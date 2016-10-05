@@ -1,0 +1,464 @@
+.TH "src/confini.h" 3 "Wed Oct 5 2016" "libconfini" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+src/confini.h \- libconfini header  
+
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBIniFormat\fP"
+.br
+.RI "24-bit bitfield representing a unique format of an INI file (INI dialect) "
+.ti -1c
+.RI "struct \fBIniStatistics\fP"
+.br
+.RI "Global statistics about an INI file\&. "
+.ti -1c
+.RI "struct \fBIniDispatch\fP"
+.br
+.RI "Dispatch of a single INI member\&. "
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBIniFormat\fP \fBIniFormat\fP"
+.br
+.RI "24-bit bitfield representing a unique format of an INI file (INI dialect) "
+.ti -1c
+.RI "typedef struct \fBIniStatistics\fP \fBIniStatistics\fP"
+.br
+.RI "Global statistics about an INI file\&. "
+.ti -1c
+.RI "typedef struct \fBIniDispatch\fP \fBIniDispatch\fP"
+.br
+.RI "Dispatch of a single INI member\&. "
+.ti -1c
+.RI "typedef unsigned long long int \fBini_format_uint\fP"
+.br
+.RI "24-bit bitmask representing the format of an INI file "
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBConfiniErrorNo\fP { \fBCONFINI_EFEINTR\fP = 1, \fBCONFINI_EFEOOR\fP = 2, \fBCONFINI_EIINTR\fP = 3, \fBCONFINI_ENOMEM\fP = 4, \fBCONFINI_EIO\fP = 5, \fBCONFINI_ENOENT\fP = 6 }
+.RI "Error codes\&. ""
+.br
+.ti -1c
+.RI "enum \fBIniNodeType\fP { \fBINI_UNKNOWN\fP = 0, \fBINI_DOCUMENT\fP = 1, \fBINI_SECTION\fP = 2, \fBINI_KEY\fP = 3, \fBINI_COMMENT\fP = 4, \fBINI_INLINE_COMMENT\fP = 5, \fBINI_DISABLED_SECTION\fP = 6, \fBINI_DISABLED_KEY\fP = 7 }
+.RI "INI nodes types\&. ""
+.br
+.ti -1c
+.RI "enum \fBIniComments\fP { \fBINI_PARSE_COMMENT\fP = 0, \fBINI_SHOW_COMMENT\fP = 1, \fBINI_ERASE_COMMENT\fP = 2, \fBINI_NORMAL_CHARACTER\fP = 3 }
+.RI "Behaviors of '#' and ';'\&. ""
+.br
+.ti -1c
+.RI "enum \fBIniMultiline\fP { \fBINI_EVERYTHING_MULTILINE\fP = 0, \fBINI_ACTIVE_AND_DISABLED_MULTILINE\fP = 1, \fBINI_ACTIVE_MULTILINE\fP = 2, \fBINI_NO_MULTILINE\fP = 3 }
+.RI "Multiline entries\&. ""
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static void \fBini_set_implicit_value\fP (char *the_value, signed long int the_v_length)"
+.br
+.ti -1c
+.RI "unsigned int \fBload_ini_file\fP (const char *path, const \fBIniFormat\fP format, int(*f_init)(\fBIniStatistics\fP *statistics, void *init_other), int(*f_foreach)(\fBIniDispatch\fP *dispatch, void *foreach_other), void *other_argument)"
+.br
+.RI "Parses an INI file and dispatches its content\&. "
+.ti -1c
+.RI "\fBini_format_uint\fP \fBget_ini_format_mask\fP (const \fBIniFormat\fP format)"
+.br
+.RI "Converts an \fBIniFormat\fP into an \fBini_format_uint\fP\&. "
+.ti -1c
+.RI "void \fBread_ini_format_mask\fP (\fBini_format_uint\fP mask, \fBIniFormat\fP *format)"
+.br
+.RI "Sets all the values of an \fBIniFormat\fP by reading them from an \fBini_format_uint\fP\&. "
+.ti -1c
+.RI "unsigned long int \fBini_unquote\fP (char *ini_string, const \fBIniFormat\fP format)"
+.br
+.RI "Unescapes a string and removes all its unescaped quotes (if single/double quotes are active) "
+.ti -1c
+.RI "unsigned long int \fBini_array_getlength\fP (const char *ini_string, const char delimiter, const \fBIniFormat\fP format)"
+.br
+.RI "Gets the length of an INI array\&. "
+.ti -1c
+.RI "unsigned int \fBini_array_foreach\fP (const char *ini_string, const char delimiter, const \fBIniFormat\fP format, int(*f_foreach)(const char *member, unsigned int offset, unsigned int length, void *foreach_other), void *other_argument)"
+.br
+.RI "Calls a custom function for each member of an INI array -- useful for read-only (const) stringified arrays\&. "
+.ti -1c
+.RI "unsigned int \fBini_split_array\fP (char *ini_string, const char delimiter, const \fBIniFormat\fP format, int(*f_foreach)(char *element, unsigned int length, void *foreach_other), void *other_argument)"
+.br
+.RI "Splits an INI array and calls a custom function for each member\&. "
+.ti -1c
+.RI "signed int \fBini_getbool\fP (const char *ini_string, const signed int return_value)"
+.br
+.RI "Checks if a string matches \fIexactly\fP one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\&.\fP"
+.ti -1c
+.RI "signed int \fBini_getlazybool\fP (const char *ini_string, const signed int return_value)"
+.br
+.RI "Checks if the first letter of a string matches the first letter of one of the booleans listed in \fILIBCONFINI_BOOLEANS\fP "
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "static const \fBIniFormat\fP \fBINI_DEFAULT_FORMAT\fP = { '=' , \fBINI_PARSE_COMMENT\fP , \fBINI_PARSE_COMMENT\fP , \fBINI_EVERYTHING_MULTILINE\fP , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }"
+.br
+.RI "A model format\&. "
+.ti -1c
+.RI "char * \fBINI_IMPLICIT_VALUE\fP"
+.br
+.RI "Default value of implicit keys\&. "
+.ti -1c
+.RI "signed short \fBINI_IMPLICIT_V_LENGTH\fP"
+.br
+.RI "Default length of implicit keys' values -- it can be set to any unsigned number, indipendently of \fBINI_IMPLICIT_VALUE\fP\&. "
+.ti -1c
+.RI "double(* \fBini_getfloat\fP )(const char *ini_string)"
+.br
+.ti -1c
+.RI "long long int(* \fBini_getllint\fP )(const char *ini_string)"
+.br
+.ti -1c
+.RI "long int(* \fBini_getlint\fP )(const char *ini_string)"
+.br
+.ti -1c
+.RI "int(* \fBini_getint\fP )(const char *ini_string)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+libconfini header 
+
+
+.PP
+\fBAuthor:\fP
+.RS 4
+Stefano Gioffre\*(` 
+.RE
+.PP
+\fBCopyright:\fP
+.RS 4
+GNU Public License v3 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2016 
+.RE
+.PP
+
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef unsigned long long int \fBini_format_uint\fP"
+
+.PP
+24-bit bitmask representing the format of an INI file 
+.SS "typedef struct \fBIniDispatch\fP  \fBIniDispatch\fP"
+
+.PP
+Dispatch of a single INI member\&. 
+.SS "typedef struct \fBIniFormat\fP   \fBIniFormat\fP"
+
+.PP
+24-bit bitfield representing a unique format of an INI file (INI dialect) 
+.SS "typedef struct \fBIniStatistics\fP  \fBIniStatistics\fP"
+
+.PP
+Global statistics about an INI file\&. 
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBConfiniErrorNo\fP"
+
+.PP
+Error codes\&. 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fICONFINI_EFEINTR \fP\fP
+.TP
+\fB\fICONFINI_EFEOOR \fP\fP
+Interrupted by the user during f_foreach 
+.TP
+\fB\fICONFINI_EIINTR \fP\fP
+The loop is longer than expected (out of range) 
+.TP
+\fB\fICONFINI_ENOMEM \fP\fP
+Interrupted by the user during f_init 
+.TP
+\fB\fICONFINI_EIO \fP\fP
+Error allocating memory 
+.TP
+\fB\fICONFINI_ENOENT \fP\fP
+Error reading the file 
+.SS "enum \fBIniComments\fP"
+
+.PP
+Behaviors of '#' and ';'\&. 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIINI_PARSE_COMMENT \fP\fP
+.TP
+\fB\fIINI_SHOW_COMMENT \fP\fP
+.TP
+\fB\fIINI_ERASE_COMMENT \fP\fP
+.TP
+\fB\fIINI_NORMAL_CHARACTER \fP\fP
+.SS "enum \fBIniMultiline\fP"
+
+.PP
+Multiline entries\&. 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIINI_EVERYTHING_MULTILINE \fP\fP
+.TP
+\fB\fIINI_ACTIVE_AND_DISABLED_MULTILINE \fP\fP
+.TP
+\fB\fIINI_ACTIVE_MULTILINE \fP\fP
+.TP
+\fB\fIINI_NO_MULTILINE \fP\fP
+.SS "enum \fBIniNodeType\fP"
+
+.PP
+INI nodes types\&. 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIINI_UNKNOWN \fP\fP
+.TP
+\fB\fIINI_DOCUMENT \fP\fP
+.TP
+\fB\fIINI_SECTION \fP\fP
+.TP
+\fB\fIINI_KEY \fP\fP
+.TP
+\fB\fIINI_COMMENT \fP\fP
+.TP
+\fB\fIINI_INLINE_COMMENT \fP\fP
+.TP
+\fB\fIINI_DISABLED_SECTION \fP\fP
+.TP
+\fB\fIINI_DISABLED_KEY \fP\fP
+.SH "Function Documentation"
+.PP 
+.SS "\fBini_format_uint\fP get_ini_format_mask (const \fBIniFormat\fP source)"
+
+.PP
+Converts an \fBIniFormat\fP into an \fBini_format_uint\fP\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsource\fP The \fBIniFormat\fP to be read 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The mask representing the format 
+.RE
+.PP
+
+.SS "unsigned int ini_array_foreach (const char * ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(const char *member, unsigned int offset, unsigned int length, void *foreach_other) f_foreach, void * other_argument)"
+
+.PP
+Calls a custom function for each member of an INI array -- useful for read-only (const) stringified arrays\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIini_string\fP The stringified array 
+.br
+\fIdelimiter\fP The delimiter of the array members 
+.br
+\fIformat\fP The format of the INI file 
+.br
+\fIf_foreach\fP The function that will be invoked for each array member 
+.br
+\fIother_argument\fP A custom argument, or NULL 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Zero for success, otherwise an error code 
+.RE
+.PP
+
+.SS "unsigned long int ini_array_getlength (const char * ini_string, const char delimiter, const \fBIniFormat\fP format)"
+
+.PP
+Gets the length of an INI array\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIini_string\fP The stringified array 
+.br
+\fIdelimiter\fP The delimiter of the array members 
+.br
+\fIformat\fP The format of the INI file 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The length of the INI array 
+.RE
+.PP
+
+.SS "signed int ini_getbool (const char * ini_string, const signed int return_value)"
+
+.PP
+Checks if a string matches \fIexactly\fP one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\&.\fP
+.PP
+\fBParameters:\fP
+.RS 4
+\fIini_string\fP A string to be checked 
+.br
+\fIreturn_value\fP A value that will be returned if no matching boolean will be found 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The matching boolean value (0 or 1) or \fBreturn_value\fP if no boolean will be found 
+.RE
+.PP
+
+.SS "signed int ini_getlazybool (const char * ini_string, const signed int return_value)"
+
+.PP
+Checks if the first letter of a string matches the first letter of one of the booleans listed in \fILIBCONFINI_BOOLEANS\fP 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIini_string\fP A string to be checked 
+.br
+\fIreturn_value\fP A value that will be returned if no matching boolean will be found 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The matching boolean value (0 or 1) or \fBreturn_value\fP if no boolean will be found 
+.RE
+.PP
+
+.SS "static void ini_set_implicit_value (char * the_value, signed long int the_v_length)\fC [inline]\fP, \fC [static]\fP"
+
+.SS "unsigned int ini_split_array (char * ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(char *element, unsigned int length, void *foreach_other) f_foreach, void * other_argument)"
+
+.PP
+Splits an INI array and calls a custom function for each member\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIini_string\fP The stringified array 
+.br
+\fIdelimiter\fP The delimiter of the array members 
+.br
+\fIformat\fP The format of the INI file 
+.br
+\fIf_foreach\fP The function that will be invoked for each array member 
+.br
+\fIother_argument\fP A custom argument, or NULL 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Zero for success, otherwise an error code 
+.RE
+.PP
+
+.SS "unsigned long int ini_unquote (char * ini_string, const \fBIniFormat\fP format)"
+
+.PP
+Unescapes a string and removes all its unescaped quotes (if single/double quotes are active) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIini_string\fP The string to be unescaped 
+.br
+\fIformat\fP The format of the INI file 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The new length of the string 
+.RE
+.PP
+
+.SS "unsigned int load_ini_file (const char * path, const \fBIniFormat\fP format, int(*)(\fBIniStatistics\fP *statistics, void *init_other) f_init, int(*)(\fBIniDispatch\fP *dispatch, void *foreach_other) f_foreach, void * other_argument)"
+
+.PP
+Parses an INI file and dispatches its content\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpath\fP The path of the INI file 
+.br
+\fIformat\fP The format of the INI file 
+.br
+\fIf_init\fP The function that will be invoked before the dispatch, or NULL 
+.br
+\fIf_foreach\fP The function that will be invoked for each dispatch, or NULL 
+.br
+\fIother_argument\fP A custom argument, or NULL 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Zero for success, otherwise an error code 
+.RE
+.PP
+
+.SS "void read_ini_format_mask (\fBini_format_uint\fP mask, \fBIniFormat\fP * dest)"
+
+.PP
+Sets all the values of an \fBIniFormat\fP by reading them from an \fBini_format_uint\fP\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fImask\fP The \fBini_format_uint\fP to be read 
+.br
+\fIdest\fP The \fBIniFormat\fP to be set 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Nothing 
+.RE
+.PP
+
+.SH "Variable Documentation"
+.PP 
+.SS "const \fBIniFormat\fP INI_DEFAULT_FORMAT = { '=' , \fBINI_PARSE_COMMENT\fP , \fBINI_PARSE_COMMENT\fP , \fBINI_EVERYTHING_MULTILINE\fP , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }\fC [static]\fP"
+
+.PP
+A model format\&. 
+.SS "double(* ini_getfloat) (const char *ini_string)"
+
+.SS "int(* ini_getint) (const char *ini_string)"
+
+.SS "long int(* ini_getlint) (const char *ini_string)"
+
+.SS "long long int(* ini_getllint) (const char *ini_string)"
+
+.SS "signed short INI_IMPLICIT_V_LENGTH"
+
+.PP
+Default length of implicit keys' values -- it can be set to any unsigned number, indipendently of \fBINI_IMPLICIT_VALUE\fP\&. 
+.SS "char* INI_IMPLICIT_VALUE"
+
+.PP
+Default value of implicit keys\&. 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for libconfini from the source code\&.

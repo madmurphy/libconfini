@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <confini.h>
+
+struct my_struct {
+
+	char *my_date;
+	char *my_ini_file;
+
+};
+
+int print_ini_stats (IniStatistics *statistics, void *my_argument) {
+
+	struct my_struct *my_other = (struct my_struct *) my_argument;
+
+	printf(
+
+		"Hi there!\n\n"
+		"Today is %s.\n\n"
+		"We decided to parse the INI file \"%s\".\n\n"
+		"The file is %d bytes large and contains %d nodes.\n"
+		"Please find below the output of each dispatch.\n",
+
+		my_other->my_date, my_other->my_ini_file, statistics->bytes, statistics->members
+
+	);
+
+	return 0;
+
+}
+
+int my_ini_listener(IniDispatch *dispatch, void *ignore_me) {
+
+	printf(
+
+		"\ndispatch_id: %d\n"
+		"format: {IniFormat}\n"
+		"type: %d\n"
+		"data: |%s|\n"
+		"value: |%s|\n"
+		"append_to: |%s|\n"
+		"d_length: %d\n"
+		"v_length: %d\n",
+
+		dispatch->dispatch_id,
+		dispatch->type,
+		dispatch->data,
+		dispatch->value,
+		dispatch->append_to,
+		dispatch->d_length,
+		dispatch->v_length
+
+	);
+
+	return 0;
+
+}
+
+
+int main () {
+
+	IniFormat my_format;
+	struct my_struct my_other;
+
+	my_other.my_date = "Thursday September 22th, 2016";
+	my_other.my_ini_file = "example.conf";
+	my_format = INI_DEFAULT_FORMAT;
+	my_format.implicit_is_special = 1;
+	ini_set_implicit_value("yes", -1);
+
+	if (load_ini_file("example.conf", my_format, print_ini_stats, my_ini_listener, &my_other)) {
+
+		fprintf(stderr, "Sorry, something went wrong :-(\n");
+
+	} else {
+
+		printf("\nFile \"%s\" has been parsed successfully.\n\n", my_other.my_ini_file);
+
+	}
+
+	return 0;
+
+}
+

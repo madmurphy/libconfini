@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+datarootdir=@datarootdir@
+datadir=@datadir@
+includedir=@includedir@/libconfini-0.1
+
+Name: libconfini
+Description: Yet another INI parser
+Version: @VERSION@
+Requires: 
+Libs: -L${libdir} -lconfini
+Cflags: -I${includedir}
