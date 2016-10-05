@@ -12,8 +12,8 @@ dist_doc_DATA = \
 	README \
 	MAN.md
 
-man_MANS = doc/man/man3/confini.h.3 \
-	doc/man/man3/libconfini.3
+man_MANS = docs/man/man3/confini.h.3 \
+	docs/man/man3/libconfini.3
 
 examplesdir = $(docdir)/examples
 examples_DATA = \
