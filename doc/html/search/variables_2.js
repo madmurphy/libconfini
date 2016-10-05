@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['bytes',['bytes',['../structIniStatistics.html#ab5911ee36bf6c20d6e9107c769945ffd',1,'IniStatistics']]]
+  ['case_5fsensitive',['case_sensitive',['../structIniFormat.html#a50f562eda0d26ed7e0d3c57afeb46d2d',1,'IniFormat']]]
 ];

@@ -51,6 +51,12 @@ int my_ini_listener(IniDispatch *dispatch, void *ignore_me) {
 
 	);
 
+	if (dispatch->value == INI_IMPLICIT_VALUE) {
+
+		printf("\n\tHey! This is an implicit value!\n");
+
+	}
+
 	return 0;
 
 }
@@ -65,7 +71,7 @@ int main () {
 	my_other.my_ini_file = "example.conf";
 	my_format = INI_DEFAULT_FORMAT;
 	my_format.implicit_is_special = 1;
-	ini_set_implicit_value("yes", -1);
+	ini_set_implicit_value("YES", 0);
 
 	if (load_ini_file("example.conf", my_format, print_ini_stats, my_ini_listener, &my_other)) {
 

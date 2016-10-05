@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['_5fspaces_5f',['_SPACES_',['../confini_8c.html#aac7fbb84cc73ca36238447aa3ae50f57',1,'confini.c']]]
+  ['append_5fto',['append_to',['../structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9',1,'IniDispatch']]]
 ];

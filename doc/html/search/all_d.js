@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['read_5fini_5fformat_5fmask',['read_ini_format_mask',['../confini_8c.html#aae7c95e28a2316bbdc33996ad0844452',1,'read_ini_format_mask(ini_format_uint mask, IniFormat *dest):&#160;confini.c'],['../confini_8h.html#a9f57070b6c7e4b964f850d8ddda19d31',1,'read_ini_format_mask(ini_format_uint mask, IniFormat *format):&#160;confini.c']]],
-  ['readme_2emd',['README.md',['../README_8md.html',1,'']]],
-  ['rtrim_5fh',['rtrim_h',['../confini_8c.html#abd139ab417a8ff23a3b44d78d0606f4b',1,'confini.c']]],
-  ['rtrim_5fs',['rtrim_s',['../confini_8c.html#aec74641a1b0ca9262114082ed680b982',1,'confini.c']]]
+  ['sanitize_5fsection_5fname',['sanitize_section_name',['../confini_8c.html#a03a68e31890efbebb8a2209aa0117d1a',1,'confini.c']]],
+  ['semicolon',['semicolon',['../structIniFormat.html#a90f42c0052d9a45ad137f2f5517fbb3c',1,'IniFormat']]],
+  ['string_5ftolower',['string_tolower',['../confini_8c.html#ae040cb607600c6c27532139308fe1cac',1,'confini.c']]]
 ];

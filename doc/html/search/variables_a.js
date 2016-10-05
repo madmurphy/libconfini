@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['preserve_5fspaces_5fin_5fvalues',['preserve_spaces_in_values',['../structIniFormat.html#a6754bb12139c447c252937959e126c06',1,'IniFormat']]]
+  ['semicolon',['semicolon',['../structIniFormat.html#a90f42c0052d9a45ad137f2f5517fbb3c',1,'IniFormat']]]
 ];

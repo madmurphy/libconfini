@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['semicolon',['semicolon',['../structIniFormat.html#a90f42c0052d9a45ad137f2f5517fbb3c',1,'IniFormat']]]
+  ['type',['type',['../structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8',1,'IniDispatch']]]
 ];

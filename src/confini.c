@@ -89,7 +89,8 @@
 		\*/
 
 
-/* Aliases just for code clarity... */
+
+/* ALIASES */
 
 #define _LIBCONFINI_BOOL_ unsigned char
 #define _LIBCONFINI_BYTE_ unsigned char
@@ -138,16 +139,16 @@ static const char *_LIBCONFINI_BOOLEANS_[][2] = {
 
 /* ABSTRACT UTILITIES */
 
-static const _LIBCONFINI_BYTE_ _SPACES_[] = { _LIBCONFINI_SIMPLE_SPACE_, '\t', '\v', '\f', _LIBCONFINI_LF_, _LIBCONFINI_CR_ };
+static const _LIBCONFINI_BYTE_ _LIBCONFINI_SPACES_[] = { _LIBCONFINI_SIMPLE_SPACE_, '\t', '\v', '\f', _LIBCONFINI_LF_, _LIBCONFINI_CR_ };
 
-/* _SPACES_ possible lengths */
-#define _JUST_S_T_ 2
-#define _NO_EOL_ 4
-#define _WITH_EOL_ 6
+/* Possible lengths of array #_LIBCONFINI_SPACES_ */
+#define _LIBCONFINI_JUST_S_T_ 2
+#define _LIBCONFINI_NO_EOL_ 4
+#define _LIBCONFINI_WITH_EOL_ 6
 
 static inline _LIBCONFINI_BOOL_ is_some_space (const char ch, const _LIBCONFINI_BYTE_ depth) {
 	_LIBCONFINI_BYTE_ sp_idx;
-	for (sp_idx = 0; sp_idx < depth && ch != _SPACES_[sp_idx]; sp_idx++);
+	for (sp_idx = 0; sp_idx < depth && ch != _LIBCONFINI_SPACES_[sp_idx]; sp_idx++);
 	return sp_idx < depth;
 }
 
@@ -208,7 +209,7 @@ static inline _LIBCONFINI_UINT_ ultrim_h (char *lt_s, const _LIBCONFINI_UINT_ st
 
 	for (; lt_s[lt_i] && (abacus & 8); lt_i++) {
 
-		abacus = (abacus & 4) && is_some_space(lt_s[lt_i], _NO_EOL_) ? 13
+		abacus = (abacus & 4) && is_some_space(lt_s[lt_i], _LIBCONFINI_NO_EOL_) ? 13
 			: lt_s[lt_i] == _LIBCONFINI_LF_ || lt_s[lt_i] == _LIBCONFINI_CR_ ? abacus | 5
 			: (abacus & 4) && lt_s[lt_i] == _LIBCONFINI_BACKSLASH_ ? 10
 			: abacus & 4;
@@ -313,7 +314,7 @@ static inline _LIBCONFINI_UINT_ get_delimiter_pos (const char *str, const _LIBCO
 				(
 					settings.delimiter_symbol ?
 						str[idx] == settings.delimiter_symbol
-						: is_some_space(str[idx], _NO_EOL_)
+						: is_some_space(str[idx], _LIBCONFINI_NO_EOL_)
 				)
 			);
 
@@ -347,12 +348,12 @@ static _LIBCONFINI_UINT_ unescape_cr_lf (char * nstr, const _LIBCONFINI_UINT_ le
 
 	for (is_escaped = _LIBCONFINI_FALSE_, idx = 0, lshift = 0; idx < len; idx++) {
 
-		if (is_escaped && (nstr[idx] == _SPACES_[cr_or_lf] || nstr[idx] == _SPACES_[cr_or_lf ^= 1])) {
+		if (is_escaped && (nstr[idx] == _LIBCONFINI_SPACES_[cr_or_lf] || nstr[idx] == _LIBCONFINI_SPACES_[cr_or_lf ^= 1])) {
 
 			for (
 
 				iter = idx,
-				idx += nstr[idx + 1] == _SPACES_[cr_or_lf ^ 1];
+				idx += nstr[idx + 1] == _LIBCONFINI_SPACES_[cr_or_lf ^ 1];
 
 					iter < idx + 1;
 
@@ -365,7 +366,7 @@ static _LIBCONFINI_UINT_ unescape_cr_lf (char * nstr, const _LIBCONFINI_UINT_ le
 
 			if (is_disabled) {
 
-				iter = ltrim_s(nstr, iter, _NO_EOL_);
+				iter = ltrim_s(nstr, iter, _LIBCONFINI_NO_EOL_);
 
 				if (is_parsable_char(nstr[iter], settings)) {
 
@@ -421,11 +422,11 @@ static _LIBCONFINI_UINT_ collapse_spaces (char *str, const IniFormat settings) {
 	*/
 
 	_LIBCONFINI_UINT_ idx, lshift;
-	_LIBCONFINI_BYTE_ abacus = 1 | (is_some_space(*str, _WITH_EOL_) << 3);
+	_LIBCONFINI_BYTE_ abacus = 1 | (is_some_space(*str, _LIBCONFINI_WITH_EOL_) << 3);
 
 	for (lshift = 0, idx = 0; str[idx]; idx++) {
 
-		if (!(abacus & 6) && is_some_space(str[idx], _WITH_EOL_)) {
+		if (!(abacus & 6) && is_some_space(str[idx], _LIBCONFINI_WITH_EOL_)) {
 
 			if (abacus & 8) {
 
@@ -500,9 +501,9 @@ static _LIBCONFINI_UINT_ sanitize_section_name (char *str, const IniFormat setti
 
 	*/
 
-	for (abacus = is_some_space(*str, _WITH_EOL_) ? 65 : 9, lshift = 0, idx = 0; str[idx]; idx++) {
+	for (abacus = is_some_space(*str, _LIBCONFINI_WITH_EOL_) ? 65 : 9, lshift = 0, idx = 0; str[idx]; idx++) {
 
-		if (!(abacus & 6) && is_some_space(str[idx], _WITH_EOL_)) {
+		if (!(abacus & 6) && is_some_space(str[idx], _LIBCONFINI_WITH_EOL_)) {
 
 			if (abacus & 80) {
 
@@ -611,7 +612,7 @@ static _LIBCONFINI_UINT_ uncomment (char *commstr, _LIBCONFINI_UINT_ len, const 
 								(abacus & 16) | ((abacus << 1) & 4)
 							: !(abacus & 32) && is_comm_char(commstr[idx], format) ?
 								(abacus & 40) | 8
-							: !(abacus & 40) && is_some_space(commstr[idx], _NO_EOL_)?
+							: !(abacus & 40) && is_some_space(commstr[idx], _LIBCONFINI_NO_EOL_)?
 								(abacus & 57) | 16
 							:
 								(abacus & 33) | 32;
@@ -719,7 +720,7 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 			(
 				is_parsable_char(*segment, settings)
 				&&
-				!(settings.no_disabled_after_spaces && is_some_space(segment[1], _NO_EOL_))
+				!(settings.no_disabled_after_spaces && is_some_space(segment[1], _LIBCONFINI_NO_EOL_))
 			)
 
 		) {
@@ -736,7 +737,7 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 
 		*/
 
-		for (abacus = 15, idx = ltrim_s(segment, 1, _NO_EOL_); segment[idx]; idx++) {
+		for (abacus = 15, idx = ltrim_s(segment, 1, _LIBCONFINI_NO_EOL_); segment[idx]; idx++) {
 
 				if (is_comm_char(segment[idx], settings)) {
 
@@ -744,13 +745,13 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 
 					if (abacus == 31) {
 
-						focus_at = ltrim_s(segment, 1, _NO_EOL_);
+						focus_at = ltrim_s(segment, 1, _LIBCONFINI_NO_EOL_);
 
 						if (get_type_as_active(segment + focus_at, idx - focus_at, _LIBCONFINI_TRUE_, settings)) {
 
 							segment[idx] = _LIBCONFINI_INLINE_MARKER_;
 							segment[idx - 1] = '\0';
-							rtrim_h(segment, idx - 1, _NO_EOL_);
+							rtrim_h(segment, idx - 1, _LIBCONFINI_NO_EOL_);
 
 							if (show_comments) {
 
@@ -781,10 +782,10 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 
 					/* Search for /\\(?:\n\r?|\r\n?)\s*[^;#]/ in multiline disabled items */
 
-					idx = ltrim_s(segment, idx + 1, _WITH_EOL_);
+					idx = ltrim_s(segment, idx + 1, _LIBCONFINI_WITH_EOL_);
 
 					if (
-							(settings.no_disabled_after_spaces && is_some_space(segment[idx + 1], _NO_EOL_))
+							(settings.no_disabled_after_spaces && is_some_space(segment[idx + 1], _LIBCONFINI_NO_EOL_))
 							||
 							!(
 								(is_comm_char(segment[idx], settings) && !settings.multiline_entries)
@@ -793,7 +794,7 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 							)
 						) {
 
-						rtrim_h(segment, idx, _WITH_EOL_);
+						rtrim_h(segment, idx, _LIBCONFINI_WITH_EOL_);
 
 						if (segment[idx]) {
 
@@ -814,7 +815,7 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 					abacus &= 7;
 					abacus |= 1;
 
-				} else if (is_some_space(segment[idx], _NO_EOL_)) {
+				} else if (is_some_space(segment[idx], _LIBCONFINI_NO_EOL_)) {
 
 					abacus &= 7;
 					abacus |= 25;
@@ -834,7 +835,7 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 
 		if (settings.multiline_entries && !unparse_at) {
 
-			focus_at = ltrim_s(segment, 1, _NO_EOL_);
+			focus_at = ltrim_s(segment, 1, _LIBCONFINI_NO_EOL_);
 
 			if (segment[focus_at] && !get_type_as_active(segment + focus_at, idx - focus_at, _LIBCONFINI_TRUE_, settings)) {
 
@@ -878,11 +879,11 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 
 		for (abacus = 1, idx = search_at; segment[idx]; idx++) {
 
-			if (is_comm_char(segment[idx], settings) && is_some_space(segment[idx - 1], _WITH_EOL_) && !(abacus & 6)) {
+			if (is_comm_char(segment[idx], settings) && is_some_space(segment[idx - 1], _LIBCONFINI_WITH_EOL_) && !(abacus & 6)) {
 
 				segment[idx] = _LIBCONFINI_INLINE_MARKER_;
 				segment[idx - 1] = '\0';
-				rtrim_h(segment, idx - 1, _NO_EOL_);
+				rtrim_h(segment, idx - 1, _LIBCONFINI_NO_EOL_);
 				unparse_at = idx + 1;
 				search_at = 0;
 
@@ -925,7 +926,6 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 
 
 /* LIBRARY'S MAIN FUNCTION */
-
 
 /**
 
@@ -998,11 +998,11 @@ unsigned int load_ini_file (
 
 	for (tmp_int = 5, abacus = 0, node_at = 0, idx = 0; idx < len; idx++) {
 
-		if (cache[idx] == _SPACES_[tmp_int] || cache[idx] == _SPACES_[tmp_int ^= 1]) {
+		if (cache[idx] == _LIBCONFINI_SPACES_[tmp_int] || cache[idx] == _LIBCONFINI_SPACES_[tmp_int ^= 1]) {
 
 			if (format.multiline_entries < 3 && abacus) {
 
-				idx += cache[idx + 1] == _SPACES_[tmp_int ^ 1];
+				idx += cache[idx + 1] == _LIBCONFINI_SPACES_[tmp_int ^ 1];
 
 			} else {
 
@@ -1031,8 +1031,6 @@ unsigned int load_ini_file (
 		}
 
 	}
-
-	this_doc.members += further_cuts(cache + ultrim_h(cache, node_at), format);
 
 	/* Debug */
 	/*
@@ -1097,7 +1095,7 @@ unsigned int load_ini_file (
 
 		if (is_parsable_char(*this_d.data, format)) {
 
-			parse_at = ltrim_s(cache, node_at + 1, _NO_EOL_);
+			parse_at = ltrim_s(cache, node_at + 1, _LIBCONFINI_NO_EOL_);
 
 			/*
 
@@ -1113,7 +1111,7 @@ unsigned int load_ini_file (
 
 				abacus		=	this_d.data[tmp_int] == _LIBCONFINI_LF_ || this_d.data[tmp_int] == _LIBCONFINI_CR_ ? 1
 								: (abacus & 4) && is_comm_char(this_d.data[tmp_int], format) ? 0
-								: (abacus & 2) && is_some_space(this_d.data[tmp_int], _NO_EOL_) ? 7
+								: (abacus & 2) && is_some_space(this_d.data[tmp_int], _LIBCONFINI_NO_EOL_) ? 7
 								: 3;
 
 			}
@@ -1265,7 +1263,7 @@ unsigned int load_ini_file (
 
 					if (format.preserve_spaces_in_values) {
 
-						this_d.v_length = this_d.d_length - ltrim_h(this_d.data, tmp_int + 1, _NO_EOL_);
+						this_d.v_length = this_d.d_length - ltrim_h(this_d.data, tmp_int + 1, _LIBCONFINI_NO_EOL_);
 						this_d.value = this_d.data + this_d.d_length - this_d.v_length;
 
 					} else {
@@ -1319,19 +1317,35 @@ unsigned int load_ini_file (
 
 
 
-/* UTILITIES JUST FOR THE USER (NOT USED HERE) */
+/* FUNCTIONS FOR THE USER (NOT USED BY LIBCONFINI) */
 
 
 /**
 
-	@brief			Converts an IniFormat into an ::ini_format_uint
+	@brief			Sets the valued used for implicit keys
+	@param			implicit_value		The string to be used as implicit value (usually `"YES"`, or `"TRUE"`)
+	@param			implicit_v_length	The length of @p implicit_value (usually 0, independently of its real length)
+	@return			Nothing
+
+**/
+void ini_set_implicit_value (char *implicit_value, unsigned long int implicit_v_length) {
+
+	INI_IMPLICIT_VALUE = implicit_value;
+	INI_IMPLICIT_V_LENGTH = implicit_v_length;
+
+}
+
+
+/**
+
+	@brief			Converts an IniFormat into an ::IniFormatBitmask
 	@param			source		The IniFormat to be read
 	@return			The mask representing the format
 
 **/
-ini_format_uint get_ini_format_mask (const IniFormat source) {
+IniFormatBitmask get_ini_format_mask (const IniFormat source) {
 
-	ini_format_uint mask = 0;
+	IniFormatBitmask mask = 0;
 
 	unsigned int bitpos = 0;
 
@@ -1350,13 +1364,13 @@ ini_format_uint get_ini_format_mask (const IniFormat source) {
 
 /**
 
-	@brief			Sets all the values of an IniFormat by reading them from an ::ini_format_uint
-	@param			mask		The ::ini_format_uint to be read
+	@brief			Sets all the values of an IniFormat by reading them from an ::IniFormatBitmask
+	@param			mask		The ::IniFormatBitmask to be read
 	@param			dest		The IniFormat to be set
 	@return			Nothing
 
 **/
-void read_ini_format_mask (ini_format_uint mask, IniFormat *dest) {
+void read_ini_format_mask (IniFormatBitmask mask, IniFormat *dest) {
 
 	#define _LIBCONFINI_ASSIGN_TO_INI_TYPE_(SIZE, PROPERTY, IGNORE_ME) \
 		dest->PROPERTY = mask;\
@@ -1527,23 +1541,23 @@ unsigned int ini_array_foreach (
 
 	for (abacus = 17, offs = 0, idx = 0; abacus; idx++) {
 
-		abacus = ini_string[idx] == delimiter ? abacus & 23
-				: ini_string[idx] == _LIBCONFINI_BACKSLASH_ ? (abacus | 8) ^ 1
-				: ini_string[idx] ? (
-					(abacus | 9)
-					^ (
-						!format.no_double_quotes && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ && (abacus & 1) ? 4
-						: !format.no_single_quotes && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ && (abacus & 1) ? 2
-						: 0
-					)
-				)
-				: 0;
+		abacus		=	ini_string[idx] == delimiter ? abacus & 23
+						: ini_string[idx] == _LIBCONFINI_BACKSLASH_ ? (abacus | 8) ^ 1
+						: ini_string[idx] ? (
+							(abacus | 9)
+							^ (
+								!format.no_double_quotes && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ && (abacus & 1) ? 4
+								: !format.no_single_quotes && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ && (abacus & 1) ? 2
+								: 0
+							)
+						)
+						: 0;
 
 		if (!(abacus & 14)) {
 
-			offs = ltrim_s(ini_string, offs, _WITH_EOL_);
+			offs = ltrim_s(ini_string, offs, _LIBCONFINI_WITH_EOL_);
 
-			if (f_foreach(ini_string, offs, rtrim_s(ini_string + offs, idx - offs, _WITH_EOL_), other_argument)) {
+			if (f_foreach(ini_string, offs, rtrim_s(ini_string + offs, idx - offs, _LIBCONFINI_WITH_EOL_), other_argument)) {
 
 				return CONFINI_EFEINTR;
 
@@ -1609,9 +1623,9 @@ unsigned int ini_split_array (
 		if (!(abacus & 14)) {
 
 			ini_string[idx] = '\0';
-			offs = ltrim_h(ini_string, offs, _WITH_EOL_);
+			offs = ltrim_h(ini_string, offs, _LIBCONFINI_WITH_EOL_);
 
-			if (f_foreach(ini_string + offs, rtrim_h(ini_string + offs, idx - offs, _WITH_EOL_), other_argument)) {
+			if (f_foreach(ini_string + offs, rtrim_h(ini_string + offs, idx - offs, _LIBCONFINI_WITH_EOL_), other_argument)) {
 
 				return CONFINI_EFEINTR;
 
@@ -1630,10 +1644,11 @@ unsigned int ini_split_array (
 
 /**
 
-	@brief			Checks if a string matches *exactly* one of the booleans listed in the private constant @link #_LIBCONFINI_BOOLEANS_
+	@brief			Checks whether a string matches *exactly* one of the booleans listed in
+					the private constant @link #_LIBCONFINI_BOOLEANS_
 	@param			ini_string			A string to be checked
-	@param			return_value		A value that will be returned if no matching boolean will be found
-	@return			The matching boolean value (0 or 1) or **return_value** if no boolean will be found
+	@param			return_value		A value that is returned if no matching boolean has been found
+	@return			The matching boolean value (0 or 1) or @p return_value if no boolean has been found
 
 **/
 signed int ini_getbool (const char *ini_string, const signed int return_value) {
@@ -1678,10 +1693,11 @@ signed int ini_getbool (const char *ini_string, const signed int return_value) {
 
 /**
 
-	@brief			Checks if the first letter of a string matches the first letter of one of the booleans listed in _LIBCONFINI_BOOLEANS_
+	@brief			Checks whether the first letter of a string matches the first letter of one of the
+					booleans listed in the private constant @link #_LIBCONFINI_BOOLEANS_
 	@param			ini_string			A string to be checked
-	@param			return_value		A value that will be returned if no matching boolean will be found
-	@return			The matching boolean value (0 or 1) or **return_value** if no boolean will be found
+	@param			return_value		A value that is returned if no matching boolean has been found
+	@return			The matching boolean value (0 or 1) or @p return_value if no boolean has been found
 
 **/
 signed int ini_getlazybool (const char *ini_string, const signed int return_value) {
@@ -1707,6 +1723,8 @@ signed int ini_getlazybool (const char *ini_string, const signed int return_valu
 
 }
 
+
+
 /* WRAPPERS -- In case you don't want to "#include <stdlib.h>" in your source */
 
 /*
@@ -1721,6 +1739,14 @@ long long int (*ini_getllint) (const char *ini_string) = &atoll;
 long int (*ini_getlint) (const char *ini_string) = &atol;
 
 int (*ini_getint) (const char *ini_string) = &atoi;
+
+
+
+/* VARIABLES */
+
+char *INI_IMPLICIT_VALUE = (char *) 0;
+unsigned long int INI_IMPLICIT_V_LENGTH = 0;
+
 
 
 /* EOF */
