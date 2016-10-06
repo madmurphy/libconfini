@@ -9,3 +9,9 @@ libconfini 0.9-1 is ready to be published!
 Changes:
 
 * Documentation has been moved to docs/
+
+## [0.9-3] - 2016-10-06
+
+Changes:
+
+* Small bug regarding inline comments fixed

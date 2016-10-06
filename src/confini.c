@@ -1173,8 +1173,10 @@ unsigned int load_ini_file (
 
 		this_d.append_to = parent;
 
-		this_d.d_length		=	this_d.type == INI_COMMENT || this_d.type == INI_INLINE_COMMENT ? 
+		this_d.d_length		=	this_d.type == INI_COMMENT ? 
 									uncomment(this_d.data, idx - node_at, format)
+								: this_d.type == INI_INLINE_COMMENT ? 
+									uncomment(++this_d.data, idx - node_at - 1, format)
 								: format.multiline_entries < 3 ?
 									unescape_cr_lf(this_d.data, idx - node_at, this_d.type & 4, format)
 								:
