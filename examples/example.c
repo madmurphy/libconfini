@@ -8,9 +8,9 @@ struct my_struct {
 
 };
 
-int print_ini_stats (IniStatistics *statistics, void *my_argument) {
+int print_ini_stats (IniStatistics *statistics, void *user_data) {
 
-	struct my_struct *my_other = (struct my_struct *) my_argument;
+	struct my_struct *my_other = (struct my_struct *) user_data;
 
 	printf(
 
@@ -28,7 +28,7 @@ int print_ini_stats (IniStatistics *statistics, void *my_argument) {
 
 }
 
-int my_ini_listener(IniDispatch *dispatch, void *ignore_me) {
+int my_ini_listener (IniDispatch *dispatch, void *user_data) {
 
 	printf(
 

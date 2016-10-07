@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Thu Oct 6 2016" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Fri Oct 7 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -39,7 +39,7 @@ src/confini.h \- libconfini header
 .br
 .RI "Dispatch of a single INI member\&. "
 .ti -1c
-.RI "typedef unsigned long long int \fBIniFormatBitmask\fP"
+.RI "typedef unsigned long long int \fBIniFormatMask\fP"
 .br
 .RI "24-bit bitmask representing the format of an INI file "
 .in -1c
@@ -67,7 +67,7 @@ src/confini.h \- libconfini header
 
 .in +1c
 .ti -1c
-.RI "unsigned int \fBload_ini_file\fP (const char *path, const \fBIniFormat\fP format, int(*f_init)(\fBIniStatistics\fP *statistics, void *init_other), int(*f_foreach)(\fBIniDispatch\fP *dispatch, void *foreach_other), void *other_argument)"
+.RI "unsigned int \fBload_ini_file\fP (const char *path, const \fBIniFormat\fP format, int(*f_init)(\fBIniStatistics\fP *statistics, void *init_other), int(*f_foreach)(\fBIniDispatch\fP *dispatch, void *foreach_other), void *user_data)"
 .br
 .RI "Parses an INI file and dispatches its content\&. "
 .ti -1c
@@ -75,13 +75,13 @@ src/confini.h \- libconfini header
 .br
 .RI "Sets the valued used for implicit keys\&. "
 .ti -1c
-.RI "\fBIniFormatBitmask\fP \fBget_ini_format_mask\fP (const \fBIniFormat\fP format)"
+.RI "\fBIniFormatMask\fP \fBget_ini_format_mask\fP (const \fBIniFormat\fP format)"
 .br
-.RI "Converts an \fBIniFormat\fP into an \fBIniFormatBitmask\fP\&. "
+.RI "Converts an \fBIniFormat\fP into an \fBIniFormatMask\fP\&. "
 .ti -1c
-.RI "void \fBread_ini_format_mask\fP (\fBIniFormatBitmask\fP mask, \fBIniFormat\fP *format)"
+.RI "void \fBread_ini_format_mask\fP (\fBIniFormatMask\fP mask, \fBIniFormat\fP *format)"
 .br
-.RI "Sets all the values of an \fBIniFormat\fP by reading them from an \fBIniFormatBitmask\fP\&. "
+.RI "Sets all the values of an \fBIniFormat\fP by reading them from an \fBIniFormatMask\fP\&. "
 .ti -1c
 .RI "unsigned long int \fBini_unquote\fP (char *ini_string, const \fBIniFormat\fP format)"
 .br
@@ -91,11 +91,11 @@ src/confini.h \- libconfini header
 .br
 .RI "Gets the length of an INI array\&. "
 .ti -1c
-.RI "unsigned int \fBini_array_foreach\fP (const char *ini_string, const char delimiter, const \fBIniFormat\fP format, int(*f_foreach)(const char *member, unsigned int offset, unsigned int length, void *foreach_other), void *other_argument)"
+.RI "unsigned int \fBini_array_foreach\fP (const char *ini_string, const char delimiter, const \fBIniFormat\fP format, int(*f_foreach)(const char *member, unsigned int offset, unsigned int length, void *foreach_other), void *user_data)"
 .br
 .RI "Calls a custom function for each member of an INI array -- useful for read-only (const) stringified arrays\&. "
 .ti -1c
-.RI "unsigned int \fBini_split_array\fP (char *ini_string, const char delimiter, const \fBIniFormat\fP format, int(*f_foreach)(char *element, unsigned int length, void *foreach_other), void *other_argument)"
+.RI "unsigned int \fBini_split_array\fP (char *ini_string, const char delimiter, const \fBIniFormat\fP format, int(*f_foreach)(char *element, unsigned int length, void *foreach_other), void *user_data)"
 .br
 .RI "Splits an INI array and calls a custom function for each member\&. "
 .ti -1c
@@ -167,7 +167,7 @@ Dispatch of a single INI member\&.
 
 .PP
 24-bit bitfield representing a unique format of an INI file (INI dialect) 
-.SS "typedef unsigned long long int \fBIniFormatBitmask\fP"
+.SS "typedef unsigned long long int \fBIniFormatMask\fP"
 
 .PP
 24-bit bitmask representing the format of an INI file 
@@ -256,10 +256,10 @@ INI nodes types\&.
 \fB\fIINI_DISABLED_KEY \fP\fP
 .SH "Function Documentation"
 .PP 
-.SS "\fBIniFormatBitmask\fP get_ini_format_mask (const \fBIniFormat\fP source)"
+.SS "\fBIniFormatMask\fP get_ini_format_mask (const \fBIniFormat\fP source)"
 
 .PP
-Converts an \fBIniFormat\fP into an \fBIniFormatBitmask\fP\&. 
+Converts an \fBIniFormat\fP into an \fBIniFormatMask\fP\&. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -272,7 +272,7 @@ The mask representing the format
 .RE
 .PP
 
-.SS "unsigned int ini_array_foreach (const char * ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(const char *member, unsigned int offset, unsigned int length, void *foreach_other) f_foreach, void * other_argument)"
+.SS "unsigned int ini_array_foreach (const char * ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(const char *member, unsigned int offset, unsigned int length, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
 Calls a custom function for each member of an INI array -- useful for read-only (const) stringified arrays\&. 
@@ -287,7 +287,7 @@ Calls a custom function for each member of an INI array -- useful for read-only 
 .br
 \fIf_foreach\fP The function that will be invoked for each array member 
 .br
-\fIother_argument\fP A custom argument, or NULL 
+\fIuser_data\fP A custom argument, or NULL 
 .RE
 .PP
 \fBReturns:\fP
@@ -370,7 +370,7 @@ Nothing
 .RE
 .PP
 
-.SS "unsigned int ini_split_array (char * ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(char *element, unsigned int length, void *foreach_other) f_foreach, void * other_argument)"
+.SS "unsigned int ini_split_array (char * ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(char *element, unsigned int length, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
 Splits an INI array and calls a custom function for each member\&. 
@@ -385,7 +385,7 @@ Splits an INI array and calls a custom function for each member\&.
 .br
 \fIf_foreach\fP The function that will be invoked for each array member 
 .br
-\fIother_argument\fP A custom argument, or NULL 
+\fIuser_data\fP A custom argument, or NULL 
 .RE
 .PP
 \fBReturns:\fP
@@ -412,7 +412,7 @@ The new length of the string
 .RE
 .PP
 
-.SS "unsigned int load_ini_file (const char * path, const \fBIniFormat\fP format, int(*)(\fBIniStatistics\fP *statistics, void *init_other) f_init, int(*)(\fBIniDispatch\fP *dispatch, void *foreach_other) f_foreach, void * other_argument)"
+.SS "unsigned int load_ini_file (const char * path, const \fBIniFormat\fP format, int(*)(\fBIniStatistics\fP *statistics, void *init_other) f_init, int(*)(\fBIniDispatch\fP *dispatch, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
 Parses an INI file and dispatches its content\&. 
@@ -427,7 +427,7 @@ Parses an INI file and dispatches its content\&.
 .br
 \fIf_foreach\fP The function that will be invoked for each dispatch, or NULL 
 .br
-\fIother_argument\fP A custom argument, or NULL 
+\fIuser_data\fP A custom argument, or NULL 
 .RE
 .PP
 \fBReturns:\fP
@@ -436,14 +436,14 @@ Zero for success, otherwise an error code
 .RE
 .PP
 
-.SS "void read_ini_format_mask (\fBIniFormatBitmask\fP mask, \fBIniFormat\fP * dest)"
+.SS "void read_ini_format_mask (\fBIniFormatMask\fP mask, \fBIniFormat\fP * dest)"
 
 .PP
-Sets all the values of an \fBIniFormat\fP by reading them from an \fBIniFormatBitmask\fP\&. 
+Sets all the values of an \fBIniFormat\fP by reading them from an \fBIniFormatMask\fP\&. 
 .PP
 \fBParameters:\fP
 .RS 4
-\fImask\fP The \fBIniFormatBitmask\fP to be read 
+\fImask\fP The \fBIniFormatMask\fP to be read 
 .br
 \fIdest\fP The \fBIniFormat\fP to be set 
 .RE

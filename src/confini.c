@@ -130,8 +130,8 @@ static const char *_LIBCONFINI_BOOLEANS_[][2] = {
 };
 
 /*
-	This can be any character, in theory. But after the left-trim of each line a leading space
-	works pretty well as metacharacter.
+	This can be any character, in theory... But after the left-trim of each line a leading
+	space works pretty well as metacharacter.
 */
 #define _LIBCONFINI_INLINE_MARKER_ '\t'
 
@@ -147,9 +147,9 @@ static const _LIBCONFINI_BYTE_ _LIBCONFINI_SPACES_[] = { _LIBCONFINI_SIMPLE_SPAC
 #define _LIBCONFINI_WITH_EOL_ 6
 
 static inline _LIBCONFINI_BOOL_ is_some_space (const char ch, const _LIBCONFINI_BYTE_ depth) {
-	_LIBCONFINI_BYTE_ sp_idx;
-	for (sp_idx = 0; sp_idx < depth && ch != _LIBCONFINI_SPACES_[sp_idx]; sp_idx++);
-	return sp_idx < depth;
+	_LIBCONFINI_BYTE_ idx;
+	for (idx = 0; idx < depth && ch != _LIBCONFINI_SPACES_[idx]; idx++);
+	return idx < depth;
 }
 
 /**
@@ -194,37 +194,37 @@ static inline _LIBCONFINI_UINT_ ltrim_h (char *lt_s, const _LIBCONFINI_UINT_ sta
 static inline _LIBCONFINI_UINT_ ultrim_h (char *lt_s, const _LIBCONFINI_UINT_ start_from) {
 
 	_LIBCONFINI_BYTE_ abacus = 12;
-	_LIBCONFINI_UINT_ lt_i = start_from;
+	_LIBCONFINI_UINT_ ult_i = start_from;
 
 	/*
 
 	Mask "abacus":
 
-	FLAG_1	this is any space
-	FLAG_2	this is not a backslash
-	FLAG_4	previous was not a backslash
-	FLAG_8	continue the loop
+		FLAG_1	this is any space
+		FLAG_2	this is not a backslash
+		FLAG_4	previous was not a backslash
+		FLAG_8	continue the loop
 
 	*/
 
-	for (; lt_s[lt_i] && (abacus & 8); lt_i++) {
+	for (; lt_s[ult_i] && (abacus & 8); ult_i++) {
 
-		abacus = (abacus & 4) && is_some_space(lt_s[lt_i], _LIBCONFINI_NO_EOL_) ? 13
-			: lt_s[lt_i] == _LIBCONFINI_LF_ || lt_s[lt_i] == _LIBCONFINI_CR_ ? abacus | 5
-			: (abacus & 4) && lt_s[lt_i] == _LIBCONFINI_BACKSLASH_ ? 10
+		abacus = (abacus & 4) && is_some_space(lt_s[ult_i], _LIBCONFINI_NO_EOL_) ? 13
+			: lt_s[ult_i] == _LIBCONFINI_LF_ || lt_s[ult_i] == _LIBCONFINI_CR_ ? abacus | 5
+			: (abacus & 4) && lt_s[ult_i] == _LIBCONFINI_BACKSLASH_ ? 10
 			: abacus & 4;
 
 		if (abacus & 1) {
-			lt_s[lt_i] = '\0';
+			lt_s[ult_i] = '\0';
 		}
 
 		if ((abacus & 2) && (abacus & 4)) {
-			lt_s[lt_i - 1] = '\0';
+			lt_s[ult_i - 1] = '\0';
 		}
 
 	}
 
-	return abacus & 8 ? lt_i : abacus & 4 ? lt_i - 1 : lt_i - 2;
+	return abacus & 8 ? ult_i : abacus & 4 ? ult_i - 1 : ult_i - 2;
 
 }
 
@@ -233,7 +233,7 @@ static inline _LIBCONFINI_UINT_ ultrim_h (char *lt_s, const _LIBCONFINI_UINT_ st
 	@brief			Soft right trim -- does not change the buffer
 	@param			string			The target string
 	@param			length			The length of the string
-	@param			depth			What is actually considered a space -- a number ranging from 1 to 6
+	@param			depth			What is actually considered a space -- a subset of @link #_LIBCONFINI_SPACES_ ranging from 1 to 6
 	@return			The length of the string until the last non-space character
 
 **/
@@ -276,14 +276,42 @@ static inline void string_tolower (char *str) {
 
 /* CONCRETE UTILITIES */
 
+
+/**
+
+	@brief			Checks whether a character can represent the opening of a disabled entry
+					within a given format
+	@param			ch			The character to check
+	@param			format		The format of the INI file
+	@return			1 if @p ch matches, 0 otherwise
+
+**/
 static inline _LIBCONFINI_BOOL_ is_parsable_char (const char ch, const IniFormat settings) {
 	return (settings.semicolon == INI_PARSE_COMMENT && ch == _LIBCONFINI_SEMICOLON_) || (settings.hash == INI_PARSE_COMMENT && ch == _LIBCONFINI_HASH_);
 }
 
+/**
+
+	@brief			Checks whether a character can represent the opening of a comment within
+					a given format
+	@param			ch			The character to check
+	@param			format		The format of the INI file
+	@return			1 if @p ch matches, 0 otherwise
+
+**/
 static inline _LIBCONFINI_BOOL_ is_comm_char (const char ch, const IniFormat settings) {
 	return (settings.semicolon != INI_NORMAL_CHARACTER && ch == _LIBCONFINI_SEMICOLON_) || (settings.hash != INI_NORMAL_CHARACTER && ch == _LIBCONFINI_HASH_);
 }
 
+/**
+
+	@brief			Checks whether a character can represent the opening of a comment that
+					has to be ignored within a given format
+	@param			ch			The character to check
+	@param			format		The format of the INI file
+	@return			1 if @p ch matches, 0 otherwise
+
+**/
 static inline _LIBCONFINI_BOOL_ is_erase_char (const char ch, const IniFormat settings) {
 	return (settings.semicolon == INI_ERASE_COMMENT && ch == _LIBCONFINI_SEMICOLON_) || (settings.hash == INI_ERASE_COMMENT && ch == _LIBCONFINI_HASH_);
 }
@@ -294,7 +322,8 @@ static inline _LIBCONFINI_BOOL_ is_erase_char (const char ch, const IniFormat se
 	@param			string		The string to analyse
 	@param			length		The length of the string
 	@param			format		The format of the INI file
-	@return			The offset of the delimiter or `len` if not found
+	@return			The offset of the delimiter or @p length if the delimiter has not
+					been not found
 
 **/
 static inline _LIBCONFINI_UINT_ get_delimiter_pos (const char *str, const _LIBCONFINI_UINT_ len, const IniFormat settings) {
@@ -334,9 +363,9 @@ static inline _LIBCONFINI_UINT_ get_delimiter_pos (const char *str, const _LIBCO
 /**
 
 	@brief			Replaces /\\(\n\r?|\r\n?)s*[#;]/ or /\\(\n\r?|\r\n?)/ with "$1".
-	@param			string		Target string
-	@param			length		Length of the string
-	@param			is_disabled	The string represents an disabled item
+	@param			string			Target string
+	@param			length			Length of the string
+	@param			is_disabled		The string represents a disabled entry
 	@return			Number of characters removed
 
 **/
@@ -377,11 +406,11 @@ static _LIBCONFINI_UINT_ unescape_cr_lf (char * nstr, const _LIBCONFINI_UINT_ le
 
 			}
 
-			is_escaped = 0;
+			is_escaped = _LIBCONFINI_FALSE_;
 
 		} else {
 
-			is_escaped = nstr[idx] == _LIBCONFINI_BACKSLASH_ ? !is_escaped : 0;
+			is_escaped = nstr[idx] == _LIBCONFINI_BACKSLASH_ ? !is_escaped : _LIBCONFINI_FALSE_;
 
 			if (lshift) {
 
@@ -414,10 +443,10 @@ static _LIBCONFINI_UINT_ collapse_spaces (char *str, const IniFormat settings) {
 
 	Mask "abacus":
 
-	FLAG_1	backslashes immediately preceding this character are even
-	FLAG_2	unescaped single quotes are odd until now
-	FLAG_4	unescaped double quotes are odd until now
-	FLAG_8	the string does not start with a space
+		FLAG_1	backslashes immediately preceding this character are even
+		FLAG_2	unescaped single quotes are odd until now
+		FLAG_4	unescaped double quotes are odd until now
+		FLAG_8	the string does not start with a space
 
 	*/
 
@@ -489,15 +518,15 @@ static _LIBCONFINI_UINT_ sanitize_section_name (char *str, const IniFormat setti
 
 	Mask "abacus":
 
-	FLAG_1			backslashes immediately preceding this character are even
-	FLAG_2			unescaped single quotes are odd until now
-	FLAG_4			unescaped double quotes are odd until now
-	FLAG_8			the string does not start with a new line
-	FLAG_16			more than one space is here
-	FLAG_32			at least one dot is here
-	FLAG_64			one or more spaces follow a dot
-	FLAG_128		more than one dot is here
-	FLAG_256		continue the shift
+		FLAG_1			backslashes immediately preceding this character are even
+		FLAG_2			unescaped single quotes are odd until now
+		FLAG_4			unescaped double quotes are odd until now
+		FLAG_8			the string does not start with a new line
+		FLAG_16			more than one space is here
+		FLAG_32			at least one dot is here
+		FLAG_64			one or more spaces follow a dot
+		FLAG_128		more than one dot is here
+		FLAG_256		continue the shift
 
 	*/
 
@@ -562,7 +591,7 @@ static _LIBCONFINI_UINT_ sanitize_section_name (char *str, const IniFormat setti
 
 	@brief			Removes all comment initializers ('#' or ';') from the beginning of each line of a comment
 	@param			commstr		The comment to sanitize
-	@param			commstr		The length of commstr
+	@param			len			The length of commstr
 	@param			format		The format of the INI file
 	@return			The new length of the string
 
@@ -595,12 +624,12 @@ static _LIBCONFINI_UINT_ uncomment (char *commstr, _LIBCONFINI_UINT_ len, const 
 
 		Mask "abacus":
 
-		FLAG_1		Don't erase any character
-		FLAG_2		Backslashes immediately preceding this character are odd
-		FLAG_4		This character is a backslash
-		FLAG_8		This character is a comment character and follows /(\n\s*|\r\s*)/
-		FLAG_16		This character is a part of a group of spaces following a new line (/(\n|\r)[\t \v\f]+/)
-		FLAG_32		This character is not a new line character (/[^\r\n]/)
+			FLAG_1		Don't erase any character
+			FLAG_2		Backslashes immediately preceding this character are odd
+			FLAG_4		This character is a backslash
+			FLAG_8		This character is a comment character and follows /(\n\s*|\r\s*)/
+			FLAG_16		This character is a part of a group of spaces following a new line (/(\n|\r)[\t \v\f]+/)
+			FLAG_32		This character is not a new line character (/[^\r\n]/)
 
 		*/
 
@@ -713,37 +742,40 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 	_LIBCONFINI_BYTE_ abacus;
 	_LIBCONFINI_UINT_ idx, focus_at, search_at = 0, unparse_at = 0, fragm_size = show_comments;
 
-	if (
+	/*
 
-			(!settings.multiline_entries && is_comm_char(*segment, settings))
-			||
-			(
-				is_parsable_char(*segment, settings)
-				&&
-				!(settings.no_disabled_after_spaces && is_some_space(segment[1], _LIBCONFINI_NO_EOL_))
-			)
-
-		) {
-
-		/*
-
-		Mask "abacus":
+	Mask "abacus":
 
 		FLAG_1	backslashes immediately preceding this character are even
 		FLAG_2	unescaped single quotes are even until now
 		FLAG_4	unescaped double quotes are even until now
 		FLAG_8	this does not immediately follow [\n\r]\s*
 		FLAG_16	the previous character was a space
+		FLAG_32	this can be a disabled entry
+		FLAG_64	this is nothing but a comment that can be multiline
 
-		*/
+	*/
 
-		for (abacus = 15, idx = ltrim_s(segment, 1, _LIBCONFINI_NO_EOL_); segment[idx]; idx++) {
+	abacus		=	is_parsable_char(*segment, settings) && !(
+						settings.no_disabled_after_spaces && is_some_space(segment[1], _LIBCONFINI_NO_EOL_)
+					) ?
+						47
+					: !settings.multiline_entries && (
+						is_comm_char(*segment, settings) || *segment == _LIBCONFINI_INLINE_MARKER_
+					) ?
+						79
+					:
+						15;
+
+	if (abacus & 96) {
+
+		for (idx = ltrim_s(segment, 1, _LIBCONFINI_NO_EOL_); segment[idx]; idx++) {
 
 				if (is_comm_char(segment[idx], settings)) {
 
 					/* Search for inline comments in (supposedly) disabled items */
 
-					if (abacus == 31) {
+					if (abacus == 63) {
 
 						focus_at = ltrim_s(segment, 1, _LIBCONFINI_NO_EOL_);
 
@@ -775,7 +807,7 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 
 					}
 
-					abacus &= 7;
+					abacus &= 103;
 					abacus |= 9;
 
 				} else if (segment[idx] == _LIBCONFINI_LF_ || segment[idx] == _LIBCONFINI_CR_) {
@@ -812,17 +844,17 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 
 					}
 
-					abacus &= 7;
+					abacus &= 103;
 					abacus |= 1;
 
 				} else if (is_some_space(segment[idx], _LIBCONFINI_NO_EOL_)) {
 
-					abacus &= 7;
+					abacus &= 103;
 					abacus |= 25;
 
 				} else {
 
-					abacus &= 15;
+					abacus &= 111;
 					abacus = (abacus & 1) && !settings.no_double_quotes && segment[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
 							: (abacus & 1) && !settings.no_single_quotes && segment[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
 							: segment[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
@@ -884,16 +916,23 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 				segment[idx] = _LIBCONFINI_INLINE_MARKER_;
 				segment[idx - 1] = '\0';
 				rtrim_h(segment, idx - 1, _LIBCONFINI_NO_EOL_);
-				unparse_at = idx + 1;
 				search_at = 0;
 
-				if (show_comments) {
+				if (settings.multiline_entries) {
 
-					fragm_size++;
+					if (show_comments) {
+
+						fragm_size++;
+
+					}
+
+					unparse_at = idx + 1;
+					goto cut_unparsable;
 
 				}
 
-				goto cut_unparsable;
+				fragm_size += further_cuts(segment + idx, settings);
+				break;
 
 			} else {
 
@@ -934,7 +973,7 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 	@param			format				The format of the INI file
 	@param			f_init				The function that will be invoked before the dispatch, or NULL
 	@param			f_foreach			The function that will be invoked for each dispatch, or NULL
-	@param			other_argument		A custom argument, or NULL
+	@param			user_data			A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
 
 **/
@@ -949,7 +988,7 @@ unsigned int load_ini_file (
 		IniDispatch *dispatch,
 		void *foreach_other
 	),
-	void *other_argument
+	void *user_data
 ) {
 
 	FILE *config_file = fopen(path, "r");
@@ -1020,6 +1059,8 @@ unsigned int load_ini_file (
 
 		} else {
 
+			/* Replace NUL characters in the buffer (if any) with simple spaces */
+
 			if (!cache[idx]) {
 
 				cache[idx] = _LIBCONFINI_SIMPLE_SPACE_;
@@ -1042,7 +1083,7 @@ unsigned int load_ini_file (
 
 	*/
 
-	if (f_init && f_init(&this_doc, other_argument)) {
+	if (f_init && f_init(&this_doc, user_data)) {
 
 		return_value = CONFINI_EIINTR;
 		goto free_and_exit;
@@ -1203,9 +1244,9 @@ unsigned int load_ini_file (
 
 					Mask "abacus":
 
-					FLAG_1			backslashes immediately preceding this character are even
-					FLAG_2			unescaped single quotes are odd until now
-					FLAG_4			unescaped double quotes are odd until now
+						FLAG_1			backslashes immediately preceding this character are even
+						FLAG_2			unescaped single quotes are odd until now
+						FLAG_4			unescaped double quotes are odd until now
 
 				*/
 
@@ -1298,7 +1339,7 @@ unsigned int load_ini_file (
 
 		}
 
-		if (f_foreach(&this_d, other_argument)) {
+		if (f_foreach(&this_d, user_data)) {
 
 			return_value = CONFINI_EFEINTR;
 			goto free_and_exit;
@@ -1340,14 +1381,14 @@ void ini_set_implicit_value (char *implicit_value, unsigned long int implicit_v_
 
 /**
 
-	@brief			Converts an IniFormat into an ::IniFormatBitmask
+	@brief			Converts an IniFormat into an ::IniFormatMask
 	@param			source		The IniFormat to be read
 	@return			The mask representing the format
 
 **/
-IniFormatBitmask get_ini_format_mask (const IniFormat source) {
+IniFormatMask get_ini_format_mask (const IniFormat source) {
 
-	IniFormatBitmask mask = 0;
+	IniFormatMask mask = 0;
 
 	unsigned int bitpos = 0;
 
@@ -1366,13 +1407,13 @@ IniFormatBitmask get_ini_format_mask (const IniFormat source) {
 
 /**
 
-	@brief			Sets all the values of an IniFormat by reading them from an ::IniFormatBitmask
-	@param			mask		The ::IniFormatBitmask to be read
+	@brief			Sets all the values of an IniFormat by reading them from an ::IniFormatMask
+	@param			mask		The ::IniFormatMask to be read
 	@param			dest		The IniFormat to be set
 	@return			Nothing
 
 **/
-void read_ini_format_mask (IniFormatBitmask mask, IniFormat *dest) {
+void read_ini_format_mask (IniFormatMask mask, IniFormat *dest) {
 
 	#define _LIBCONFINI_ASSIGN_TO_INI_TYPE_(SIZE, PROPERTY, IGNORE_ME) \
 		dest->PROPERTY = mask;\
@@ -1402,10 +1443,10 @@ unsigned long int ini_unquote (char *ini_string, const IniFormat format) {
 
 	Mask "qmask":
 
-	FLAG_1		unescaped single quotes are even until now
-	FLAG_2		unescaped double quotes are even until now
-	FLAG_4		this is an unescaped single quote and single quotes are metacharacters
-	FLAG_8		this is an unescaped double quote and double quotes are metacharacters
+		FLAG_1		unescaped single quotes are even until now
+		FLAG_2		unescaped double quotes are even until now
+		FLAG_4		this is an unescaped single quote and single quotes are metacharacters
+		FLAG_8		this is an unescaped double quote and double quotes are metacharacters
 
 	*/
 
@@ -1477,11 +1518,11 @@ unsigned long int ini_array_getlength (const char *ini_string, const char delimi
 
 	Mask "abacus":
 
-	FLAG_1	backslashes immediately preceding this character are even
-	FLAG_2	unescaped single quotes are odd until now
-	FLAG_4	unescaped double quotes are odd until now
-	FLAG_8	this is not a delimiter
-	FLAG_16	continue the loop
+		FLAG_1	backslashes immediately preceding this character are even
+		FLAG_2	unescaped single quotes are odd until now
+		FLAG_4	unescaped double quotes are odd until now
+		FLAG_8	this is not a delimiter
+		FLAG_16	continue the loop
 
 	*/
 
@@ -1519,7 +1560,7 @@ unsigned long int ini_array_getlength (const char *ini_string, const char delimi
 	@param			delimiter			The delimiter of the array members
 	@param			format				The format of the INI file
 	@param			f_foreach			The function that will be invoked for each array member
-	@param			other_argument		A custom argument, or NULL
+	@param			user_data			A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
 
 **/
@@ -1533,7 +1574,7 @@ unsigned int ini_array_foreach (
 		unsigned int length,
 		void *foreach_other
 	),
-	void *other_argument
+	void *user_data
 ) {
 
 	_LIBCONFINI_BYTE_ abacus;
@@ -1559,7 +1600,7 @@ unsigned int ini_array_foreach (
 
 			offs = ltrim_s(ini_string, offs, _LIBCONFINI_WITH_EOL_);
 
-			if (f_foreach(ini_string, offs, rtrim_s(ini_string + offs, idx - offs, _LIBCONFINI_WITH_EOL_), other_argument)) {
+			if (f_foreach(ini_string, offs, rtrim_s(ini_string + offs, idx - offs, _LIBCONFINI_WITH_EOL_), user_data)) {
 
 				return CONFINI_EFEINTR;
 
@@ -1583,7 +1624,7 @@ unsigned int ini_array_foreach (
 	@param			delimiter			The delimiter of the array members
 	@param			format				The format of the INI file
 	@param			f_foreach			The function that will be invoked for each array member
-	@param			other_argument		A custom argument, or NULL
+	@param			user_data			A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
 
 **/
@@ -1596,7 +1637,7 @@ unsigned int ini_split_array (
 		unsigned int length,
 		void *foreach_other
 	),
-	void *other_argument
+	void *user_data
 ) {
 
 	_LIBCONFINI_BYTE_ abacus;
@@ -1627,7 +1668,7 @@ unsigned int ini_split_array (
 			ini_string[idx] = '\0';
 			offs = ltrim_h(ini_string, offs, _LIBCONFINI_WITH_EOL_);
 
-			if (f_foreach(ini_string + offs, rtrim_h(ini_string + offs, idx - offs, _LIBCONFINI_WITH_EOL_), other_argument)) {
+			if (f_foreach(ini_string + offs, rtrim_h(ini_string + offs, idx - offs, _LIBCONFINI_WITH_EOL_), user_data)) {
 
 				return CONFINI_EFEINTR;
 

@@ -74,7 +74,7 @@ typedef struct IniDispatch {
 } IniDispatch;
 
 /** @brief	24-bit bitmask representing the format of an INI file **/
-typedef unsigned long long int IniFormatBitmask;
+typedef unsigned long long int IniFormatMask;
 
 
 
@@ -92,14 +92,14 @@ extern unsigned int load_ini_file (
 		IniDispatch *dispatch,
 		void *foreach_other
 	),
-	void *other_argument
+	void *user_data
 );
 
 extern void ini_set_implicit_value (char *implicit_value, unsigned long int implicit_v_length);
 
-extern IniFormatBitmask get_ini_format_mask (const IniFormat format);
+extern IniFormatMask get_ini_format_mask (const IniFormat format);
 
-extern void read_ini_format_mask (IniFormatBitmask mask, IniFormat *format);
+extern void read_ini_format_mask (IniFormatMask mask, IniFormat *format);
 
 extern unsigned long int ini_unquote (char *ini_string, const IniFormat format);
 
@@ -115,7 +115,7 @@ extern unsigned int ini_array_foreach (
 		unsigned int length,
 		void *foreach_other
 	),
-	void *other_argument
+	void *user_data
 );
 
 extern unsigned int ini_split_array (
@@ -127,7 +127,7 @@ extern unsigned int ini_split_array (
 		unsigned int length,
 		void *foreach_other
 	),
-	void *other_argument
+	void *user_data
 );
 
 extern signed int ini_getbool (const char *ini_string, const signed int return_value);

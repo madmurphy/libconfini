@@ -101,9 +101,9 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a48a2d1eb3a8f1cfd41efb34c615d496d"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structIniDispatch.html">IniDispatch</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a48a2d1eb3a8f1cfd41efb34c615d496d">IniDispatch</a></td></tr>
 <tr class="memdesc:a48a2d1eb3a8f1cfd41efb34c615d496d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch of a single INI member.  <a href="#a48a2d1eb3a8f1cfd41efb34c615d496d">More...</a><br /></td></tr>
 <tr class="separator:a48a2d1eb3a8f1cfd41efb34c615d496d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20fffc3bdc5738191711df3aa2156431"><td class="memItemLeft" align="right" valign="top">typedef unsigned long long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a20fffc3bdc5738191711df3aa2156431">IniFormatBitmask</a></td></tr>
-<tr class="memdesc:a20fffc3bdc5738191711df3aa2156431"><td class="mdescLeft">&#160;</td><td class="mdescRight">24-bit bitmask representing the format of an INI file  <a href="#a20fffc3bdc5738191711df3aa2156431">More...</a><br /></td></tr>
-<tr class="separator:a20fffc3bdc5738191711df3aa2156431"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69d4acd52d62a4660a9e0943be23f960"><td class="memItemLeft" align="right" valign="top">typedef unsigned long long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a69d4acd52d62a4660a9e0943be23f960">IniFormatMask</a></td></tr>
+<tr class="memdesc:a69d4acd52d62a4660a9e0943be23f960"><td class="mdescLeft">&#160;</td><td class="mdescRight">24-bit bitmask representing the format of an INI file  <a href="#a69d4acd52d62a4660a9e0943be23f960">More...</a><br /></td></tr>
+<tr class="separator:a69d4acd52d62a4660a9e0943be23f960"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -150,30 +150,30 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:af4aea61ffd09a0220b9ce0ab9b872110"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#af4aea61ffd09a0220b9ce0ab9b872110">load_ini_file</a> (const char *path, const <a class="el" href="structIniFormat.html">IniFormat</a> format, int(*f_init)(<a class="el" href="structIniStatistics.html">IniStatistics</a> *statistics, void *init_other), int(*f_foreach)(<a class="el" href="structIniDispatch.html">IniDispatch</a> *dispatch, void *foreach_other), void *other_argument)</td></tr>
-<tr class="memdesc:af4aea61ffd09a0220b9ce0ab9b872110"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses an INI file and dispatches its content.  <a href="#af4aea61ffd09a0220b9ce0ab9b872110">More...</a><br /></td></tr>
-<tr class="separator:af4aea61ffd09a0220b9ce0ab9b872110"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab417ac1154d63ff752cf5f2df3bc6a8d"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#ab417ac1154d63ff752cf5f2df3bc6a8d">load_ini_file</a> (const char *path, const <a class="el" href="structIniFormat.html">IniFormat</a> format, int(*f_init)(<a class="el" href="structIniStatistics.html">IniStatistics</a> *statistics, void *init_other), int(*f_foreach)(<a class="el" href="structIniDispatch.html">IniDispatch</a> *dispatch, void *foreach_other), void *user_data)</td></tr>
+<tr class="memdesc:ab417ac1154d63ff752cf5f2df3bc6a8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses an INI file and dispatches its content.  <a href="#ab417ac1154d63ff752cf5f2df3bc6a8d">More...</a><br /></td></tr>
+<tr class="separator:ab417ac1154d63ff752cf5f2df3bc6a8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae936105c62e52370ea7241bcca995b2d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#ae936105c62e52370ea7241bcca995b2d">ini_set_implicit_value</a> (char *implicit_value, unsigned long int implicit_v_length)</td></tr>
 <tr class="memdesc:ae936105c62e52370ea7241bcca995b2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the valued used for implicit keys.  <a href="#ae936105c62e52370ea7241bcca995b2d">More...</a><br /></td></tr>
 <tr class="separator:ae936105c62e52370ea7241bcca995b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a485d8dde219d7af50e7d1aac1ee200f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="confini_8h.html#a20fffc3bdc5738191711df3aa2156431">IniFormatBitmask</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a485d8dde219d7af50e7d1aac1ee200f2">get_ini_format_mask</a> (const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
-<tr class="memdesc:a485d8dde219d7af50e7d1aac1ee200f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> into an <a class="el" href="confini_8h.html#a20fffc3bdc5738191711df3aa2156431" title="24-bit bitmask representing the format of an INI file ">IniFormatBitmask</a>.  <a href="#a485d8dde219d7af50e7d1aac1ee200f2">More...</a><br /></td></tr>
-<tr class="separator:a485d8dde219d7af50e7d1aac1ee200f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae91c5e821e3f9967413237989ac10ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#aae91c5e821e3f9967413237989ac10ac">read_ini_format_mask</a> (<a class="el" href="confini_8h.html#a20fffc3bdc5738191711df3aa2156431">IniFormatBitmask</a> mask, <a class="el" href="structIniFormat.html">IniFormat</a> *format)</td></tr>
-<tr class="memdesc:aae91c5e821e3f9967413237989ac10ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets all the values of an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> by reading them from an <a class="el" href="confini_8h.html#a20fffc3bdc5738191711df3aa2156431" title="24-bit bitmask representing the format of an INI file ">IniFormatBitmask</a>.  <a href="#aae91c5e821e3f9967413237989ac10ac">More...</a><br /></td></tr>
-<tr class="separator:aae91c5e821e3f9967413237989ac10ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad964ed1ff717be625a8459c8384ec2b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="confini_8h.html#a69d4acd52d62a4660a9e0943be23f960">IniFormatMask</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#ad964ed1ff717be625a8459c8384ec2b6">get_ini_format_mask</a> (const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
+<tr class="memdesc:ad964ed1ff717be625a8459c8384ec2b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> into an <a class="el" href="confini_8h.html#a69d4acd52d62a4660a9e0943be23f960" title="24-bit bitmask representing the format of an INI file ">IniFormatMask</a>.  <a href="#ad964ed1ff717be625a8459c8384ec2b6">More...</a><br /></td></tr>
+<tr class="separator:ad964ed1ff717be625a8459c8384ec2b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa688aa937d3bb2d7f222f17d77efa364"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#aa688aa937d3bb2d7f222f17d77efa364">read_ini_format_mask</a> (<a class="el" href="confini_8h.html#a69d4acd52d62a4660a9e0943be23f960">IniFormatMask</a> mask, <a class="el" href="structIniFormat.html">IniFormat</a> *format)</td></tr>
+<tr class="memdesc:aa688aa937d3bb2d7f222f17d77efa364"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets all the values of an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> by reading them from an <a class="el" href="confini_8h.html#a69d4acd52d62a4660a9e0943be23f960" title="24-bit bitmask representing the format of an INI file ">IniFormatMask</a>.  <a href="#aa688aa937d3bb2d7f222f17d77efa364">More...</a><br /></td></tr>
+<tr class="separator:aa688aa937d3bb2d7f222f17d77efa364"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25ce7d3a21abcdd9e197ed945b06e8b6"><td class="memItemLeft" align="right" valign="top">unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a25ce7d3a21abcdd9e197ed945b06e8b6">ini_unquote</a> (char *ini_string, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
 <tr class="memdesc:a25ce7d3a21abcdd9e197ed945b06e8b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescapes a string and removes all its unescaped quotes (if single/double quotes are active)  <a href="#a25ce7d3a21abcdd9e197ed945b06e8b6">More...</a><br /></td></tr>
 <tr class="separator:a25ce7d3a21abcdd9e197ed945b06e8b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9555ebbbc03affe2916c2697aa429a53"><td class="memItemLeft" align="right" valign="top">unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a9555ebbbc03affe2916c2697aa429a53">ini_array_getlength</a> (const char *ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
 <tr class="memdesc:a9555ebbbc03affe2916c2697aa429a53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the length of an INI array.  <a href="#a9555ebbbc03affe2916c2697aa429a53">More...</a><br /></td></tr>
 <tr class="separator:a9555ebbbc03affe2916c2697aa429a53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77a527261b130a002b27f78cccabd869"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a77a527261b130a002b27f78cccabd869">ini_array_foreach</a> (const char *ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format, int(*f_foreach)(const char *member, unsigned int offset, unsigned int length, void *foreach_other), void *other_argument)</td></tr>
-<tr class="memdesc:a77a527261b130a002b27f78cccabd869"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls a custom function for each member of an INI array &ndash; useful for read-only (const) stringified arrays.  <a href="#a77a527261b130a002b27f78cccabd869">More...</a><br /></td></tr>
-<tr class="separator:a77a527261b130a002b27f78cccabd869"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8cf406a32d5f8a83a284865b96d4cf4"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#ae8cf406a32d5f8a83a284865b96d4cf4">ini_split_array</a> (char *ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format, int(*f_foreach)(char *element, unsigned int length, void *foreach_other), void *other_argument)</td></tr>
-<tr class="memdesc:ae8cf406a32d5f8a83a284865b96d4cf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Splits an INI array and calls a custom function for each member.  <a href="#ae8cf406a32d5f8a83a284865b96d4cf4">More...</a><br /></td></tr>
-<tr class="separator:ae8cf406a32d5f8a83a284865b96d4cf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0320e6fbf2efcf80c3742f4340cd9072"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a0320e6fbf2efcf80c3742f4340cd9072">ini_array_foreach</a> (const char *ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format, int(*f_foreach)(const char *member, unsigned int offset, unsigned int length, void *foreach_other), void *user_data)</td></tr>
+<tr class="memdesc:a0320e6fbf2efcf80c3742f4340cd9072"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls a custom function for each member of an INI array &ndash; useful for read-only (const) stringified arrays.  <a href="#a0320e6fbf2efcf80c3742f4340cd9072">More...</a><br /></td></tr>
+<tr class="separator:a0320e6fbf2efcf80c3742f4340cd9072"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae499043bf20dd4f7ab89b42d21758427"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#ae499043bf20dd4f7ab89b42d21758427">ini_split_array</a> (char *ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format, int(*f_foreach)(char *element, unsigned int length, void *foreach_other), void *user_data)</td></tr>
+<tr class="memdesc:ae499043bf20dd4f7ab89b42d21758427"><td class="mdescLeft">&#160;</td><td class="mdescRight">Splits an INI array and calls a custom function for each member.  <a href="#ae499043bf20dd4f7ab89b42d21758427">More...</a><br /></td></tr>
+<tr class="separator:ae499043bf20dd4f7ab89b42d21758427"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac58d2599330a82d971e8c2a974e3b38c"><td class="memItemLeft" align="right" valign="top">signed int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#ac58d2599330a82d971e8c2a974e3b38c">ini_getbool</a> (const char *ini_string, const signed int return_value)</td></tr>
 <tr class="memdesc:ac58d2599330a82d971e8c2a974e3b38c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_.</a> <a href="#ac58d2599330a82d971e8c2a974e3b38c">More...</a><br /></td></tr>
 <tr class="separator:ac58d2599330a82d971e8c2a974e3b38c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -239,14 +239,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a20fffc3bdc5738191711df3aa2156431"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a20fffc3bdc5738191711df3aa2156431">&sect;&nbsp;</a></span>IniFormatBitmask</h2>
+<a id="a69d4acd52d62a4660a9e0943be23f960"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69d4acd52d62a4660a9e0943be23f960">&sect;&nbsp;</a></span>IniFormatMask</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef unsigned long long int <a class="el" href="confini_8h.html#a20fffc3bdc5738191711df3aa2156431">IniFormatBitmask</a></td>
+          <td class="memname">typedef unsigned long long int <a class="el" href="confini_8h.html#a69d4acd52d62a4660a9e0943be23f960">IniFormatMask</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -372,14 +372,14 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a485d8dde219d7af50e7d1aac1ee200f2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a485d8dde219d7af50e7d1aac1ee200f2">&sect;&nbsp;</a></span>get_ini_format_mask()</h2>
+<a id="ad964ed1ff717be625a8459c8384ec2b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad964ed1ff717be625a8459c8384ec2b6">&sect;&nbsp;</a></span>get_ini_format_mask()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="confini_8h.html#a20fffc3bdc5738191711df3aa2156431">IniFormatBitmask</a> get_ini_format_mask </td>
+          <td class="memname"><a class="el" href="confini_8h.html#a69d4acd52d62a4660a9e0943be23f960">IniFormatMask</a> get_ini_format_mask </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td>
           <td class="paramname"><em>source</em></td><td>)</td>
@@ -388,7 +388,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Converts an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> into an <a class="el" href="confini_8h.html#a20fffc3bdc5738191711df3aa2156431" title="24-bit bitmask representing the format of an INI file ">IniFormatBitmask</a>. </p>
+<p>Converts an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> into an <a class="el" href="confini_8h.html#a69d4acd52d62a4660a9e0943be23f960" title="24-bit bitmask representing the format of an INI file ">IniFormatMask</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">source</td><td>The <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> to be read </td></tr>
@@ -399,8 +399,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a77a527261b130a002b27f78cccabd869"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a77a527261b130a002b27f78cccabd869">&sect;&nbsp;</a></span>ini_array_foreach()</h2>
+<a id="a0320e6fbf2efcf80c3742f4340cd9072"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0320e6fbf2efcf80c3742f4340cd9072">&sect;&nbsp;</a></span>ini_array_foreach()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -433,7 +433,7 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>other_argument</em>&#160;</td>
+          <td class="paramname"><em>user_data</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -450,7 +450,7 @@ Variables</h2></td></tr>
     <tr><td class="paramname">delimiter</td><td>The delimiter of the array members </td></tr>
     <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
     <tr><td class="paramname">f_foreach</td><td>The function that will be invoked for each array member </td></tr>
-    <tr><td class="paramname">other_argument</td><td>A custom argument, or NULL </td></tr>
+    <tr><td class="paramname">user_data</td><td>A custom argument, or NULL </td></tr>
   </table>
   </dd>
 </dl>
@@ -617,8 +617,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="ae8cf406a32d5f8a83a284865b96d4cf4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae8cf406a32d5f8a83a284865b96d4cf4">&sect;&nbsp;</a></span>ini_split_array()</h2>
+<a id="ae499043bf20dd4f7ab89b42d21758427"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae499043bf20dd4f7ab89b42d21758427">&sect;&nbsp;</a></span>ini_split_array()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -651,7 +651,7 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>other_argument</em>&#160;</td>
+          <td class="paramname"><em>user_data</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -668,7 +668,7 @@ Variables</h2></td></tr>
     <tr><td class="paramname">delimiter</td><td>The delimiter of the array members </td></tr>
     <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
     <tr><td class="paramname">f_foreach</td><td>The function that will be invoked for each array member </td></tr>
-    <tr><td class="paramname">other_argument</td><td>A custom argument, or NULL </td></tr>
+    <tr><td class="paramname">user_data</td><td>A custom argument, or NULL </td></tr>
   </table>
   </dd>
 </dl>
@@ -714,8 +714,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="af4aea61ffd09a0220b9ce0ab9b872110"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af4aea61ffd09a0220b9ce0ab9b872110">&sect;&nbsp;</a></span>load_ini_file()</h2>
+<a id="ab417ac1154d63ff752cf5f2df3bc6a8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab417ac1154d63ff752cf5f2df3bc6a8d">&sect;&nbsp;</a></span>load_ini_file()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -748,7 +748,7 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>other_argument</em>&#160;</td>
+          <td class="paramname"><em>user_data</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -765,7 +765,7 @@ Variables</h2></td></tr>
     <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
     <tr><td class="paramname">f_init</td><td>The function that will be invoked before the dispatch, or NULL </td></tr>
     <tr><td class="paramname">f_foreach</td><td>The function that will be invoked for each dispatch, or NULL </td></tr>
-    <tr><td class="paramname">other_argument</td><td>A custom argument, or NULL </td></tr>
+    <tr><td class="paramname">user_data</td><td>A custom argument, or NULL </td></tr>
   </table>
   </dd>
 </dl>
@@ -773,8 +773,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="aae91c5e821e3f9967413237989ac10ac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aae91c5e821e3f9967413237989ac10ac">&sect;&nbsp;</a></span>read_ini_format_mask()</h2>
+<a id="aa688aa937d3bb2d7f222f17d77efa364"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa688aa937d3bb2d7f222f17d77efa364">&sect;&nbsp;</a></span>read_ini_format_mask()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -782,7 +782,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">void read_ini_format_mask </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="confini_8h.html#a20fffc3bdc5738191711df3aa2156431">IniFormatBitmask</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="confini_8h.html#a69d4acd52d62a4660a9e0943be23f960">IniFormatMask</a>&#160;</td>
           <td class="paramname"><em>mask</em>, </td>
         </tr>
         <tr>
@@ -799,10 +799,10 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Sets all the values of an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> by reading them from an <a class="el" href="confini_8h.html#a20fffc3bdc5738191711df3aa2156431" title="24-bit bitmask representing the format of an INI file ">IniFormatBitmask</a>. </p>
+<p>Sets all the values of an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> by reading them from an <a class="el" href="confini_8h.html#a69d4acd52d62a4660a9e0943be23f960" title="24-bit bitmask representing the format of an INI file ">IniFormatMask</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mask</td><td>The <a class="el" href="confini_8h.html#a20fffc3bdc5738191711df3aa2156431" title="24-bit bitmask representing the format of an INI file ">IniFormatBitmask</a> to be read </td></tr>
+    <tr><td class="paramname">mask</td><td>The <a class="el" href="confini_8h.html#a69d4acd52d62a4660a9e0943be23f960" title="24-bit bitmask representing the format of an INI file ">IniFormatMask</a> to be read </td></tr>
     <tr><td class="paramname">dest</td><td>The <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> to be set </td></tr>
   </table>
   </dd>
