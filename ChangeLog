@@ -15,3 +15,9 @@ Changes:
 Changes:
 
 * Small bug regarding inline comments fixed
+
+## [0.9-4] - 2016-10-07
+
+Changes:
+
+* Small bug regarding multiline inline comments fixed
