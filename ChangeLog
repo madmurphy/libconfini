@@ -8,19 +8,19 @@ libconfini 0.9-1 is ready to be published!
 
 Changes:
 
-	* Documentation has been moved to docs/
+* Documentation has been moved to docs/
 
 ## [0.9-3] - 2016-10-06
 
 Changes:
 
-	* Small bug regarding inline comments fixed
+* Small bug regarding inline comments fixed
 
 ## [0.9-4] - 2016-10-07
 
 Changes:
 
-	* Small bug regarding multiline inline comments fixed
+* Small bug regarding multiline inline comments fixed
 
 ## [1.0-1] - 2016-10-10
 
@@ -28,11 +28,11 @@ Major version change, due to the renaming of several public functions.
 
 Changes:
 
-	* `ini_array_getlength()` has been renamed to `ini_array_get_length()`
-	* `ini_getbool()` has been renamed to `ini_get_bool()`
-	* `ini_getlazybool()` has been renamed to `ini_get_lazy_bool()`
-	* `ini_getfloat()` has been renamed to `ini_get_float()`
-	* `ini_getllint()` has been renamed to `ini_get_llint()`
-	* `get_ini_format_mask()` has been renamed to `ini_format_calculate_mask()`
-	* `read_ini_format_mask()` has been renamed to `ini_format_set_from_mask()`
+* `ini_array_getlength()` has been renamed to `ini_array_get_length()`
+* `ini_getbool()` has been renamed to `ini_get_bool()`
+* `ini_getlazybool()` has been renamed to `ini_get_lazy_bool()`
+* `ini_getfloat()` has been renamed to `ini_get_float()`
+* `ini_getllint()` has been renamed to `ini_get_llint()`
+* `get_ini_format_mask()` has been renamed to `ini_format_calculate_mask()`
+* `read_ini_format_mask()` has been renamed to `ini_format_set_from_mask()`
 
