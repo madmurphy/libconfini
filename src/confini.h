@@ -97,13 +97,13 @@ extern unsigned int load_ini_file (
 
 extern void ini_set_implicit_value (char *implicit_value, unsigned long int implicit_v_length);
 
-extern IniFormatMask get_ini_format_mask (const IniFormat format);
+extern IniFormatMask ini_format_calculate_mask (const IniFormat format);
 
-extern void read_ini_format_mask (IniFormatMask mask, IniFormat *format);
+extern void ini_format_set_from_mask (IniFormat *dest_format, IniFormatMask mask);
 
 extern unsigned long int ini_unquote (char *ini_string, const IniFormat format);
 
-extern unsigned long int ini_array_getlength (const char *ini_string, const char delimiter, const IniFormat format);
+extern unsigned long int ini_array_get_length (const char *ini_string, const char delimiter, const IniFormat format);
 
 extern unsigned int ini_array_foreach (
 	const char *ini_string,
@@ -130,22 +130,22 @@ extern unsigned int ini_split_array (
 	void *user_data
 );
 
-extern signed int ini_getbool (const char *ini_string, const signed int return_value);
+extern signed int ini_get_bool (const char *ini_string, const signed int return_value);
 
-extern signed int ini_getlazybool (const char *ini_string, const signed int return_value);
+extern signed int ini_get_lazy_bool (const char *ini_string, const signed int return_value);
 
 
 
 /* PUBLIC WRAPPERS */
 
 
-extern double (*ini_getfloat) (const char *ini_string);
+extern double (*ini_get_float) (const char *ini_string);
 
-extern long long int (*ini_getllint) (const char *ini_string);
+extern long long int (*ini_get_llint) (const char *ini_string);
 
-extern long int (*ini_getlint) (const char *ini_string);
+extern long int (*ini_get_lint) (const char *ini_string);
 
-extern int (*ini_getint) (const char *ini_string);
+extern int (*ini_get_int) (const char *ini_string);
 
 
 

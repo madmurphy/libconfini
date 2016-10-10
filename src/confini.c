@@ -119,7 +119,7 @@
 
 	@brief A list of possible string representations of boolean pairs
 
-	There can be infinite pairs here, but be aware of the lazy behavior of ini_getlazybool().
+	There can be infinite pairs here, but be aware of the lazy behavior of ini_get_lazy_bool().
 	Everything lowercase in this list!
 
 **/
@@ -286,8 +286,8 @@ static inline void string_tolower (char *str) {
 	@return			1 if @p ch matches, 0 otherwise
 
 **/
-static inline _LIBCONFINI_BOOL_ is_parsable_char (const char ch, const IniFormat settings) {
-	return (settings.semicolon == INI_PARSE_COMMENT && ch == _LIBCONFINI_SEMICOLON_) || (settings.hash == INI_PARSE_COMMENT && ch == _LIBCONFINI_HASH_);
+static inline _LIBCONFINI_BOOL_ is_parsable_char (const char ch, const IniFormat format) {
+	return (format.semicolon == INI_PARSE_COMMENT && ch == _LIBCONFINI_SEMICOLON_) || (format.hash == INI_PARSE_COMMENT && ch == _LIBCONFINI_HASH_);
 }
 
 /**
@@ -299,8 +299,8 @@ static inline _LIBCONFINI_BOOL_ is_parsable_char (const char ch, const IniFormat
 	@return			1 if @p ch matches, 0 otherwise
 
 **/
-static inline _LIBCONFINI_BOOL_ is_comm_char (const char ch, const IniFormat settings) {
-	return (settings.semicolon != INI_NORMAL_CHARACTER && ch == _LIBCONFINI_SEMICOLON_) || (settings.hash != INI_NORMAL_CHARACTER && ch == _LIBCONFINI_HASH_);
+static inline _LIBCONFINI_BOOL_ is_comm_char (const char ch, const IniFormat format) {
+	return (format.semicolon != INI_NORMAL_CHARACTER && ch == _LIBCONFINI_SEMICOLON_) || (format.hash != INI_NORMAL_CHARACTER && ch == _LIBCONFINI_HASH_);
 }
 
 /**
@@ -312,8 +312,8 @@ static inline _LIBCONFINI_BOOL_ is_comm_char (const char ch, const IniFormat set
 	@return			1 if @p ch matches, 0 otherwise
 
 **/
-static inline _LIBCONFINI_BOOL_ is_erase_char (const char ch, const IniFormat settings) {
-	return (settings.semicolon == INI_ERASE_COMMENT && ch == _LIBCONFINI_SEMICOLON_) || (settings.hash == INI_ERASE_COMMENT && ch == _LIBCONFINI_HASH_);
+static inline _LIBCONFINI_BOOL_ is_erase_char (const char ch, const IniFormat format) {
+	return (format.semicolon == INI_ERASE_COMMENT && ch == _LIBCONFINI_SEMICOLON_) || (format.hash == INI_ERASE_COMMENT && ch == _LIBCONFINI_HASH_);
 }
 
 /**
@@ -326,7 +326,7 @@ static inline _LIBCONFINI_BOOL_ is_erase_char (const char ch, const IniFormat se
 					been not found
 
 **/
-static inline _LIBCONFINI_UINT_ get_delimiter_pos (const char *str, const _LIBCONFINI_UINT_ len, const IniFormat settings) {
+static inline _LIBCONFINI_UINT_ get_delimiter_pos (const char *str, const _LIBCONFINI_UINT_ len, const IniFormat format) {
 
 	_LIBCONFINI_UINT_ idx;
 	_LIBCONFINI_BYTE_ qmask = 1;
@@ -341,14 +341,14 @@ static inline _LIBCONFINI_UINT_ get_delimiter_pos (const char *str, const _LIBCO
 				!(qmask & 6)
 				&&
 				(
-					settings.delimiter_symbol ?
-						str[idx] == settings.delimiter_symbol
+					format.delimiter_symbol ?
+						str[idx] == format.delimiter_symbol
 						: is_some_space(str[idx], _LIBCONFINI_NO_EOL_)
 				)
 			);
 
-		qmask = (qmask & 1) && !settings.no_double_quotes && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? qmask ^ 4
-				: (qmask & 1) && !settings.no_single_quotes && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? qmask ^ 2
+		qmask = (qmask & 1) && !format.no_double_quotes && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? qmask ^ 4
+				: (qmask & 1) && !format.no_single_quotes && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? qmask ^ 2
 				: str[idx] == _LIBCONFINI_BACKSLASH_ ? qmask ^ 1
 				: qmask | 1,
 		idx++
@@ -369,7 +369,7 @@ static inline _LIBCONFINI_UINT_ get_delimiter_pos (const char *str, const _LIBCO
 	@return			Number of characters removed
 
 **/
-static _LIBCONFINI_UINT_ unescape_cr_lf (char * nstr, const _LIBCONFINI_UINT_ len, const _LIBCONFINI_BOOL_ is_disabled, const IniFormat settings) {
+static _LIBCONFINI_UINT_ unescape_cr_lf (char * nstr, const _LIBCONFINI_UINT_ len, const _LIBCONFINI_BOOL_ is_disabled, const IniFormat format) {
 
 	_LIBCONFINI_UINT_ idx, iter, lshift;
 	_LIBCONFINI_BOOL_ is_escaped = _LIBCONFINI_FALSE_;
@@ -397,7 +397,7 @@ static _LIBCONFINI_UINT_ unescape_cr_lf (char * nstr, const _LIBCONFINI_UINT_ le
 
 				iter = ltrim_s(nstr, iter, _LIBCONFINI_NO_EOL_);
 
-				if (is_parsable_char(nstr[iter], settings)) {
+				if (is_parsable_char(nstr[iter], format)) {
 
 					lshift += iter - idx;
 					idx = iter;
@@ -437,7 +437,7 @@ static _LIBCONFINI_UINT_ unescape_cr_lf (char * nstr, const _LIBCONFINI_UINT_ le
 	@return			The new length of the string
 
 **/
-static _LIBCONFINI_UINT_ collapse_spaces (char *str, const IniFormat settings) {
+static _LIBCONFINI_UINT_ collapse_spaces (char *str, const IniFormat format) {
 
 	/*
 
@@ -472,8 +472,8 @@ static _LIBCONFINI_UINT_ collapse_spaces (char *str, const IniFormat settings) {
 
 		} else {
 
-			abacus = (abacus & 1) && !settings.no_double_quotes && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
-					: (abacus & 1) && !settings.no_single_quotes && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
+			abacus = (abacus & 1) && !format.no_double_quotes && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
+					: (abacus & 1) && !format.no_single_quotes && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
 					: str[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
 					: abacus | 1;
 
@@ -509,7 +509,7 @@ static _LIBCONFINI_UINT_ collapse_spaces (char *str, const IniFormat settings) {
 	will be removed. Single quotes or double quotes (if active and present) prevent changes.
 
 **/
-static _LIBCONFINI_UINT_ sanitize_section_name (char *str, const IniFormat settings) {
+static _LIBCONFINI_UINT_ sanitize_section_name (char *str, const IniFormat format) {
 
 	_LIBCONFINI_UINT_ idx, lshift;
 	unsigned int abacus;
@@ -563,8 +563,8 @@ static _LIBCONFINI_UINT_ sanitize_section_name (char *str, const IniFormat setti
 		} else {
 
 				abacus &= 7;
-				abacus = (abacus & 1) && !settings.no_double_quotes && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
-					: (abacus & 1) && !settings.no_single_quotes && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
+				abacus = (abacus & 1) && !format.no_double_quotes && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
+					: (abacus & 1) && !format.no_single_quotes && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
 					: str[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
 					: abacus | 1;
 				abacus |= 264;
@@ -679,9 +679,9 @@ static _LIBCONFINI_UINT_ uncomment (char *commstr, _LIBCONFINI_UINT_ len, const 
 	@return			The node type (see header)
 
 **/
-static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONFINI_UINT_ len, const _LIBCONFINI_BOOL_ wanna_be_active, const IniFormat settings) {
+static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONFINI_UINT_ len, const _LIBCONFINI_BOOL_ wanna_be_active, const IniFormat format) {
 
-	if (!len || *nodestr == settings.delimiter_symbol || is_comm_char(*nodestr, settings)) {
+	if (!len || *nodestr == format.delimiter_symbol || is_comm_char(*nodestr, format)) {
 
 		return INI_UNKNOWN;
 
@@ -700,8 +700,8 @@ static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONF
 
 			}
 
-			qmask = (qmask & 1) && !settings.no_double_quotes && nodestr[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? qmask ^ 4
-					: (qmask & 1) && !settings.no_single_quotes && nodestr[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? qmask ^ 2
+			qmask = (qmask & 1) && !format.no_double_quotes && nodestr[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? qmask ^ 4
+					: (qmask & 1) && !format.no_single_quotes && nodestr[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? qmask ^ 2
 					: nodestr[idx] == _LIBCONFINI_BACKSLASH_ ? qmask ^ 1
 					: qmask | 1;
 
@@ -713,9 +713,9 @@ static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONF
 
 	/* It can be just a key... */
 
-	idx = get_delimiter_pos(nodestr, len, settings);
+	idx = get_delimiter_pos(nodestr, len, format);
 
-	if (wanna_be_active && (!settings.disabled_can_be_implicit && idx == len)) {
+	if (wanna_be_active && (!format.disabled_can_be_implicit && idx == len)) {
 
 		return INI_UNKNOWN;
 
@@ -734,11 +734,11 @@ static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONF
 	@return			Number of sub-segments found, included itself
 
 **/
-static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) {
+static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat format) {
 
 	if (!*segment) { return 0; }
 
-	_LIBCONFINI_BOOL_ show_comments = !is_erase_char(*segment, settings);
+	_LIBCONFINI_BOOL_ show_comments = !is_erase_char(*segment, format);
 	_LIBCONFINI_BYTE_ abacus;
 	_LIBCONFINI_UINT_ idx, focus_at, search_at = 0, unparse_at = 0, fragm_size = show_comments;
 
@@ -756,12 +756,12 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 
 	*/
 
-	abacus		=	is_parsable_char(*segment, settings) && !(
-						settings.no_disabled_after_spaces && is_some_space(segment[1], _LIBCONFINI_NO_EOL_)
+	abacus		=	is_parsable_char(*segment, format) && !(
+						format.no_disabled_after_spaces && is_some_space(segment[1], _LIBCONFINI_NO_EOL_)
 					) ?
 						47
-					: !settings.multiline_entries && (
-						is_comm_char(*segment, settings) || *segment == _LIBCONFINI_INLINE_MARKER_
+					: !format.multiline_entries && (
+						is_comm_char(*segment, format) || *segment == _LIBCONFINI_INLINE_MARKER_
 					) ?
 						79
 					:
@@ -771,7 +771,7 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 
 		for (idx = ltrim_s(segment, 1, _LIBCONFINI_NO_EOL_); segment[idx]; idx++) {
 
-				if (is_comm_char(segment[idx], settings)) {
+				if (is_comm_char(segment[idx], format)) {
 
 					/* Search for inline comments in (supposedly) disabled items */
 
@@ -779,7 +779,7 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 
 						focus_at = ltrim_s(segment, 1, _LIBCONFINI_NO_EOL_);
 
-						if (get_type_as_active(segment + focus_at, idx - focus_at, _LIBCONFINI_TRUE_, settings)) {
+						if (get_type_as_active(segment + focus_at, idx - focus_at, _LIBCONFINI_TRUE_, format)) {
 
 							segment[idx] = _LIBCONFINI_INLINE_MARKER_;
 							segment[idx - 1] = '\0';
@@ -791,14 +791,14 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 
 							}
 
-							if (settings.multiline_entries) {
+							if (format.multiline_entries) {
 
 								unparse_at = idx + 1;
 								break;
 
 							}
 
-						} else if (settings.multiline_entries) {
+						} else if (format.multiline_entries) {
 
 							unparse_at = 1;
 							break;
@@ -817,12 +817,12 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 					idx = ltrim_s(segment, idx + 1, _LIBCONFINI_WITH_EOL_);
 
 					if (
-							(settings.no_disabled_after_spaces && is_some_space(segment[idx + 1], _LIBCONFINI_NO_EOL_))
+							(format.no_disabled_after_spaces && is_some_space(segment[idx + 1], _LIBCONFINI_NO_EOL_))
 							||
 							!(
-								(is_comm_char(segment[idx], settings) && !settings.multiline_entries)
+								(is_comm_char(segment[idx], format) && !format.multiline_entries)
 								||
-								(is_parsable_char(segment[idx], settings) && settings.multiline_entries < 2)
+								(is_parsable_char(segment[idx], format) && format.multiline_entries < 2)
 							)
 						) {
 
@@ -855,8 +855,8 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 				} else {
 
 					abacus &= 111;
-					abacus = (abacus & 1) && !settings.no_double_quotes && segment[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
-							: (abacus & 1) && !settings.no_single_quotes && segment[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
+					abacus = (abacus & 1) && !format.no_double_quotes && segment[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
+							: (abacus & 1) && !format.no_single_quotes && segment[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
 							: segment[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
 							: abacus | 1;
 					abacus |= 8;
@@ -865,18 +865,18 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 
 		}
 
-		if (settings.multiline_entries && !unparse_at) {
+		if (format.multiline_entries && !unparse_at) {
 
 			focus_at = ltrim_s(segment, 1, _LIBCONFINI_NO_EOL_);
 
-			if (segment[focus_at] && !get_type_as_active(segment + focus_at, idx - focus_at, _LIBCONFINI_TRUE_, settings)) {
+			if (segment[focus_at] && !get_type_as_active(segment + focus_at, idx - focus_at, _LIBCONFINI_TRUE_, format)) {
 
 				unparse_at = 1;
 			}
 
 		}
 
-	} else if (is_comm_char(*segment, settings)) {
+	} else if (is_comm_char(*segment, format)) {
 
 		unparse_at = 1;
 
@@ -896,7 +896,7 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 
 			if (segment[idx] == _LIBCONFINI_LF_ || segment[idx] == _LIBCONFINI_CR_) {
 
-				fragm_size += further_cuts(segment + ultrim_h(segment, idx), settings);
+				fragm_size += further_cuts(segment + ultrim_h(segment, idx), format);
 				break;
 
 			}
@@ -911,14 +911,14 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 
 		for (abacus = 1, idx = search_at; segment[idx]; idx++) {
 
-			if (is_comm_char(segment[idx], settings) && is_some_space(segment[idx - 1], _LIBCONFINI_WITH_EOL_) && !(abacus & 6)) {
+			if (is_comm_char(segment[idx], format) && is_some_space(segment[idx - 1], _LIBCONFINI_WITH_EOL_) && !(abacus & 6)) {
 
 				segment[idx] = _LIBCONFINI_INLINE_MARKER_;
 				segment[idx - 1] = '\0';
 				rtrim_h(segment, idx - 1, _LIBCONFINI_NO_EOL_);
 				search_at = 0;
 
-				if (settings.multiline_entries) {
+				if (format.multiline_entries) {
 
 					if (show_comments) {
 
@@ -931,13 +931,13 @@ static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat settings) 
 
 				}
 
-				fragm_size += further_cuts(segment + idx, settings);
+				fragm_size += further_cuts(segment + idx, format);
 				break;
 
 			} else {
 
-				abacus = (abacus & 1) && !settings.no_double_quotes && segment[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
-						: (abacus & 1) && !settings.no_single_quotes && segment[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
+				abacus = (abacus & 1) && !format.no_double_quotes && segment[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
+						: (abacus & 1) && !format.no_single_quotes && segment[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
 						: segment[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
 						: abacus | 1;
 
@@ -1386,7 +1386,7 @@ void ini_set_implicit_value (char *implicit_value, unsigned long int implicit_v_
 	@return			The mask representing the format
 
 **/
-IniFormatMask get_ini_format_mask (const IniFormat source) {
+IniFormatMask ini_format_calculate_mask (const IniFormat source) {
 
 	IniFormatMask mask = 0;
 
@@ -1408,15 +1408,15 @@ IniFormatMask get_ini_format_mask (const IniFormat source) {
 /**
 
 	@brief			Sets all the values of an IniFormat by reading them from an ::IniFormatMask
-	@param			mask		The ::IniFormatMask to be read
-	@param			dest		The IniFormat to be set
+	@param			dest_format		The IniFormat to be set
+	@param			mask			The ::IniFormatMask to be read
 	@return			Nothing
 
 **/
-void read_ini_format_mask (IniFormatMask mask, IniFormat *dest) {
+void ini_format_set_from_mask (IniFormat *dest_format, IniFormatMask mask) {
 
 	#define _LIBCONFINI_ASSIGN_TO_INI_TYPE_(SIZE, PROPERTY, IGNORE_ME) \
-		dest->PROPERTY = mask;\
+		dest_format->PROPERTY = mask;\
 		mask >>= SIZE;
 
 	_LIBCONFINI_EXPAND_SETTINGS_MACRO_AS_(_LIBCONFINI_ASSIGN_TO_INI_TYPE_)
@@ -1508,7 +1508,7 @@ unsigned long int ini_unquote (char *ini_string, const IniFormat format) {
 	@return			The length of the INI array
 
 **/
-unsigned long int ini_array_getlength (const char *ini_string, const char delimiter, const IniFormat format) {
+unsigned long int ini_array_get_length (const char *ini_string, const char delimiter, const IniFormat format) {
 
 	unsigned long int arr_length = 0;
 	_LIBCONFINI_UINT_ idx;
@@ -1694,7 +1694,7 @@ unsigned int ini_split_array (
 	@return			The matching boolean value (0 or 1) or @p return_value if no boolean has been found
 
 **/
-signed int ini_getbool (const char *ini_string, const signed int return_value) {
+signed int ini_get_bool (const char *ini_string, const signed int return_value) {
 
 	unsigned short pair_idx, bool_idx, chr_idx;
 
@@ -1743,7 +1743,7 @@ signed int ini_getbool (const char *ini_string, const signed int return_value) {
 	@return			The matching boolean value (0 or 1) or @p return_value if no boolean has been found
 
 **/
-signed int ini_getlazybool (const char *ini_string, const signed int return_value) {
+signed int ini_get_lazy_bool (const char *ini_string, const signed int return_value) {
 
 	unsigned short pair_idx, bool_idx;
 	unsigned char ch = *ini_string > 0x40 && *ini_string < 0x5b ? *ini_string | 0x60 : *ini_string;
@@ -1775,13 +1775,13 @@ long double (*ini_getlfloat)(const char *ini_string) = &atolf;
 */
 /* Where is atolf?? */
 
-double (*ini_getfloat) (const char *ini_string) = &atof;
+double (*ini_get_float) (const char *ini_string) = &atof;
 
-long long int (*ini_getllint) (const char *ini_string) = &atoll;
+long long int (*ini_get_llint) (const char *ini_string) = &atoll;
 
-long int (*ini_getlint) (const char *ini_string) = &atol;
+long int (*ini_get_lint) (const char *ini_string) = &atol;
 
-int (*ini_getint) (const char *ini_string) = &atoi;
+int (*ini_get_int) (const char *ini_string) = &atoi;
 
 
 

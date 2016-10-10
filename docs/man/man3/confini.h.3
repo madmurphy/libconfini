@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Fri Oct 7 2016" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Mon Oct 10 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -75,11 +75,11 @@ src/confini.h \- libconfini header
 .br
 .RI "Sets the valued used for implicit keys\&. "
 .ti -1c
-.RI "\fBIniFormatMask\fP \fBget_ini_format_mask\fP (const \fBIniFormat\fP format)"
+.RI "\fBIniFormatMask\fP \fBini_format_calculate_mask\fP (const \fBIniFormat\fP format)"
 .br
 .RI "Converts an \fBIniFormat\fP into an \fBIniFormatMask\fP\&. "
 .ti -1c
-.RI "void \fBread_ini_format_mask\fP (\fBIniFormatMask\fP mask, \fBIniFormat\fP *format)"
+.RI "void \fBini_format_set_from_mask\fP (\fBIniFormat\fP *dest_format, \fBIniFormatMask\fP mask)"
 .br
 .RI "Sets all the values of an \fBIniFormat\fP by reading them from an \fBIniFormatMask\fP\&. "
 .ti -1c
@@ -87,7 +87,7 @@ src/confini.h \- libconfini header
 .br
 .RI "Unescapes a string and removes all its unescaped quotes (if single/double quotes are active) "
 .ti -1c
-.RI "unsigned long int \fBini_array_getlength\fP (const char *ini_string, const char delimiter, const \fBIniFormat\fP format)"
+.RI "unsigned long int \fBini_array_get_length\fP (const char *ini_string, const char delimiter, const \fBIniFormat\fP format)"
 .br
 .RI "Gets the length of an INI array\&. "
 .ti -1c
@@ -99,11 +99,11 @@ src/confini.h \- libconfini header
 .br
 .RI "Splits an INI array and calls a custom function for each member\&. "
 .ti -1c
-.RI "signed int \fBini_getbool\fP (const char *ini_string, const signed int return_value)"
+.RI "signed int \fBini_get_bool\fP (const char *ini_string, const signed int return_value)"
 .br
 .RI "Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\&.\fP"
 .ti -1c
-.RI "signed int \fBini_getlazybool\fP (const char *ini_string, const signed int return_value)"
+.RI "signed int \fBini_get_lazy_bool\fP (const char *ini_string, const signed int return_value)"
 .br
 .RI "Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\&.\fP"
 .in -1c
@@ -111,16 +111,16 @@ src/confini.h \- libconfini header
 
 .in +1c
 .ti -1c
-.RI "double(* \fBini_getfloat\fP )(const char *ini_string)"
+.RI "double(* \fBini_get_float\fP )(const char *ini_string)"
 .br
 .ti -1c
-.RI "long long int(* \fBini_getllint\fP )(const char *ini_string)"
+.RI "long long int(* \fBini_get_llint\fP )(const char *ini_string)"
 .br
 .ti -1c
-.RI "long int(* \fBini_getlint\fP )(const char *ini_string)"
+.RI "long int(* \fBini_get_lint\fP )(const char *ini_string)"
 .br
 .ti -1c
-.RI "int(* \fBini_getint\fP )(const char *ini_string)"
+.RI "int(* \fBini_get_int\fP )(const char *ini_string)"
 .br
 .ti -1c
 .RI "static const \fBIniFormat\fP \fBINI_DEFAULT_FORMAT\fP = { '=' , \fBINI_PARSE_COMMENT\fP , \fBINI_PARSE_COMMENT\fP , \fBINI_EVERYTHING_MULTILINE\fP , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }"
@@ -256,22 +256,6 @@ INI nodes types\&.
 \fB\fIINI_DISABLED_KEY \fP\fP
 .SH "Function Documentation"
 .PP 
-.SS "\fBIniFormatMask\fP get_ini_format_mask (const \fBIniFormat\fP source)"
-
-.PP
-Converts an \fBIniFormat\fP into an \fBIniFormatMask\fP\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIsource\fP The \fBIniFormat\fP to be read 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-The mask representing the format 
-.RE
-.PP
-
 .SS "unsigned int ini_array_foreach (const char * ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(const char *member, unsigned int offset, unsigned int length, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
@@ -296,7 +280,7 @@ Zero for success, otherwise an error code
 .RE
 .PP
 
-.SS "unsigned long int ini_array_getlength (const char * ini_string, const char delimiter, const \fBIniFormat\fP format)"
+.SS "unsigned long int ini_array_get_length (const char * ini_string, const char delimiter, const \fBIniFormat\fP format)"
 
 .PP
 Gets the length of an INI array\&. 
@@ -316,7 +300,41 @@ The length of the INI array
 .RE
 .PP
 
-.SS "signed int ini_getbool (const char * ini_string, const signed int return_value)"
+.SS "\fBIniFormatMask\fP ini_format_calculate_mask (const \fBIniFormat\fP source)"
+
+.PP
+Converts an \fBIniFormat\fP into an \fBIniFormatMask\fP\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsource\fP The \fBIniFormat\fP to be read 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The mask representing the format 
+.RE
+.PP
+
+.SS "void ini_format_set_from_mask (\fBIniFormat\fP * dest_format, \fBIniFormatMask\fP mask)"
+
+.PP
+Sets all the values of an \fBIniFormat\fP by reading them from an \fBIniFormatMask\fP\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdest_format\fP The \fBIniFormat\fP to be set 
+.br
+\fImask\fP The \fBIniFormatMask\fP to be read 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Nothing 
+.RE
+.PP
+
+.SS "signed int ini_get_bool (const char * ini_string, const signed int return_value)"
 
 .PP
 Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\&.\fP
@@ -334,7 +352,7 @@ The matching boolean value (0 or 1) or \fCreturn_value\fP if no boolean has been
 .RE
 .PP
 
-.SS "signed int ini_getlazybool (const char * ini_string, const signed int return_value)"
+.SS "signed int ini_get_lazy_bool (const char * ini_string, const signed int return_value)"
 
 .PP
 Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\&.\fP
@@ -436,37 +454,19 @@ Zero for success, otherwise an error code
 .RE
 .PP
 
-.SS "void read_ini_format_mask (\fBIniFormatMask\fP mask, \fBIniFormat\fP * dest)"
-
-.PP
-Sets all the values of an \fBIniFormat\fP by reading them from an \fBIniFormatMask\fP\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fImask\fP The \fBIniFormatMask\fP to be read 
-.br
-\fIdest\fP The \fBIniFormat\fP to be set 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-Nothing 
-.RE
-.PP
-
 .SH "Variable Documentation"
 .PP 
 .SS "const \fBIniFormat\fP INI_DEFAULT_FORMAT = { '=' , \fBINI_PARSE_COMMENT\fP , \fBINI_PARSE_COMMENT\fP , \fBINI_EVERYTHING_MULTILINE\fP , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }\fC [static]\fP"
 
 .PP
 A model format\&. 
-.SS "double(* ini_getfloat) (const char *ini_string)"
+.SS "double(* ini_get_float) (const char *ini_string)"
 
-.SS "int(* ini_getint) (const char *ini_string)"
+.SS "int(* ini_get_int) (const char *ini_string)"
 
-.SS "long int(* ini_getlint) (const char *ini_string)"
+.SS "long int(* ini_get_lint) (const char *ini_string)"
 
-.SS "long long int(* ini_getllint) (const char *ini_string)"
+.SS "long long int(* ini_get_llint) (const char *ini_string)"
 
 .SS "unsigned long int INI_IMPLICIT_V_LENGTH"
 
