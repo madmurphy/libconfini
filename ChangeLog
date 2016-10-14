@@ -4,9 +4,9 @@
 
 Changes:
 
-* fixed quotes nesting bug
+* Fixed quotes nesting bug
 * enum `IniDelimiters` has been created
-* added support for `INI_ANY_SPACE` (`0`) as delimiter in `ini_array_get_length()`, `ini_array_foreach()` and `ini_split_array()`
+* Added support for `INI_ANY_SPACE` (`0`) as delimiter in `ini_array_get_length()`, `ini_array_foreach()` and `ini_split_array()`
 * `IniFormat::no_spaces_in_names` has been created
 * `IniFormat::no_disabled_after_spaces` has been renamed to `IniFormat::no_disabled_after_space`
 * `IniFormat::preserve_spaces_in_values` has been renamed to `IniFormat::no_collapsed_values`
