@@ -87,14 +87,16 @@ Public Attributes</h2></td></tr>
 <tr class="separator:aa6e8b4274f3da1468a1806398b504d64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50f562eda0d26ed7e0d3c57afeb46d2d"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#a50f562eda0d26ed7e0d3c57afeb46d2d">case_sensitive</a>: 1</td></tr>
 <tr class="separator:a50f562eda0d26ed7e0d3c57afeb46d2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6754bb12139c447c252937959e126c06"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#a6754bb12139c447c252937959e126c06">preserve_spaces_in_values</a>: 1</td></tr>
-<tr class="separator:a6754bb12139c447c252937959e126c06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ba4b139739e9082abf9078032ea44d2"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#a4ba4b139739e9082abf9078032ea44d2">no_spaces_in_names</a>: 1</td></tr>
+<tr class="separator:a4ba4b139739e9082abf9078032ea44d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebb8afeaf0fdfcdd6998d301b4661ef2"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#aebb8afeaf0fdfcdd6998d301b4661ef2">no_collapsed_values</a>: 1</td></tr>
+<tr class="separator:aebb8afeaf0fdfcdd6998d301b4661ef2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40a08a472ae9053fbaf4e7042967503d"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#a40a08a472ae9053fbaf4e7042967503d">no_disabled_after_space</a>: 1</td></tr>
+<tr class="separator:a40a08a472ae9053fbaf4e7042967503d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a250264e07360ba67671fab42743a9d45"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#a250264e07360ba67671fab42743a9d45">implicit_is_special</a>: 1</td></tr>
 <tr class="separator:a250264e07360ba67671fab42743a9d45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab5937aaf72b0ce5b62aece8d23ad7b82"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#ab5937aaf72b0ce5b62aece8d23ad7b82">disabled_can_be_implicit</a>: 1</td></tr>
 <tr class="separator:ab5937aaf72b0ce5b62aece8d23ad7b82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a7a2baa92be48d95277dc67f90adff1"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#a0a7a2baa92be48d95277dc67f90adff1">no_disabled_after_spaces</a>: 1</td></tr>
-<tr class="separator:a0a7a2baa92be48d95277dc67f90adff1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>24-bit bitfield representing a unique format of an INI file (INI dialect) </p>
@@ -189,14 +191,29 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a0a7a2baa92be48d95277dc67f90adff1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0a7a2baa92be48d95277dc67f90adff1">&sect;&nbsp;</a></span>no_disabled_after_spaces</h2>
+<a id="aebb8afeaf0fdfcdd6998d301b4661ef2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebb8afeaf0fdfcdd6998d301b4661ef2">&sect;&nbsp;</a></span>no_collapsed_values</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">IniFormat::no_disabled_after_spaces</td>
+          <td class="memname">IniFormat::no_collapsed_values</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>If set to 1, sequences of more than one space in values (/{2,}/) will not be collapsed </p>
+
+</div>
+</div>
+<a id="a40a08a472ae9053fbaf4e7042967503d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40a08a472ae9053fbaf4e7042967503d">&sect;&nbsp;</a></span>no_disabled_after_space</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IniFormat::no_disabled_after_space</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -235,18 +252,17 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a6754bb12139c447c252937959e126c06"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6754bb12139c447c252937959e126c06">&sect;&nbsp;</a></span>preserve_spaces_in_values</h2>
+<a id="a4ba4b139739e9082abf9078032ea44d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ba4b139739e9082abf9078032ea44d2">&sect;&nbsp;</a></span>no_spaces_in_names</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">IniFormat::preserve_spaces_in_values</td>
+          <td class="memname">unsigned char IniFormat::no_spaces_in_names</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to 1, sequences of more than one space in values (/{2,}/) will not be collapsed </p>
 
 </div>
 </div>

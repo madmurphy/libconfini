@@ -34,7 +34,7 @@ include_HEADERS = \
 	confini.h
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = confini-1.0.pc
+pkgconfig_DATA = confini-1.1.pc
 
 EXTRA_DIST = \
-	confini-1.0.pc.in
+	confini-1.1.pc.in

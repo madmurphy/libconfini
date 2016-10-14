@@ -6,7 +6,7 @@
 
 ## MOTIVATION
 
-I have to confess that I have never had any particular interest in INI files. But on the other hand I always had interest in GNU/Linux.
+I have to confess that I have never had any particular interest in INI files. But I always had interest in GNU/Linux.
 
 The motivation behind this library came from the observation that many system applications in GNU/Linux rely on _INI-like_ files (systemd, pacman, networkmanager, etc.), and for many users who approach GNU/Linux for the first time it can be frustrating not to have a GUI for configuring their system. So, I thought, a general .conf/.ini editor for GNOME _in dconf-style_ had to be done.
 
@@ -16,9 +16,9 @@ With this in mind I wrote down the first algorithms for doing the job. As I said
 
 Here is where **libconfini** comes.
 
-It can be synthetized as a parser smart enough to allow a complete lossless analysis and parsing of many different types of INI files, but _K.I.S.S._ enough to not store any parsed data, but rather dispatch it (well formatted) to a custom listener. It was born for a GUI editor (which per se needs to read _every_ information out of an INI file), but is usable by any other application that needs to read INI files but does not need to read commented INI lines.
+It can be synthetized as a parser smart enough to allow a complete lossless analysis and parsing of many different types of INI files, but _K.I.S.S._ enough to not store any parsed data, but rather dispatch it (well formatted) to a custom listener. It was born for a GUI editor (which per se needs to read _every_ information out of an INI file), but is usable by any other application that needs to read INI files but does not need to read commented INI lines. Despite highly configurable, **libconfini** is still a small piece of work.
 
-I really don't know if it will be useful to the community, but for sure it does the right job for my editor.
+I really don't know if it will be useful to the community. For sure it does the right job for my editor.
 
 ## SEE ALSO
 

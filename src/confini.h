@@ -30,7 +30,7 @@
 
     ______(     BITS      NAME                        DEFAULT VALUE            )/--/
                                                                                /-*/\
-    ______(     8,        delimiter_symbol,           '='                      )/*-/
+    ______(     8,        delimiter_symbol,           INI_EQUALS               )/*-/
                                                                                /-*/\
     ______(     2,        semicolon,                  INI_PARSE_COMMENT        )   \
     ______(     2,        hash,                       INI_PARSE_COMMENT        )   \
@@ -39,11 +39,12 @@
     ______(     1,        no_double_quotes,           0                        )/*-/
                                                                                /-*/\
     ______(     1,        case_sensitive,             0                        )   \
-    ______(     1,        preserve_spaces_in_values,  0                        )   \
+    ______(     1,        no_spaces_in_names,         0                        )   \
+    ______(     1,        no_collapsed_values,        0                        )   \
+    ______(     1,        no_disabled_after_space,    0                        )   \
     ______(     1,        implicit_is_special,        0                        )   \
     ______(     1,        disabled_can_be_implicit,   0                        )   \
-    ______(     1,        no_disabled_after_spaces,   0                        )   \
-    ______(     3,        _LIBCONFINI_RESERVED_,      0                        )/*-/
+    ______(     2,        _LIBCONFINI_RESERVED_,      0                        )/*-/
                                                                                /-*/
 
 
@@ -63,11 +64,11 @@ typedef struct IniStatistics {
 
 /** @brief	Dispatch of a single INI member **/
 typedef struct IniDispatch {
-	char *append_to;
 	const IniFormat format;
 	unsigned short int type;
 	char *data;
 	char *value;
+	char *append_to;
 	unsigned long int d_length;
 	unsigned long int v_length;
 	unsigned long int dispatch_id;
@@ -160,6 +161,13 @@ enum ConfiniErrorNo {
 	CONFINI_ENOMEM = 4,	/** Error allocating memory **/
 	CONFINI_EIO = 5,	/** Error reading the file **/
 	CONFINI_ENOENT = 6	/** File inaccessible **/
+};
+
+/** @brief	Most used delimiters (but a delimiter can also be any other ASCII character) **/
+enum IniDelimiters {
+	INI_ANY_SPACE = '\0',
+	INI_EQUALS = '=',
+	INI_COLON = ':'
 };
 
 /** @brief	INI nodes types **/

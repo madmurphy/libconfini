@@ -1,26 +1,15 @@
 # Change Log
 
-## [0.9-1] - 2016-10-05
-
-libconfini 0.9-1 is ready to be published!
-
-## [0.9-2] - 2016-10-06
+## [1.1-1] - 2016-10-14
 
 Changes:
 
-* Documentation has been moved to docs/
-
-## [0.9-3] - 2016-10-06
-
-Changes:
-
-* Small bug regarding inline comments fixed
-
-## [0.9-4] - 2016-10-07
-
-Changes:
-
-* Small bug regarding multiline inline comments fixed
+* fixed quotes nesting bug
+* enum `IniDelimiters` has been created
+* added support for `INI_ANY_SPACE` (`0`) as delimiter in `ini_array_get_length()`, `ini_array_foreach()` and `ini_split_array()`
+* `IniFormat::no_spaces_in_names` has been created
+* `IniFormat::no_disabled_after_spaces` has been renamed to `IniFormat::no_disabled_after_space`
+* `IniFormat::preserve_spaces_in_values` has been renamed to `IniFormat::no_collapsed_values`
 
 ## [1.0-1] - 2016-10-10
 
@@ -36,3 +25,24 @@ Changes:
 * `get_ini_format_mask()` has been renamed to `ini_format_calculate_mask()`
 * `read_ini_format_mask()` has been renamed to `ini_format_set_from_mask()`
 
+## [0.9-4] - 2016-10-07
+
+Changes:
+
+* Small bug regarding multiline inline comments fixed
+
+## [0.9-3] - 2016-10-06
+
+Changes:
+
+* Small bug regarding inline comments fixed
+
+## [0.9-2] - 2016-10-06
+
+Changes:
+
+* Documentation has been moved to docs/
+
+## [0.9-1] - 2016-10-05
+
+libconfini 0.9-1 is ready to be published!
