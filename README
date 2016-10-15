@@ -16,9 +16,9 @@ With this in mind I wrote down the first algorithms for doing the job. As I said
 
 Here is where **libconfini** comes.
 
-It can be synthetized as a parser smart enough to allow a complete lossless analysis and parsing of many different types of INI files, but _K.I.S.S._ enough to not store any parsed data, but rather dispatch it (well formatted) to a custom listener. It was born for a GUI editor (which per se needs to read _every_ information out of an INI file), but is usable by any other application that needs to read INI files but does not need to read commented INI lines. Despite highly configurable, **libconfini** is still a small piece of work.
+It can be synthetized as a parser smart enough to allow a complete lossless analysis and parsing of many different types of INI files, but _K.I.S.S._ enough to not store any parsed data, but rather dispatch it (well formatted) to a custom listener. It was born for a GUI editor (which per se needs to read _every_ information out of an INI file), but is usable by any other application that needs to read INI files but does not need to read commented INI lines.
 
-I really don't know if it will be useful to the community. For sure it does the right job for my editor.
+Despite highly configurable and flexible, **libconfini** is still a small piece of work. I really don't know if it will be useful to the community. For sure it does the right job for my editor.
 
 ## SEE ALSO
 
