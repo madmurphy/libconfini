@@ -94,8 +94,9 @@
 
 #define _LIBCONFINI_BOOL_ unsigned char
 #define _LIBCONFINI_BYTE_ unsigned char
-#define _LIBCONFINI_UINT_ unsigned long int
-#define _LIBCONFINI_INT_ signed long int
+
+/* _LIBCONFINI_SIZE_ must be able to express at least the size of an INI file */
+#define _LIBCONFINI_SIZE_ unsigned long int
 
 #define _LIBCONFINI_FALSE_ 0
 #define _LIBCONFINI_TRUE_ 1
@@ -152,32 +153,34 @@ static inline _LIBCONFINI_BOOL_ is_some_space (const char ch, const _LIBCONFINI_
 	return idx < depth;
 }
 
+
 /**
 
 	@brief			Soft left trim -- does not change the buffer
-	@param			string			The target string
+	@param			lt_s			The target string
 	@param			start_from		The offset where to start the left trim
 	@param			depth			What is actually considered a space -- a number ranging from 1 to 6
 	@return			The offset of the first non-space character
 
 **/
-static inline _LIBCONFINI_UINT_ ltrim_s (const char *lt_s, const _LIBCONFINI_UINT_ start_from, const _LIBCONFINI_BYTE_ depth) {
-	_LIBCONFINI_UINT_ lt_i = start_from;
+static inline _LIBCONFINI_SIZE_ ltrim_s (const char *lt_s, const _LIBCONFINI_SIZE_ start_from, const _LIBCONFINI_BYTE_ depth) {
+	_LIBCONFINI_SIZE_ lt_i = start_from;
 	for (; lt_s[lt_i] && is_some_space(lt_s[lt_i], depth); lt_i++);
 	return lt_i;
 }
 
+
 /**
 
 	@brief			Hard left trim -- **does** change the buffer
-	@param			string			The target string
+	@param			lt_s			The target string
 	@param			start_from		The offset where to start the left trim
 	@param			depth			What is actually considered a space -- a number ranging from 1 to 6
 	@return			The offset of the first non-space character
 
 **/
-static inline _LIBCONFINI_UINT_ ltrim_h (char *lt_s, const _LIBCONFINI_UINT_ start_from, const _LIBCONFINI_BYTE_ depth) {
-	_LIBCONFINI_UINT_ lt_i = start_from;
+static inline _LIBCONFINI_SIZE_ ltrim_h (char *lt_s, const _LIBCONFINI_SIZE_ start_from, const _LIBCONFINI_BYTE_ depth) {
+	_LIBCONFINI_SIZE_ lt_i = start_from;
 	for (; lt_s[lt_i] && is_some_space(lt_s[lt_i], depth); lt_s[lt_i++] = '\0');
 	return lt_i;
 }
@@ -185,16 +188,16 @@ static inline _LIBCONFINI_UINT_ ltrim_h (char *lt_s, const _LIBCONFINI_UINT_ sta
 
 /**
 
-	@brief			Unescaped hard left trim (left trim of /^(\s*|\\[\n\r])+/) -- **does** change the buffer
-	@param			string			The target string
+	@brief			Unescaped hard left trim (left trim of /^(\s+|\\[\n\r])+/) -- **does** change the buffer
+	@param			ult_s			The target string
 	@param			start_from		The offset where to start the left trim
 	@return			The offset of the first non matching character
 
 **/
-static inline _LIBCONFINI_UINT_ ultrim_h (char *lt_s, const _LIBCONFINI_UINT_ start_from) {
+static inline _LIBCONFINI_SIZE_ ultrim_h (char *ult_s, const _LIBCONFINI_SIZE_ start_from) {
 
-	_LIBCONFINI_BYTE_ abacus = 12;
-	_LIBCONFINI_UINT_ ult_i = start_from;
+	_LIBCONFINI_BYTE_ abacus;
+	_LIBCONFINI_SIZE_ ult_i = start_from;
 
 	/*
 
@@ -207,19 +210,19 @@ static inline _LIBCONFINI_UINT_ ultrim_h (char *lt_s, const _LIBCONFINI_UINT_ st
 
 	*/
 
-	for (; lt_s[ult_i] && (abacus & 8); ult_i++) {
+	for (abacus = 12; ult_s[ult_i] && (abacus & 8); ult_i++) {
 
-		abacus = (abacus & 4) && is_some_space(lt_s[ult_i], _LIBCONFINI_NO_EOL_) ? 13
-			: lt_s[ult_i] == _LIBCONFINI_LF_ || lt_s[ult_i] == _LIBCONFINI_CR_ ? abacus | 5
-			: (abacus & 4) && lt_s[ult_i] == _LIBCONFINI_BACKSLASH_ ? 10
+		abacus = (abacus & 4) && is_some_space(ult_s[ult_i], _LIBCONFINI_NO_EOL_) ? 13
+			: ult_s[ult_i] == _LIBCONFINI_LF_ || ult_s[ult_i] == _LIBCONFINI_CR_ ? abacus | 5
+			: (abacus & 4) && ult_s[ult_i] == _LIBCONFINI_BACKSLASH_ ? 10
 			: abacus & 4;
 
 		if (abacus & 1) {
-			lt_s[ult_i] = '\0';
+			ult_s[ult_i] = '\0';
 		}
 
 		if ((abacus & 2) && (abacus & 4)) {
-			lt_s[ult_i - 1] = '\0';
+			ult_s[ult_i - 1] = '\0';
 		}
 
 	}
@@ -228,34 +231,77 @@ static inline _LIBCONFINI_UINT_ ultrim_h (char *lt_s, const _LIBCONFINI_UINT_ st
 
 }
 
+
 /**
 
 	@brief			Soft right trim -- does not change the buffer
-	@param			string			The target string
+	@param			rt_s			The target string
 	@param			length			The length of the string
 	@param			depth			What is actually considered a space -- a subset of @link #_LIBCONFINI_SPACES_ ranging from 1 to 6
 	@return			The length of the string until the last non-space character
 
 **/
-static inline _LIBCONFINI_UINT_ rtrim_s (const char *rt_s, const _LIBCONFINI_UINT_ length, const _LIBCONFINI_BYTE_ depth) {
-	_LIBCONFINI_UINT_ rt_i = length;
-	for (; rt_i > 0 && is_some_space(rt_s[rt_i - 1], depth); rt_i--);
-	return rt_i;
+static inline _LIBCONFINI_SIZE_ rtrim_s (const char *rt_s, const _LIBCONFINI_SIZE_ length, const _LIBCONFINI_BYTE_ depth) {
+	_LIBCONFINI_SIZE_ rt_l = length;
+	for (; rt_l > 0 && is_some_space(rt_s[rt_l - 1], depth); rt_l--);
+	return rt_l;
 }
+
 
 /**
 
 	@brief			Hard right trim -- **does** change the buffer
-	@param			string			The target string
+	@param			rt_s			The target string
 	@param			length			The length of the string
 	@param			depth			What is actually considered a space -- a number ranging from 1 to 6
 	@return			The length of the string until the last non-space character
 
 **/
-static inline _LIBCONFINI_UINT_ rtrim_h (char *rt_s, const _LIBCONFINI_UINT_ length, const _LIBCONFINI_BYTE_ depth) {
-	_LIBCONFINI_UINT_ rt_i = length;
-	for (; rt_i > 0 && is_some_space(rt_s[rt_i - 1], depth); rt_s[--rt_i] = '\0');
-	return rt_i;
+static inline _LIBCONFINI_SIZE_ rtrim_h (char *rt_s, const _LIBCONFINI_SIZE_ length, const _LIBCONFINI_BYTE_ depth) {
+	_LIBCONFINI_SIZE_ rt_l = length;
+	for (; rt_l > 0 && is_some_space(rt_s[rt_l - 1], depth); rt_s[--rt_l] = '\0');
+	return rt_l;
+}
+
+
+/**
+
+	@brief			Unescaped soft right trim (right trim of /(\s+|\\[\n\r])+$/) -- does not change the buffer
+	@param			urt_s			The target string
+	@param			length			The length of the string
+	@return			The length of the string until the last non-space character
+
+**/
+static inline _LIBCONFINI_SIZE_ urtrim_s (const char *urt_s, const _LIBCONFINI_SIZE_ length) {
+
+	_LIBCONFINI_SIZE_ urt_l = length;
+
+	/*
+
+	Mask "abacus" (2 bits):
+
+		FLAG_1	continue the loop
+		FLAG_2	next character is a new line character
+
+	*/
+
+	for (
+
+		_LIBCONFINI_BYTE_ abacus = 1;
+
+			(
+				abacus	=	urt_l < 1 ? 0
+							: urt_s[urt_l - 1] == _LIBCONFINI_LF_ || urt_s[urt_l - 1] == _LIBCONFINI_CR_ ? 3
+							: urt_s[urt_l - 1] == _LIBCONFINI_BACKSLASH_ ? abacus >> 1
+							: is_some_space(urt_s[urt_l - 1], _LIBCONFINI_NO_EOL_)
+			) & 1;
+
+		urt_l--
+
+	);
+
+	return urt_l;
+
 }
 
 
@@ -290,6 +336,7 @@ static inline _LIBCONFINI_BOOL_ is_parsable_char (const char ch, const IniFormat
 	return (format.semicolon == INI_PARSE_COMMENT && ch == _LIBCONFINI_SEMICOLON_) || (format.hash == INI_PARSE_COMMENT && ch == _LIBCONFINI_HASH_);
 }
 
+
 /**
 
 	@brief			Checks whether a character can represent the opening of a comment within
@@ -302,6 +349,7 @@ static inline _LIBCONFINI_BOOL_ is_parsable_char (const char ch, const IniFormat
 static inline _LIBCONFINI_BOOL_ is_comm_char (const char ch, const IniFormat format) {
 	return (format.semicolon != INI_NORMAL_CHARACTER && ch == _LIBCONFINI_SEMICOLON_) || (format.hash != INI_NORMAL_CHARACTER && ch == _LIBCONFINI_HASH_);
 }
+
 
 /**
 
@@ -316,6 +364,7 @@ static inline _LIBCONFINI_BOOL_ is_erase_char (const char ch, const IniFormat fo
 	return (format.semicolon == INI_ERASE_COMMENT && ch == _LIBCONFINI_SEMICOLON_) || (format.hash == INI_ERASE_COMMENT && ch == _LIBCONFINI_HASH_);
 }
 
+
 /**
 
 	@brief			Gets the position of the first delimiter out of quotes
@@ -326,14 +375,23 @@ static inline _LIBCONFINI_BOOL_ is_erase_char (const char ch, const IniFormat fo
 					been not found
 
 **/
-static inline _LIBCONFINI_UINT_ get_delimiter_pos (const char *str, const _LIBCONFINI_UINT_ len, const IniFormat format) {
+static inline _LIBCONFINI_SIZE_ get_delimiter_pos (const char *str, const _LIBCONFINI_SIZE_ len, const IniFormat format) {
 
-	_LIBCONFINI_UINT_ idx;
-	_LIBCONFINI_BYTE_ qmask = 0;
+	_LIBCONFINI_SIZE_ idx = 0;
+
+	/*
+
+	Mask "qmask" (3 bits):
+
+		FLAG_1		we are in an odd sequence of backslashes
+		FLAG_2		unescaped single quotes are odd until now
+		FLAG_4		unescaped double quotes are odd until now
+
+	*/
 
 	for (
 
-		idx = 0;
+		_LIBCONFINI_BYTE_ qmask = 0;
 
 			idx < len
 			&&
@@ -369,9 +427,9 @@ static inline _LIBCONFINI_UINT_ get_delimiter_pos (const char *str, const _LIBCO
 	@return			Number of characters removed
 
 **/
-static _LIBCONFINI_UINT_ unescape_cr_lf (char * nstr, const _LIBCONFINI_UINT_ len, const _LIBCONFINI_BOOL_ is_disabled, const IniFormat format) {
+static _LIBCONFINI_SIZE_ unescape_cr_lf (char * nstr, const _LIBCONFINI_SIZE_ len, const _LIBCONFINI_BOOL_ is_disabled, const IniFormat format) {
 
-	_LIBCONFINI_UINT_ idx, iter, lshift;
+	_LIBCONFINI_SIZE_ idx, iter, lshift;
 	_LIBCONFINI_BOOL_ is_escaped = _LIBCONFINI_FALSE_;
 	_LIBCONFINI_BYTE_ cr_or_lf = 5;
 
@@ -437,7 +495,7 @@ static _LIBCONFINI_UINT_ unescape_cr_lf (char * nstr, const _LIBCONFINI_UINT_ le
 	@return			The new length of the string
 
 **/
-static _LIBCONFINI_UINT_ collapse_spaces (char *str, const IniFormat format) {
+static _LIBCONFINI_SIZE_ collapse_spaces (char *str, const IniFormat format) {
 
 	/*
 
@@ -450,7 +508,7 @@ static _LIBCONFINI_UINT_ collapse_spaces (char *str, const IniFormat format) {
 
 	*/
 
-	_LIBCONFINI_UINT_ idx, lshift;
+	_LIBCONFINI_SIZE_ idx, lshift;
 	_LIBCONFINI_BYTE_ abacus = is_some_space(*str, _LIBCONFINI_WITH_EOL_) << 3;
 
 	for (lshift = 0, idx = 0; str[idx]; idx++) {
@@ -509,9 +567,9 @@ static _LIBCONFINI_UINT_ collapse_spaces (char *str, const IniFormat format) {
 	will be removed. Single quotes or double quotes (if active and present) prevent changes.
 
 **/
-static _LIBCONFINI_UINT_ sanitize_section_name (char *str, const IniFormat format) {
+static _LIBCONFINI_SIZE_ sanitize_section_name (char *str, const IniFormat format) {
 
-	_LIBCONFINI_UINT_ idx, lshift;
+	_LIBCONFINI_SIZE_ idx, lshift;
 	unsigned int abacus;
 
 	/*
@@ -597,9 +655,9 @@ static _LIBCONFINI_UINT_ sanitize_section_name (char *str, const IniFormat forma
 	@return			The new length of the string
 
 **/
-static _LIBCONFINI_UINT_ uncomment (char *commstr, _LIBCONFINI_UINT_ len, const IniFormat format) {
+static _LIBCONFINI_SIZE_ uncomment (char *commstr, _LIBCONFINI_SIZE_ len, const IniFormat format) {
 
-	_LIBCONFINI_UINT_ lshift, idx;
+	_LIBCONFINI_SIZE_ lshift, idx;
 
 	if (format.multiline_entries) {
 
@@ -680,7 +738,7 @@ static _LIBCONFINI_UINT_ uncomment (char *commstr, _LIBCONFINI_UINT_ len, const 
 	@return			The node type (see header)
 
 **/
-static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONFINI_UINT_ len, const _LIBCONFINI_BOOL_ wanna_be_active, const IniFormat format) {
+static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONFINI_SIZE_ len, const _LIBCONFINI_BOOL_ wanna_be_active, const IniFormat format) {
 
 	if (!len || *nodestr == format.delimiter_symbol || is_comm_char(*nodestr, format)) {
 
@@ -689,11 +747,20 @@ static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONF
 	}
 
 	unsigned int abacus;
-	_LIBCONFINI_UINT_ idx;
+	_LIBCONFINI_SIZE_ idx;
 
 	if (*nodestr == _LIBCONFINI_OPEN_SECTION_) {
 
 		if (format.no_spaces_in_names) {
+
+			/*
+
+				Search of the CLOSE_SECTION character and possible spaces in
+				names -- i.e., ECMAScript /[^\.\s]\s+[^\.\s]/g.test(nodestr)].
+				The algorithm is made more complex by the fact that LF and CR
+				characters can still be escaped at this stage ("\\\n", "\\\r").
+
+			*/
 
 			/*
 
@@ -708,15 +775,6 @@ static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONF
 				FLAG_64		this is a new line
 				FLAG_128	section name end character found
 				FLAG_256	name contains spaces
-
-			*/
-
-			/*
-
-				Search of the CLOSE_SECTION character and possible spaces in
-				names -- i.e., ECMAScript /[^\.\s]\s+[^\.\s]/g.test(nodestr)].
-				The algorithm is made more complicated by the fact that LF and
-				CR characters can be still unescaped. ("\\\n", "\\\r").
 
 			*/
 
@@ -798,7 +856,7 @@ static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONF
 
 	if (format.no_spaces_in_names) {
 
-		idx = rtrim_s(nodestr, idx, _LIBCONFINI_WITH_EOL_) - 1;
+		idx = urtrim_s(nodestr, idx) - 1;
 
 		do {
 
@@ -825,13 +883,13 @@ static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONF
 	@return			Number of sub-segments found, included itself
 
 **/
-static _LIBCONFINI_UINT_ further_cuts (char *segment, const IniFormat format) {
+static _LIBCONFINI_SIZE_ further_cuts (char *segment, const IniFormat format) {
 
 	if (!*segment) { return 0; }
 
 	_LIBCONFINI_BOOL_ show_comments = !is_erase_char(*segment, format);
 	_LIBCONFINI_BYTE_ abacus;
-	_LIBCONFINI_UINT_ idx, focus_at, search_at = 0, unparse_at = 0, fragm_size = show_comments;
+	_LIBCONFINI_SIZE_ idx, focus_at, search_at = 0, unparse_at = 0, fragm_size = show_comments;
 
 	/*
 
@@ -1091,7 +1149,7 @@ unsigned int load_ini_file (
 
 	unsigned int return_value = 0;
 	char *cache;
-	_LIBCONFINI_UINT_ len;
+	_LIBCONFINI_SIZE_ len;
 
 	fseek(config_file, 0, SEEK_END);
 	len = ftell(config_file);
@@ -1115,7 +1173,7 @@ unsigned int load_ini_file (
 	cache[len] = '\0';
 
 	_LIBCONFINI_BYTE_ abacus;
-	_LIBCONFINI_UINT_ idx, node_at, tmp_int;
+	_LIBCONFINI_SIZE_ idx, node_at, tmp_int;
 
 	IniStatistics this_doc = {
 			.format = format,
@@ -1166,7 +1224,7 @@ unsigned int load_ini_file (
 	/* Debug */
 	/*
 
-	for (_LIBCONFINI_UINT_ tmp = 0; tmp < len; tmp++) {
+	for (_LIBCONFINI_SIZE_ tmp = 0; tmp < len; tmp++) {
 		putchar(cache[tmp] > 0 ? cache[tmp] : '$');
 	}
 	putchar(_LIBCONFINI_LF_);
@@ -1189,7 +1247,7 @@ unsigned int load_ini_file (
 	/* Dispatch the parsed input */
 
 	_LIBCONFINI_BOOL_ parent_is_disabled = _LIBCONFINI_FALSE_;
-	_LIBCONFINI_UINT_ parse_at, real_parent_len = 0, parent_len = 0;
+	_LIBCONFINI_SIZE_ parse_at, real_parent_len = 0, parent_len = 0;
 	char *parent = cache + len, *subparent = parent, *real_parent = parent;
 	IniDispatch this_d = {
 		.format = format,
@@ -1528,7 +1586,7 @@ void ini_format_set_from_mask (IniFormat *dest_format, IniFormatMask mask) {
 unsigned long int ini_unquote (char *ini_string, const IniFormat format) {
 
 	_LIBCONFINI_BYTE_ qmask;
-	_LIBCONFINI_UINT_ lshift, nbacksl, idx;
+	_LIBCONFINI_SIZE_ lshift, nbacksl, idx;
 
 	/*
 
@@ -1602,7 +1660,7 @@ unsigned long int ini_unquote (char *ini_string, const IniFormat format) {
 unsigned long int ini_array_get_length (const char *ini_string, const char delimiter, const IniFormat format) {
 
 	unsigned long int arr_length = 0;
-	_LIBCONFINI_UINT_ idx;
+	_LIBCONFINI_SIZE_ idx;
 	_LIBCONFINI_BYTE_ abacus;
 
 	/*
@@ -1680,7 +1738,7 @@ unsigned int ini_array_foreach (
 ) {
 
 	_LIBCONFINI_BYTE_ abacus;
-	_LIBCONFINI_UINT_ idx, offs;
+	_LIBCONFINI_SIZE_ idx, offs;
 
 	/* Mask "abacus" (6 bits): as above */
 
@@ -1753,7 +1811,7 @@ unsigned int ini_split_array (
 ) {
 
 	_LIBCONFINI_BYTE_ abacus;
-	_LIBCONFINI_UINT_ offs, idx;
+	_LIBCONFINI_SIZE_ offs, idx;
 
 	/* Mask "abacus" (6 bits): as above */
 

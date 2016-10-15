@@ -86,16 +86,20 @@ Functions</h2></td></tr>
 <tr class="memitem:acfbb5324d2225e034a824462c614c2b1"><td class="memItemLeft" align="right" valign="top">static unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#acfbb5324d2225e034a824462c614c2b1">ltrim_h</a> (char *lt_s, const unsigned long int start_from, const unsigned char depth)</td></tr>
 <tr class="memdesc:acfbb5324d2225e034a824462c614c2b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hard left trim &ndash; <b>does</b> change the buffer.  <a href="#acfbb5324d2225e034a824462c614c2b1">More...</a><br /></td></tr>
 <tr class="separator:acfbb5324d2225e034a824462c614c2b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae4a72e2f73286f665de68598c0e87bd"><td class="memItemLeft" align="right" valign="top">static unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#aae4a72e2f73286f665de68598c0e87bd">ultrim_h</a> (char *lt_s, const unsigned long int start_from)</td></tr>
-<tr class="memdesc:aae4a72e2f73286f665de68598c0e87bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescaped hard left trim (left trim of /^(*|\[<br />
-])+/) &ndash; <b>does</b> change the buffer.  <a href="#aae4a72e2f73286f665de68598c0e87bd">More...</a><br /></td></tr>
-<tr class="separator:aae4a72e2f73286f665de68598c0e87bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af60f41c3151f486acc371731eb8e7909"><td class="memItemLeft" align="right" valign="top">static unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#af60f41c3151f486acc371731eb8e7909">ultrim_h</a> (char *ult_s, const unsigned long int start_from)</td></tr>
+<tr class="memdesc:af60f41c3151f486acc371731eb8e7909"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescaped hard left trim (left trim of /^(+|\[<br />
+])+/) &ndash; <b>does</b> change the buffer.  <a href="#af60f41c3151f486acc371731eb8e7909">More...</a><br /></td></tr>
+<tr class="separator:af60f41c3151f486acc371731eb8e7909"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec74641a1b0ca9262114082ed680b982"><td class="memItemLeft" align="right" valign="top">static unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#aec74641a1b0ca9262114082ed680b982">rtrim_s</a> (const char *rt_s, const unsigned long int length, const unsigned char depth)</td></tr>
 <tr class="memdesc:aec74641a1b0ca9262114082ed680b982"><td class="mdescLeft">&#160;</td><td class="mdescRight">Soft right trim &ndash; does not change the buffer.  <a href="#aec74641a1b0ca9262114082ed680b982">More...</a><br /></td></tr>
 <tr class="separator:aec74641a1b0ca9262114082ed680b982"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd139ab417a8ff23a3b44d78d0606f4b"><td class="memItemLeft" align="right" valign="top">static unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#abd139ab417a8ff23a3b44d78d0606f4b">rtrim_h</a> (char *rt_s, const unsigned long int length, const unsigned char depth)</td></tr>
 <tr class="memdesc:abd139ab417a8ff23a3b44d78d0606f4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hard right trim &ndash; <b>does</b> change the buffer.  <a href="#abd139ab417a8ff23a3b44d78d0606f4b">More...</a><br /></td></tr>
 <tr class="separator:abd139ab417a8ff23a3b44d78d0606f4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33513167ced26639050bfd9cc743c829"><td class="memItemLeft" align="right" valign="top">static unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a33513167ced26639050bfd9cc743c829">urtrim_s</a> (const char *urt_s, const unsigned long int length)</td></tr>
+<tr class="memdesc:a33513167ced26639050bfd9cc743c829"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescaped soft right trim (right trim of /(+|\[<br />
+])+$/) &ndash; does not change the buffer.  <a href="#a33513167ced26639050bfd9cc743c829">More...</a><br /></td></tr>
+<tr class="separator:a33513167ced26639050bfd9cc743c829"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae040cb607600c6c27532139308fe1cac"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ae040cb607600c6c27532139308fe1cac">string_tolower</a> (char *str)</td></tr>
 <tr class="memdesc:ae040cb607600c6c27532139308fe1cac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a string to lower case.  <a href="#ae040cb607600c6c27532139308fe1cac">More...</a><br /></td></tr>
 <tr class="separator:ae040cb607600c6c27532139308fe1cac"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1050,7 +1054,7 @@ Variables</h2></td></tr>
 <p>Hard left trim &ndash; <b>does</b> change the buffer. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">string</td><td>The target string </td></tr>
+    <tr><td class="paramname">lt_s</td><td>The target string </td></tr>
     <tr><td class="paramname">start_from</td><td>The offset where to start the left trim </td></tr>
     <tr><td class="paramname">depth</td><td>What is actually considered a space &ndash; a number ranging from 1 to 6 </td></tr>
   </table>
@@ -1103,7 +1107,7 @@ Variables</h2></td></tr>
 <p>Soft left trim &ndash; does not change the buffer. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">string</td><td>The target string </td></tr>
+    <tr><td class="paramname">lt_s</td><td>The target string </td></tr>
     <tr><td class="paramname">start_from</td><td>The offset where to start the left trim </td></tr>
     <tr><td class="paramname">depth</td><td>What is actually considered a space &ndash; a number ranging from 1 to 6 </td></tr>
   </table>
@@ -1156,7 +1160,7 @@ Variables</h2></td></tr>
 <p>Hard right trim &ndash; <b>does</b> change the buffer. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">string</td><td>The target string </td></tr>
+    <tr><td class="paramname">rt_s</td><td>The target string </td></tr>
     <tr><td class="paramname">length</td><td>The length of the string </td></tr>
     <tr><td class="paramname">depth</td><td>What is actually considered a space &ndash; a number ranging from 1 to 6 </td></tr>
   </table>
@@ -1209,7 +1213,7 @@ Variables</h2></td></tr>
 <p>Soft right trim &ndash; does not change the buffer. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">string</td><td>The target string </td></tr>
+    <tr><td class="paramname">rt_s</td><td>The target string </td></tr>
     <tr><td class="paramname">length</td><td>The length of the string </td></tr>
     <tr><td class="paramname">depth</td><td>What is actually considered a space &ndash; a subset of <a class="el" href="">ranging from 1 to 6  The length of the string until the last non-space character </a></td></tr>
   </table>
@@ -1301,8 +1305,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="aae4a72e2f73286f665de68598c0e87bd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aae4a72e2f73286f665de68598c0e87bd">&sect;&nbsp;</a></span>ultrim_h()</h2>
+<a id="af60f41c3151f486acc371731eb8e7909"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af60f41c3151f486acc371731eb8e7909">&sect;&nbsp;</a></span>ultrim_h()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1314,7 +1318,7 @@ Variables</h2></td></tr>
           <td class="memname">static unsigned long int ultrim_h </td>
           <td>(</td>
           <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>lt_s</em>, </td>
+          <td class="paramname"><em>ult_s</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1335,11 +1339,11 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Unescaped hard left trim (left trim of /^(*|\[<br />
+<p>Unescaped hard left trim (left trim of /^(+|\[<br />
 ])+/) &ndash; <b>does</b> change the buffer. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">string</td><td>The target string </td></tr>
+    <tr><td class="paramname">ult_s</td><td>The target string </td></tr>
     <tr><td class="paramname">start_from</td><td>The offset where to start the left trim </td></tr>
   </table>
   </dd>
@@ -1461,6 +1465,53 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Number of characters removed </dd></dl>
+
+</div>
+</div>
+<a id="a33513167ced26639050bfd9cc743c829"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33513167ced26639050bfd9cc743c829">&sect;&nbsp;</a></span>urtrim_s()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static unsigned long int urtrim_s </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>urt_s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const unsigned long int&#160;</td>
+          <td class="paramname"><em>length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unescaped soft right trim (right trim of /(+|\[<br />
+])+$/) &ndash; does not change the buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">urt_s</td><td>The target string </td></tr>
+    <tr><td class="paramname">length</td><td>The length of the string </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The length of the string until the last non-space character </dd></dl>
 
 </div>
 </div>
