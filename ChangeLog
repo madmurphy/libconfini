@@ -4,6 +4,9 @@
 
 Changes:
 
+* `IniFormatMask` has been renamed to `IniFormatId`
+* `ini_format_set_from_mask()` has been renamed to `ini_format_set_to_id()`
+* `ini_format_calculate_mask()` has been renamed to `ini_format_get_id()`
 * `IniFormat::no_spaces_in_names`: small bug fixed
 * General code review
 

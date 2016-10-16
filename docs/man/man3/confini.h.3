@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Sat Oct 15 2016" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Sun Oct 16 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -39,7 +39,7 @@ src/confini.h \- libconfini header
 .br
 .RI "Dispatch of a single INI member\&. "
 .ti -1c
-.RI "typedef unsigned long long int \fBIniFormatMask\fP"
+.RI "typedef unsigned long int \fBIniFormatId\fP"
 .br
 .RI "24-bit bitmask representing the format of an INI file "
 .in -1c
@@ -71,43 +71,43 @@ src/confini.h \- libconfini header
 
 .in +1c
 .ti -1c
-.RI "unsigned int \fBload_ini_file\fP (const char *path, const \fBIniFormat\fP format, int(*f_init)(\fBIniStatistics\fP *statistics, void *init_other), int(*f_foreach)(\fBIniDispatch\fP *dispatch, void *foreach_other), void *user_data)"
+.RI "unsigned int \fBload_ini_file\fP (const char *const path, const \fBIniFormat\fP format, int(*const f_init)(\fBIniStatistics\fP *statistics, void *init_other), int(*const f_foreach)(\fBIniDispatch\fP *dispatch, void *foreach_other), void *user_data)"
 .br
 .RI "Parses an INI file and dispatches its content\&. "
 .ti -1c
-.RI "void \fBini_set_implicit_value\fP (char *implicit_value, unsigned long int implicit_v_length)"
+.RI "void \fBini_set_implicit_value\fP (char *const implicit_value, const unsigned long int implicit_v_length)"
 .br
 .RI "Sets the valued used for implicit keys\&. "
 .ti -1c
-.RI "\fBIniFormatMask\fP \fBini_format_calculate_mask\fP (const \fBIniFormat\fP format)"
+.RI "\fBIniFormatId\fP \fBini_format_get_id\fP (const \fBIniFormat\fP format)"
 .br
-.RI "Converts an \fBIniFormat\fP into an \fBIniFormatMask\fP\&. "
+.RI "Converts an \fBIniFormat\fP into an \fBIniFormatId\fP\&. "
 .ti -1c
-.RI "void \fBini_format_set_from_mask\fP (\fBIniFormat\fP *dest_format, \fBIniFormatMask\fP mask)"
+.RI "void \fBini_format_set_to_id\fP (\fBIniFormat\fP *dest_format, \fBIniFormatId\fP format_id)"
 .br
-.RI "Sets all the values of an \fBIniFormat\fP by reading them from an \fBIniFormatMask\fP\&. "
+.RI "Sets all the values of an \fBIniFormat\fP by reading them from an \fBIniFormatId\fP\&. "
 .ti -1c
-.RI "unsigned long int \fBini_unquote\fP (char *ini_string, const \fBIniFormat\fP format)"
+.RI "unsigned long int \fBini_unquote\fP (char *const ini_string, const \fBIniFormat\fP format)"
 .br
-.RI "Unescapes a string and removes all its unescaped quotes (if single/double quotes are active) "
+.RI "Unescapes ", \\' and " and removes all unescaped quotes (if single/double quotes are active) "
 .ti -1c
-.RI "unsigned long int \fBini_array_get_length\fP (const char *ini_string, const char delimiter, const \fBIniFormat\fP format)"
+.RI "unsigned long int \fBini_array_get_length\fP (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 .br
 .RI "Gets the length of an INI array\&. "
 .ti -1c
-.RI "unsigned int \fBini_array_foreach\fP (const char *ini_string, const char delimiter, const \fBIniFormat\fP format, int(*f_foreach)(const char *member, unsigned int offset, unsigned int length, void *foreach_other), void *user_data)"
+.RI "unsigned int \fBini_array_foreach\fP (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(const char *member, unsigned int offset, unsigned int length, void *foreach_other), void *user_data)"
 .br
 .RI "Calls a custom function for each member of an INI array -- useful for read-only (const) stringified arrays\&. "
 .ti -1c
-.RI "unsigned int \fBini_split_array\fP (char *ini_string, const char delimiter, const \fBIniFormat\fP format, int(*f_foreach)(char *element, unsigned int length, void *foreach_other), void *user_data)"
+.RI "unsigned int \fBini_split_array\fP (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(char *element, unsigned int length, void *foreach_other), void *user_data)"
 .br
 .RI "Splits an INI array and calls a custom function for each member\&. "
 .ti -1c
-.RI "signed int \fBini_get_bool\fP (const char *ini_string, const signed int return_value)"
+.RI "signed int \fBini_get_bool\fP (const char *const ini_string, const signed int return_value)"
 .br
 .RI "Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\&.\fP"
 .ti -1c
-.RI "signed int \fBini_get_lazy_bool\fP (const char *ini_string, const signed int return_value)"
+.RI "signed int \fBini_get_lazy_bool\fP (const char *const ini_string, const signed int return_value)"
 .br
 .RI "Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\&.\fP"
 .in -1c
@@ -171,7 +171,7 @@ Dispatch of a single INI member\&.
 
 .PP
 24-bit bitfield representing a unique format of an INI file (INI dialect) 
-.SS "typedef unsigned long long int \fBIniFormatMask\fP"
+.SS "typedef unsigned long int \fBIniFormatId\fP"
 
 .PP
 24-bit bitmask representing the format of an INI file 
@@ -273,7 +273,7 @@ INI nodes types\&.
 \fB\fIINI_DISABLED_KEY \fP\fP
 .SH "Function Documentation"
 .PP 
-.SS "unsigned int ini_array_foreach (const char * ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(const char *member, unsigned int offset, unsigned int length, void *foreach_other) f_foreach, void * user_data)"
+.SS "unsigned int ini_array_foreach (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(const char *member, unsigned int offset, unsigned int length, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
 Calls a custom function for each member of an INI array -- useful for read-only (const) stringified arrays\&. 
@@ -297,7 +297,7 @@ Zero for success, otherwise an error code
 .RE
 .PP
 
-.SS "unsigned long int ini_array_get_length (const char * ini_string, const char delimiter, const \fBIniFormat\fP format)"
+.SS "unsigned long int ini_array_get_length (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 
 .PP
 Gets the length of an INI array\&. 
@@ -317,10 +317,10 @@ The length of the INI array
 .RE
 .PP
 
-.SS "\fBIniFormatMask\fP ini_format_calculate_mask (const \fBIniFormat\fP source)"
+.SS "\fBIniFormatId\fP ini_format_get_id (const \fBIniFormat\fP source)"
 
 .PP
-Converts an \fBIniFormat\fP into an \fBIniFormatMask\fP\&. 
+Converts an \fBIniFormat\fP into an \fBIniFormatId\fP\&. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -333,16 +333,16 @@ The mask representing the format
 .RE
 .PP
 
-.SS "void ini_format_set_from_mask (\fBIniFormat\fP * dest_format, \fBIniFormatMask\fP mask)"
+.SS "void ini_format_set_to_id (\fBIniFormat\fP * dest_format, \fBIniFormatId\fP format_id)"
 
 .PP
-Sets all the values of an \fBIniFormat\fP by reading them from an \fBIniFormatMask\fP\&. 
+Sets all the values of an \fBIniFormat\fP by reading them from an \fBIniFormatId\fP\&. 
 .PP
 \fBParameters:\fP
 .RS 4
 \fIdest_format\fP The \fBIniFormat\fP to be set 
 .br
-\fImask\fP The \fBIniFormatMask\fP to be read 
+\fImask\fP The \fBIniFormatId\fP to be read 
 .RE
 .PP
 \fBReturns:\fP
@@ -351,7 +351,7 @@ Nothing
 .RE
 .PP
 
-.SS "signed int ini_get_bool (const char * ini_string, const signed int return_value)"
+.SS "signed int ini_get_bool (const char *const ini_string, const signed int return_value)"
 
 .PP
 Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\&.\fP
@@ -369,7 +369,7 @@ The matching boolean value (0 or 1) or \fCreturn_value\fP if no boolean has been
 .RE
 .PP
 
-.SS "signed int ini_get_lazy_bool (const char * ini_string, const signed int return_value)"
+.SS "signed int ini_get_lazy_bool (const char *const ini_string, const signed int return_value)"
 
 .PP
 Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\&.\fP
@@ -387,7 +387,7 @@ The matching boolean value (0 or 1) or \fCreturn_value\fP if no boolean has been
 .RE
 .PP
 
-.SS "void ini_set_implicit_value (char * implicit_value, unsigned long int implicit_v_length)"
+.SS "void ini_set_implicit_value (char *const implicit_value, const unsigned long int implicit_v_length)"
 
 .PP
 Sets the valued used for implicit keys\&. 
@@ -405,7 +405,7 @@ Nothing
 .RE
 .PP
 
-.SS "unsigned int ini_split_array (char * ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(char *element, unsigned int length, void *foreach_other) f_foreach, void * user_data)"
+.SS "unsigned int ini_split_array (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(char *element, unsigned int length, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
 Splits an INI array and calls a custom function for each member\&. 
@@ -429,10 +429,10 @@ Zero for success, otherwise an error code
 .RE
 .PP
 
-.SS "unsigned long int ini_unquote (char * ini_string, const \fBIniFormat\fP format)"
+.SS "unsigned long int ini_unquote (char *const ini_string, const \fBIniFormat\fP format)"
 
 .PP
-Unescapes a string and removes all its unescaped quotes (if single/double quotes are active) 
+Unescapes ", \\' and " and removes all unescaped quotes (if single/double quotes are active) 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -447,7 +447,7 @@ The new length of the string
 .RE
 .PP
 
-.SS "unsigned int load_ini_file (const char * path, const \fBIniFormat\fP format, int(*)(\fBIniStatistics\fP *statistics, void *init_other) f_init, int(*)(\fBIniDispatch\fP *dispatch, void *foreach_other) f_foreach, void * user_data)"
+.SS "unsigned int load_ini_file (const char *const path, const \fBIniFormat\fP format, int(*)(\fBIniStatistics\fP *statistics, void *init_other) f_init, int(*)(\fBIniDispatch\fP *dispatch, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
 Parses an INI file and dispatches its content\&. 

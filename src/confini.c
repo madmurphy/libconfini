@@ -124,7 +124,7 @@
 	Everything lowercase in this list!
 
 **/
-static const char *_LIBCONFINI_BOOLEANS_[][2] = {
+static const char * const _LIBCONFINI_BOOLEANS_[][2] = {
 	{ "no", "yes" },
 	{ "false", "true" },
 	{ "0", "1" }
@@ -163,7 +163,7 @@ static inline _LIBCONFINI_BOOL_ is_some_space (const char ch, const _LIBCONFINI_
 	@return			The offset of the first non-space character
 
 **/
-static inline _LIBCONFINI_SIZE_ ltrim_s (const char *lt_s, const _LIBCONFINI_SIZE_ start_from, const _LIBCONFINI_BYTE_ depth) {
+static inline _LIBCONFINI_SIZE_ ltrim_s (const char * const lt_s, const _LIBCONFINI_SIZE_ start_from, const _LIBCONFINI_BYTE_ depth) {
 	_LIBCONFINI_SIZE_ lt_i = start_from;
 	for (; lt_s[lt_i] && is_some_space(lt_s[lt_i], depth); lt_i++);
 	return lt_i;
@@ -179,7 +179,7 @@ static inline _LIBCONFINI_SIZE_ ltrim_s (const char *lt_s, const _LIBCONFINI_SIZ
 	@return			The offset of the first non-space character
 
 **/
-static inline _LIBCONFINI_SIZE_ ltrim_h (char *lt_s, const _LIBCONFINI_SIZE_ start_from, const _LIBCONFINI_BYTE_ depth) {
+static inline _LIBCONFINI_SIZE_ ltrim_h (char * const lt_s, const _LIBCONFINI_SIZE_ start_from, const _LIBCONFINI_BYTE_ depth) {
 	_LIBCONFINI_SIZE_ lt_i = start_from;
 	for (; lt_s[lt_i] && is_some_space(lt_s[lt_i], depth); lt_s[lt_i++] = '\0');
 	return lt_i;
@@ -194,28 +194,28 @@ static inline _LIBCONFINI_SIZE_ ltrim_h (char *lt_s, const _LIBCONFINI_SIZE_ sta
 	@return			The offset of the first non matching character
 
 **/
-static inline _LIBCONFINI_SIZE_ ultrim_h (char *ult_s, const _LIBCONFINI_SIZE_ start_from) {
+static inline _LIBCONFINI_SIZE_ ultrim_h (char * const ult_s, const _LIBCONFINI_SIZE_ start_from) {
 
 	_LIBCONFINI_BYTE_ abacus;
 	_LIBCONFINI_SIZE_ ult_i = start_from;
 
 	/*
 
-	Mask "abacus" (4 bits):
+	Mask "abacus" (4 bits used):
 
-		FLAG_1	this is any space
-		FLAG_2	this is not a backslash
-		FLAG_4	previous was not a backslash
-		FLAG_8	continue the loop
+		FLAG_1		This is any space
+		FLAG_2		This is not a backslash
+		FLAG_4		Previous was not a backslash
+		FLAG_8		Continue the loop
 
 	*/
 
 	for (abacus = 12; ult_s[ult_i] && (abacus & 8); ult_i++) {
 
-		abacus = (abacus & 4) && is_some_space(ult_s[ult_i], _LIBCONFINI_NO_EOL_) ? 13
-			: ult_s[ult_i] == _LIBCONFINI_LF_ || ult_s[ult_i] == _LIBCONFINI_CR_ ? abacus | 5
-			: (abacus & 4) && ult_s[ult_i] == _LIBCONFINI_BACKSLASH_ ? 10
-			: abacus & 4;
+		abacus	=	(abacus & 4) && is_some_space(ult_s[ult_i], _LIBCONFINI_NO_EOL_) ? 13
+					: ult_s[ult_i] == _LIBCONFINI_LF_ || ult_s[ult_i] == _LIBCONFINI_CR_ ? abacus | 5
+					: (abacus & 4) && ult_s[ult_i] == _LIBCONFINI_BACKSLASH_ ? 10
+					: abacus & 4;
 
 		if (abacus & 1) {
 			ult_s[ult_i] = '\0';
@@ -241,7 +241,7 @@ static inline _LIBCONFINI_SIZE_ ultrim_h (char *ult_s, const _LIBCONFINI_SIZE_ s
 	@return			The length of the string until the last non-space character
 
 **/
-static inline _LIBCONFINI_SIZE_ rtrim_s (const char *rt_s, const _LIBCONFINI_SIZE_ length, const _LIBCONFINI_BYTE_ depth) {
+static inline _LIBCONFINI_SIZE_ rtrim_s (const char * const rt_s, const _LIBCONFINI_SIZE_ length, const _LIBCONFINI_BYTE_ depth) {
 	_LIBCONFINI_SIZE_ rt_l = length;
 	for (; rt_l > 0 && is_some_space(rt_s[rt_l - 1], depth); rt_l--);
 	return rt_l;
@@ -257,7 +257,7 @@ static inline _LIBCONFINI_SIZE_ rtrim_s (const char *rt_s, const _LIBCONFINI_SIZ
 	@return			The length of the string until the last non-space character
 
 **/
-static inline _LIBCONFINI_SIZE_ rtrim_h (char *rt_s, const _LIBCONFINI_SIZE_ length, const _LIBCONFINI_BYTE_ depth) {
+static inline _LIBCONFINI_SIZE_ rtrim_h (char * const rt_s, const _LIBCONFINI_SIZE_ length, const _LIBCONFINI_BYTE_ depth) {
 	_LIBCONFINI_SIZE_ rt_l = length;
 	for (; rt_l > 0 && is_some_space(rt_s[rt_l - 1], depth); rt_s[--rt_l] = '\0');
 	return rt_l;
@@ -272,16 +272,16 @@ static inline _LIBCONFINI_SIZE_ rtrim_h (char *rt_s, const _LIBCONFINI_SIZE_ len
 	@return			The length of the string until the last non-space character
 
 **/
-static inline _LIBCONFINI_SIZE_ urtrim_s (const char *urt_s, const _LIBCONFINI_SIZE_ length) {
+static inline _LIBCONFINI_SIZE_ urtrim_s (const char * const urt_s, const _LIBCONFINI_SIZE_ length) {
 
 	_LIBCONFINI_SIZE_ urt_l = length;
 
 	/*
 
-	Mask "abacus" (2 bits):
+	Mask "abacus" (2 bits used):
 
-		FLAG_1	continue the loop
-		FLAG_2	next character is a new line character
+		FLAG_1		Continue the loop
+		FLAG_2		Next character is a new line character
 
 	*/
 
@@ -312,7 +312,7 @@ static inline _LIBCONFINI_SIZE_ urtrim_s (const char *urt_s, const _LIBCONFINI_S
 	@return			Nothing
 
 **/
-static inline void string_tolower (char *str) {
+static inline void string_tolower (char * const str) {
 	for (char *ch_ptr = str; *ch_ptr; ++ch_ptr) {
 		*ch_ptr = *ch_ptr > 0x40 && *ch_ptr < 0x5b ? *ch_ptr | 0x60 : *ch_ptr;
 	}
@@ -375,28 +375,28 @@ static inline _LIBCONFINI_BOOL_ is_erase_char (const char ch, const IniFormat fo
 					been not found
 
 **/
-static inline _LIBCONFINI_SIZE_ get_delimiter_pos (const char *str, const _LIBCONFINI_SIZE_ len, const IniFormat format) {
+static inline _LIBCONFINI_SIZE_ get_delimiter_pos (const char * const str, const _LIBCONFINI_SIZE_ len, const IniFormat format) {
 
 	_LIBCONFINI_SIZE_ idx = 0;
 
 	/*
 
-	Mask "qmask" (3 bits):
+	Mask "abacus" (3 bits used):
 
-		FLAG_1		we are in an odd sequence of backslashes
-		FLAG_2		unescaped single quotes are odd until now
-		FLAG_4		unescaped double quotes are odd until now
+		FLAG_1		We are in an odd sequence of backslashes
+		FLAG_2		Unescaped single quotes are odd until now
+		FLAG_4		Unescaped double quotes are odd until now
 
 	*/
 
 	for (
 
-		_LIBCONFINI_BYTE_ qmask = 0;
+		_LIBCONFINI_BYTE_ abacus = 0;
 
 			idx < len
 			&&
 			!(
-				!(qmask & 6)
+				!(abacus & 6)
 				&&
 				(
 					format.delimiter_symbol ?
@@ -405,10 +405,10 @@ static inline _LIBCONFINI_SIZE_ get_delimiter_pos (const char *str, const _LIBCO
 				)
 			);
 
-		qmask = !(qmask & 3) && !format.no_double_quotes && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? qmask ^ 4
-				: !(qmask & 5) && !format.no_single_quotes && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? qmask ^ 2
-				: str[idx] == _LIBCONFINI_BACKSLASH_ ? qmask ^ 1
-				: qmask & 6,
+		abacus	=	!(abacus & 3) && !format.no_double_quotes && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
+					: !(abacus & 5) && !format.no_single_quotes && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
+					: str[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
+					: abacus & 6,
 		idx++
 
 	);
@@ -427,7 +427,7 @@ static inline _LIBCONFINI_SIZE_ get_delimiter_pos (const char *str, const _LIBCO
 	@return			Number of characters removed
 
 **/
-static _LIBCONFINI_SIZE_ unescape_cr_lf (char * nstr, const _LIBCONFINI_SIZE_ len, const _LIBCONFINI_BOOL_ is_disabled, const IniFormat format) {
+static _LIBCONFINI_SIZE_ unescape_cr_lf (char * const nstr, const _LIBCONFINI_SIZE_ len, const _LIBCONFINI_BOOL_ is_disabled, const IniFormat format) {
 
 	_LIBCONFINI_SIZE_ idx, iter, lshift;
 	_LIBCONFINI_BOOL_ is_escaped = _LIBCONFINI_FALSE_;
@@ -495,16 +495,16 @@ static _LIBCONFINI_SIZE_ unescape_cr_lf (char * nstr, const _LIBCONFINI_SIZE_ le
 	@return			The new length of the string
 
 **/
-static _LIBCONFINI_SIZE_ collapse_spaces (char *str, const IniFormat format) {
+static _LIBCONFINI_SIZE_ collapse_spaces (char * const str, const IniFormat format) {
 
 	/*
 
-	Mask "abacus" (4 bits):
+	Mask "abacus" (4 bits used):
 
-		FLAG_1	we are in an odd sequence of backslashes
-		FLAG_2	unescaped single quotes are odd until now
-		FLAG_4	unescaped double quotes are odd until now
-		FLAG_8	the string does not start with a space
+		FLAG_1		We are in an odd sequence of backslashes
+		FLAG_2		Unescaped single quotes are odd until now
+		FLAG_4		Unescaped double quotes are odd until now
+		FLAG_8		The string does not start with a space
 
 	*/
 
@@ -530,10 +530,10 @@ static _LIBCONFINI_SIZE_ collapse_spaces (char *str, const IniFormat format) {
 
 		} else {
 
-			abacus = !(abacus & 3) && !format.no_double_quotes && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
-					: !(abacus & 5) && !format.no_single_quotes && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
-					: str[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
-					: abacus & 14;
+			abacus	=	!(abacus & 3) && !format.no_double_quotes && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
+						: !(abacus & 5) && !format.no_single_quotes && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
+						: str[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
+						: abacus & 14;
 
 			if (lshift) {
 
@@ -567,24 +567,24 @@ static _LIBCONFINI_SIZE_ collapse_spaces (char *str, const IniFormat format) {
 	will be removed. Single quotes or double quotes (if active and present) prevent changes.
 
 **/
-static _LIBCONFINI_SIZE_ sanitize_section_name (char *str, const IniFormat format) {
+static _LIBCONFINI_SIZE_ sanitize_section_name (char * const str, const IniFormat format) {
 
 	_LIBCONFINI_SIZE_ idx, lshift;
 	unsigned int abacus;
 
 	/*
 
-	Mask "abacus" (9 bits):
+	Mask "abacus" (9 bits used):
 
-		FLAG_1			we are in an odd sequence of backslashes
-		FLAG_2			unescaped single quotes are odd until now
-		FLAG_4			unescaped double quotes are odd until now
-		FLAG_8			the string does not start with a new line
-		FLAG_16			more than one space is here
-		FLAG_32			at least one dot is here
-		FLAG_64			one or more spaces follow a dot
-		FLAG_128		more than one dot is here
-		FLAG_256		continue the shift
+		FLAG_1		We are in an odd sequence of backslashes
+		FLAG_2		Unescaped single quotes are odd until now
+		FLAG_4		Unescaped double quotes are odd until now
+		FLAG_8		The string does not start with a new line
+		FLAG_16		More than one space is here
+		FLAG_32		At least one dot is here
+		FLAG_64		One or more spaces follow a dot
+		FLAG_128	More than one dot is here
+		FLAG_256	Continue the shift
 
 	*/
 
@@ -621,12 +621,16 @@ static _LIBCONFINI_SIZE_ sanitize_section_name (char *str, const IniFormat forma
 
 		} else {
 
-				abacus &= 7;
-				abacus = !(abacus & 3) && !format.no_double_quotes && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
-					: !(abacus & 5) && !format.no_single_quotes && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
-					: str[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
-					: abacus & 510;
-				abacus |= 264;
+				abacus	=	((
+								!(abacus & 3) && !format.no_double_quotes && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+									abacus ^ 4
+								: !(abacus & 5) && !format.no_single_quotes && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
+									abacus ^ 2
+								: str[idx] == _LIBCONFINI_BACKSLASH_ ?
+									abacus ^ 1
+								:
+									abacus & 510
+							) & 271) | 264;
 
 		}
 
@@ -655,7 +659,7 @@ static _LIBCONFINI_SIZE_ sanitize_section_name (char *str, const IniFormat forma
 	@return			The new length of the string
 
 **/
-static _LIBCONFINI_SIZE_ uncomment (char *commstr, _LIBCONFINI_SIZE_ len, const IniFormat format) {
+static _LIBCONFINI_SIZE_ uncomment (char * const commstr, _LIBCONFINI_SIZE_ len, const IniFormat format) {
 
 	_LIBCONFINI_SIZE_ lshift, idx;
 
@@ -681,10 +685,10 @@ static _LIBCONFINI_SIZE_ uncomment (char *commstr, _LIBCONFINI_SIZE_ len, const 
 
 		/*
 
-		Mask "abacus" (6 bits):
+		Mask "abacus" (6 bits used):
 
 			FLAG_1		Don't erase any character
-			FLAG_2		we are in an odd sequence of backslashes
+			FLAG_2		We are in an odd sequence of backslashes
 			FLAG_4		This character is a backslash
 			FLAG_8		This character is a comment character and follows /(\n\s*|\r\s*)/
 			FLAG_16		This character is a part of a group of spaces following a new line (/(\n|\r)[\t \v\f]+/)
@@ -694,16 +698,16 @@ static _LIBCONFINI_SIZE_ uncomment (char *commstr, _LIBCONFINI_SIZE_ len, const 
 
 		for (abacus = 3, lshift = 0, idx = 0; idx < len; idx++) {
 
-			abacus		=	commstr[idx] == _LIBCONFINI_BACKSLASH_ ?
-								((abacus & 35) | 32) ^ 2
-							: commstr[idx] == _LIBCONFINI_LF_ || commstr[idx] == _LIBCONFINI_CR_ ?
-								(abacus & 16) | ((abacus << 1) & 4)
-							: !(abacus & 32) && is_comm_char(commstr[idx], format) ?
-								(abacus & 40) | 8
-							: !(abacus & 40) && is_some_space(commstr[idx], _LIBCONFINI_NO_EOL_)?
-								(abacus & 57) | 16
-							:
-								(abacus & 33) | 32;
+			abacus	=	commstr[idx] == _LIBCONFINI_BACKSLASH_ ?
+							((abacus & 35) | 32) ^ 2
+						: commstr[idx] == _LIBCONFINI_LF_ || commstr[idx] == _LIBCONFINI_CR_ ?
+							(abacus & 16) | ((abacus << 1) & 4)
+						: !(abacus & 32) && is_comm_char(commstr[idx], format) ?
+							(abacus & 40) | 8
+						: !(abacus & 40) && is_some_space(commstr[idx], _LIBCONFINI_NO_EOL_)?
+							(abacus & 57) | 16
+						:
+							(abacus & 33) | 32;
 
 			if (abacus & 28) {
 
@@ -738,7 +742,12 @@ static _LIBCONFINI_SIZE_ uncomment (char *commstr, _LIBCONFINI_SIZE_ len, const 
 	@return			The node type (see header)
 
 **/
-static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONFINI_SIZE_ len, const _LIBCONFINI_BOOL_ wanna_be_active, const IniFormat format) {
+static _LIBCONFINI_BYTE_ get_type_as_active (
+	const char * const nodestr,
+	const _LIBCONFINI_SIZE_ len,
+	const _LIBCONFINI_BOOL_ wanna_be_active,
+	const IniFormat format
+) {
 
 	if (!len || *nodestr == format.delimiter_symbol || is_comm_char(*nodestr, format)) {
 
@@ -756,7 +765,7 @@ static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONF
 			/*
 
 				Search of the CLOSE_SECTION character and possible spaces in
-				names -- i.e., ECMAScript /[^\.\s]\s+[^\.\s]/g.test(nodestr)].
+				names -- i.e., ECMAScript /[^\.\s]\s+[^\.\s]/g.test(nodestr).
 				The algorithm is made more complex by the fact that LF and CR
 				characters can still be escaped at this stage ("\\\n", "\\\r").
 
@@ -764,38 +773,38 @@ static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONF
 
 			/*
 
-			Mask "abacus" (9 bits):
+			Mask "abacus" (9 bits used):
 
-				FLAG_1		we are in an odd sequence of backslashes
-				FLAG_2		more than one backslash is here
-				FLAG_4		unescaped single quotes are odd until now
-				FLAG_8		unescaped double quotes are odd until now
-				FLAG_16		we are not around a dot
-				FLAG_32		this is a space
-				FLAG_64		this is a new line
-				FLAG_128	section name end character found
-				FLAG_256	name contains spaces
+				FLAG_1		We are in an odd sequence of backslashes
+				FLAG_2		More than one backslash is here
+				FLAG_4		Unescaped single quotes are odd until now
+				FLAG_8		Unescaped double quotes are odd until now
+				FLAG_16		We are not around a dot
+				FLAG_32		This is a space
+				FLAG_64		This is a new line
+				FLAG_128	Section name end character found
+				FLAG_256	Name contains spaces
 
 			*/
 
 			for (abacus = 0, idx = 1; idx < len; idx++) {
 
-				abacus		=	nodestr[idx] == _LIBCONFINI_BACKSLASH_ ?
-									(abacus ^ 1) | ((abacus & 1) && !(abacus & 2) ? 2 : 0)
-								: !(abacus & 15) && nodestr[idx] == _LIBCONFINI_SUBSECTION_ ?
-									abacus & 492
-								: !(abacus & 13) && is_some_space(nodestr[idx], _LIBCONFINI_NO_EOL_) ?
-									(abacus & 510) | (abacus & 2 ? 48 : 32)
-								: !(abacus & 12) && (nodestr[idx] == _LIBCONFINI_LF_ || nodestr[idx] == _LIBCONFINI_CR_) ?
-									(abacus & 510) | (abacus & 2 ? 80 : 64)
-								: !(abacus & 5) && !format.no_double_quotes && nodestr[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
-									((abacus ^ 8) & 413) | ((abacus & 16) && (abacus & 96) ? 272 : 16)
-								: !(abacus & 9) && !format.no_single_quotes && nodestr[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
-									((abacus ^ 4) & 413) | ((abacus & 16) && (abacus & 96) ? 272 : 16)
-								: !(abacus & 12) && nodestr[idx] == _LIBCONFINI_CLOSE_SECTION_ ?
-									(abacus & 492) | 128
-								:
-									(abacus & 412) | ((abacus & 16) && (abacus & 96) ? 272 : 16);
+				abacus	=	nodestr[idx] == _LIBCONFINI_BACKSLASH_ ?
+								(abacus ^ 1) | (((abacus << 1) & 2) & (~abacus & 2))
+							: !(abacus & 15) && nodestr[idx] == _LIBCONFINI_SUBSECTION_ ?
+								abacus & 492
+							: !(abacus & 13) && is_some_space(nodestr[idx], _LIBCONFINI_NO_EOL_) ?
+								(abacus & 510) | (abacus & 2 ? 48 : 32)
+							: !(abacus & 12) && (nodestr[idx] == _LIBCONFINI_LF_ || nodestr[idx] == _LIBCONFINI_CR_) ?
+								(abacus & 510) | (abacus & 2 ? 80 : 64)
+							: !(abacus & 5) && !format.no_double_quotes && nodestr[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+								((abacus ^ 8) & 413) | ((abacus & 16) && (abacus & 96) ? 272 : 16)
+							: !(abacus & 9) && !format.no_single_quotes && nodestr[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
+								((abacus ^ 4) & 413) | ((abacus & 16) && (abacus & 96) ? 272 : 16)
+							: !(abacus & 12) && nodestr[idx] == _LIBCONFINI_CLOSE_SECTION_ ?
+								(abacus & 492) | 128
+							:
+								(abacus & 412) | ((abacus & 16) && (abacus & 96) ? 272 : 16);
 
 				if (abacus & 256) {
 
@@ -815,11 +824,11 @@ static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONF
 
 			/*
 
-			Mask "abacus" (3 bits):
+			Mask "abacus" (3 bits used):
 
-				FLAG_1		we are in an odd sequence of backslashes
-				FLAG_2		unescaped single quotes are odd until now
-				FLAG_4		unescaped double quotes are odd until now
+				FLAG_1		We are in an odd sequence of backslashes
+				FLAG_2		Unescaped single quotes are odd until now
+				FLAG_4		Unescaped double quotes are odd until now
 
 			*/
 
@@ -831,10 +840,14 @@ static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONF
 
 				}
 
-				abacus = !(abacus & 3) && !format.no_double_quotes && nodestr[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
-						: !(abacus & 5) && !format.no_single_quotes && nodestr[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
-						: nodestr[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
-						: abacus & 6;
+				abacus	=	!(abacus & 3) && !format.no_double_quotes && nodestr[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+								abacus ^ 4
+							: !(abacus & 5) && !format.no_single_quotes && nodestr[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
+								abacus ^ 2
+							: nodestr[idx] == _LIBCONFINI_BACKSLASH_ ?
+								abacus ^ 1
+							:
+								abacus & 6;
 
 			}
 
@@ -883,7 +896,7 @@ static _LIBCONFINI_BYTE_ get_type_as_active (const char *nodestr, const _LIBCONF
 	@return			Number of sub-segments found, included itself
 
 **/
-static _LIBCONFINI_SIZE_ further_cuts (char *segment, const IniFormat format) {
+static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat format) {
 
 	if (!*segment) { return 0; }
 
@@ -893,15 +906,15 @@ static _LIBCONFINI_SIZE_ further_cuts (char *segment, const IniFormat format) {
 
 	/*
 
-	Mask "abacus" (7 bits):
+	Mask "abacus" (7 bits used):
 
-		FLAG_1	we are in an odd sequence of backslashes
-		FLAG_2	unescaped single quotes are even until now
-		FLAG_4	unescaped double quotes are even until now
-		FLAG_8	this does not immediately follow [\n\r]\s*
-		FLAG_16	the previous character was a space
-		FLAG_32	this can be a disabled entry
-		FLAG_64	this is nothing but a comment that can be multiline
+		FLAG_1		We are in an odd sequence of backslashes
+		FLAG_2		Unescaped single quotes are even until now
+		FLAG_4		Unescaped double quotes are even until now
+		FLAG_8		This does not immediately follow [\n\r]\s*
+		FLAG_16		The previous character was a space
+		FLAG_32		This can be a disabled entry
+		FLAG_64		This is nothing but a comment that can be multiline
 
 	*/
 
@@ -1002,10 +1015,15 @@ static _LIBCONFINI_SIZE_ further_cuts (char *segment, const IniFormat format) {
 
 				} else {
 
-					abacus = !(abacus & 3) && !format.no_double_quotes && segment[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
-							: !(abacus & 5) && !format.no_single_quotes && segment[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
-							: segment[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
-							: abacus & 126;
+					abacus	=	!(abacus & 3) && !format.no_double_quotes && segment[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+									abacus ^ 4
+								: !(abacus & 5) && !format.no_single_quotes && segment[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
+									abacus ^ 2
+								: segment[idx] == _LIBCONFINI_BACKSLASH_ ?
+									abacus ^ 1
+								:
+									abacus & 126;
+
 					abacus &= 111;
 					abacus |= 8;
 
@@ -1084,10 +1102,14 @@ static _LIBCONFINI_SIZE_ further_cuts (char *segment, const IniFormat format) {
 
 			} else {
 
-				abacus = !(abacus & 3) && !format.no_double_quotes && segment[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
-						: !(abacus & 5) && !format.no_single_quotes && segment[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
-						: segment[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
-						: abacus & 6;
+				abacus	=	!(abacus & 3) && !format.no_double_quotes && segment[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+								abacus ^ 4
+							: !(abacus & 5) && !format.no_single_quotes && segment[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
+								abacus ^ 2
+							: segment[idx] == _LIBCONFINI_BACKSLASH_ ?
+								abacus ^ 1
+							:
+								abacus & 6;
 
 			}
 
@@ -1126,20 +1148,20 @@ static _LIBCONFINI_SIZE_ further_cuts (char *segment, const IniFormat format) {
 
 **/
 unsigned int load_ini_file (
-	const char *path,
+	const char * const path,
 	const IniFormat format,
-	int (*f_init)(
+	int (* const f_init)(
 		IniStatistics *statistics,
 		void *init_other
 	),
-	int (*f_foreach)(
+	int (* const f_foreach)(
 		IniDispatch *dispatch,
 		void *foreach_other
 	),
 	void *user_data
 ) {
 
-	FILE *config_file = fopen(path, "r");
+	FILE * const config_file = fopen(path, "r");
 
 	if (config_file == NULL) {
 
@@ -1148,13 +1170,13 @@ unsigned int load_ini_file (
 	}
 
 	unsigned int return_value = 0;
-	char *cache;
 	_LIBCONFINI_SIZE_ len;
 
 	fseek(config_file, 0, SEEK_END);
 	len = ftell(config_file);
 	rewind(config_file);
-	cache = (char *) malloc((len + 1) * sizeof(char));
+
+	char * const cache = (char *) malloc((len + 1) * sizeof(char));
 
 	if (cache == NULL) {
 
@@ -1288,20 +1310,20 @@ unsigned int load_ini_file (
 
 			/*
 
-			Mask "abacus" (3 bits):
+			Mask "abacus" (3 bits used):
 
-					FLAG_1			continue the loop
-					FLAG_2			we are not in \n[ \t\v\f]*
-					FLAG_4			this is a space and FLAG_2 == TRUE
+				FLAG_1		Continue the loop
+				FLAG_2		We are not in \n[ \t\v\f]*
+				FLAG_4		This is a space and FLAG_2 == TRUE
 
 			*/
 
 			for (abacus = 1, tmp_int = 1; abacus && tmp_int < this_d.d_length; tmp_int++) {
 
-				abacus		=	this_d.data[tmp_int] == _LIBCONFINI_LF_ || this_d.data[tmp_int] == _LIBCONFINI_CR_ ? 1
-								: (abacus & 4) && is_comm_char(this_d.data[tmp_int], format) ? 0
-								: (abacus & 2) && is_some_space(this_d.data[tmp_int], _LIBCONFINI_NO_EOL_) ? 7
-								: 3;
+				abacus	=	this_d.data[tmp_int] == _LIBCONFINI_LF_ || this_d.data[tmp_int] == _LIBCONFINI_CR_ ? 1
+							: (abacus & 4) && is_comm_char(this_d.data[tmp_int], format) ? 0
+							: (abacus & 2) && is_some_space(this_d.data[tmp_int], _LIBCONFINI_NO_EOL_) ? 7
+							: 3;
 
 			}
 
@@ -1390,11 +1412,11 @@ unsigned int load_ini_file (
 
 				/*
 
-					Mask "abacus" (3 bits):
+					Mask "abacus" (3 bits used):
 
-						FLAG_1			we are in an odd sequence of backslashes
-						FLAG_2			unescaped single quotes are odd until now
-						FLAG_4			unescaped double quotes are odd until now
+						FLAG_1			We are in an odd sequence of backslashes
+						FLAG_2			Unescaped single quotes are odd until now
+						FLAG_4			Unescaped double quotes are odd until now
 
 				*/
 
@@ -1406,10 +1428,10 @@ unsigned int load_ini_file (
 						&&
 						((abacus & 6) || this_d.data[tmp_int] != _LIBCONFINI_CLOSE_SECTION_);
 
-					abacus = !(abacus & 3) && !format.no_double_quotes && this_d.data[tmp_int] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
-							: !(abacus & 5) && !format.no_single_quotes && this_d.data[tmp_int] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
-							: this_d.data[tmp_int] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
-							: abacus & 6,
+					abacus	=	!(abacus & 3) && !format.no_double_quotes && this_d.data[tmp_int] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
+								: !(abacus & 5) && !format.no_single_quotes && this_d.data[tmp_int] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
+								: this_d.data[tmp_int] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
+								: abacus & 6,
 
 					tmp_int++
 
@@ -1520,7 +1542,7 @@ unsigned int load_ini_file (
 	@return			Nothing
 
 **/
-void ini_set_implicit_value (char *implicit_value, unsigned long int implicit_v_length) {
+void ini_set_implicit_value (char * const implicit_value, const unsigned long int implicit_v_length) {
 
 	INI_IMPLICIT_VALUE = implicit_value;
 	INI_IMPLICIT_V_LENGTH = implicit_v_length;
@@ -1530,14 +1552,14 @@ void ini_set_implicit_value (char *implicit_value, unsigned long int implicit_v_
 
 /**
 
-	@brief			Converts an IniFormat into an ::IniFormatMask
+	@brief			Converts an IniFormat into an ::IniFormatId
 	@param			source		The IniFormat to be read
 	@return			The mask representing the format
 
 **/
-IniFormatMask ini_format_calculate_mask (const IniFormat source) {
+IniFormatId ini_format_get_id (const IniFormat source) {
 
-	IniFormatMask mask = 0;
+	IniFormatId mask = 0;
 
 	unsigned int bitpos = 0;
 
@@ -1556,17 +1578,17 @@ IniFormatMask ini_format_calculate_mask (const IniFormat source) {
 
 /**
 
-	@brief			Sets all the values of an IniFormat by reading them from an ::IniFormatMask
+	@brief			Sets all the values of an IniFormat by reading them from an ::IniFormatId
 	@param			dest_format		The IniFormat to be set
-	@param			mask			The ::IniFormatMask to be read
+	@param			mask			The ::IniFormatId to be read
 	@return			Nothing
 
 **/
-void ini_format_set_from_mask (IniFormat *dest_format, IniFormatMask mask) {
+void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id) {
 
 	#define _LIBCONFINI_ASSIGN_TO_INI_TYPE_(SIZE, PROPERTY, IGNORE_ME) \
-		dest_format->PROPERTY = mask;\
-		mask >>= SIZE;
+		dest_format->PROPERTY = format_id;\
+		format_id >>= SIZE;
 
 	_LIBCONFINI_EXPAND_SETTINGS_MACRO_AS_(_LIBCONFINI_ASSIGN_TO_INI_TYPE_)
 
@@ -1577,36 +1599,36 @@ void ini_format_set_from_mask (IniFormat *dest_format, IniFormatMask mask) {
 
 /**
 
-	@brief			Unescapes a string and removes all its unescaped quotes (if single/double quotes are active)
-	@param			ini_string	The string to be unescaped
-	@param			format		The format of the INI file
+	@brief			Unescapes \", \' and \" and removes all unescaped quotes (if single/double quotes are active)
+	@param			ini_string		The string to be unescaped
+	@param			format			The format of the INI file
 	@return			The new length of the string
 
 **/
-unsigned long int ini_unquote (char *ini_string, const IniFormat format) {
+unsigned long int ini_unquote (char * const ini_string, const IniFormat format) {
 
 	_LIBCONFINI_BYTE_ qmask;
 	_LIBCONFINI_SIZE_ lshift, nbacksl, idx;
 
 	/*
 
-	Mask "qmask" (4 bits):
+	Mask "qmask" (4 bits used):
 
-		FLAG_1		unescaped single quotes are even until now
-		FLAG_2		unescaped double quotes are even until now
-		FLAG_4		this is an unescaped single quote and single quotes are metacharacters
-		FLAG_8		this is an unescaped double quote and double quotes are metacharacters
+		FLAG_1		Unescaped single quotes are even until now
+		FLAG_2		Unescaped double quotes are even until now
+		FLAG_4		This is an unescaped single quote and single quotes are metacharacters
+		FLAG_8		This is an unescaped double quote and double quotes are metacharacters
 
 	*/
 
 	for (qmask = 3, lshift = 0, nbacksl = 0, idx = 0; ini_string[idx]; idx++) {
 
-		qmask = (qmask & 3)
-				| (
-					!format.no_double_quotes && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? 8
-					: !format.no_single_quotes && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? 4
-					: 0
-				);
+		qmask	=	(qmask & 3)
+					| (
+						!format.no_double_quotes && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? 8
+						: !format.no_single_quotes && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? 4
+						: 0
+					);
 
 		if (!(nbacksl & 1) && !((~qmask & 9) && (~qmask & 6))) {
 
@@ -1657,7 +1679,7 @@ unsigned long int ini_unquote (char *ini_string, const IniFormat format) {
 	@return			The length of the INI array
 
 **/
-unsigned long int ini_array_get_length (const char *ini_string, const char delimiter, const IniFormat format) {
+unsigned long int ini_array_get_length (const char * const ini_string, const char delimiter, const IniFormat format) {
 
 	unsigned long int arr_length = 0;
 	_LIBCONFINI_SIZE_ idx;
@@ -1665,34 +1687,34 @@ unsigned long int ini_array_get_length (const char *ini_string, const char delim
 
 	/*
 
-	Mask "abacus" (6 bits):
+	Mask "abacus" (6 bits used):
 
-		FLAG_1		we are in an odd sequence of backslashes
-		FLAG_2		unescaped single quotes are odd until now
-		FLAG_4		unescaped double quotes are odd until now
-		FLAG_8		this is not a delimiter
-		FLAG_16		delimiter is not any space
-		FLAG_32		stop the loop
+		FLAG_1		We are in an odd sequence of backslashes
+		FLAG_2		Unescaped single quotes are odd until now
+		FLAG_4		Unescaped double quotes are odd until now
+		FLAG_8		This is not a delimiter
+		FLAG_16		Delimiter is not any space
+		FLAG_32		Stop the loop
 
 	*/
 
 	for (abacus = delimiter ? 16 : 0, idx = 0; !(abacus & 32); idx++) {
 
-		abacus		=	(delimiter ? ini_string[idx] == delimiter : is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_)) ?
-							abacus & 54
-						: ini_string[idx] == _LIBCONFINI_BACKSLASH_ ?
-							(abacus | 8) ^ 1
-						: ini_string[idx] ?
-							(
-								((abacus & 62) | 8)
-								^ (
-									!(abacus & 3) && !format.no_double_quotes && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? 4
-									: !(abacus & 5) && !format.no_single_quotes && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? 2
-									: 0
-								)
+		abacus	=	(delimiter ? ini_string[idx] == delimiter : is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_)) ?
+						abacus & 54
+					: ini_string[idx] == _LIBCONFINI_BACKSLASH_ ?
+						(abacus | 8) ^ 1
+					: ini_string[idx] ?
+						(
+							((abacus & 62) | 8)
+							^ (
+								!(abacus & 3) && !format.no_double_quotes && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? 4
+								: !(abacus & 5) && !format.no_single_quotes && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? 2
+								: 0
 							)
-						:
-							32;
+						)
+					:
+						32;
 
 		if (!(abacus & 14)) {
 
@@ -1725,10 +1747,10 @@ unsigned long int ini_array_get_length (const char *ini_string, const char delim
 
 **/
 unsigned int ini_array_foreach (
-	const char *ini_string,
+	const char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
-	int (*f_foreach)(
+	int (* const f_foreach)(
 		const char *member,
 		unsigned int offset,
 		unsigned int length,
@@ -1740,25 +1762,25 @@ unsigned int ini_array_foreach (
 	_LIBCONFINI_BYTE_ abacus;
 	_LIBCONFINI_SIZE_ idx, offs;
 
-	/* Mask "abacus" (6 bits): as above */
+	/* Mask "abacus" (6 bits used): as above */
 
 	for (offs = 0, abacus = delimiter ? 16 : 0, idx = 0; !(abacus & 32); idx++) {
 
-		abacus		=	(delimiter ? ini_string[idx] == delimiter : is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_)) ?
-							abacus & 54
-						: ini_string[idx] == _LIBCONFINI_BACKSLASH_ ?
-							(abacus | 8) ^ 1
-						: ini_string[idx] ?
-							(
-								((abacus & 62) | 8)
-								^ (
-									!(abacus & 3) && !format.no_double_quotes && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? 4
-									: !(abacus & 5) && !format.no_single_quotes && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? 2
-									: 0
-								)
+		abacus	=	(delimiter ? ini_string[idx] == delimiter : is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_)) ?
+						abacus & 54
+					: ini_string[idx] == _LIBCONFINI_BACKSLASH_ ?
+						(abacus | 8) ^ 1
+					: ini_string[idx] ?
+						(
+							((abacus & 62) | 8)
+							^ (
+								!(abacus & 3) && !format.no_double_quotes && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? 4
+								: !(abacus & 5) && !format.no_single_quotes && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? 2
+								: 0
 							)
-						:
-							32;
+						)
+					:
+						32;
 
 		if (!(abacus & 14)) {
 
@@ -1799,10 +1821,10 @@ unsigned int ini_array_foreach (
 
 **/
 unsigned int ini_split_array (
-	char *ini_string,
+	char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
-	int (*f_foreach)(
+	int (* const f_foreach)(
 		char *element,
 		unsigned int length,
 		void *foreach_other
@@ -1813,25 +1835,25 @@ unsigned int ini_split_array (
 	_LIBCONFINI_BYTE_ abacus;
 	_LIBCONFINI_SIZE_ offs, idx;
 
-	/* Mask "abacus" (6 bits): as above */
+	/* Mask "abacus" (6 bits used): as above */
 
 	for (offs = 0, abacus = delimiter ? 16 : 0, idx = 0; !(abacus & 32); idx++) {
 
-		abacus		=	(delimiter ? ini_string[idx] == delimiter : is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_)) ?
-							abacus & 54
-						: ini_string[idx] == _LIBCONFINI_BACKSLASH_ ?
-							(abacus | 8) ^ 1
-						: ini_string[idx] ?
-							(
-								((abacus & 62) | 8)
-								^ (
-									!(abacus & 3) && !format.no_double_quotes && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? 4
-									: !(abacus & 5) && !format.no_single_quotes && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? 2
-									: 0
-								)
+		abacus	=	(delimiter ? ini_string[idx] == delimiter : is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_)) ?
+						abacus & 54
+					: ini_string[idx] == _LIBCONFINI_BACKSLASH_ ?
+						(abacus | 8) ^ 1
+					: ini_string[idx] ?
+						(
+							((abacus & 62) | 8)
+							^ (
+								!(abacus & 3) && !format.no_double_quotes && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? 4
+								: !(abacus & 5) && !format.no_single_quotes && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? 2
+								: 0
 							)
-						:
-							32;
+						)
+					:
+						32;
 
 		if (!(abacus & 14)) {
 
@@ -1870,9 +1892,9 @@ unsigned int ini_split_array (
 	@return			The matching boolean value (0 or 1) or @p return_value if no boolean has been found
 
 **/
-signed int ini_get_bool (const char *ini_string, const signed int return_value) {
+signed int ini_get_bool (const char * const ini_string, const signed int return_value) {
 
-	unsigned short pair_idx, bool_idx, chr_idx;
+	unsigned short int pair_idx, bool_idx, chr_idx;
 
 	for (pair_idx = 0; pair_idx < sizeof(_LIBCONFINI_BOOLEANS_) / 2 / sizeof(char *); pair_idx++) {
 
@@ -1919,10 +1941,10 @@ signed int ini_get_bool (const char *ini_string, const signed int return_value) 
 	@return			The matching boolean value (0 or 1) or @p return_value if no boolean has been found
 
 **/
-signed int ini_get_lazy_bool (const char *ini_string, const signed int return_value) {
+signed int ini_get_lazy_bool (const char * const ini_string, const signed int return_value) {
 
-	unsigned short pair_idx, bool_idx;
-	unsigned char ch = *ini_string > 0x40 && *ini_string < 0x5b ? *ini_string | 0x60 : *ini_string;
+	unsigned short int pair_idx, bool_idx;
+	const char ch = *ini_string > 0x40 && *ini_string < 0x5b ? *ini_string | 0x60 : *ini_string;
 
 	for (pair_idx = 0; pair_idx < sizeof(_LIBCONFINI_BOOLEANS_) / 2 / sizeof(char *); pair_idx++) {
 

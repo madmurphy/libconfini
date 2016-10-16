@@ -63,6 +63,8 @@ int my_ini_listener (IniDispatch *dispatch, void *user_data) {
 
 }
 
+#define NO 0
+#define YES 1
 
 int main () {
 
@@ -79,8 +81,8 @@ int main () {
 	my_format = INI_DEFAULT_FORMAT;
 
 	/* Define the value to be shown in case of implicit keys, and its length */
-	my_format.implicit_is_special = 1;
-	ini_set_implicit_value("YES", 0);
+	my_format.implicit_is_special = YES;
+	ini_set_implicit_value("TRUE", 0);
 
 	/* Load INI file */
 	if (load_ini_file("example.conf", my_format, print_ini_stats, my_ini_listener, &my_other)) {

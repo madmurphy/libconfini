@@ -75,7 +75,7 @@ typedef struct IniDispatch {
 } IniDispatch;
 
 /** @brief	24-bit bitmask representing the format of an INI file **/
-typedef unsigned long long int IniFormatMask;
+typedef unsigned long int IniFormatId;
 
 
 
@@ -83,34 +83,34 @@ typedef unsigned long long int IniFormatMask;
 
 
 extern unsigned int load_ini_file (
-	const char *path,
+	const char * const path,
 	const IniFormat format,
-	int (*f_init)(
+	int (* const f_init)(
 		IniStatistics *statistics,
 		void *init_other
 	),
-	int (*f_foreach)(
+	int (* const f_foreach)(
 		IniDispatch *dispatch,
 		void *foreach_other
 	),
 	void *user_data
 );
 
-extern void ini_set_implicit_value (char *implicit_value, unsigned long int implicit_v_length);
+extern void ini_set_implicit_value (char * const implicit_value, const unsigned long int implicit_v_length);
 
-extern IniFormatMask ini_format_calculate_mask (const IniFormat format);
+extern IniFormatId ini_format_get_id (const IniFormat format);
 
-extern void ini_format_set_from_mask (IniFormat *dest_format, IniFormatMask mask);
+extern void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id);
 
-extern unsigned long int ini_unquote (char *ini_string, const IniFormat format);
+extern unsigned long int ini_unquote (char * const ini_string, const IniFormat format);
 
-extern unsigned long int ini_array_get_length (const char *ini_string, const char delimiter, const IniFormat format);
+extern unsigned long int ini_array_get_length (const char * const ini_string, const char delimiter, const IniFormat format);
 
 extern unsigned int ini_array_foreach (
-	const char *ini_string,
+	const char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
-	int (*f_foreach)(
+	int (* const f_foreach)(
 		const char *member,
 		unsigned int offset,
 		unsigned int length,
@@ -120,10 +120,10 @@ extern unsigned int ini_array_foreach (
 );
 
 extern unsigned int ini_split_array (
-	char *ini_string,
+	char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
-	int (*f_foreach)(
+	int (* const f_foreach)(
 		char *element,
 		unsigned int length,
 		void *foreach_other
@@ -131,9 +131,9 @@ extern unsigned int ini_split_array (
 	void *user_data
 );
 
-extern signed int ini_get_bool (const char *ini_string, const signed int return_value);
+extern signed int ini_get_bool (const char * const ini_string, const signed int return_value);
 
-extern signed int ini_get_lazy_bool (const char *ini_string, const signed int return_value);
+extern signed int ini_get_lazy_bool (const char * const ini_string, const signed int return_value);
 
 
 
