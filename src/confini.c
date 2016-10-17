@@ -147,7 +147,7 @@ static const char * const _LIBCONFINI_BOOLEANS_[][2] = {
 
 /* ABSTRACT UTILITIES */
 
-static const _LIBCONFINI_BYTE_ _LIBCONFINI_SPACES_[] = { _LIBCONFINI_SIMPLE_SPACE_, '\t', '\v', '\f', _LIBCONFINI_LF_, _LIBCONFINI_CR_ };
+static const char _LIBCONFINI_SPACES_[] = { _LIBCONFINI_SIMPLE_SPACE_, '\t', '\v', '\f', _LIBCONFINI_LF_, _LIBCONFINI_CR_ };
 
 /* Possible lengths of array #_LIBCONFINI_SPACES_ */
 #define _LIBCONFINI_JUST_S_T_ 2
@@ -868,7 +868,7 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 
 	idx = get_delimiter_pos(nodestr, len, format);
 
-	if (wanna_be_active && (!format.disabled_can_be_implicit && idx == len)) {
+	if (wanna_be_active && !format.disabled_can_be_implicit && idx == len) {
 
 		return INI_UNKNOWN;
 
@@ -1566,9 +1566,8 @@ void ini_set_implicit_value (char * const implicit_value, const unsigned long in
 **/
 IniFormatId ini_format_get_id (const IniFormat source) {
 
+	unsigned short int bitpos = 0;
 	IniFormatId mask = 0;
-
-	unsigned int bitpos = 0;
 
 	#define _LIBCONFINI_ASSIGN_TO_FORMAT_ID_(SIZE, PROPERTY, IGNORE_ME) \
 		mask |= source.PROPERTY << bitpos;\
@@ -1641,8 +1640,8 @@ unsigned long int ini_unquote (char * const ini_string, const IniFormat format) 
 
 		FLAG_1		Unescaped single quotes are even until now
 		FLAG_2		Unescaped double quotes are even until now
-		FLAG_4		This is an unescaped single quote and single quotes are metacharacters
-		FLAG_8		This is an unescaped double quote and double quotes are metacharacters
+		FLAG_4		This is an unescaped single quote and format supports single quotes
+		FLAG_8		This is an unescaped double quote and format supports double quotes
 
 	*/
 
