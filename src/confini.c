@@ -19,6 +19,13 @@
 
 	@struct		IniFormat
 
+	Structure of the bitfield:
+
+	- Bits 1-18: INI syntax
+	- Bits 19-20: INI semantics
+	- Bits 21-22: user's syntax (disabled entries)
+	- Bits 23-24: unused
+
 	@var		IniFormat::delimiter_symbol
 					The symbol to be used as delimiter; if set to '\0', any space is delimiter (/[\s]/)
 	@var		IniFormat::semicolon
@@ -33,9 +40,9 @@
 					If set to 1, makes the double-quote character (") a normal character
 	@var		IniFormat::case_sensitive
 					If set to 1, key- and section- names will not be rendered in lower case
-	@var		IniFormat::no_collapsed_values
+	@var		IniFormat::do_not_collapse_values
 					If set to 1, sequences of more than one space in values (/\s{2,}/) will not be collapsed
-	@var		IniFormat::implicit_is_special
+	@var		IniFormat::implicit_is_not_empty
 					If set to 1, the dispatch of implicit keys (see @ref libconfini) will always
 					assign to IniDispatch::value and to IniDispatch::v_length the global variables
 					::INI_IMPLICIT_VALUE and ::INI_IMPLICIT_V_LENGTH respectively; if set to 0,
@@ -914,7 +921,7 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 		FLAG_8		This does not immediately follow [\n\r]\s*
 		FLAG_16		The previous character was a space
 		FLAG_32		This can be a disabled entry
-		FLAG_64		This is nothing but a comment that can be multiline
+		FLAG_64		This is nothing but a (multiline) comment
 
 	*/
 
@@ -1198,9 +1205,9 @@ unsigned int load_ini_file (
 	_LIBCONFINI_SIZE_ idx, node_at, tmp_int;
 
 	IniStatistics this_doc = {
-			.format = format,
-			.bytes = len,
-			.members = 0
+		.format = format,
+		.bytes = len,
+		.members = 0
 	};
 
 	/* Examine and isolate each segment */
@@ -1475,7 +1482,7 @@ unsigned int load_ini_file (
 
 					this_d.data[tmp_int] = '\0';
 
-					if (format.no_collapsed_values) {
+					if (format.do_not_collapse_values) {
 
 						this_d.v_length = this_d.d_length - ltrim_h(this_d.data, tmp_int + 1, _LIBCONFINI_NO_EOL_);
 						this_d.value = this_d.data + this_d.d_length - this_d.v_length;
@@ -1489,7 +1496,7 @@ unsigned int load_ini_file (
 
 					this_d.d_length = collapse_spaces(this_d.data, format);
 
-				} else if (format.implicit_is_special) {
+				} else if (format.implicit_is_not_empty) {
 
 					this_d.value = INI_IMPLICIT_VALUE;
 					this_d.v_length = INI_IMPLICIT_V_LENGTH;
@@ -1563,13 +1570,13 @@ IniFormatId ini_format_get_id (const IniFormat source) {
 
 	unsigned int bitpos = 0;
 
-	#define _LIBCONFINI_ASSIGN_TO_MASK_(SIZE, PROPERTY, IGNORE_ME) \
+	#define _LIBCONFINI_ASSIGN_TO_FORMAT_ID_(SIZE, PROPERTY, IGNORE_ME) \
 		mask |= source.PROPERTY << bitpos;\
 		bitpos += SIZE;
 
-	_LIBCONFINI_EXPAND_SETTINGS_MACRO_AS_(_LIBCONFINI_ASSIGN_TO_MASK_)
+	_LIBCONFINI_EXPAND_FORMAT_MACRO_AS_(_LIBCONFINI_ASSIGN_TO_FORMAT_ID_)
 
-	#undef _LIBCONFINI_ASSIGN_TO_MASK_
+	#undef _LIBCONFINI_ASSIGN_TO_FORMAT_ID_
 
 	return mask;
 
@@ -1586,13 +1593,31 @@ IniFormatId ini_format_get_id (const IniFormat source) {
 **/
 void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id) {
 
-	#define _LIBCONFINI_ASSIGN_TO_INI_TYPE_(SIZE, PROPERTY, IGNORE_ME) \
-		dest_format->PROPERTY = format_id;\
+	#define _LIBCONFINI_MAX_1_BITS_ 1
+	#define _LIBCONFINI_MAX_2_BITS_ 3
+	#define _LIBCONFINI_MAX_3_BITS_ 7
+	#define _LIBCONFINI_MAX_4_BITS_ 15
+	#define _LIBCONFINI_MAX_5_BITS_ 31
+	#define _LIBCONFINI_MAX_6_BITS_ 63
+	#define _LIBCONFINI_MAX_7_BITS_ 127
+	#define _LIBCONFINI_MAX_8_BITS_ 255
+	#define _LIBCONFINI_MAX_BITS_(SIZE_IN_BITS) _LIBCONFINI_MAX_##SIZE_IN_BITS##_BITS_
+	#define _LIBCONFINI_ASSIGN_TO_FORMAT_(SIZE, PROPERTY, IGNORE_ME) \
+		dest_format->PROPERTY = format_id & _LIBCONFINI_MAX_BITS_(SIZE);\
 		format_id >>= SIZE;
 
-	_LIBCONFINI_EXPAND_SETTINGS_MACRO_AS_(_LIBCONFINI_ASSIGN_TO_INI_TYPE_)
+	_LIBCONFINI_EXPAND_FORMAT_MACRO_AS_(_LIBCONFINI_ASSIGN_TO_FORMAT_)
 
-	#undef _LIBCONFINI_ASSIGN_TO_INI_TYPE_
+	#undef _LIBCONFINI_ASSIGN_TO_FORMAT_
+	#undef _LIBCONFINI_MAX_BITS_
+	#undef _LIBCONFINI_MAX_8_BITS_
+	#undef _LIBCONFINI_MAX_7_BITS_
+	#undef _LIBCONFINI_MAX_6_BITS_
+	#undef _LIBCONFINI_MAX_5_BITS_
+	#undef _LIBCONFINI_MAX_4_BITS_
+	#undef _LIBCONFINI_MAX_3_BITS_
+	#undef _LIBCONFINI_MAX_2_BITS_
+	#undef _LIBCONFINI_MAX_1_BITS_
 
 }
 
@@ -1968,18 +1993,16 @@ signed int ini_get_lazy_bool (const char * const ini_string, const signed int re
 
 /* WRAPPERS -- In case you don't want to "#include <stdlib.h>" in your source */
 
-/*
-long double (*ini_getlfloat)(const char *ini_string) = &atolf;
-*/
+int (* const ini_get_int) (const char *ini_string) = &atoi;
+
+long int (* const ini_get_lint) (const char *ini_string) = &atol;
+
+long long int (* const ini_get_llint) (const char *ini_string) = &atoll;
+
+double (* const ini_get_float) (const char *ini_string) = &atof;
+
 /* Where is atolf?? */
-
-double (*ini_get_float) (const char *ini_string) = &atof;
-
-long long int (*ini_get_llint) (const char *ini_string) = &atoll;
-
-long int (*ini_get_lint) (const char *ini_string) = &atol;
-
-int (*ini_get_int) (const char *ini_string) = &atoi;
+/* long double (* const ini_getlfloat)(const char *ini_string) = &atolf; */
 
 
 

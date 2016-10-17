@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Sun Oct 16 2016" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Mon Oct 17 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -115,16 +115,16 @@ src/confini.h \- libconfini header
 
 .in +1c
 .ti -1c
-.RI "double(* \fBini_get_float\fP )(const char *ini_string)"
+.RI "int(*const \fBini_get_int\fP )(const char *ini_string)"
 .br
 .ti -1c
-.RI "long long int(* \fBini_get_llint\fP )(const char *ini_string)"
+.RI "long int(*const \fBini_get_lint\fP )(const char *ini_string)"
 .br
 .ti -1c
-.RI "long int(* \fBini_get_lint\fP )(const char *ini_string)"
+.RI "long long int(*const \fBini_get_llint\fP )(const char *ini_string)"
 .br
 .ti -1c
-.RI "int(* \fBini_get_int\fP )(const char *ini_string)"
+.RI "double(*const \fBini_get_float\fP )(const char *ini_string)"
 .br
 .ti -1c
 .RI "static const \fBIniFormat\fP \fBINI_DEFAULT_FORMAT\fP = { \fBINI_EQUALS\fP , \fBINI_PARSE_COMMENT\fP , \fBINI_PARSE_COMMENT\fP , \fBINI_EVERYTHING_MULTILINE\fP , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }"
@@ -477,13 +477,13 @@ Zero for success, otherwise an error code
 
 .PP
 A model format\&. 
-.SS "double(* ini_get_float) (const char *ini_string)"
+.SS "double(* const ini_get_float) (const char *ini_string)"
 
-.SS "int(* ini_get_int) (const char *ini_string)"
+.SS "int(* const ini_get_int) (const char *ini_string)"
 
-.SS "long int(* ini_get_lint) (const char *ini_string)"
+.SS "long int(* const ini_get_lint) (const char *ini_string)"
 
-.SS "long long int(* ini_get_llint) (const char *ini_string)"
+.SS "long long int(* const ini_get_llint) (const char *ini_string)"
 
 .SS "unsigned long int INI_IMPLICIT_V_LENGTH"
 

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['implicit_5fis_5fspecial',['implicit_is_special',['../structIniFormat.html#a250264e07360ba67671fab42743a9d45',1,'IniFormat']]],
+  ['implicit_5fis_5fnot_5fempty',['implicit_is_not_empty',['../structIniFormat.html#ae5722efd535f1d27c624a927eea622c3',1,'IniFormat']]],
   ['ini_5factive_5fand_5fdisabled_5fmultiline',['INI_ACTIVE_AND_DISABLED_MULTILINE',['../confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa426bba017f46fafc1c189dec3272c31a',1,'confini.h']]],
   ['ini_5factive_5fmultiline',['INI_ACTIVE_MULTILINE',['../confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa926e3f70e2e018bd9d285e1003f27b81',1,'confini.h']]],
   ['ini_5fany_5fspace',['INI_ANY_SPACE',['../confini_8h.html#ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd',1,'confini.h']]],
@@ -18,11 +18,11 @@ var searchData=
   ['ini_5fformat_5fget_5fid',['ini_format_get_id',['../confini_8c.html#a9a64f92daee918044788b1d221c68631',1,'ini_format_get_id(const IniFormat source):&#160;confini.c'],['../confini_8h.html#aa04a2dc8c1bed5d43d20a9d8dde67edf',1,'ini_format_get_id(const IniFormat format):&#160;confini.c']]],
   ['ini_5fformat_5fset_5fto_5fid',['ini_format_set_to_id',['../confini_8c.html#a70efd63125e671c52dc998341b4609db',1,'ini_format_set_to_id(IniFormat *dest_format, IniFormatId format_id):&#160;confini.c'],['../confini_8h.html#a70efd63125e671c52dc998341b4609db',1,'ini_format_set_to_id(IniFormat *dest_format, IniFormatId format_id):&#160;confini.c']]],
   ['ini_5fget_5fbool',['ini_get_bool',['../confini_8c.html#a2a8dcc3d8ff26554486691423cce4ea0',1,'ini_get_bool(const char *const ini_string, const signed int return_value):&#160;confini.c'],['../confini_8h.html#a2a8dcc3d8ff26554486691423cce4ea0',1,'ini_get_bool(const char *const ini_string, const signed int return_value):&#160;confini.c']]],
-  ['ini_5fget_5ffloat',['ini_get_float',['../confini_8c.html#a22c94856e9644c1d4da45f2f9b787bba',1,'ini_get_float():&#160;confini.c'],['../confini_8h.html#a22c94856e9644c1d4da45f2f9b787bba',1,'ini_get_float():&#160;confini.c']]],
-  ['ini_5fget_5fint',['ini_get_int',['../confini_8c.html#acad893321c61de241c3e93cab5b50766',1,'ini_get_int():&#160;confini.c'],['../confini_8h.html#acad893321c61de241c3e93cab5b50766',1,'ini_get_int():&#160;confini.c']]],
+  ['ini_5fget_5ffloat',['ini_get_float',['../confini_8c.html#a178704d02ede6101f757bbd37e5bd697',1,'ini_get_float():&#160;confini.c'],['../confini_8h.html#a178704d02ede6101f757bbd37e5bd697',1,'ini_get_float():&#160;confini.c']]],
+  ['ini_5fget_5fint',['ini_get_int',['../confini_8c.html#a5b6bebfc01f8b23f69a2a2e602e91521',1,'ini_get_int():&#160;confini.c'],['../confini_8h.html#a5b6bebfc01f8b23f69a2a2e602e91521',1,'ini_get_int():&#160;confini.c']]],
   ['ini_5fget_5flazy_5fbool',['ini_get_lazy_bool',['../confini_8c.html#ad95262d09842c25e8bb610bf95c42cd3',1,'ini_get_lazy_bool(const char *const ini_string, const signed int return_value):&#160;confini.c'],['../confini_8h.html#ad95262d09842c25e8bb610bf95c42cd3',1,'ini_get_lazy_bool(const char *const ini_string, const signed int return_value):&#160;confini.c']]],
-  ['ini_5fget_5flint',['ini_get_lint',['../confini_8c.html#a81662606e680e6e161c4a2453c68257e',1,'ini_get_lint():&#160;confini.c'],['../confini_8h.html#a81662606e680e6e161c4a2453c68257e',1,'ini_get_lint():&#160;confini.c']]],
-  ['ini_5fget_5fllint',['ini_get_llint',['../confini_8c.html#a36a44d5b253090fe0063af0bd409eab2',1,'ini_get_llint():&#160;confini.c'],['../confini_8h.html#a36a44d5b253090fe0063af0bd409eab2',1,'ini_get_llint():&#160;confini.c']]],
+  ['ini_5fget_5flint',['ini_get_lint',['../confini_8c.html#a05042d2551ab1c9402ab7223547c0777',1,'ini_get_lint():&#160;confini.c'],['../confini_8h.html#a05042d2551ab1c9402ab7223547c0777',1,'ini_get_lint():&#160;confini.c']]],
+  ['ini_5fget_5fllint',['ini_get_llint',['../confini_8c.html#aaf3640e3632b10bf8dd2e852a7d82630',1,'ini_get_llint():&#160;confini.c'],['../confini_8h.html#aaf3640e3632b10bf8dd2e852a7d82630',1,'ini_get_llint():&#160;confini.c']]],
   ['ini_5fimplicit_5fv_5flength',['INI_IMPLICIT_V_LENGTH',['../confini_8c.html#abaccc9da1abf7eed871674f0f56946b6',1,'INI_IMPLICIT_V_LENGTH():&#160;confini.c'],['../confini_8h.html#abaccc9da1abf7eed871674f0f56946b6',1,'INI_IMPLICIT_V_LENGTH():&#160;confini.c']]],
   ['ini_5fimplicit_5fvalue',['INI_IMPLICIT_VALUE',['../confini_8c.html#af8b0049b3a18c7704ad503ed6ad21927',1,'INI_IMPLICIT_VALUE():&#160;confini.c'],['../confini_8h.html#af8b0049b3a18c7704ad503ed6ad21927',1,'INI_IMPLICIT_VALUE():&#160;confini.c']]],
   ['ini_5finline_5fcomment',['INI_INLINE_COMMENT',['../confini_8h.html#a4e394db479f56eaa830ade09c907461ba92f6493ac98e3743c82d05f20e20c6cc',1,'confini.h']]],

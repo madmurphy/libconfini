@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl Created by Anjuta application wizard.
 
-AC_INIT(libconfini, 1.1)
+AC_INIT(libconfini, 1.2)
 
 AC_CONFIG_HEADERS([config.h])
 
@@ -57,6 +57,6 @@ LT_INIT([win32-dll])
 
 AC_OUTPUT([
 Makefile
-src/confini-1.1.pc
+src/confini-1.2.pc
 src/Makefile
 po/Makefile.in])

@@ -81,7 +81,7 @@ int main () {
 	my_format = INI_DEFAULT_FORMAT;
 
 	/* Define the value to be shown in case of implicit keys, and its length */
-	my_format.implicit_is_special = YES;
+	my_format.implicit_is_not_empty = YES;
 	ini_set_implicit_value("TRUE", 0);
 
 	/* Load INI file */

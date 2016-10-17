@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.2-1] - 2016-10-17
+
+* Order of the `IniFormat` bitfield has been changed
+* `IniFormat::implicit_is_special` has been renamed to `IniFormat::implicit_is_not_empty`
+* `IniFormat::no_collapsed_values` has been renamed to `IniFormat::do_not_collapse_values`
+
 ## [1.1-2] - 2016-10-15
 
 Changes:

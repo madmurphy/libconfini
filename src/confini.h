@@ -16,17 +16,17 @@
 /* PRIVATE (HEADER-SCOPED) MACROS */
 
 
-#define _LIBCONFINI_SETTINGS_AS_DECLARATION_(SIZE, PROPERTY, VALUE) unsigned char PROPERTY:SIZE;
-#define _LIBCONFINI_SETTINGS_AS_ASSIGNEMENT_(SIZE, PROPERTY, VALUE) VALUE,
-#define _LIBCONFINI_FORMAT_STRUCT_ struct IniFormat { _LIBCONFINI_EXPAND_SETTINGS_MACRO_AS_(_LIBCONFINI_SETTINGS_AS_DECLARATION_) }
-#define _LIBCONFINI_DEFAULT_SETTINGS_ { _LIBCONFINI_EXPAND_SETTINGS_MACRO_AS_(_LIBCONFINI_SETTINGS_AS_ASSIGNEMENT_) }
+#define _LIBCONFINI_FORMAT_AS_DECLARATION_(SIZE, PROPERTY, VALUE) unsigned char PROPERTY:SIZE;
+#define _LIBCONFINI_FORMAT_AS_ASSIGNEMENT_(SIZE, PROPERTY, VALUE) VALUE,
+#define _LIBCONFINI_FORMAT_STRUCT_ struct IniFormat { _LIBCONFINI_EXPAND_FORMAT_MACRO_AS_(_LIBCONFINI_FORMAT_AS_DECLARATION_) }
+#define _LIBCONFINI_DEFAULT_FORMAT_ { _LIBCONFINI_EXPAND_FORMAT_MACRO_AS_(_LIBCONFINI_FORMAT_AS_ASSIGNEMENT_) }
 
 
 
 /* PUBLIC MACROS */
 
 
-#define _LIBCONFINI_EXPAND_SETTINGS_MACRO_AS_(______)                          /*-*\
+#define _LIBCONFINI_EXPAND_FORMAT_MACRO_AS_(______)                          /*-*\
 
     ______(     BITS      NAME                        DEFAULT VALUE            )/--/
                                                                                /-*/\
@@ -35,14 +35,14 @@
     ______(     2,        semicolon,                  INI_PARSE_COMMENT        )   \
     ______(     2,        hash,                       INI_PARSE_COMMENT        )   \
     ______(     2,        multiline_entries,          INI_EVERYTHING_MULTILINE )   \
-    ______(     1,        no_single_quotes,           0                        )   \
-    ______(     1,        no_double_quotes,           0                        )/*-/
-                                                                               /-*/\
     ______(     1,        case_sensitive,             0                        )   \
-    ______(     1,        no_spaces_in_names,         0                        )   \
-    ______(     1,        no_collapsed_values,        0                        )   \
+    ______(     1,        no_spaces_in_names,         0                        )/*-/
+                                                                               /-*/\
+    ______(     1,        no_single_quotes,           0                        )   \
+    ______(     1,        no_double_quotes,           0                        )   \
+    ______(     1,        implicit_is_not_empty,      0                        )   \
+    ______(     1,        do_not_collapse_values,     0                        )   \
     ______(     1,        no_disabled_after_space,    0                        )   \
-    ______(     1,        implicit_is_special,        0                        )   \
     ______(     1,        disabled_can_be_implicit,   0                        )   \
     ______(     2,        _LIBCONFINI_RESERVED_,      0                        )/*-/
                                                                                /-*/
@@ -140,13 +140,13 @@ extern signed int ini_get_lazy_bool (const char * const ini_string, const signed
 /* PUBLIC WRAPPERS */
 
 
-extern double (*ini_get_float) (const char *ini_string);
+extern int (* const ini_get_int) (const char *ini_string);
 
-extern long long int (*ini_get_llint) (const char *ini_string);
+extern long int (* const ini_get_lint) (const char *ini_string);
 
-extern long int (*ini_get_lint) (const char *ini_string);
+extern long long int (* const ini_get_llint) (const char *ini_string);
 
-extern int (*ini_get_int) (const char *ini_string);
+extern double (* const ini_get_float) (const char *ini_string);
 
 
 
@@ -199,7 +199,7 @@ enum IniMultiline {
 };
 
 /** @brief	A model format **/
-static const IniFormat INI_DEFAULT_FORMAT = _LIBCONFINI_DEFAULT_SETTINGS_;
+static const IniFormat INI_DEFAULT_FORMAT = _LIBCONFINI_DEFAULT_FORMAT_;
 
 /** @brief	Default value of implicit keys **/
 extern char *INI_IMPLICIT_VALUE;
@@ -212,10 +212,10 @@ extern unsigned long int INI_IMPLICIT_V_LENGTH;
 /* CLEAN THE PRIVATE ENVIRONMENT */
 
 
-#undef _LIBCONFINI_SETTINGS_AS_DECLARATION_
-#undef _LIBCONFINI_SETTINGS_AS_ASSIGNEMENT_
+#undef _LIBCONFINI_FORMAT_AS_DECLARATION_
+#undef _LIBCONFINI_FORMAT_AS_ASSIGNEMENT_
 #undef _LIBCONFINI_FORMAT_STRUCT_
-#undef _LIBCONFINI_DEFAULT_SETTINGS_
+#undef _LIBCONFINI_DEFAULT_FORMAT_
 
 
 
