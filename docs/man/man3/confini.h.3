@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Mon Oct 17 2016" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Tue Oct 18 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -89,7 +89,7 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "unsigned long int \fBini_unquote\fP (char *const ini_string, const \fBIniFormat\fP format)"
 .br
-.RI "Unescapes ", \\' and " and removes all unescaped quotes (if single/double quotes are active) "
+.RI "Unescapes \\, \\' and " and removes all unescaped quotes (if single/double quotes are active) "
 .ti -1c
 .RI "unsigned long int \fBini_array_get_length\fP (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 .br
@@ -432,7 +432,7 @@ Zero for success, otherwise an error code
 .SS "unsigned long int ini_unquote (char *const ini_string, const \fBIniFormat\fP format)"
 
 .PP
-Unescapes ", \\' and " and removes all unescaped quotes (if single/double quotes are active) 
+Unescapes \\, \\' and " and removes all unescaped quotes (if single/double quotes are active) 
 .PP
 \fBParameters:\fP
 .RS 4

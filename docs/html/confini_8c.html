@@ -151,7 +151,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a70efd63125e671c52dc998341b4609db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets all the values of an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> by reading them from an <a class="el" href="confini_8h.html#ad88dd5ea6ac66d7b1c31c5e26fca8e88" title="24-bit bitmask representing the format of an INI file ">IniFormatId</a>.  <a href="#a70efd63125e671c52dc998341b4609db">More...</a><br /></td></tr>
 <tr class="separator:a70efd63125e671c52dc998341b4609db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4ae2df08ce4f4ffcb183d965ac4f35b"><td class="memItemLeft" align="right" valign="top">unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ac4ae2df08ce4f4ffcb183d965ac4f35b">ini_unquote</a> (char *const ini_string, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
-<tr class="memdesc:ac4ae2df08ce4f4ffcb183d965ac4f35b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescapes ", \' and " and removes all unescaped quotes (if single/double quotes are active)  <a href="#ac4ae2df08ce4f4ffcb183d965ac4f35b">More...</a><br /></td></tr>
+<tr class="memdesc:ac4ae2df08ce4f4ffcb183d965ac4f35b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescapes \, \' and " and removes all unescaped quotes (if single/double quotes are active)  <a href="#ac4ae2df08ce4f4ffcb183d965ac4f35b">More...</a><br /></td></tr>
 <tr class="separator:ac4ae2df08ce4f4ffcb183d965ac4f35b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7906f6324aa01202145d1c98591310d2"><td class="memItemLeft" align="right" valign="top">unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a7906f6324aa01202145d1c98591310d2">ini_array_get_length</a> (const char *const ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
 <tr class="memdesc:a7906f6324aa01202145d1c98591310d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the length of an INI array.  <a href="#a7906f6324aa01202145d1c98591310d2">More...</a><br /></td></tr>
@@ -766,7 +766,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Unescapes ", \' and " and removes all unescaped quotes (if single/double quotes are active) </p>
+<p>Unescapes \, \' and " and removes all unescaped quotes (if single/double quotes are active) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ini_string</td><td>The string to be unescaped </td></tr>

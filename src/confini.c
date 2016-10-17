@@ -52,8 +52,6 @@
 					(disabled) implicit keys
 	@var		IniFormat::no_disabled_after_space
 					If set to 1, prevents that /[#;]\s+/[^\s][^\n]+/ be parsed as a disabled entry
-	@var		IniFormat::_LIBCONFINI_RESERVED_
-					Unused bits -- reserved for future extensions
 
 
 	@struct		IniStatistics
@@ -554,7 +552,7 @@ static _LIBCONFINI_SIZE_ collapse_spaces (char * const str, const IniFormat form
 
 	}
 
-	for (idx -= (abacus & 8) ? ++lshift : lshift; str[idx]; str[idx++] = '\0');
+	for (idx -= abacus & 8 ? ++lshift : lshift; str[idx]; str[idx++] = '\0');
 
 	return idx - lshift;
 
@@ -1623,7 +1621,7 @@ void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id) {
 
 /**
 
-	@brief			Unescapes \", \' and \" and removes all unescaped quotes (if single/double quotes are active)
+	@brief			Unescapes \\, \' and \" and removes all unescaped quotes (if single/double quotes are active)
 	@param			ini_string		The string to be unescaped
 	@param			format			The format of the INI file
 	@return			The new length of the string
