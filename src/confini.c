@@ -45,7 +45,7 @@
 	@var		IniFormat::implicit_is_not_empty
 					If set to 1, the dispatch of implicit keys (see @ref libconfini) will always
 					assign to IniDispatch::value and to IniDispatch::v_len the global variables
-					::INI_IMPLICIT_VALUE and ::INI_IMPLICIT_v_len respectively; if set to 0,
+					::INI_IMPLICIT_VALUE and ::INI_IMPLICIT_V_LEN respectively; if set to 0,
 					implicit keys will be considered as empty keys
 	@var		IniFormat::disabled_can_be_implicit
 					If set to 1, comments non containing a delimiter symbol will not be parsed as
@@ -1531,7 +1531,7 @@ unsigned int load_ini_file (
 				} else if (format.implicit_is_not_empty) {
 
 					this_d.value = INI_IMPLICIT_VALUE;
-					this_d.v_len = INI_IMPLICIT_v_len;
+					this_d.v_len = INI_IMPLICIT_V_LEN;
 				}
 
 				if (!format.case_sensitive) {
@@ -1580,14 +1580,14 @@ unsigned int load_ini_file (
 
 	@brief			Sets the valued used for implicit keys
 	@param			implicit_value		The string to be used as implicit value (usually `"YES"`, or `"TRUE"`)
-	@param			implicit_v_len	The length of @p implicit_value (usually 0, independently of its real length)
+	@param			implicit_v_len		The length of @p implicit_value (usually 0, independently of its real length)
 	@return			Nothing
 
 **/
 void ini_set_implicit_value (char * const implicit_value, const unsigned long int implicit_v_len) {
 
 	INI_IMPLICIT_VALUE = implicit_value;
-	INI_IMPLICIT_v_len = implicit_v_len;
+	INI_IMPLICIT_V_LEN = implicit_v_len;
 
 }
 
@@ -2042,7 +2042,7 @@ double (* const ini_get_float) (const char *ini_string) = &atof;
 /* VARIABLES */
 
 char *INI_IMPLICIT_VALUE = (char *) 0;
-unsigned long int INI_IMPLICIT_v_len = 0;
+unsigned long int INI_IMPLICIT_V_LEN = 0;
 
 
 

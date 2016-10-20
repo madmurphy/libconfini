@@ -206,7 +206,7 @@ static const IniFormat INI_DEFAULT_FORMAT = _LIBCONFINI_DEFAULT_FORMAT_;
 extern char *INI_IMPLICIT_VALUE;
 
 /** @brief	Default length of implicit keys' value -- it can be set to any unsigned number, independently of #INI_IMPLICIT_VALUE **/
-extern unsigned long int INI_IMPLICIT_v_len;
+extern unsigned long int INI_IMPLICIT_V_LEN;
 
 
 
