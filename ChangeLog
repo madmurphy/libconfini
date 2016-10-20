@@ -7,6 +7,9 @@ Changes:
 * Order of the `IniFormat` bitfield has been changed
 * `IniFormat::implicit_is_special` has been renamed to `IniFormat::implicit_is_not_empty`
 * `IniFormat::no_collapsed_values` has been renamed to `IniFormat::do_not_collapse_values`
+* `IniDispatch::d_length` has been renamed to `IniDispatch::d_len`
+* `IniDispatch::v_length` has been renamed to `IniDispatch::v_len`
+* `IniDispatch::at_len` (length of `IniDispatch::append_to`) has been created
 
 ## [1.1-2] - 2016-10-15
 

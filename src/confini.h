@@ -69,8 +69,9 @@ typedef struct IniDispatch {
 	char *data;
 	char *value;
 	char *append_to;
-	unsigned long int d_length;
-	unsigned long int v_length;
+	unsigned long int d_len;
+	unsigned long int v_len;
+	unsigned long int at_len;
 	unsigned long int dispatch_id;
 } IniDispatch;
 
@@ -96,7 +97,7 @@ extern unsigned int load_ini_file (
 	void *user_data
 );
 
-extern void ini_set_implicit_value (char * const implicit_value, const unsigned long int implicit_v_length);
+extern void ini_set_implicit_value (char * const implicit_value, const unsigned long int implicit_v_len);
 
 extern IniFormatId ini_format_get_id (const IniFormat format);
 
@@ -205,7 +206,7 @@ static const IniFormat INI_DEFAULT_FORMAT = _LIBCONFINI_DEFAULT_FORMAT_;
 extern char *INI_IMPLICIT_VALUE;
 
 /** @brief	Default length of implicit keys' value -- it can be set to any unsigned number, independently of #INI_IMPLICIT_VALUE **/
-extern unsigned long int INI_IMPLICIT_V_LENGTH;
+extern unsigned long int INI_IMPLICIT_v_len;
 
 
 

@@ -38,16 +38,18 @@ int my_ini_listener (IniDispatch *dispatch, void *user_data) {
 		"data: |%s|\n"
 		"value: |%s|\n"
 		"append_to: |%s|\n"
-		"d_length: %d\n"
-		"v_length: %d\n",
+		"d_len: %d\n"
+		"v_len: %d\n"
+		"at_len: %d\n",
 
 		dispatch->dispatch_id,
 		dispatch->type,
 		dispatch->data,
 		dispatch->value,
 		dispatch->append_to,
-		dispatch->d_length,
-		dispatch->v_length
+		dispatch->d_len,
+		dispatch->v_len,
+		dispatch->at_len
 
 	);
 

@@ -75,7 +75,7 @@ src/confini.h \- libconfini header
 .br
 .RI "Parses an INI file and dispatches its content\&. "
 .ti -1c
-.RI "void \fBini_set_implicit_value\fP (char *const implicit_value, const unsigned long int implicit_v_length)"
+.RI "void \fBini_set_implicit_value\fP (char *const implicit_value, const unsigned long int implicit_v_len)"
 .br
 .RI "Sets the valued used for implicit keys\&. "
 .ti -1c
@@ -135,7 +135,7 @@ src/confini.h \- libconfini header
 .br
 .RI "Default value of implicit keys\&. "
 .ti -1c
-.RI "unsigned long int \fBINI_IMPLICIT_V_LENGTH\fP"
+.RI "unsigned long int \fBINI_IMPLICIT_v_len\fP"
 .br
 .RI "Default length of implicit keys' value -- it can be set to any unsigned number, independently of \fBINI_IMPLICIT_VALUE\fP\&. "
 .in -1c
@@ -388,7 +388,7 @@ The matching boolean value (0 or 1) or \fCreturn_value\fP if no boolean has been
 .RE
 .PP
 
-.SS "void ini_set_implicit_value (char *const implicit_value, const unsigned long int implicit_v_length)"
+.SS "void ini_set_implicit_value (char *const implicit_value, const unsigned long int implicit_v_len)"
 
 .PP
 Sets the valued used for implicit keys\&. 
@@ -397,7 +397,7 @@ Sets the valued used for implicit keys\&.
 .RS 4
 \fIimplicit_value\fP The string to be used as implicit value (usually \fC'YES'\fP, or \fC'TRUE'\fP) 
 .br
-\fIimplicit_v_length\fP The length of \fCimplicit_value\fP (usually 0, independently of its real length) 
+\fIimplicit_v_len\fP The length of \fCimplicit_value\fP (usually 0, independently of its real length) 
 .RE
 .PP
 \fBReturns:\fP
@@ -486,7 +486,7 @@ A model format\&.
 
 .SS "long long int(* const ini_get_llint) (const char *ini_string)"
 
-.SS "unsigned long int INI_IMPLICIT_V_LENGTH"
+.SS "unsigned long int INI_IMPLICIT_v_len"
 
 .PP
 Default length of implicit keys' value -- it can be set to any unsigned number, independently of \fBINI_IMPLICIT_VALUE\fP\&. 

@@ -44,8 +44,8 @@
 					If set to 1, sequences of more than one space in values (/\s{2,}/) will not be collapsed
 	@var		IniFormat::implicit_is_not_empty
 					If set to 1, the dispatch of implicit keys (see @ref libconfini) will always
-					assign to IniDispatch::value and to IniDispatch::v_length the global variables
-					::INI_IMPLICIT_VALUE and ::INI_IMPLICIT_V_LENGTH respectively; if set to 0,
+					assign to IniDispatch::value and to IniDispatch::v_len the global variables
+					::INI_IMPLICIT_VALUE and ::INI_IMPLICIT_v_len respectively; if set to 0,
 					implicit keys will be considered as empty keys
 	@var		IniFormat::disabled_can_be_implicit
 					If set to 1, comments non containing a delimiter symbol will not be parsed as
@@ -76,9 +76,9 @@
 					It can be a comment, a section or a key
 	@var		IniDispatch::value
 					It can be a key value or an empty string
-	@var		IniDispatch::d_length
+	@var		IniDispatch::d_len
 					The length of the string IniDispatch::data
-	@var		IniDispatch::v_length
+	@var		IniDispatch::v_len
 					The length of the string IniDispatch::value
 	@var		IniDispatch::dispatch_id
 					The dispatch id
@@ -429,7 +429,7 @@ static inline _LIBCONFINI_SIZE_ get_delimiter_pos (const char * const str, const
 
 /**
 
-	@brief			Replaces `/\\(\n\r?|\r\n?)s*[#;]/` or `/\\(\n\r?|\r\n?)/` with "$1".
+	@brief			Replaces `/\\(\n\r?|\r\n?)s*[#;]/` or `/\\(\n\r?|\r\n?)/` with `"$1"`.
 	@param			string			Target string
 	@param			length			Length of the string
 	@param			is_disabled		The string represents a disabled entry
@@ -1335,8 +1335,8 @@ unsigned int load_ini_file (
 		this_d.data = cache + node_at;
 		this_d.value = cache + idx;
 		this_d.type = 0;
-		this_d.d_length = idx - node_at;
-		this_d.v_length = 0;
+		this_d.d_len = idx - node_at;
+		this_d.v_len = 0;
 
 		if (is_parsable_char(*this_d.data, format)) {
 
@@ -1352,7 +1352,7 @@ unsigned int load_ini_file (
 
 			*/
 
-			for (abacus = 1, tmp_int = 1; abacus && tmp_int < this_d.d_length; tmp_int++) {
+			for (abacus = 1, tmp_int = 1; abacus && tmp_int < this_d.d_len; tmp_int++) {
 
 				abacus	=	this_d.data[tmp_int] == _LIBCONFINI_LF_ || this_d.data[tmp_int] == _LIBCONFINI_CR_ ? 1
 							: (abacus & 4) && is_comm_char(this_d.data[tmp_int], format) ? 0
@@ -1361,7 +1361,7 @@ unsigned int load_ini_file (
 
 			}
 
-			this_d.type		=	tmp_int == this_d.d_length ?
+			this_d.type		=	tmp_int == this_d.d_len ?
 									get_type_as_active(cache + parse_at, idx - parse_at, _LIBCONFINI_TRUE_, format)
 							:
 								0;
@@ -1369,7 +1369,7 @@ unsigned int load_ini_file (
 			if (this_d.type) {
 
 				this_d.data = cache + parse_at;
-				this_d.d_length = idx - parse_at;
+				this_d.d_len = idx - parse_at;
 
 			}
 
@@ -1385,7 +1385,7 @@ unsigned int load_ini_file (
 
 		} else {
 
-			this_d.type = get_type_as_active(this_d.data, this_d.d_length, _LIBCONFINI_FALSE_, format);
+			this_d.type = get_type_as_active(this_d.data, this_d.d_len, _LIBCONFINI_FALSE_, format);
 
 		}
 
@@ -1420,8 +1420,9 @@ unsigned int load_ini_file (
 		}
 
 		this_d.append_to = curr_parent_str;
+		this_d.at_len = curr_parent_len;
 
-		this_d.d_length		=	this_d.type == INI_COMMENT ? 
+		this_d.d_len		=	this_d.type == INI_COMMENT ? 
 									uncomment(this_d.data, idx - node_at, format)
 								: this_d.type == INI_INLINE_COMMENT ? 
 									uncomment(++this_d.data, idx - node_at - 1, format)
@@ -1480,7 +1481,7 @@ unsigned int load_ini_file (
 
 				}
 
-				this_d.d_length = sanitize_section_name(this_d.data, format);
+				this_d.d_len = sanitize_section_name(this_d.data, format);
 
 				if (curr_parent_len && *this_d.data == _LIBCONFINI_SUBSECTION_) {
 
@@ -1489,9 +1490,10 @@ unsigned int load_ini_file (
 				} else {
 
 					curr_parent_str = this_d.data + (!curr_parent_len && *this_d.data == _LIBCONFINI_SUBSECTION_);
-					curr_parent_len = this_d.d_length - (!curr_parent_len && *this_d.data == _LIBCONFINI_SUBSECTION_);
+					curr_parent_len = this_d.d_len - (!curr_parent_len && *this_d.data == _LIBCONFINI_SUBSECTION_);
 					subparent_str = cache + idx;
 					this_d.append_to = subparent_str;
+					this_d.at_len = 0;
 
 				}
 
@@ -1506,30 +1508,30 @@ unsigned int load_ini_file (
 			case INI_KEY:
 			case INI_DISABLED_KEY:
 
-				tmp_int = get_delimiter_pos(this_d.data, this_d.d_length, format);
+				tmp_int = get_delimiter_pos(this_d.data, this_d.d_len, format);
 
-				if (this_d.d_length && tmp_int && tmp_int < this_d.d_length) {
+				if (this_d.d_len && tmp_int && tmp_int < this_d.d_len) {
 
 					this_d.data[tmp_int] = '\0';
 
 					if (format.do_not_collapse_values) {
 
-						this_d.v_length = this_d.d_length - ltrim_h(this_d.data, tmp_int + 1, _LIBCONFINI_NO_EOL_);
-						this_d.value = this_d.data + this_d.d_length - this_d.v_length;
+						this_d.v_len = this_d.d_len - ltrim_h(this_d.data, tmp_int + 1, _LIBCONFINI_NO_EOL_);
+						this_d.value = this_d.data + this_d.d_len - this_d.v_len;
 
 					} else {
 
 						this_d.value = this_d.data + tmp_int + 1;
-						this_d.v_length = collapse_spaces(this_d.value, format);
+						this_d.v_len = collapse_spaces(this_d.value, format);
 
 					}
 
-					this_d.d_length = collapse_spaces(this_d.data, format);
+					this_d.d_len = collapse_spaces(this_d.data, format);
 
 				} else if (format.implicit_is_not_empty) {
 
 					this_d.value = INI_IMPLICIT_VALUE;
-					this_d.v_length = INI_IMPLICIT_V_LENGTH;
+					this_d.v_len = INI_IMPLICIT_v_len;
 				}
 
 				if (!format.case_sensitive) {
@@ -1544,6 +1546,7 @@ unsigned int load_ini_file (
 			case INI_INLINE_COMMENT:
 
 				this_d.append_to = cache + idx;
+				this_d.at_len = 0;
 
 		}
 
@@ -1577,14 +1580,14 @@ unsigned int load_ini_file (
 
 	@brief			Sets the valued used for implicit keys
 	@param			implicit_value		The string to be used as implicit value (usually `"YES"`, or `"TRUE"`)
-	@param			implicit_v_length	The length of @p implicit_value (usually 0, independently of its real length)
+	@param			implicit_v_len	The length of @p implicit_value (usually 0, independently of its real length)
 	@return			Nothing
 
 **/
-void ini_set_implicit_value (char * const implicit_value, const unsigned long int implicit_v_length) {
+void ini_set_implicit_value (char * const implicit_value, const unsigned long int implicit_v_len) {
 
 	INI_IMPLICIT_VALUE = implicit_value;
-	INI_IMPLICIT_V_LENGTH = implicit_v_length;
+	INI_IMPLICIT_v_len = implicit_v_len;
 
 }
 
@@ -2039,7 +2042,7 @@ double (* const ini_get_float) (const char *ini_string) = &atof;
 /* VARIABLES */
 
 char *INI_IMPLICIT_VALUE = (char *) 0;
-unsigned long int INI_IMPLICIT_V_LENGTH = 0;
+unsigned long int INI_IMPLICIT_v_len = 0;
 
 
 
