@@ -87,8 +87,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a90c4b547e13b6f2fe259968372c26343"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hard left trim &ndash; <b>does</b> change the buffer.  <a href="#a90c4b547e13b6f2fe259968372c26343">More...</a><br /></td></tr>
 <tr class="separator:a90c4b547e13b6f2fe259968372c26343"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a389e2c2ea220eaec88790ccf6db1821c"><td class="memItemLeft" align="right" valign="top">static unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a389e2c2ea220eaec88790ccf6db1821c">ultrim_h</a> (char *const ult_s, const unsigned long int start_from)</td></tr>
-<tr class="memdesc:a389e2c2ea220eaec88790ccf6db1821c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescaped hard left trim (left trim of /^(+|\[<br />
-])+/) &ndash; <b>does</b> change the buffer.  <a href="#a389e2c2ea220eaec88790ccf6db1821c">More...</a><br /></td></tr>
+<tr class="memdesc:a389e2c2ea220eaec88790ccf6db1821c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescaped hard left trim (left trim of <code>/^(\s+|\\[\n\r])+/</code>) &ndash; <b>does</b> change the buffer.  <a href="#a389e2c2ea220eaec88790ccf6db1821c">More...</a><br /></td></tr>
 <tr class="separator:a389e2c2ea220eaec88790ccf6db1821c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f66b51b20e6767205bdbc79da135613"><td class="memItemLeft" align="right" valign="top">static unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a1f66b51b20e6767205bdbc79da135613">rtrim_s</a> (const char *const rt_s, const unsigned long int length, const unsigned char depth)</td></tr>
 <tr class="memdesc:a1f66b51b20e6767205bdbc79da135613"><td class="mdescLeft">&#160;</td><td class="mdescRight">Soft right trim &ndash; does not change the buffer.  <a href="#a1f66b51b20e6767205bdbc79da135613">More...</a><br /></td></tr>
@@ -97,8 +96,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a043ee18598136f4d3245fc828e0fdf13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hard right trim &ndash; <b>does</b> change the buffer.  <a href="#a043ee18598136f4d3245fc828e0fdf13">More...</a><br /></td></tr>
 <tr class="separator:a043ee18598136f4d3245fc828e0fdf13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab91e4d8257c8ea3c95db30590c346cb1"><td class="memItemLeft" align="right" valign="top">static unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ab91e4d8257c8ea3c95db30590c346cb1">urtrim_s</a> (const char *const urt_s, const unsigned long int length)</td></tr>
-<tr class="memdesc:ab91e4d8257c8ea3c95db30590c346cb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescaped soft right trim (right trim of /(+|\[<br />
-])+$/) &ndash; does not change the buffer.  <a href="#ab91e4d8257c8ea3c95db30590c346cb1">More...</a><br /></td></tr>
+<tr class="memdesc:ab91e4d8257c8ea3c95db30590c346cb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescaped soft right trim (right trim of <code>/(\s+|\\[\n\r])+$/</code>) &ndash; does not change the buffer.  <a href="#ab91e4d8257c8ea3c95db30590c346cb1">More...</a><br /></td></tr>
 <tr class="separator:ab91e4d8257c8ea3c95db30590c346cb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6e6972b13052e995b3ceb2fb4996ede"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ad6e6972b13052e995b3ceb2fb4996ede">string_tolower</a> (char *const str)</td></tr>
 <tr class="memdesc:ad6e6972b13052e995b3ceb2fb4996ede"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a string to lower case.  <a href="#ad6e6972b13052e995b3ceb2fb4996ede">More...</a><br /></td></tr>
@@ -116,21 +114,16 @@ Functions</h2></td></tr>
 <tr class="memdesc:a23319274b88f23e93ab7cdace8e0d55f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the position of the first delimiter out of quotes.  <a href="#a23319274b88f23e93ab7cdace8e0d55f">More...</a><br /></td></tr>
 <tr class="separator:a23319274b88f23e93ab7cdace8e0d55f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93f5cdd0aca84a827ebfffdcaef41162"><td class="memItemLeft" align="right" valign="top">static unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a93f5cdd0aca84a827ebfffdcaef41162">unescape_cr_lf</a> (char *const nstr, const unsigned long int len, const unsigned char is_disabled, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
-<tr class="memdesc:a93f5cdd0aca84a827ebfffdcaef41162"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces /\(<br />
-?|<br />
-?)s*[#;]/ or /\(<br />
-?|<br />
-?)/ with "$1".  <a href="#a93f5cdd0aca84a827ebfffdcaef41162">More...</a><br /></td></tr>
+<tr class="memdesc:a93f5cdd0aca84a827ebfffdcaef41162"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces <code>/\\(\n\r?|\r\n?)s*[#;]/</code> or <code>/\\(\n\r?|\r\n?)/</code> with "$1".  <a href="#a93f5cdd0aca84a827ebfffdcaef41162">More...</a><br /></td></tr>
 <tr class="separator:a93f5cdd0aca84a827ebfffdcaef41162"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ef6f24512f59ad7dd4db4f8e63a647d"><td class="memItemLeft" align="right" valign="top">static unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a1ef6f24512f59ad7dd4db4f8e63a647d">collapse_spaces</a> (char *const str, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
-<tr class="memdesc:a1ef6f24512f59ad7dd4db4f8e63a647d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Out of quotes similar to ECMAScript string.replace(/^[<br />
-]*|()+/g, "$1")  <a href="#a1ef6f24512f59ad7dd4db4f8e63a647d">More...</a><br /></td></tr>
+<tr class="memdesc:a1ef6f24512f59ad7dd4db4f8e63a647d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Out of quotes similar to ECMAScript <code>string.replace(/^[\n\r]\s*|(\s)+/g, "$1")</code>  <a href="#a1ef6f24512f59ad7dd4db4f8e63a647d">More...</a><br /></td></tr>
 <tr class="separator:a1ef6f24512f59ad7dd4db4f8e63a647d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b51ec046d982514677d9868dbfab50d"><td class="memItemLeft" align="right" valign="top">static unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a8b51ec046d982514677d9868dbfab50d">sanitize_section_name</a> (char *const str, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
 <tr class="memdesc:a8b51ec046d982514677d9868dbfab50d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sanitizes the name of a section.  <a href="#a8b51ec046d982514677d9868dbfab50d">More...</a><br /></td></tr>
 <tr class="separator:a8b51ec046d982514677d9868dbfab50d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb1a73bcb22984fb028aa8b3f99ec818"><td class="memItemLeft" align="right" valign="top">static unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#abb1a73bcb22984fb028aa8b3f99ec818">uncomment</a> (char *const commstr, unsigned long int len, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
-<tr class="memdesc:abb1a73bcb22984fb028aa8b3f99ec818"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all comment initializers ('#' or ';') from the beginning of each line of a comment.  <a href="#abb1a73bcb22984fb028aa8b3f99ec818">More...</a><br /></td></tr>
+<tr class="memdesc:abb1a73bcb22984fb028aa8b3f99ec818"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all comment initializers (<code>#</code> or <code>;</code>) from the beginning of each line of a comment.  <a href="#abb1a73bcb22984fb028aa8b3f99ec818">More...</a><br /></td></tr>
 <tr class="separator:abb1a73bcb22984fb028aa8b3f99ec818"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a266637fa409be25b91bfcc9ade9c22a6"><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a266637fa409be25b91bfcc9ade9c22a6">get_type_as_active</a> (const char *const nodestr, const unsigned long int len, const unsigned char wanna_be_active, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
 <tr class="memdesc:a266637fa409be25b91bfcc9ade9c22a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tries to determine the type of a member "as if it was active".  <a href="#a266637fa409be25b91bfcc9ade9c22a6">More...</a><br /></td></tr>
@@ -145,13 +138,13 @@ Functions</h2></td></tr>
 <tr class="memdesc:aa3af6164b077d8320820e4262bc41ff4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the valued used for implicit keys.  <a href="#aa3af6164b077d8320820e4262bc41ff4">More...</a><br /></td></tr>
 <tr class="separator:aa3af6164b077d8320820e4262bc41ff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a64f92daee918044788b1d221c68631"><td class="memItemLeft" align="right" valign="top"><a class="el" href="confini_8h.html#ad88dd5ea6ac66d7b1c31c5e26fca8e88">IniFormatId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a9a64f92daee918044788b1d221c68631">ini_format_get_id</a> (const <a class="el" href="structIniFormat.html">IniFormat</a> source)</td></tr>
-<tr class="memdesc:a9a64f92daee918044788b1d221c68631"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> into an <a class="el" href="confini_8h.html#ad88dd5ea6ac66d7b1c31c5e26fca8e88" title="24-bit bitmask representing the format of an INI file ">IniFormatId</a>.  <a href="#a9a64f92daee918044788b1d221c68631">More...</a><br /></td></tr>
+<tr class="memdesc:a9a64f92daee918044788b1d221c68631"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) – sizeof(IniFormat) should...">IniFormat</a> into an <a class="el" href="confini_8h.html#ad88dd5ea6ac66d7b1c31c5e26fca8e88" title="24-bit bitmask representing the format of an INI file ">IniFormatId</a>.  <a href="#a9a64f92daee918044788b1d221c68631">More...</a><br /></td></tr>
 <tr class="separator:a9a64f92daee918044788b1d221c68631"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70efd63125e671c52dc998341b4609db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a70efd63125e671c52dc998341b4609db">ini_format_set_to_id</a> (<a class="el" href="structIniFormat.html">IniFormat</a> *dest_format, <a class="el" href="confini_8h.html#ad88dd5ea6ac66d7b1c31c5e26fca8e88">IniFormatId</a> format_id)</td></tr>
-<tr class="memdesc:a70efd63125e671c52dc998341b4609db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets all the values of an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> by reading them from an <a class="el" href="confini_8h.html#ad88dd5ea6ac66d7b1c31c5e26fca8e88" title="24-bit bitmask representing the format of an INI file ">IniFormatId</a>.  <a href="#a70efd63125e671c52dc998341b4609db">More...</a><br /></td></tr>
+<tr class="memdesc:a70efd63125e671c52dc998341b4609db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets all the values of an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) – sizeof(IniFormat) should...">IniFormat</a> by reading them from an <a class="el" href="confini_8h.html#ad88dd5ea6ac66d7b1c31c5e26fca8e88" title="24-bit bitmask representing the format of an INI file ">IniFormatId</a>.  <a href="#a70efd63125e671c52dc998341b4609db">More...</a><br /></td></tr>
 <tr class="separator:a70efd63125e671c52dc998341b4609db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4ae2df08ce4f4ffcb183d965ac4f35b"><td class="memItemLeft" align="right" valign="top">unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ac4ae2df08ce4f4ffcb183d965ac4f35b">ini_unquote</a> (char *const ini_string, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
-<tr class="memdesc:ac4ae2df08ce4f4ffcb183d965ac4f35b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescapes \, \' and " and removes all unescaped quotes (if single/double quotes are active)  <a href="#ac4ae2df08ce4f4ffcb183d965ac4f35b">More...</a><br /></td></tr>
+<tr class="memdesc:ac4ae2df08ce4f4ffcb183d965ac4f35b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescapes <code>\\</code>, <code>\'</code> and <code>\"</code> and removes all unescaped quotes (if single/double quotes are active)  <a href="#ac4ae2df08ce4f4ffcb183d965ac4f35b">More...</a><br /></td></tr>
 <tr class="separator:ac4ae2df08ce4f4ffcb183d965ac4f35b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7906f6324aa01202145d1c98591310d2"><td class="memItemLeft" align="right" valign="top">unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a7906f6324aa01202145d1c98591310d2">ini_array_get_length</a> (const char *const ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
 <tr class="memdesc:a7906f6324aa01202145d1c98591310d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the length of an INI array.  <a href="#a7906f6324aa01202145d1c98591310d2">More...</a><br /></td></tr>
@@ -226,8 +219,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Out of quotes similar to ECMAScript string.replace(/^[<br />
-]*|()+/g, "$1") </p>
+<p>Out of quotes similar to ECMAScript <code>string.replace(/^[\n\r]\s*|(\s)+/g, "$1")</code> </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">string</td><td>The string to collapse </td></tr>
@@ -518,10 +510,10 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Converts an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> into an <a class="el" href="confini_8h.html#ad88dd5ea6ac66d7b1c31c5e26fca8e88" title="24-bit bitmask representing the format of an INI file ">IniFormatId</a>. </p>
+<p>Converts an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) – sizeof(IniFormat) should...">IniFormat</a> into an <a class="el" href="confini_8h.html#ad88dd5ea6ac66d7b1c31c5e26fca8e88" title="24-bit bitmask representing the format of an INI file ">IniFormatId</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">source</td><td>The <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> to be read </td></tr>
+    <tr><td class="paramname">source</td><td>The <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) – sizeof(IniFormat) should...">IniFormat</a> to be read </td></tr>
   </table>
   </dd>
 </dl>
@@ -555,10 +547,10 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Sets all the values of an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> by reading them from an <a class="el" href="confini_8h.html#ad88dd5ea6ac66d7b1c31c5e26fca8e88" title="24-bit bitmask representing the format of an INI file ">IniFormatId</a>. </p>
+<p>Sets all the values of an <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) – sizeof(IniFormat) should...">IniFormat</a> by reading them from an <a class="el" href="confini_8h.html#ad88dd5ea6ac66d7b1c31c5e26fca8e88" title="24-bit bitmask representing the format of an INI file ">IniFormatId</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dest_format</td><td>The <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) ">IniFormat</a> to be set </td></tr>
+    <tr><td class="paramname">dest_format</td><td>The <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) – sizeof(IniFormat) should...">IniFormat</a> to be set </td></tr>
     <tr><td class="paramname">mask</td><td>The <a class="el" href="confini_8h.html#ad88dd5ea6ac66d7b1c31c5e26fca8e88" title="24-bit bitmask representing the format of an INI file ">IniFormatId</a> to be read </td></tr>
   </table>
   </dd>
@@ -766,7 +758,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Unescapes \, \' and " and removes all unescaped quotes (if single/double quotes are active) </p>
+<p>Unescapes <code>\\</code>, <code>\'</code> and <code>\"</code> and removes all unescaped quotes (if single/double quotes are active) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ini_string</td><td>The string to be unescaped </td></tr>
@@ -1339,8 +1331,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Unescaped hard left trim (left trim of /^(+|\[<br />
-])+/) &ndash; <b>does</b> change the buffer. </p>
+<p>Unescaped hard left trim (left trim of <code>/^(\s+|\\[\n\r])+/</code>) &ndash; <b>does</b> change the buffer. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ult_s</td><td>The target string </td></tr>
@@ -1392,7 +1383,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Removes all comment initializers ('#' or ';') from the beginning of each line of a comment. </p>
+<p>Removes all comment initializers (<code>#</code> or <code>;</code>) from the beginning of each line of a comment. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">commstr</td><td>The comment to sanitize </td></tr>
@@ -1451,11 +1442,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Replaces /\(<br />
-?|<br />
-?)s*[#;]/ or /\(<br />
-?|<br />
-?)/ with "$1". </p>
+<p>Replaces <code>/\\(\n\r?|\r\n?)s*[#;]/</code> or <code>/\\(\n\r?|\r\n?)/</code> with "$1". </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">string</td><td>Target string </td></tr>
@@ -1502,8 +1489,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Unescaped soft right trim (right trim of /(+|\[<br />
-])+$/) &ndash; does not change the buffer. </p>
+<p>Unescaped soft right trim (right trim of <code>/(\s+|\\[\n\r])+$/</code>) &ndash; does not change the buffer. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">urt_s</td><td>The target string </td></tr>

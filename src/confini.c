@@ -193,7 +193,7 @@ static inline _LIBCONFINI_SIZE_ ltrim_h (char * const lt_s, const _LIBCONFINI_SI
 
 /**
 
-	@brief			Unescaped hard left trim (left trim of /^(\s+|\\[\n\r])+/) -- **does** change the buffer
+	@brief			Unescaped hard left trim (left trim of `/^(\s+|\\[\n\r])+/`) -- **does** change the buffer
 	@param			ult_s			The target string
 	@param			start_from		The offset where to start the left trim
 	@return			The offset of the first non matching character
@@ -206,7 +206,7 @@ static inline _LIBCONFINI_SIZE_ ultrim_h (char * const ult_s, const _LIBCONFINI_
 
 	/*
 
-	Mask "abacus" (4 bits used):
+	Mask `abacus` (4 bits used):
 
 		FLAG_1		This is any space
 		FLAG_2		This is not a backslash
@@ -223,11 +223,15 @@ static inline _LIBCONFINI_SIZE_ ultrim_h (char * const ult_s, const _LIBCONFINI_
 					: abacus & 4;
 
 		if (abacus & 1) {
+
 			ult_s[ult_i] = '\0';
+
 		}
 
 		if ((abacus & 2) && (abacus & 4)) {
+
 			ult_s[ult_i - 1] = '\0';
+
 		}
 
 	}
@@ -271,7 +275,7 @@ static inline _LIBCONFINI_SIZE_ rtrim_h (char * const rt_s, const _LIBCONFINI_SI
 
 /**
 
-	@brief			Unescaped soft right trim (right trim of /(\s+|\\[\n\r])+$/) -- does not change the buffer
+	@brief			Unescaped soft right trim (right trim of `/(\s+|\\[\n\r])+$/`) -- does not change the buffer
 	@param			urt_s			The target string
 	@param			length			The length of the string
 	@return			The length of the string until the last non-space character
@@ -283,7 +287,7 @@ static inline _LIBCONFINI_SIZE_ urtrim_s (const char * const urt_s, const _LIBCO
 
 	/*
 
-	Mask "abacus" (2 bits used):
+	Mask `abacus` (2 bits used):
 
 		FLAG_1		Continue the loop
 		FLAG_2		Next character is a new line character
@@ -386,7 +390,7 @@ static inline _LIBCONFINI_SIZE_ get_delimiter_pos (const char * const str, const
 
 	/*
 
-	Mask "abacus" (3 bits used):
+	Mask `abacus` (3 bits used):
 
 		FLAG_1		We are in an odd sequence of backslashes
 		FLAG_2		Unescaped single quotes are odd until now
@@ -425,7 +429,7 @@ static inline _LIBCONFINI_SIZE_ get_delimiter_pos (const char * const str, const
 
 /**
 
-	@brief			Replaces /\\(\n\r?|\r\n?)s*[#;]/ or /\\(\n\r?|\r\n?)/ with "$1".
+	@brief			Replaces `/\\(\n\r?|\r\n?)s*[#;]/` or `/\\(\n\r?|\r\n?)/` with "$1".
 	@param			string			Target string
 	@param			length			Length of the string
 	@param			is_disabled		The string represents a disabled entry
@@ -494,7 +498,7 @@ static _LIBCONFINI_SIZE_ unescape_cr_lf (char * const nstr, const _LIBCONFINI_SI
 
 /**
 
-	@brief			Out of quotes similar to ECMAScript string.replace(/^[\n\r]\s*|(\s)+/g, "$1")
+	@brief			Out of quotes similar to ECMAScript `string.replace(/^[\n\r]\s*|(\s)+/g, "$1")`
 	@param			string		The string to collapse
 	@param			format		The format of the INI file
 	@return			The new length of the string
@@ -504,7 +508,7 @@ static _LIBCONFINI_SIZE_ collapse_spaces (char * const str, const IniFormat form
 
 	/*
 
-	Mask "abacus" (4 bits used):
+	Mask `abacus` (4 bits used):
 
 		FLAG_1		We are in an odd sequence of backslashes
 		FLAG_2		Unescaped single quotes are odd until now
@@ -579,7 +583,7 @@ static _LIBCONFINI_SIZE_ sanitize_section_name (char * const str, const IniForma
 
 	/*
 
-	Mask "abacus" (9 bits used):
+	Mask `abacus` (9 bits used):
 
 		FLAG_1		We are in an odd sequence of backslashes
 		FLAG_2		Unescaped single quotes are odd until now
@@ -657,7 +661,7 @@ static _LIBCONFINI_SIZE_ sanitize_section_name (char * const str, const IniForma
 
 /**
 
-	@brief			Removes all comment initializers ('#' or ';') from the beginning of each line of a comment
+	@brief			Removes all comment initializers (`#` or `;`) from the beginning of each line of a comment
 	@param			commstr		The comment to sanitize
 	@param			len			The length of commstr
 	@param			format		The format of the INI file
@@ -690,14 +694,14 @@ static _LIBCONFINI_SIZE_ uncomment (char * const commstr, _LIBCONFINI_SIZE_ len,
 
 		/*
 
-		Mask "abacus" (6 bits used):
+		Mask `abacus` (6 bits used):
 
 			FLAG_1		Don't erase any character
 			FLAG_2		We are in an odd sequence of backslashes
 			FLAG_4		This character is a backslash
-			FLAG_8		This character is a comment character and follows /(\n\s*|\r\s*)/
-			FLAG_16		This character is a part of a group of spaces following a new line (/(\n|\r)[\t \v\f]+/)
-			FLAG_32		This character is not a new line character (/[^\r\n]/)
+			FLAG_8		This character is a comment character and follows `/(\n\s*|\r\s*)/`
+			FLAG_16		This character is a part of a group of spaces following a new line (`/(\n|\r)[\t \v\f]+/`)
+			FLAG_32		This character is not a new line character (`/[^\r\n]/`)
 
 		*/
 
@@ -770,7 +774,7 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 			/*
 
 				Search of the CLOSE_SECTION character and possible spaces in
-				names -- i.e., ECMAScript /[^\.\s]\s+[^\.\s]/g.test(nodestr).
+				names -- i.e., ECMAScript `/[^\.\s]\s+[^\.\s]/g.test(nodestr)`.
 				The algorithm is made more complex by the fact that LF and CR
 				characters can still be escaped at this stage ("\\\n", "\\\r").
 
@@ -778,7 +782,7 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 
 			/*
 
-			Mask "abacus" (9 bits used):
+			Mask `abacus` (9 bits used):
 
 				FLAG_1		We are in an odd sequence of backslashes
 				FLAG_2		More than one backslash is here
@@ -829,7 +833,7 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 
 			/*
 
-			Mask "abacus" (3 bits used):
+			Mask `abacus` (3 bits used):
 
 				FLAG_1		We are in an odd sequence of backslashes
 				FLAG_2		Unescaped single quotes are odd until now
@@ -896,8 +900,8 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 /**
 
 	@brief			Recursive function, examines a (single-/multi- line) segment and searches for sub-segments.
-	@param			segment	Segment to examine
-	@param			format	The format of the INI file
+	@param			segment		Segment to examine
+	@param			format		The format of the INI file
 	@return			Number of sub-segments found, included itself
 
 **/
@@ -911,12 +915,12 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 	/*
 
-	Mask "abacus" (7 bits used):
+	Mask `abacus` (7 bits used):
 
 		FLAG_1		We are in an odd sequence of backslashes
 		FLAG_2		Unescaped single quotes are even until now
 		FLAG_4		Unescaped double quotes are even until now
-		FLAG_8		This does not immediately follow [\n\r]\s*
+		FLAG_8		This does not immediately follow `[\n\r]\s*`
 		FLAG_16		The previous character was a space
 		FLAG_32		This can be a disabled entry
 		FLAG_64		This is nothing but a (multiline) comment
@@ -979,7 +983,7 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 				} else if (segment[idx] == _LIBCONFINI_LF_ || segment[idx] == _LIBCONFINI_CR_) {
 
-					/* Search for /\\(?:\n\r?|\r\n?)\s*[^;#]/ in multiline disabled items */
+					/* Search for `/\\(?:\n\r?|\r\n?)\s*[^;#]/` in multiline disabled items */
 
 					idx = ltrim_s(segment, idx + 1, _LIBCONFINI_WITH_EOL_);
 
@@ -1144,11 +1148,11 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 /**
 
 	@brief			Parses an INI file and dispatches its content
-	@param			path				The path of the INI file
-	@param			format				The format of the INI file
-	@param			f_init				The function that will be invoked before the dispatch, or NULL
-	@param			f_foreach			The function that will be invoked for each dispatch, or NULL
-	@param			user_data			A custom argument, or NULL
+	@param			path			The path of the INI file
+	@param			format			The format of the INI file
+	@param			f_init			The function that will be invoked before the dispatch, or NULL
+	@param			f_foreach		The function that will be invoked for each dispatch, or NULL
+	@param			user_data		A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
 
 **/
@@ -1174,7 +1178,6 @@ unsigned int load_ini_file (
 
 	}
 
-	unsigned int return_value = 0;
 	_LIBCONFINI_SIZE_ len;
 
 	fseek(config_file, 0, SEEK_END);
@@ -1189,6 +1192,8 @@ unsigned int load_ini_file (
 
 	}
 
+	unsigned int return_value = 0;
+
 	if (fread(cache, sizeof(char), len, config_file) < len) {
 
 		return_value = CONFINI_EIO;
@@ -1199,42 +1204,53 @@ unsigned int load_ini_file (
 	fclose(config_file);
 	cache[len] = '\0';
 
+	_LIBCONFINI_BOOL_ tmp_bool;
 	_LIBCONFINI_BYTE_ abacus;
-	_LIBCONFINI_SIZE_ idx, node_at, tmp_int;
+	_LIBCONFINI_SIZE_ tmp_int, idx, node_at;
 
-	IniStatistics this_doc = {
-		.format = format,
-		.bytes = len,
-		.members = 0
-	};
+	/* PART ONE: Examine and isolate each segment */
 
-	/* Examine and isolate each segment */
+	#define _LIBCONFINI_IS_ESCAPED_ tmp_bool
+	#define _LIBCONFINI_NL_ID_ abacus
+	#define _LIBCONFINI_MEMBERS_ tmp_int
 
-	for (tmp_int = 5, abacus = 0, node_at = 0, idx = 0; idx < len; idx++) {
+	for (
 
-		if (cache[idx] == _LIBCONFINI_SPACES_[tmp_int] || cache[idx] == _LIBCONFINI_SPACES_[tmp_int ^= 1]) {
+		_LIBCONFINI_MEMBERS_ = 0,
+		_LIBCONFINI_NL_ID_ = 5,
+		_LIBCONFINI_IS_ESCAPED_ = _LIBCONFINI_FALSE_,
+		node_at = 0,
+		idx = 0;
 
-			if (format.multiline_entries < 3 && abacus) {
+			idx < len;
 
-				idx += cache[idx + 1] == _LIBCONFINI_SPACES_[tmp_int ^ 1];
+		idx++
+
+	) {
+
+		if (cache[idx] == _LIBCONFINI_SPACES_[_LIBCONFINI_NL_ID_] || cache[idx] == _LIBCONFINI_SPACES_[_LIBCONFINI_NL_ID_ ^= 1]) {
+
+			if (format.multiline_entries < 3 && _LIBCONFINI_IS_ESCAPED_) {
+
+				idx += cache[idx + 1] == _LIBCONFINI_SPACES_[_LIBCONFINI_NL_ID_ ^ 1];
 
 			} else {
 
 				cache[idx] = '\0';
-				this_doc.members += further_cuts(cache + ultrim_h(cache, node_at), format);
+				_LIBCONFINI_MEMBERS_ += further_cuts(cache + ultrim_h(cache, node_at), format);
 				node_at = idx + 1;
 
 			}
 
-			abacus = 0;
+			_LIBCONFINI_IS_ESCAPED_ = _LIBCONFINI_FALSE_;
 
 		} else if (cache[idx] == _LIBCONFINI_BACKSLASH_) {
 
-			abacus ^= 1;
+			_LIBCONFINI_IS_ESCAPED_ = !_LIBCONFINI_IS_ESCAPED_;
 
 		} else {
 
-			/* Replace NUL characters in the buffer (if any) with simple spaces */
+			/* Replace `NUL` characters in the buffer (if any) with simple spaces */
 
 			if (!cache[idx]) {
 
@@ -1242,11 +1258,21 @@ unsigned int load_ini_file (
 
 			}
 
-			abacus = 0;
+			_LIBCONFINI_IS_ESCAPED_ = _LIBCONFINI_FALSE_;
 
 		}
 
 	}
+
+	IniStatistics this_doc = {
+		.format = format,
+		.bytes = len,
+		.members = _LIBCONFINI_MEMBERS_
+	};
+
+	#undef _LIBCONFINI_MEMBERS_
+	#undef _LIBCONFINI_NL_ID_
+	#undef _LIBCONFINI_IS_ESCAPED_
 
 	/* Debug */
 	/*
@@ -1271,15 +1297,18 @@ unsigned int load_ini_file (
 
 	}
 
-	/* Dispatch the parsed input */
+	/* PART TWO: Dispatch the parsed input */
 
-	_LIBCONFINI_BOOL_ parent_is_disabled = _LIBCONFINI_FALSE_;
-	_LIBCONFINI_SIZE_ parse_at, real_parent_len = 0, parent_len = 0;
-	char *parent = cache + len, *subparent = parent, *real_parent = parent;
+	#define _LIBCONFINI_PARENT_IS_DISABLED_ tmp_bool
+
+	_LIBCONFINI_SIZE_ parse_at, real_parent_len = 0, curr_parent_len = 0;
+	char *curr_parent_str = cache + len, *subparent_str = curr_parent_str, *real_parent_str = curr_parent_str;
 	IniDispatch this_d = {
 		.format = format,
 		.dispatch_id = 0
 	};
+
+	_LIBCONFINI_PARENT_IS_DISABLED_ = _LIBCONFINI_FALSE_;
 
 	for (node_at = 0, idx = 0; idx <= len; idx++) {
 
@@ -1315,7 +1344,7 @@ unsigned int load_ini_file (
 
 			/*
 
-			Mask "abacus" (3 bits used):
+			Mask `abacus` (3 bits used):
 
 				FLAG_1		Continue the loop
 				FLAG_2		We are not in \n[ \t\v\f]*
@@ -1332,7 +1361,10 @@ unsigned int load_ini_file (
 
 			}
 
-			this_d.type = tmp_int == this_d.d_length ? get_type_as_active(cache + parse_at, idx - parse_at, _LIBCONFINI_TRUE_, format) : 0;
+			this_d.type		=	tmp_int == this_d.d_length ?
+									get_type_as_active(cache + parse_at, idx - parse_at, _LIBCONFINI_TRUE_, format)
+							:
+								0;
 
 			if (this_d.type) {
 
@@ -1357,37 +1389,37 @@ unsigned int load_ini_file (
 
 		}
 
-		if (parent_len && *subparent) {
+		if (curr_parent_len && *subparent_str) {
 
 			tmp_int = 0;
 
 			do {
 
-				parent[tmp_int + parent_len] = subparent[tmp_int];
+				curr_parent_str[tmp_int + curr_parent_len] = subparent_str[tmp_int];
 
-			} while (subparent[tmp_int++]);
+			} while (subparent_str[tmp_int++]);
 
-			parent_len += tmp_int - 1;
-			subparent = parent + parent_len;
-
-		}
-
-		if (parent_is_disabled && !(this_d.type & 4)) {
-
-			real_parent[real_parent_len] = '\0';
-			parent_len = real_parent_len;
-			parent = real_parent;
-			parent_is_disabled = _LIBCONFINI_FALSE_;
-
-		} else if (!parent_is_disabled && this_d.type == INI_DISABLED_SECTION) {
-
-			real_parent_len = parent_len;
-			real_parent = parent;
-			parent_is_disabled = _LIBCONFINI_TRUE_;
+			curr_parent_len += tmp_int - 1;
+			subparent_str = curr_parent_str + curr_parent_len;
 
 		}
 
-		this_d.append_to = parent;
+		if (_LIBCONFINI_PARENT_IS_DISABLED_ && !(this_d.type & 4)) {
+
+			real_parent_str[real_parent_len] = '\0';
+			curr_parent_len = real_parent_len;
+			curr_parent_str = real_parent_str;
+			_LIBCONFINI_PARENT_IS_DISABLED_ = _LIBCONFINI_FALSE_;
+
+		} else if (!_LIBCONFINI_PARENT_IS_DISABLED_ && this_d.type == INI_DISABLED_SECTION) {
+
+			real_parent_len = curr_parent_len;
+			real_parent_str = curr_parent_str;
+			_LIBCONFINI_PARENT_IS_DISABLED_ = _LIBCONFINI_TRUE_;
+
+		}
+
+		this_d.append_to = curr_parent_str;
 
 		this_d.d_length		=	this_d.type == INI_COMMENT ? 
 									uncomment(this_d.data, idx - node_at, format)
@@ -1417,11 +1449,11 @@ unsigned int load_ini_file (
 
 				/*
 
-					Mask "abacus" (3 bits used):
+					Mask `abacus` (3 bits used):
 
-						FLAG_1			We are in an odd sequence of backslashes
-						FLAG_2			Unescaped single quotes are odd until now
-						FLAG_4			Unescaped double quotes are odd until now
+						FLAG_1		We are in an odd sequence of backslashes
+						FLAG_2		Unescaped single quotes are odd until now
+						FLAG_4		Unescaped double quotes are odd until now
 
 				*/
 
@@ -1450,16 +1482,16 @@ unsigned int load_ini_file (
 
 				this_d.d_length = sanitize_section_name(this_d.data, format);
 
-				if (parent_len && *this_d.data == _LIBCONFINI_SUBSECTION_) {
+				if (curr_parent_len && *this_d.data == _LIBCONFINI_SUBSECTION_) {
 
-					subparent = this_d.data;
+					subparent_str = this_d.data;
 
 				} else {
 
-					parent = this_d.data + (!parent_len && *this_d.data == _LIBCONFINI_SUBSECTION_);
-					parent_len = this_d.d_length - (!parent_len && *this_d.data == _LIBCONFINI_SUBSECTION_);
-					subparent = cache + idx;
-					this_d.append_to = subparent;
+					curr_parent_str = this_d.data + (!curr_parent_len && *this_d.data == _LIBCONFINI_SUBSECTION_);
+					curr_parent_len = this_d.d_length - (!curr_parent_len && *this_d.data == _LIBCONFINI_SUBSECTION_);
+					subparent_str = cache + idx;
+					this_d.append_to = subparent_str;
 
 				}
 
@@ -1529,6 +1561,8 @@ unsigned int load_ini_file (
 
 	free_and_exit:
 
+	#undef _LIBCONFINI_PARENT_IS_DISABLED_
+
 	free(cache);
 	return return_value;
 
@@ -1571,7 +1605,7 @@ IniFormatId ini_format_get_id (const IniFormat source) {
 		mask |= source.PROPERTY << bitpos;\
 		bitpos += SIZE;
 
-	_LIBCONFINI_EXPAND_FORMAT_MACRO_AS_(_LIBCONFINI_ASSIGN_TO_FORMAT_ID_)
+	_LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(_LIBCONFINI_ASSIGN_TO_FORMAT_ID_)
 
 	#undef _LIBCONFINI_ASSIGN_TO_FORMAT_ID_
 
@@ -1603,7 +1637,7 @@ void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id) {
 		dest_format->PROPERTY = format_id & _LIBCONFINI_MAX_BITS_(SIZE);\
 		format_id >>= SIZE;
 
-	_LIBCONFINI_EXPAND_FORMAT_MACRO_AS_(_LIBCONFINI_ASSIGN_TO_FORMAT_)
+	_LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(_LIBCONFINI_ASSIGN_TO_FORMAT_)
 
 	#undef _LIBCONFINI_ASSIGN_TO_FORMAT_
 	#undef _LIBCONFINI_MAX_BITS_
@@ -1621,7 +1655,7 @@ void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id) {
 
 /**
 
-	@brief			Unescapes \\, \' and \" and removes all unescaped quotes (if single/double quotes are active)
+	@brief			Unescapes `\\`, `\'` and `\"` and removes all unescaped quotes (if single/double quotes are active)
 	@param			ini_string		The string to be unescaped
 	@param			format			The format of the INI file
 	@return			The new length of the string
@@ -1634,7 +1668,7 @@ unsigned long int ini_unquote (char * const ini_string, const IniFormat format) 
 
 	/*
 
-	Mask "qmask" (4 bits used):
+	Mask `qmask` (4 bits used):
 
 		FLAG_1		Unescaped single quotes are even until now
 		FLAG_2		Unescaped double quotes are even until now
@@ -1709,7 +1743,7 @@ unsigned long int ini_array_get_length (const char * const ini_string, const cha
 
 	/*
 
-	Mask "abacus" (6 bits used):
+	Mask `abacus` (6 bits used):
 
 		FLAG_1		We are in an odd sequence of backslashes
 		FLAG_2		Unescaped single quotes are odd until now
@@ -1784,7 +1818,7 @@ unsigned int ini_array_foreach (
 	_LIBCONFINI_BYTE_ abacus;
 	_LIBCONFINI_SIZE_ idx, offs;
 
-	/* Mask "abacus" (6 bits used): as above */
+	/* Mask `abacus` (6 bits used): as above */
 
 	for (offs = 0, abacus = delimiter ? 16 : 0, idx = 0; !(abacus & 32); idx++) {
 
@@ -1834,11 +1868,11 @@ unsigned int ini_array_foreach (
 /**
 
 	@brief			Splits an INI array and calls a custom function for each member.
-	@param			ini_string			The stringified array
-	@param			delimiter			The delimiter of the array members
-	@param			format				The format of the INI file
-	@param			f_foreach			The function that will be invoked for each array member
-	@param			user_data			A custom argument, or NULL
+	@param			ini_string		The stringified array
+	@param			delimiter		The delimiter of the array members
+	@param			format			The format of the INI file
+	@param			f_foreach		The function that will be invoked for each array member
+	@param			user_data		A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
 
 **/
@@ -1857,7 +1891,7 @@ unsigned int ini_split_array (
 	_LIBCONFINI_BYTE_ abacus;
 	_LIBCONFINI_SIZE_ offs, idx;
 
-	/* Mask "abacus" (6 bits used): as above */
+	/* Mask `abacus` (6 bits used): as above */
 
 	for (offs = 0, abacus = delimiter ? 16 : 0, idx = 0; !(abacus & 32); idx++) {
 
@@ -1998,7 +2032,6 @@ long long int (* const ini_get_llint) (const char *ini_string) = &atoll;
 
 double (* const ini_get_float) (const char *ini_string) = &atof;
 
-/* Where is atolf?? */
 /* long double (* const ini_getlfloat)(const char *ini_string) = &atolf; */
 
 

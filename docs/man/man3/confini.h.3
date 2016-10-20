@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Tue Oct 18 2016" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Thu Oct 20 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -13,7 +13,7 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "struct \fBIniFormat\fP"
 .br
-.RI "24-bit bitfield representing a unique format of an INI file (INI dialect) "
+.RI "24-bit bitfield representing a unique format of an INI file (INI dialect) -- \fCsizeof(IniFormat)\fP should be \fC3\fP "
 .ti -1c
 .RI "struct \fBIniStatistics\fP"
 .br
@@ -29,7 +29,7 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "typedef struct \fBIniFormat\fP \fBIniFormat\fP"
 .br
-.RI "24-bit bitfield representing a unique format of an INI file (INI dialect) "
+.RI "24-bit bitfield representing a unique format of an INI file (INI dialect) -- \fCsizeof(IniFormat)\fP should be \fC3\fP "
 .ti -1c
 .RI "typedef struct \fBIniStatistics\fP \fBIniStatistics\fP"
 .br
@@ -89,7 +89,7 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "unsigned long int \fBini_unquote\fP (char *const ini_string, const \fBIniFormat\fP format)"
 .br
-.RI "Unescapes \\, \\' and " and removes all unescaped quotes (if single/double quotes are active) "
+.RI "Unescapes \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP and removes all unescaped quotes (if single/double quotes are active) "
 .ti -1c
 .RI "unsigned long int \fBini_array_get_length\fP (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 .br
@@ -170,7 +170,7 @@ Dispatch of a single INI member\&.
 .SS "typedef struct \fBIniFormat\fP   \fBIniFormat\fP"
 
 .PP
-24-bit bitfield representing a unique format of an INI file (INI dialect) 
+24-bit bitfield representing a unique format of an INI file (INI dialect) -- \fCsizeof(IniFormat)\fP should be \fC3\fP 
 .SS "typedef unsigned long int \fBIniFormatId\fP"
 
 .PP
@@ -190,21 +190,22 @@ Error codes\&.
 .in +1c
 .TP
 \fB\fICONFINI_EFEINTR \fP\fP
+Interrupted by the user during \fCf_foreach()\fP 
 .TP
 \fB\fICONFINI_EFEOOR \fP\fP
-Interrupted by the user during f_foreach 
-.TP
-\fB\fICONFINI_EIINTR \fP\fP
 The loop is longer than expected (out of range) 
 .TP
-\fB\fICONFINI_ENOMEM \fP\fP
-Interrupted by the user during f_init 
+\fB\fICONFINI_EIINTR \fP\fP
+Interrupted by the user during \fCf_init()\fP 
 .TP
-\fB\fICONFINI_EIO \fP\fP
+\fB\fICONFINI_ENOMEM \fP\fP
 Error allocating memory 
 .TP
-\fB\fICONFINI_ENOENT \fP\fP
+\fB\fICONFINI_EIO \fP\fP
 Error reading the file 
+.TP
+\fB\fICONFINI_ENOENT \fP\fP
+File inaccessible 
 .SS "enum \fBIniComments\fP"
 
 .PP
@@ -432,7 +433,7 @@ Zero for success, otherwise an error code
 .SS "unsigned long int ini_unquote (char *const ini_string, const \fBIniFormat\fP format)"
 
 .PP
-Unescapes \\, \\' and " and removes all unescaped quotes (if single/double quotes are active) 
+Unescapes \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP and removes all unescaped quotes (if single/double quotes are active) 
 .PP
 \fBParameters:\fP
 .RS 4

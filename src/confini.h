@@ -18,15 +18,15 @@
 
 #define _LIBCONFINI_FORMAT_AS_DECLARATION_(SIZE, PROPERTY, VALUE) unsigned char PROPERTY:SIZE;
 #define _LIBCONFINI_FORMAT_AS_ASSIGNEMENT_(SIZE, PROPERTY, VALUE) VALUE,
-#define _LIBCONFINI_FORMAT_STRUCT_ struct IniFormat { _LIBCONFINI_EXPAND_FORMAT_MACRO_AS_(_LIBCONFINI_FORMAT_AS_DECLARATION_) }
-#define _LIBCONFINI_DEFAULT_FORMAT_ { _LIBCONFINI_EXPAND_FORMAT_MACRO_AS_(_LIBCONFINI_FORMAT_AS_ASSIGNEMENT_) }
+#define _LIBCONFINI_FORMAT_STRUCT_ struct IniFormat { _LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(_LIBCONFINI_FORMAT_AS_DECLARATION_) }
+#define _LIBCONFINI_DEFAULT_FORMAT_ { _LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(_LIBCONFINI_FORMAT_AS_ASSIGNEMENT_) }
 
 
 
 /* PUBLIC MACROS */
 
 
-#define _LIBCONFINI_EXPAND_FORMAT_MACRO_AS_(______)                          /*-*\
+#define _LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(______)                            /*-*\
 
     ______(     BITS      NAME                        DEFAULT VALUE            )/--/
                                                                                /-*/\
@@ -52,14 +52,14 @@
 /* PUBLIC TYPEDEFS */
 
 
-/** @brief	24-bit bitfield representing a unique format of an INI file (INI dialect) **/
+/** @brief	24-bit bitfield representing a unique format of an INI file (INI dialect) -- `sizeof(IniFormat)` should be `3` **/
 typedef _LIBCONFINI_FORMAT_STRUCT_ IniFormat;
 
 /** @brief	Global statistics about an INI file **/
 typedef struct IniStatistics {
 	const IniFormat format;
-	unsigned long int bytes;
-	unsigned long int members;
+	const unsigned long int bytes;
+	const unsigned long int members;
 } IniStatistics;
 
 /** @brief	Dispatch of a single INI member **/
@@ -155,12 +155,12 @@ extern double (* const ini_get_float) (const char *ini_string);
 
 /** @brief	Error codes **/
 enum ConfiniErrorNo {
-	CONFINI_EFEINTR = 1,	/** Interrupted by the user during f_foreach **/
-	CONFINI_EFEOOR = 2,	/** The loop is longer than expected (out of range) **/
-	CONFINI_EIINTR = 3,	/** Interrupted by the user during f_init **/
-	CONFINI_ENOMEM = 4,	/** Error allocating memory **/
-	CONFINI_EIO = 5,	/** Error reading the file **/
-	CONFINI_ENOENT = 6	/** File inaccessible **/
+	CONFINI_EFEINTR = 1,	/**< Interrupted by the user during `f_foreach()` **/
+	CONFINI_EFEOOR = 2,	/**< The loop is longer than expected (out of range) **/
+	CONFINI_EIINTR = 3,	/**< Interrupted by the user during `f_init()` **/
+	CONFINI_ENOMEM = 4,	/**< Error allocating memory **/
+	CONFINI_EIO = 5,	/**< Error reading the file **/
+	CONFINI_ENOENT = 6	/**< File inaccessible **/
 };
 
 /** @brief	Most used delimiters (but a delimiter can also be any other ASCII character) **/
