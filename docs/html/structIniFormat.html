@@ -119,7 +119,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to 1, key- and section- names will not be rendered in lower case </p>
+<p>If set to <code>1</code>, key- and section- names will not be rendered in lower case </p>
 
 </div>
 </div>
@@ -134,7 +134,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The symbol to be used as delimiter; if set to '\0', any space is delimiter (/[]/) </p>
+<p>The symbol to be used as delimiter; if set to `'\0'<code>, any space is delimiter (</code>/[]+/`) </p>
 
 </div>
 </div>
@@ -149,7 +149,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to 1, comments non containing a delimiter symbol will not be parsed as (disabled) implicit keys </p>
+<p>If set to <code>1</code>, comments non containing a delimiter symbol will not be parsed as disabled implicit keys, but as simple comments </p>
 
 </div>
 </div>
@@ -164,7 +164,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to 1, sequences of more than one space in values (/{2,}/) will not be collapsed </p>
+<p>If set to <code>1</code>, sequences of more than one space in values (<code>/\s{2,}/</code>) will not be collapsed </p>
 
 </div>
 </div>
@@ -179,7 +179,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The rule of the hash character (use enum <a class="el" href="confini_8h.html#a397bfc55d3cf3e2ecd6b044e4d168796" title="Behaviors of &#39;#&#39; and &#39;;&#39;. ">IniComments</a> for this) </p>
+<p>The rule of the hash character (use enum <code><a class="el" href="confini_8h.html#a397bfc55d3cf3e2ecd6b044e4d168796" title="Behaviors of &#39;#&#39; and &#39;;&#39;. ">IniComments</a></code> for this) </p>
 
 </div>
 </div>
@@ -194,7 +194,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to 1, the dispatch of implicit keys (see <a class="el" href="libconfini.html">Library Functions Manual</a>) will always assign to <a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a> and to <a class="el" href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">IniDispatch::v_len</a> the global variables <a class="el" href="confini_8h.html#af8b0049b3a18c7704ad503ed6ad21927" title="Default value of implicit keys. ">INI_IMPLICIT_VALUE</a> and <a class="el" href="confini_8h.html#a0e1d42f056971f855c8130bc542d0ee9" title="Default length of implicit keys&#39; value – it can be set to any unsigned number, independently of INI_...">INI_IMPLICIT_V_LEN</a> respectively; if set to 0, implicit keys will be considered as empty keys </p>
+<p>If set to <code>1</code>, the dispatch of implicit keys (see <a class="el" href="libconfini.html">Library Functions Manual</a>) will always assign to <code><a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></code> and to <code><a class="el" href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">IniDispatch::v_len</a></code> the global variables <code><a class="el" href="confini_8h.html#af8b0049b3a18c7704ad503ed6ad21927" title="Default value of implicit keys. ">INI_IMPLICIT_VALUE</a></code> and <code><a class="el" href="confini_8h.html#a0e1d42f056971f855c8130bc542d0ee9" title="Default length of implicit keys&#39; value – it can be set to any unsigned number, independently of INI_...">INI_IMPLICIT_V_LEN</a></code> respectively; if set to <code>0</code>, implicit keys will be considered empty keys </p>
 
 </div>
 </div>
@@ -209,7 +209,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The multiline status of the document (use enum <a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55f" title="Multiline entries. ">IniMultiline</a> for this) </p>
+<p>The multiline state of the document (use enum <code><a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55f" title="Multiline entries. ">IniMultiline</a></code> for this) </p>
 
 </div>
 </div>
@@ -224,8 +224,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to 1, prevents that /[#;]+/[^][^<br />
-]+/ be parsed as a disabled entry </p>
+<p>If set to <code>1</code>, prevents that <code>/[#;]\s+/[^\s][^\n]+/</code> be parsed as a disabled entry </p>
 
 </div>
 </div>
@@ -240,7 +239,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to 1, makes the double-quote character (") a normal character </p>
+<p>If set to <code>1</code>, the double-quote character (<code>"</code>) will be considered as a normal character </p>
 
 </div>
 </div>
@@ -255,7 +254,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to 1, makes the single-quote character (') a normal character </p>
+<p>If set to <code>1</code>, the single-quote character (<code>'</code>) will be considered as a normal character </p>
 
 </div>
 </div>
@@ -284,7 +283,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The rule of the semicolon character (use enum <a class="el" href="confini_8h.html#a397bfc55d3cf3e2ecd6b044e4d168796" title="Behaviors of &#39;#&#39; and &#39;;&#39;. ">IniComments</a> for this) </p>
+<p>The rule of the semicolon character (use enum <code><a class="el" href="confini_8h.html#a397bfc55d3cf3e2ecd6b044e4d168796" title="Behaviors of &#39;#&#39; and &#39;;&#39;. ">IniComments</a></code> for this) </p>
 
 </div>
 </div>

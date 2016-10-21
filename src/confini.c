@@ -27,59 +27,61 @@
 	- Bits 23-24: unused
 
 	@var		IniFormat::delimiter_symbol
-					The symbol to be used as delimiter; if set to '\0', any space is delimiter (/[\s]/)
+					The symbol to be used as delimiter; if set to `'\0'`, any space is delimiter (`/[\s]+/`)
 	@var		IniFormat::semicolon
-					The rule of the semicolon character (use enum ::IniComments for this)
+					The rule of the semicolon character (use enum `::IniComments` for this)
 	@var		IniFormat::hash
-					The rule of the hash character (use enum ::IniComments for this)
+					The rule of the hash character (use enum `::IniComments` for this)
 	@var		IniFormat::multiline_entries
-					The multiline status of the document (use enum ::IniMultiline for this)
+					The multiline state of the document (use enum `::IniMultiline` for this)
 	@var		IniFormat::no_single_quotes
-					If set to 1, makes the single-quote character (') a normal character
+					If set to `1`, the single-quote character (`'`) will be considered as a normal character
 	@var		IniFormat::no_double_quotes
-					If set to 1, makes the double-quote character (") a normal character
+					If set to `1`, the double-quote character (`"`) will be considered as a normal character
 	@var		IniFormat::case_sensitive
-					If set to 1, key- and section- names will not be rendered in lower case
+					If set to `1`, key- and section- names will not be rendered in lower case
 	@var		IniFormat::do_not_collapse_values
-					If set to 1, sequences of more than one space in values (/\s{2,}/) will not be collapsed
+					If set to `1`, sequences of more than one space in values (`/\s{2,}/`) will not be collapsed
 	@var		IniFormat::implicit_is_not_empty
-					If set to 1, the dispatch of implicit keys (see @ref libconfini) will always
-					assign to IniDispatch::value and to IniDispatch::v_len the global variables
-					::INI_IMPLICIT_VALUE and ::INI_IMPLICIT_V_LEN respectively; if set to 0,
-					implicit keys will be considered as empty keys
+					If set to `1`, the dispatch of implicit keys (see @ref libconfini) will always
+					assign to `IniDispatch::value` and to `IniDispatch::v_len` the global variables
+					`::INI_IMPLICIT_VALUE` and `::INI_IMPLICIT_V_LEN` respectively; if set to `0`,
+					implicit keys will be considered empty keys
 	@var		IniFormat::disabled_can_be_implicit
-					If set to 1, comments non containing a delimiter symbol will not be parsed as
-					(disabled) implicit keys
+					If set to `1`, comments non containing a delimiter symbol will not be parsed as
+					disabled implicit keys, but as simple comments
 	@var		IniFormat::no_disabled_after_space
-					If set to 1, prevents that /[#;]\s+/[^\s][^\n]+/ be parsed as a disabled entry
+					If set to `1`, prevents that `/[#;]\s+/[^\s][^\n]+/` be parsed as a disabled entry
 
 
 	@struct		IniStatistics
 
 	@var		IniStatistics::format
-					The format of the INI file (see struct ::IniFormat)
+					The format of the INI file (see struct `::IniFormat`)
 	@var		IniStatistics::bytes
 					The size of the parsed file in bytes
-	@var		IniStatistics::member
+	@var		IniStatistics::members
 					The size of the parsed file in members (nodes)
 
 
 	@struct		IniDispatch
 
-	@var		IniDispatch::append_to
-					The current path
 	@var		IniDispatch::format
-					The format of the INI file (see struct ::IniFormat)
+					The format of the INI file (see struct `::IniFormat`)
 	@var		IniDispatch::type
-					The dispatch type (see enum ::IniNodeType)
+					The dispatch type (see enum `::IniNodeType`)
 	@var		IniDispatch::data
 					It can be a comment, a section or a key
 	@var		IniDispatch::value
 					It can be a key value or an empty string
+	@var		IniDispatch::append_to
+					The current path
 	@var		IniDispatch::d_len
-					The length of the string IniDispatch::data
+					The length of the string `IniDispatch::data`
 	@var		IniDispatch::v_len
-					The length of the string IniDispatch::value
+					The length of the string `IniDispatch::value`
+	@var		IniDispatch::at_len
+					The length of the string `IniDispatch::append_to`
 	@var		IniDispatch::dispatch_id
 					The dispatch id
 
@@ -544,13 +546,13 @@ static _LIBCONFINI_SIZE_ collapse_spaces (char * const str, const IniFormat form
 						: str[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
 						: abacus & 14;
 
+			abacus &= 7;
+
 			if (lshift) {
 
 					str[idx - lshift] = str[idx];
 
 			}
-
-			abacus &= 7;
 
 		}
 
@@ -705,7 +707,7 @@ static _LIBCONFINI_SIZE_ uncomment (char * const commstr, _LIBCONFINI_SIZE_ len,
 
 		*/
 
-		for (abacus = 3, lshift = 0, idx = 0; idx < len; idx++) {
+		for (abacus = 11, lshift = 0, idx = 0; idx < len; idx++) {
 
 			abacus	=	commstr[idx] == _LIBCONFINI_BACKSLASH_ ?
 							((abacus & 35) | 32) ^ 2
@@ -954,7 +956,6 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 							segment[idx] = _LIBCONFINI_INLINE_MARKER_;
 							segment[idx - 1] = '\0';
-							rtrim_h(segment, idx - 1, _LIBCONFINI_NO_EOL_);
 
 							if (show_comments) {
 
@@ -1084,13 +1085,37 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 		/* Search for inline comments in active items */
 
-		for (abacus = 0, idx = search_at; segment[idx]; idx++) {
+		/*
 
-			if (is_comm_char(segment[idx], format) && is_some_space(segment[idx - 1], _LIBCONFINI_WITH_EOL_) && !(abacus & 6)) {
+		Mask `abacus` (5 bits used):
+
+			FLAG_1		We are in an odd sequence of backslashes
+			FLAG_2		Unescaped single quotes are even until now
+			FLAG_4		Unescaped double quotes are even until now
+			FLAG_8		This is not a hash nor a semicolon character
+			FLAG_16		The previous character is not a space
+
+		*/
+
+		for (abacus = 24, idx = search_at; segment[idx]; idx++) {
+
+			abacus	=	is_comm_char(segment[idx], format) ?
+							abacus & 22
+						: is_some_space(segment[idx], _LIBCONFINI_WITH_EOL_) ?
+							(abacus & 14) | 8
+						: segment[idx] == _LIBCONFINI_BACKSLASH_ ?
+							(abacus | 24) ^ 1
+						: !(abacus & 3) && !format.no_double_quotes && segment[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+							(abacus | 24) ^ 4
+						: !(abacus & 5) && !format.no_single_quotes && segment[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
+							(abacus | 24) ^ 2
+						:
+							(abacus & 30) | 24;
+
+			if (!abacus) {
 
 				segment[idx] = _LIBCONFINI_INLINE_MARKER_;
 				segment[idx - 1] = '\0';
-				rtrim_h(segment, idx - 1, _LIBCONFINI_NO_EOL_);
 				search_at = 0;
 
 				if (format.multiline_entries) {
@@ -1108,17 +1133,6 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 				fragm_size += further_cuts(segment + idx, format);
 				break;
-
-			} else {
-
-				abacus	=	!(abacus & 3) && !format.no_double_quotes && segment[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
-								abacus ^ 4
-							: !(abacus & 5) && !format.no_single_quotes && segment[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
-								abacus ^ 2
-							: segment[idx] == _LIBCONFINI_BACKSLASH_ ?
-								abacus ^ 1
-							:
-								abacus & 6;
 
 			}
 
@@ -1206,13 +1220,13 @@ unsigned int load_ini_file (
 
 	_LIBCONFINI_BOOL_ tmp_bool;
 	_LIBCONFINI_BYTE_ abacus;
-	_LIBCONFINI_SIZE_ tmp_int, idx, node_at;
+	_LIBCONFINI_SIZE_ tmp_uint, idx, node_at;
 
 	/* PART ONE: Examine and isolate each segment */
 
 	#define _LIBCONFINI_IS_ESCAPED_ tmp_bool
 	#define _LIBCONFINI_NL_ID_ abacus
-	#define _LIBCONFINI_MEMBERS_ tmp_int
+	#define _LIBCONFINI_MEMBERS_ tmp_uint
 
 	for (
 
@@ -1352,19 +1366,19 @@ unsigned int load_ini_file (
 
 			*/
 
-			for (abacus = 1, tmp_int = 1; abacus && tmp_int < this_d.d_len; tmp_int++) {
+			for (abacus = 1, tmp_uint = 1; abacus && tmp_uint < this_d.d_len; tmp_uint++) {
 
-				abacus	=	this_d.data[tmp_int] == _LIBCONFINI_LF_ || this_d.data[tmp_int] == _LIBCONFINI_CR_ ? 1
-							: (abacus & 4) && is_comm_char(this_d.data[tmp_int], format) ? 0
-							: (abacus & 2) && is_some_space(this_d.data[tmp_int], _LIBCONFINI_NO_EOL_) ? 7
+				abacus	=	this_d.data[tmp_uint] == _LIBCONFINI_LF_ || this_d.data[tmp_uint] == _LIBCONFINI_CR_ ? 1
+							: (abacus & 4) && is_comm_char(this_d.data[tmp_uint], format) ? 0
+							: (abacus & 2) && is_some_space(this_d.data[tmp_uint], _LIBCONFINI_NO_EOL_) ? 7
 							: 3;
 
 			}
 
-			this_d.type		=	tmp_int == this_d.d_len ?
+			this_d.type		=	tmp_uint == this_d.d_len ?
 									get_type_as_active(cache + parse_at, idx - parse_at, _LIBCONFINI_TRUE_, format)
-							:
-								0;
+								:
+									0;
 
 			if (this_d.type) {
 
@@ -1391,15 +1405,15 @@ unsigned int load_ini_file (
 
 		if (curr_parent_len && *subparent_str) {
 
-			tmp_int = 0;
+			tmp_uint = 0;
 
 			do {
 
-				curr_parent_str[tmp_int + curr_parent_len] = subparent_str[tmp_int];
+				curr_parent_str[tmp_uint + curr_parent_len] = subparent_str[tmp_uint];
 
-			} while (subparent_str[tmp_int++]);
+			} while (subparent_str[tmp_uint++]);
 
-			curr_parent_len += tmp_int - 1;
+			curr_parent_len += tmp_uint - 1;
 			subparent_str = curr_parent_str + curr_parent_len;
 
 		}
@@ -1460,24 +1474,24 @@ unsigned int load_ini_file (
 
 				for (
 
-					abacus = 0, tmp_int = 0;
+					abacus = 0, tmp_uint = 0;
 
-						this_d.data[tmp_int]
+						this_d.data[tmp_uint]
 						&&
-						((abacus & 6) || this_d.data[tmp_int] != _LIBCONFINI_CLOSE_SECTION_);
+						((abacus & 6) || this_d.data[tmp_uint] != _LIBCONFINI_CLOSE_SECTION_);
 
-					abacus	=	!(abacus & 3) && !format.no_double_quotes && this_d.data[tmp_int] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
-								: !(abacus & 5) && !format.no_single_quotes && this_d.data[tmp_int] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
-								: this_d.data[tmp_int] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
+					abacus	=	!(abacus & 3) && !format.no_double_quotes && this_d.data[tmp_uint] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
+								: !(abacus & 5) && !format.no_single_quotes && this_d.data[tmp_uint] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
+								: this_d.data[tmp_uint] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 1
 								: abacus & 6,
 
-					tmp_int++
+					tmp_uint++
 
 				);
 
-				while (this_d.data[tmp_int]) {
+				while (this_d.data[tmp_uint]) {
 
-					this_d.data[tmp_int++] = '\0';
+					this_d.data[tmp_uint++] = '\0';
 
 				}
 
@@ -1508,20 +1522,20 @@ unsigned int load_ini_file (
 			case INI_KEY:
 			case INI_DISABLED_KEY:
 
-				tmp_int = get_delimiter_pos(this_d.data, this_d.d_len, format);
+				tmp_uint = get_delimiter_pos(this_d.data, this_d.d_len, format);
 
-				if (this_d.d_len && tmp_int && tmp_int < this_d.d_len) {
+				if (this_d.d_len && tmp_uint && tmp_uint < this_d.d_len) {
 
-					this_d.data[tmp_int] = '\0';
+					this_d.data[tmp_uint] = '\0';
 
 					if (format.do_not_collapse_values) {
 
-						this_d.v_len = this_d.d_len - ltrim_h(this_d.data, tmp_int + 1, _LIBCONFINI_NO_EOL_);
-						this_d.value = this_d.data + this_d.d_len - this_d.v_len;
+						this_d.value = this_d.data + ltrim_h(this_d.data, tmp_uint + 1, _LIBCONFINI_WITH_EOL_);
+						this_d.v_len = rtrim_h(this_d.value, this_d.d_len + this_d.data - this_d.value, _LIBCONFINI_WITH_EOL_);
 
 					} else {
 
-						this_d.value = this_d.data + tmp_int + 1;
+						this_d.value = this_d.data + tmp_uint + 1;
 						this_d.v_len = collapse_spaces(this_d.value, format);
 
 					}
@@ -1604,13 +1618,13 @@ IniFormatId ini_format_get_id (const IniFormat source) {
 	unsigned short int bitpos = 0;
 	IniFormatId mask = 0;
 
-	#define _LIBCONFINI_ASSIGN_TO_FORMAT_ID_(SIZE, PROPERTY, IGNORE_ME) \
+	#define _LIBCONFINI_READ_FORMAT_ID_ID_(SIZE, PROPERTY, IGNORE_ME) \
 		mask |= source.PROPERTY << bitpos;\
 		bitpos += SIZE;
 
-	_LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(_LIBCONFINI_ASSIGN_TO_FORMAT_ID_)
+	_LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(_LIBCONFINI_READ_FORMAT_ID_ID_)
 
-	#undef _LIBCONFINI_ASSIGN_TO_FORMAT_ID_
+	#undef _LIBCONFINI_READ_FORMAT_ID_ID_
 
 	return mask;
 
@@ -1635,15 +1649,13 @@ void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id) {
 	#define _LIBCONFINI_MAX_6_BITS_ 63
 	#define _LIBCONFINI_MAX_7_BITS_ 127
 	#define _LIBCONFINI_MAX_8_BITS_ 255
-	#define _LIBCONFINI_MAX_BITS_(SIZE_IN_BITS) _LIBCONFINI_MAX_##SIZE_IN_BITS##_BITS_
-	#define _LIBCONFINI_ASSIGN_TO_FORMAT_(SIZE, PROPERTY, IGNORE_ME) \
-		dest_format->PROPERTY = format_id & _LIBCONFINI_MAX_BITS_(SIZE);\
+	#define _LIBCONFINI_READ_FORMAT_ID_(SIZE, PROPERTY, IGNORE_ME) \
+		dest_format->PROPERTY = format_id & _LIBCONFINI_MAX_##SIZE##_BITS_;\
 		format_id >>= SIZE;
 
-	_LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(_LIBCONFINI_ASSIGN_TO_FORMAT_)
+	_LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(_LIBCONFINI_READ_FORMAT_ID_)
 
-	#undef _LIBCONFINI_ASSIGN_TO_FORMAT_
-	#undef _LIBCONFINI_MAX_BITS_
+	#undef _LIBCONFINI_READ_FORMAT_ID_
 	#undef _LIBCONFINI_MAX_8_BITS_
 	#undef _LIBCONFINI_MAX_7_BITS_
 	#undef _LIBCONFINI_MAX_6_BITS_

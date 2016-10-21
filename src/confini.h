@@ -41,7 +41,7 @@
     ______(     1,        no_single_quotes,           0                        )   \
     ______(     1,        no_double_quotes,           0                        )   \
     ______(     1,        implicit_is_not_empty,      0                        )   \
-    ______(     1,        do_not_collapse_values,     0                        )   \
+    ______(     1,        do_not_collapse_values,     1                        )   \
     ______(     1,        no_disabled_after_space,    0                        )   \
     ______(     1,        disabled_can_be_implicit,   0                        )   \
     ______(     2,        _LIBCONFINI_RESERVED_,      0                        )/*-/

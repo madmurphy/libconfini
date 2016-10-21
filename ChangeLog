@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.2-2] - 2016-10-21
+
+Changes:
+
+* Fixed inline comments formatting bug
+* Code optimization
+
 ## [1.2-1] - 2016-10-20
 
 Changes:
