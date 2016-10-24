@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <confini.h>
 
+#define FALSE 0
+#define TRUE 1
+
 struct my_struct {
 
 	char *my_date;
@@ -8,7 +11,7 @@ struct my_struct {
 
 };
 
-int print_ini_stats (IniStatistics *statistics, void *user_data) {
+static int print_ini_stats (IniStatistics *statistics, void *user_data) {
 
 	struct my_struct *my_other = (struct my_struct *) user_data;
 
@@ -28,7 +31,7 @@ int print_ini_stats (IniStatistics *statistics, void *user_data) {
 
 }
 
-int my_ini_listener (IniDispatch *dispatch, void *user_data) {
+static int my_ini_listener (IniDispatch *dispatch, void *user_data) {
 
 	printf(
 
@@ -65,9 +68,6 @@ int my_ini_listener (IniDispatch *dispatch, void *user_data) {
 
 }
 
-#define NO 0
-#define YES 1
-
 int main () {
 
 	/* The format of the INI file */
@@ -83,8 +83,8 @@ int main () {
 	my_format = INI_DEFAULT_FORMAT;
 
 	/* Define the value to be shown in case of implicit keys, and its length */
-	my_format.implicit_is_not_empty = YES;
-	ini_set_implicit_value("TRUE", 0);
+	my_format.implicit_is_not_empty = TRUE;
+	ini_set_implicit_value("YES", 0);
 
 	/* Load INI file */
 	if (load_ini_file("example.conf", my_format, print_ini_stats, my_ini_listener, &my_other)) {

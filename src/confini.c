@@ -28,30 +28,34 @@
 
 	@var		IniFormat::delimiter_symbol
 					The symbol to be used as delimiter; if set to `'\0'`, any space is delimiter (`/[\s]+/`)
+
 	@var		IniFormat::semicolon
 					The rule of the semicolon character (use enum `::IniComments` for this)
 	@var		IniFormat::hash
 					The rule of the hash character (use enum `::IniComments` for this)
 	@var		IniFormat::multiline_entries
 					The multiline state of the document (use enum `::IniMultiline` for this)
+	@var		IniFormat::case_sensitive
+					If set to `1`, key- and section- names will not be rendered in lower case
+	@var		IniFormat::no_spaces_in_names
+					If set to `1`, key- and section- names containing spaces will be rendered as INI_UNKNOWN
+
 	@var		IniFormat::no_single_quotes
 					If set to `1`, the single-quote character (`'`) will be considered as a normal character
 	@var		IniFormat::no_double_quotes
 					If set to `1`, the double-quote character (`"`) will be considered as a normal character
-	@var		IniFormat::case_sensitive
-					If set to `1`, key- and section- names will not be rendered in lower case
-	@var		IniFormat::do_not_collapse_values
-					If set to `1`, sequences of more than one space in values (`/\s{2,}/`) will not be collapsed
 	@var		IniFormat::implicit_is_not_empty
 					If set to `1`, the dispatch of implicit keys (see @ref libconfini) will always
 					assign to `IniDispatch::value` and to `IniDispatch::v_len` the global variables
 					`::INI_IMPLICIT_VALUE` and `::INI_IMPLICIT_V_LEN` respectively; if set to `0`,
 					implicit keys will be considered empty keys
+	@var		IniFormat::do_not_collapse_values
+					If set to `1`, sequences of more than one space in values (`/\s{2,}/`) will not be collapsed
+	@var		IniFormat::no_disabled_after_space
+					If set to `1`, prevents that `/[#;]\s+/[^\s][^\n]+/` be parsed as a disabled entry
 	@var		IniFormat::disabled_can_be_implicit
 					If set to `1`, comments non containing a delimiter symbol will not be parsed as
 					disabled implicit keys, but as simple comments
-	@var		IniFormat::no_disabled_after_space
-					If set to `1`, prevents that `/[#;]\s+/[^\s][^\n]+/` be parsed as a disabled entry
 
 
 	@struct		IniStatistics
@@ -372,7 +376,7 @@ static inline _LIBCONFINI_BOOL_ is_comm_char (const char ch, const IniFormat for
 
 **/
 static inline _LIBCONFINI_BOOL_ is_erase_char (const char ch, const IniFormat format) {
-	return (format.semicolon == INI_ERASE_COMMENT && ch == _LIBCONFINI_SEMICOLON_) || (format.hash == INI_ERASE_COMMENT && ch == _LIBCONFINI_HASH_);
+	return (format.semicolon == INI_FORGET_COMMENT && ch == _LIBCONFINI_SEMICOLON_) || (format.hash == INI_FORGET_COMMENT && ch == _LIBCONFINI_HASH_);
 }
 
 
@@ -1173,11 +1177,11 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 unsigned int load_ini_file (
 	const char * const path,
 	const IniFormat format,
-	int (* const f_init)(
+	int (* const f_init) (
 		IniStatistics *statistics,
 		void *init_other
 	),
-	int (* const f_foreach)(
+	int (* const f_foreach) (
 		IniDispatch *dispatch,
 		void *foreach_other
 	),
@@ -1821,21 +1825,23 @@ unsigned int ini_array_foreach (
 	const char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
-	int (* const f_foreach)(
+	int (* const f_foreach) (
 		const char *member,
 		unsigned int offset,
-		unsigned int length,
-		void *foreach_other
+		unsigned int elem_length,
+		unsigned int index,
+		IniFormat format,
+		void *user_data
 	),
 	void *user_data
 ) {
 
 	_LIBCONFINI_BYTE_ abacus;
-	_LIBCONFINI_SIZE_ idx, offs;
+	_LIBCONFINI_SIZE_ idx, offs, counter;
 
 	/* Mask `abacus` (6 bits used): as above */
 
-	for (offs = 0, abacus = delimiter ? 16 : 0, idx = 0; !(abacus & 32); idx++) {
+	for (offs = 0, abacus = delimiter ? 16 : 0, counter = 0, idx = 0; !(abacus & 32); idx++) {
 
 		abacus	=	(delimiter ? ini_string[idx] == delimiter : is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_)) ?
 						abacus & 54
@@ -1863,7 +1869,7 @@ unsigned int ini_array_foreach (
 
 			offs = ltrim_s(ini_string, offs, _LIBCONFINI_WITH_EOL_);
 
-			if (f_foreach(ini_string, offs, rtrim_s(ini_string + offs, idx - offs, _LIBCONFINI_WITH_EOL_), user_data)) {
+			if (f_foreach(ini_string, offs, rtrim_s(ini_string + offs, idx - offs, _LIBCONFINI_WITH_EOL_), counter++, format, user_data)) {
 
 				return CONFINI_EFEINTR;
 
@@ -1876,6 +1882,115 @@ unsigned int ini_array_foreach (
 	}
 
 	return 0;
+
+}
+
+
+/**
+
+	@brief			Removes spaces around all the delimiters of a stringified array
+	@param			ini_string			The stringified array
+	@param			delimiter			The delimiter of the array members
+	@param			format				The format of the INI file
+	@return			The new length of the string containing the array
+
+	Out of quotes similar to ECMAScript `ini_string.replace(new RegExp("^\\s+|\\s*(?:(" + delimiter + ")\\s*|($))", "g"), "$1$2")`
+	If `INI_ANY_SPACE` (`0`) is used as delimiter one or more different spaces (`/[\t \v\f\n\r]+/`) will always be
+	collapsed to one space (' '), independently of their position.
+
+**/
+unsigned long int ini_collapse_array (char * const ini_string, const char delimiter, const IniFormat format) {
+
+	unsigned int abacus;
+	unsigned long int iter;
+	_LIBCONFINI_SIZE_ idx, lshift;
+
+	/*
+
+	Mask `abacus` (10 bits used):
+
+		FLAG_1		We are in an odd sequence of backslashes
+		FLAG_2		Unescaped single quotes are odd until now
+		FLAG_4		Unescaped double quotes are odd until now
+		FLAG_8		We met a delimiter
+		FLAG_16		This shift does not contain a delimiter (possible just at the beginning or at the end of the buffer)
+		FLAG_32		Remember this position
+		FLAG_64		In this area a shift has to be done
+		FLAG_128	Account the shift now
+		FLAG_256	Any space is delimiter
+		FLAG_512	Continue the loop
+
+	*/
+
+	for (abacus = delimiter ? 528 : 784, lshift = 0, iter = 0, idx = 0; abacus & 512; idx++) {
+
+		abacus	=	!(abacus & 262) && ini_string[idx] == delimiter ?
+
+						(
+							abacus & 8 ?
+								(abacus & 878) | 744
+							:
+								((abacus & 878) | 616) ^ ((abacus >> 1) & 32)
+						)
+
+					: !(abacus & 6) && is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_) ?
+
+						(
+							(abacus & 264) ?
+								(abacus & 878) | 616
+							:
+								(abacus & 886) | 608
+						) ^ ((abacus >> 1) & 32)
+
+					: ini_string[idx] ?
+
+						(
+							(abacus & 64) && (abacus & 24) ?
+								(abacus & 919) | 640
+							:
+								(abacus & 791) | 512
+						) ^ (
+							!(abacus & 3) && !format.no_double_quotes && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? 4
+							: !(abacus & 5) && !format.no_single_quotes && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? 2
+							: ini_string[idx] == _LIBCONFINI_BACKSLASH_ ? 1
+							: abacus & 1
+						)
+
+					:
+
+						((abacus & 334) | ((abacus << 1) & 144)) ^ 16;
+
+
+		if (abacus & 128) {
+
+			if (!(abacus & 16)) {
+
+				ini_string[iter - lshift] = delimiter ? delimiter : _LIBCONFINI_SIMPLE_SPACE_;
+
+			}
+
+			lshift += abacus & 16 ? idx - iter : idx - iter - 1;
+			abacus &= 879;
+
+		}
+
+		if (lshift) {
+
+			ini_string[idx - lshift] = ini_string[idx];
+
+		}
+
+		if (abacus & 32) {
+
+			iter = idx;
+
+		}
+
+	}
+
+	for (iter = idx - lshift - 1; lshift; ini_string[idx - lshift--] = '\0');
+
+	return iter;
 
 }
 
@@ -1895,20 +2010,22 @@ unsigned int ini_split_array (
 	char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
-	int (* const f_foreach)(
+	int (* const f_foreach) (
 		char *element,
-		unsigned int length,
-		void *foreach_other
+		unsigned int elem_length,
+		unsigned int index,
+		IniFormat format,
+		void *user_data
 	),
 	void *user_data
 ) {
 
 	_LIBCONFINI_BYTE_ abacus;
-	_LIBCONFINI_SIZE_ offs, idx;
+	_LIBCONFINI_SIZE_ offs, idx, counter;
 
 	/* Mask `abacus` (6 bits used): as above */
 
-	for (offs = 0, abacus = delimiter ? 16 : 0, idx = 0; !(abacus & 32); idx++) {
+	for (offs = 0, abacus = delimiter ? 16 : 0, counter = 0, idx = 0; !(abacus & 32); idx++) {
 
 		abacus	=	(delimiter ? ini_string[idx] == delimiter : is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_)) ?
 						abacus & 54
@@ -1937,7 +2054,7 @@ unsigned int ini_split_array (
 			ini_string[idx] = '\0';
 			offs = ltrim_h(ini_string, offs, _LIBCONFINI_WITH_EOL_);
 
-			if (f_foreach(ini_string + offs, rtrim_h(ini_string + offs, idx - offs, _LIBCONFINI_WITH_EOL_), user_data)) {
+			if (f_foreach(ini_string + offs, rtrim_h(ini_string + offs, idx - offs, _LIBCONFINI_WITH_EOL_), counter++, format, user_data)) {
 
 				return CONFINI_EFEINTR;
 
@@ -2037,7 +2154,7 @@ signed int ini_get_lazy_bool (const char * const ini_string, const signed int re
 
 
 
-/* WRAPPERS -- In case you don't want to "#include <stdlib.h>" in your source */
+/* WRAPPERS -- In case you don't want to `#include <stdlib.h>` in your source */
 
 int (* const ini_get_int) (const char *ini_string) = &atoi;
 

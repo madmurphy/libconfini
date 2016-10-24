@@ -149,12 +149,15 @@ Functions</h2></td></tr>
 <tr class="memitem:a7906f6324aa01202145d1c98591310d2"><td class="memItemLeft" align="right" valign="top">unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a7906f6324aa01202145d1c98591310d2">ini_array_get_length</a> (const char *const ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
 <tr class="memdesc:a7906f6324aa01202145d1c98591310d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the length of an INI array.  <a href="#a7906f6324aa01202145d1c98591310d2">More...</a><br /></td></tr>
 <tr class="separator:a7906f6324aa01202145d1c98591310d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac76481500cf894e28511080aaf1bbb50"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ac76481500cf894e28511080aaf1bbb50">ini_array_foreach</a> (const char *const ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format, int(*const f_foreach)(const char *member, unsigned int offset, unsigned int length, void *foreach_other), void *user_data)</td></tr>
-<tr class="memdesc:ac76481500cf894e28511080aaf1bbb50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls a custom function for each member of an INI array &ndash; useful for read-only (const) stringified arrays.  <a href="#ac76481500cf894e28511080aaf1bbb50">More...</a><br /></td></tr>
-<tr class="separator:ac76481500cf894e28511080aaf1bbb50"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57fdfb89122a3dda84add8055fddfe01"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a57fdfb89122a3dda84add8055fddfe01">ini_split_array</a> (char *const ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format, int(*const f_foreach)(char *element, unsigned int length, void *foreach_other), void *user_data)</td></tr>
-<tr class="memdesc:a57fdfb89122a3dda84add8055fddfe01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Splits an INI array and calls a custom function for each member.  <a href="#a57fdfb89122a3dda84add8055fddfe01">More...</a><br /></td></tr>
-<tr class="separator:a57fdfb89122a3dda84add8055fddfe01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab88cf5748350c6ddddfcaa7d4e98133b"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ab88cf5748350c6ddddfcaa7d4e98133b">ini_array_foreach</a> (const char *const ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format, int(*const f_foreach)(const char *member, unsigned int offset, unsigned int elem_length, unsigned int index, <a class="el" href="structIniFormat.html">IniFormat</a> format, void *user_data), void *user_data)</td></tr>
+<tr class="memdesc:ab88cf5748350c6ddddfcaa7d4e98133b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls a custom function for each member of an INI array &ndash; useful for read-only (const) stringified arrays.  <a href="#ab88cf5748350c6ddddfcaa7d4e98133b">More...</a><br /></td></tr>
+<tr class="separator:ab88cf5748350c6ddddfcaa7d4e98133b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a744f00ac02b98c4a1f50206f0d28d9f8"><td class="memItemLeft" align="right" valign="top">unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a744f00ac02b98c4a1f50206f0d28d9f8">ini_collapse_array</a> (char *const ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
+<tr class="memdesc:a744f00ac02b98c4a1f50206f0d28d9f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes spaces around all the delimiters of a stringified array.  <a href="#a744f00ac02b98c4a1f50206f0d28d9f8">More...</a><br /></td></tr>
+<tr class="separator:a744f00ac02b98c4a1f50206f0d28d9f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a740b9707ef68ff4cccfa9e3b9d095334"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a740b9707ef68ff4cccfa9e3b9d095334">ini_split_array</a> (char *const ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format, int(*const f_foreach)(char *element, unsigned int elem_length, unsigned int index, <a class="el" href="structIniFormat.html">IniFormat</a> format, void *user_data), void *user_data)</td></tr>
+<tr class="memdesc:a740b9707ef68ff4cccfa9e3b9d095334"><td class="mdescLeft">&#160;</td><td class="mdescRight">Splits an INI array and calls a custom function for each member.  <a href="#a740b9707ef68ff4cccfa9e3b9d095334">More...</a><br /></td></tr>
+<tr class="separator:a740b9707ef68ff4cccfa9e3b9d095334"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a8dcc3d8ff26554486691423cce4ea0"><td class="memItemLeft" align="right" valign="top">signed int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a2a8dcc3d8ff26554486691423cce4ea0">ini_get_bool</a> (const char *const ini_string, const signed int return_value)</td></tr>
 <tr class="memdesc:a2a8dcc3d8ff26554486691423cce4ea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_.</a> <a href="#a2a8dcc3d8ff26554486691423cce4ea0">More...</a><br /></td></tr>
 <tr class="separator:a2a8dcc3d8ff26554486691423cce4ea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -390,8 +393,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="ac76481500cf894e28511080aaf1bbb50"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac76481500cf894e28511080aaf1bbb50">&sect;&nbsp;</a></span>ini_array_foreach()</h2>
+<a id="ab88cf5748350c6ddddfcaa7d4e98133b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab88cf5748350c6ddddfcaa7d4e98133b">&sect;&nbsp;</a></span>ini_array_foreach()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -417,7 +420,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int(*)(const char *member, unsigned int offset, unsigned int length, void *foreach_other)&#160;</td>
+          <td class="paramtype">int(*)(const char *member, unsigned int offset, unsigned int elem_length, unsigned int index, <a class="el" href="structIniFormat.html">IniFormat</a> format, void *user_data)&#160;</td>
           <td class="paramname"><em>f_foreach</em>, </td>
         </tr>
         <tr>
@@ -491,6 +494,52 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The length of the INI array </dd></dl>
+
+</div>
+</div>
+<a id="a744f00ac02b98c4a1f50206f0d28d9f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a744f00ac02b98c4a1f50206f0d28d9f8">&sect;&nbsp;</a></span>ini_collapse_array()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned long int ini_collapse_array </td>
+          <td>(</td>
+          <td class="paramtype">char *const&#160;</td>
+          <td class="paramname"><em>ini_string</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>delimiter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td>
+          <td class="paramname"><em>format</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes spaces around all the delimiters of a stringified array. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ini_string</td><td>The stringified array </td></tr>
+    <tr><td class="paramname">delimiter</td><td>The delimiter of the array members </td></tr>
+    <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The new length of the string containing the array</dd></dl>
+<p>Out of quotes similar to ECMAScript <code>ini_string.replace(new RegExp("^\\s+|\\s*(?:(" + delimiter + ")\\s*|($))", "g"), "$1$2")</code> If <code>INI_ANY_SPACE</code> (<code>0</code>) is used as delimiter one or more different spaces (<code>/[\t \v\f\n\r]+/</code>) will always be collapsed to one space (' '), independently of their position. </p>
 
 </div>
 </div>
@@ -673,8 +722,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a57fdfb89122a3dda84add8055fddfe01"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a57fdfb89122a3dda84add8055fddfe01">&sect;&nbsp;</a></span>ini_split_array()</h2>
+<a id="a740b9707ef68ff4cccfa9e3b9d095334"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a740b9707ef68ff4cccfa9e3b9d095334">&sect;&nbsp;</a></span>ini_split_array()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -700,7 +749,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int(*)(char *element, unsigned int length, void *foreach_other)&#160;</td>
+          <td class="paramtype">int(*)(char *element, unsigned int elem_length, unsigned int index, <a class="el" href="structIniFormat.html">IniFormat</a> format, void *user_data)&#160;</td>
           <td class="paramname"><em>f_foreach</em>, </td>
         </tr>
         <tr>

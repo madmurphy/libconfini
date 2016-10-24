@@ -3,7 +3,7 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 datarootdir=@datarootdir@
 datadir=@datadir@
-includedir=@includedir@/libconfini-1.2
+includedir=@includedir@/libconfini-1.3
 
 Name: libconfini
 Description: Yet another INI parser

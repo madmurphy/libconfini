@@ -17,9 +17,12 @@ man_MANS = docs/man/man3/confini.h.3 \
 
 examplesdir = $(docdir)/examples
 examples_DATA = \
-        examples/compile_example.sh \
-	examples/example.c \
-	examples/example.conf
+        examples/example.c \
+	examples/example.conf \
+	examples/compile_example_c.sh \
+	examples/compile_typed_ini_c.sh \
+	examples/typed_ini.c \
+	examples/typed_ini.conf
 
 
 INTLTOOL_FILES = intltool-extract.in \

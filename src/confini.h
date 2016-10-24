@@ -86,11 +86,11 @@ typedef unsigned long int IniFormatId;
 extern unsigned int load_ini_file (
 	const char * const path,
 	const IniFormat format,
-	int (* const f_init)(
+	int (* const f_init) (
 		IniStatistics *statistics,
 		void *init_other
 	),
-	int (* const f_foreach)(
+	int (* const f_foreach) (
 		IniDispatch *dispatch,
 		void *foreach_other
 	),
@@ -107,15 +107,19 @@ extern unsigned long int ini_unquote (char * const ini_string, const IniFormat f
 
 extern unsigned long int ini_array_get_length (const char * const ini_string, const char delimiter, const IniFormat format);
 
+extern unsigned long int ini_collapse_array (char * const ini_string, const char delimiter, const IniFormat format);
+
 extern unsigned int ini_array_foreach (
 	const char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
-	int (* const f_foreach)(
+	int (* const f_foreach) (
 		const char *member,
 		unsigned int offset,
-		unsigned int length,
-		void *foreach_other
+		unsigned int elem_length,
+		unsigned int index,
+		IniFormat format,
+		void *user_data
 	),
 	void *user_data
 );
@@ -124,10 +128,12 @@ extern unsigned int ini_split_array (
 	char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
-	int (* const f_foreach)(
+	int (* const f_foreach) (
 		char *element,
-		unsigned int length,
-		void *foreach_other
+		unsigned int elem_length,
+		unsigned int index,
+		IniFormat format,
+		void *user_data
 	),
 	void *user_data
 );
@@ -187,7 +193,7 @@ enum IniNodeType {
 enum IniComments {
 	INI_PARSE_COMMENT = 0,
 	INI_SHOW_COMMENT = 1,
-	INI_ERASE_COMMENT = 2,
+	INI_FORGET_COMMENT = 2,
 	INI_NORMAL_CHARACTER = 3
 };
 

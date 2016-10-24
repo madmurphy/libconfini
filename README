@@ -22,6 +22,4 @@ It can be synthetized as a parser smart enough to allow a complete lossless anal
 
 Despite highly configurable and flexible, **libconfini** is still a small piece of work. I really don't know if it will be useful to the community. For sure it does the right job for my editor.
 
-## SEE ALSO
-
-For more details, please read the [Library Functions Manual](@ref libconfini) (`man libconfini`) and the manual of the header file [confini.h](@ref confini.h) (`man %confini.h`).
+@note For more details, please read the [Library Functions Manual](@ref libconfini) (`man libconfini`) and the manual of the header file [confini.h](@ref confini.h) (`man %confini.h`). The code is available on [GitHub](https://github.com/) under [madmurphy/libconfini](https://github.com/madmurphy/libconfini).
