@@ -1,13 +1,18 @@
-.TH "libconfini" 3 "Mon Oct 24 2016" "libconfini" \" -*- nroff -*-
+.TH "libconfini" 3 "Tue Oct 25 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
 libconfini \- Library Functions Manual 
 
 .PP
-\fBAuthor:\fP
+\fBCopyright:\fP
 .RS 4
-Stefano Gioffre\*(`
+GNU Public License v3
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2016
 .RE
 .PP
 .SH "OVERVIEW"
@@ -46,7 +51,7 @@ email = mario\&.rossi@example\&.com
 .PP
 .SS "SUPPORTED SYNTAX"
 .PP
-During the years, several interpretations of INI files appeared\&. In some implementation the colon character (\fC:\fP) has been adopted as delimiter (a typical example under GNU/Linux is \fC/etc/nsswitch\&.conf\fP), in other implementation the space (\fC/[ \\t\\r\\v\\f]+/\fP) has been used instead (for example in \fC/etc/host\&.conf\fP), and so on\&. This library has been born as a general INI parser for GNU, so the support of most of the main \fIINI dialects\fP has been implemented within it\&.
+During the years, several interpretations of INI files appeared\&. In some implementation the colon character (\fC:\fP) has been adopted as delimiter (a typical example under GNU/Linux is \fC/etc/nsswitch\&.conf\fP), in other implementation the space (\fC/[ \\t\\r\\v\\f]+/\fP) has been used instead (see for example \fC/etc/host\&.conf\fP), and so on\&. This library has been born as a general INI parser for GNU, so the support of most of the main \fIINI dialects\fP has been implemented within it\&.
 .PP
 Especially in Microsoft Windows, a more radical syntax variation has been implemented: the use of the semicolon, instead of new lines, as node delimiter, as in the following example:
 .PP
@@ -64,13 +69,11 @@ email = mario\&.rossi@example\&.com
 .PP
 For several reasons the use of semicolon as node delimiter is not (and will never be) supported by \fBlibconfini\fP\&.
 .PP
-The encodings currently supported by \fBlibconfini\fP are ASCII and UTF-8 (without BOM)\&. In case the INI file is case-insensitive with respect to keys and section names, \fBlibconfini\fP will convert all ASCII letters to lowercase (except within values), but will \fBnot\fP convert non-ASCII code points to lowercase\&. \fIIn general it is a good practice to use UTF-8 within values, but ASCII only within keys names and sections names\&.\fP
-.PP
 .SS "KEYS"
 .PP
 A \fBkey element\fP is identified as a string followed by a delimiter -- typically the equals sign (\fC=\fP) or the colon sign (\fC:\fP) or a space sequence (\fC/[ \\t\\v\\f]+/\fP) -- which is followed by a value, which is followed by a new line or an inline comment\&.
 .PP
-Both the \fBkey part\fP and the \fBvalue part\fP may be sorrounded by quotes (\fC'\fP or \fC"\fP):
+Both the \fBkey part\fP and the \fBvalue part\fP may be enclosed within quotes (\fC'\fP or \fC"\fP):
 .PP
 .PP
 .nf
@@ -138,7 +141,7 @@ If not defined elsewhere, these variables are respectively set to \fCNULL\fP and
 .PP
 .SS "SECTIONS"
 .PP
-A \fBsection\fP can ben imagined like a directory\&. A \fBsection path\fP is identified as the string \fC'$1'\fP in the regular expression (ECMAScript syntax) \fC/(?:^|\\n)[ \\t\\v\\f]*\\[([^\\]]*)\\]/\fP globally applied to an INI file\&. A section path expresses nesting through the 'dot' character, as in the following example:
+A \fBsection\fP can ben imagined like a directory\&. A \fBsection path\fP is identified as the string \fC'$1'\fP in the regular expression (ECMAScript syntax) \fC/(?:^|\\n)[ \\t\\v\\f]*\\[[ \\t\\v\\f]*([^\\]]*)[ \\t\\v\\f]*\\]/\fP globally applied to an INI file\&. A section path expresses nesting through the 'dot' character, as in the following example:
 .PP
 .PP
 .nf
@@ -209,9 +212,9 @@ foo = bar       # this is an inline comment
 .PP
 .SS "ESCAPING SEQUENCES"
 .PP
-For maximizing the flexibility of the data, only three escaping sequences are supported by \fBlibconfini\fP: \fC\\'\fP, \fC\\"\fP and \fC\\\\\fP\&.
+For maximizing the flexibility of the data, only four escaping sequences are supported by \fBlibconfini\fP: \fC\\'\fP, \fC\\"\fP \fC\\\\\fP and the multiline escaping sequence (ECMAScript syntax: \fC/\\\\(?:\\n\\r?|\\r\\n?)/\fP)\&.
 .PP
-Escaping sequences are left untouched by all functions except \fC\fBini_unquote()\fP\fP\&. Nevertheless, the characters \fC'\fP, \fC"\fP and \fC\\\fP can determine different behaviors during the parsing depending on whether they are escaped or unescaped\&. For instance, the string \fC#johnsmith\fP in the following example will not be parsed as a comment:
+The first three escaping sequences are left untouched by all functions except \fC\fBini_unquote()\fP\fP\&. Nevertheless, the characters \fC'\fP, \fC"\fP and \fC\\\fP can determine different behaviors during the parsing depending on whether they are escaped or unescaped\&. For instance, the string \fC#johnsmith\fP in the following example will not be parsed as a comment:
 .PP
 .PP
 .nf
@@ -220,6 +223,22 @@ Escaping sequences are left untouched by all functions except \fC\fBini_unquote(
 comment = "hey! have a look at my hashtag #johnsmith !"
 .fi
 .PP
+.PP
+A particular case of escaping sequence is the multiline escaping sequence (\fC/\\\\(?:\\n\\r?|\\r\\n?)/\fP), which gets \fIalways automatically unescaped by \fBlibconfini\fP\fP\&.
+.PP
+.PP
+.nf
+foo = this\
+is\
+a\
+multiline\
+value
+.fi
+.PP
+.PP
+.SS "ENCODINGS"
+.PP
+The encodings currently supported by \fBlibconfini\fP are ASCII and UTF-8 (without BOM)\&. In case the INI file is case-insensitive with respect to keys and section names, \fBlibconfini\fP will always convert all ASCII letters to lowercase (except within values), including when these are enclosed within quotes, but will \fBnot\fP convert non-ASCII code points to lowercase\&. \fIIn general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names\&.\fP
 .PP
 .SH "READ AN INI FILE"
 .PP

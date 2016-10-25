@@ -1,7 +1,9 @@
 Library Functions Manual {#libconfini}
 ======================================
 
-@author Stefano Gioffr&eacute;
+@copyright GNU Public License v3
+
+@date 2016
 
 # OVERVIEW
 
@@ -38,7 +40,7 @@ email = mario.rossi@example.com
 
 ## SUPPORTED SYNTAX
 
-During the years, several interpretations of INI files appeared. In some implementation the colon character (`:`) has been adopted as delimiter (a typical example under GNU/Linux is `/etc/nsswitch.conf`), in other implementation the space (`/[ \t\r\v\f]+/`) has been used instead (for example in `/etc/host.conf`), and so on. This library has been born as a general INI parser for GNU, so the support of most of the main _INI dialects_ has been implemented within it.
+During the years, several interpretations of INI files appeared. In some implementation the colon character (`:`) has been adopted as delimiter (a typical example under GNU/Linux is `/etc/nsswitch.conf`), in other implementation the space (`/[ \t\r\v\f]+/`) has been used instead (see for example `/etc/host.conf`), and so on. This library has been born as a general INI parser for GNU, so the support of most of the main _INI dialects_ has been implemented within it.
 
 Especially in Microsoft Windows, a more radical syntax variation has been implemented: the use of the semicolon, instead of new lines, as node delimiter, as in the following example:
 
@@ -56,13 +58,11 @@ email = mario.rossi@example.com
 
 For several reasons the use of semicolon as node delimiter is not (and will never be) supported by **libconfini**.
 
-The encodings currently supported by **libconfini** are ASCII and UTF-8 (without BOM). In case the INI file is case-insensitive with respect to keys and section names, **libconfini** will convert all ASCII letters to lowercase (except within values), but will **not** convert non-ASCII code points to lowercase. _In general it is a good practice to use UTF-8 within values, but ASCII only within keys names and sections names._
-
 ### KEYS
 
 A **key element** is identified as a string followed by a delimiter -- typically the equals sign (`=`) or the colon sign (`:`) or a space sequence (`/[ \t\v\f]+/`) -- which is followed by a value, which is followed by a new line or an inline comment. 
 
-Both the **key part** and the **value part** may be sorrounded by quotes (`'` or `"`):
+Both the **key part** and the **value part** may be enclosed within quotes (`'` or `"`):
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -130,7 +130,7 @@ If not defined elsewhere, these variables are respectively set to `NULL` and `0`
 
 ### SECTIONS
 
-A **section** can ben imagined like a directory. A **section path** is identified as the string `"$1"` in the regular expression (ECMAScript syntax) `/(?:^|\n)[ \t\v\f]*\[([^\]]*)\]/` globally applied to an INI file. A section path expresses nesting through the 'dot' character, as in the following example:
+A **section** can ben imagined like a directory. A **section path** is identified as the string `"$1"` in the regular expression (ECMAScript syntax) `/(?:^|\n)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\]/` globally applied to an INI file. A section path expresses nesting through the 'dot' character, as in the following example:
 
 ~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -201,9 +201,9 @@ foo = bar       # this is an inline comment
 
 ### ESCAPING SEQUENCES
 
-For maximizing the flexibility of the data, only three escaping sequences are supported by **libconfini**: `\'`, `\"` and `\\`.
+For maximizing the flexibility of the data, only four escaping sequences are supported by **libconfini**: `\'`, `\"` `\\` and the multiline escaping sequence (ECMAScript syntax: `/\\(?:\n\r?|\r\n?)/`).
 
-Escaping sequences are left untouched by all functions except `ini_unquote()`. Nevertheless, the characters `'`, `"` and `\` can determine different behaviors during the parsing depending on whether they are escaped or unescaped. For instance, the string `#johnsmith` in the following example will not be parsed as a comment:
+The first three escaping sequences are left untouched by all functions except `ini_unquote()`. Nevertheless, the characters `'`, `"` and `\` can determine different behaviors during the parsing depending on whether they are escaped or unescaped. For instance, the string `#johnsmith` in the following example will not be parsed as a comment:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -212,6 +212,22 @@ Escaping sequences are left untouched by all functions except `ini_unquote()`. N
 comment = "hey! have a look at my hashtag #johnsmith !"
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A particular case of escaping sequence is the multiline escaping sequence (`/\\(?:\n\r?|\r\n?)/`), which gets _always automatically unescaped by **libconfini**_.
+
+~~~~~~~~~~~{.ini}
+
+foo = this\
+is\
+a\
+multiline\
+value
+
+~~~~~~~~~~~
+
+### ENCODINGS
+
+The encodings currently supported by **libconfini** are ASCII and UTF-8 (without BOM). In case the INI file is case-insensitive with respect to keys and section names, **libconfini** will always convert all ASCII letters to lowercase (except within values), including when these are enclosed within quotes, but will **not** convert non-ASCII code points to lowercase. _In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names._
 
 # READ AN INI FILE
 
