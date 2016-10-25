@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Tue Oct 25 2016" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Wed Oct 26 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -51,7 +51,7 @@ src/confini.h \- libconfini header
 .RI "Error codes\&. ""
 .br
 .ti -1c
-.RI "enum \fBIniDelimiters\fP { \fBINI_ANY_SPACE\fP = '\\0', \fBINI_EQUALS\fP = '=', \fBINI_COLON\fP = ':' }
+.RI "enum \fBIniDelimiters\fP { \fBINI_ANY_SPACE\fP = 0, \fBINI_EQUALS\fP = '=', \fBINI_COLON\fP = ':' }
 .RI "Most used delimiters (but a delimiter can also be any other ASCII character) ""
 .br
 .ti -1c
@@ -99,11 +99,11 @@ src/confini.h \- libconfini header
 .br
 .RI "Removes spaces around all the delimiters of a stringified array\&. "
 .ti -1c
-.RI "unsigned int \fBini_array_foreach\fP (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(const char *member, unsigned int offset, unsigned int elem_length, unsigned int index, \fBIniFormat\fP format, void *user_data), void *user_data)"
+.RI "unsigned int \fBini_array_foreach\fP (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(const char *member, unsigned int offset, unsigned int memb_length, unsigned int index, \fBIniFormat\fP format, void *user_data), void *user_data)"
 .br
 .RI "Calls a custom function for each member of an INI array -- useful for read-only (const) stringified arrays\&. "
 .ti -1c
-.RI "unsigned int \fBini_split_array\fP (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(char *element, unsigned int elem_length, unsigned int index, \fBIniFormat\fP format, void *user_data), void *user_data)"
+.RI "unsigned int \fBini_split_array\fP (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(char *member, unsigned int memb_length, unsigned int index, \fBIniFormat\fP format, void *user_data), void *user_data)"
 .br
 .RI "Splits an INI array and calls a custom function for each member\&. "
 .ti -1c
@@ -267,7 +267,7 @@ INI nodes types\&.
 \fB\fIINI_UNKNOWN \fP\fP
 .TP
 \fB\fIINI_VALUE \fP\fP
-Not used here but available for user's implementations 
+Not used here, but available for user's implementations 
 .TP
 \fB\fIINI_SECTION \fP\fP
 .TP
@@ -282,7 +282,7 @@ Not used here but available for user's implementations
 \fB\fIINI_DISABLED_KEY \fP\fP
 .SH "Function Documentation"
 .PP 
-.SS "unsigned int ini_array_foreach (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(const char *member, unsigned int offset, unsigned int elem_length, unsigned int index, \fBIniFormat\fP format, void *user_data) f_foreach, void * user_data)"
+.SS "unsigned int ini_array_foreach (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(const char *member, unsigned int offset, unsigned int memb_length, unsigned int index, \fBIniFormat\fP format, void *user_data) f_foreach, void * user_data)"
 
 .PP
 Calls a custom function for each member of an INI array -- useful for read-only (const) stringified arrays\&. 
@@ -434,7 +434,7 @@ Nothing
 .RE
 .PP
 
-.SS "unsigned int ini_split_array (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(char *element, unsigned int elem_length, unsigned int index, \fBIniFormat\fP format, void *user_data) f_foreach, void * user_data)"
+.SS "unsigned int ini_split_array (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(char *member, unsigned int memb_length, unsigned int index, \fBIniFormat\fP format, void *user_data) f_foreach, void * user_data)"
 
 .PP
 Splits an INI array and calls a custom function for each member\&. 

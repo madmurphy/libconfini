@@ -1,4 +1,4 @@
-.TH "IniFormat" 3 "Tue Oct 25 2016" "libconfini" \" -*- nroff -*-
+.TH "IniFormat" 3 "Wed Oct 26 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -70,11 +70,7 @@ Bits 23-24: unused
 .SS "IniFormat::case_sensitive"
 If set to \fC1\fP, key- and section- names will not be rendered in lower case 
 .SS "IniFormat::delimiter_symbol"
-The symbol to be used as delimiter; if set to `'\\0'\fC, any space is delimiter (\fP/(?:\\(?:
-.br
-?|
-.br
-?)|[ ])+/`) 
+The symbol to be used as delimiter; if set to \fC0\fP, any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
 .SS "IniFormat::disabled_can_be_implicit"
 If set to \fC1\fP, comments non containing a delimiter symbol will not be parsed as disabled implicit keys, but as simple comments 
 .SS "IniFormat::do_not_collapse_values"

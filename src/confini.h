@@ -116,7 +116,7 @@ extern unsigned int ini_array_foreach (
 	int (* const f_foreach) (
 		const char *member,
 		unsigned int offset,
-		unsigned int elem_length,
+		unsigned int memb_length,
 		unsigned int index,
 		IniFormat format,
 		void *user_data
@@ -129,8 +129,8 @@ extern unsigned int ini_split_array (
 	const char delimiter,
 	const IniFormat format,
 	int (* const f_foreach) (
-		char *element,
-		unsigned int elem_length,
+		char *member,
+		unsigned int memb_length,
 		unsigned int index,
 		IniFormat format,
 		void *user_data
@@ -172,7 +172,7 @@ enum ConfiniErrorNo {
 
 /** @brief	Most used delimiters (but a delimiter can also be any other ASCII character) **/
 enum IniDelimiters {
-	INI_ANY_SPACE = '\0',		/**< `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/` **/
+	INI_ANY_SPACE = 0,		/**< `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/` **/
 	INI_EQUALS = '=',		/**< `=` **/
 	INI_COLON = ':'			/**< `:` **/
 };
@@ -180,7 +180,7 @@ enum IniDelimiters {
 /** @brief	INI nodes types **/
 enum IniNodeType {
 	INI_UNKNOWN = 0,
-	INI_VALUE = 1,			/**< Not used here but available for user's implementations **/
+	INI_VALUE = 1,			/**< Not used here, but available for user's implementations **/
 	INI_SECTION = 2,
 	INI_KEY = 3,
 	INI_COMMENT = 4,

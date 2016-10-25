@@ -27,7 +27,7 @@
 	- Bits 23-24: unused
 
 	@property	IniFormat::delimiter_symbol
-					The symbol to be used as delimiter; if set to `'\0'`, any space is delimiter
+					The symbol to be used as delimiter; if set to `0`, any space is delimiter
 					(`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
 	@property	IniFormat::semicolon
 					The rule of the semicolon character (use enum `::IniComments` for this)
@@ -633,16 +633,18 @@ static _LIBCONFINI_SIZE_ sanitize_section_name (char * const str, const IniForma
 
 		} else {
 
-				abacus	=	((
-								!(abacus & 3) && !format.no_double_quotes && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
-									abacus ^ 4
-								: !(abacus & 5) && !format.no_single_quotes && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
-									abacus ^ 2
-								: str[idx] == _LIBCONFINI_BACKSLASH_ ?
-									abacus ^ 1
-								:
-									abacus & 510
-							) & 271) | 264;
+				abacus	=	(
+								(
+									!(abacus & 3) && !format.no_double_quotes && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+										abacus ^ 4
+									: !(abacus & 5) && !format.no_single_quotes && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
+										abacus ^ 2
+									: str[idx] == _LIBCONFINI_BACKSLASH_ ?
+										abacus ^ 1
+									:
+										abacus & 510
+								) & 271
+							) | 264;
 
 		}
 
@@ -1697,8 +1699,7 @@ unsigned long int ini_unquote (char * const ini_string, const IniFormat format) 
 
 	for (qmask = 3, lshift = 0, nbacksl = 0, idx = 0; ini_string[idx]; idx++) {
 
-		qmask	=	(qmask & 3)
-					| (
+		qmask	=	(qmask & 3) | (
 						!format.no_double_quotes && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? 8
 						: !format.no_single_quotes && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? 4
 						: 0
@@ -1827,7 +1828,7 @@ unsigned int ini_array_foreach (
 	int (* const f_foreach) (
 		const char *member,
 		unsigned int offset,
-		unsigned int elem_length,
+		unsigned int memb_length,
 		unsigned int index,
 		IniFormat format,
 		void *user_data
@@ -2014,8 +2015,8 @@ unsigned int ini_split_array (
 	const char delimiter,
 	const IniFormat format,
 	int (* const f_foreach) (
-		char *element,
-		unsigned int elem_length,
+		char *member,
+		unsigned int memb_length,
 		unsigned int index,
 		IniFormat format,
 		void *user_data
