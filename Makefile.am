@@ -13,7 +13,10 @@ dist_doc_DATA = \
 	MAN.md
 
 man_MANS = docs/man/man3/confini.h.3 \
-	docs/man/man3/libconfini.3
+	docs/man/man3/libconfini.3 \
+	docs/man/man3/IniDispatch.3 \
+	docs/man/man3/IniFormat.3 \
+	docs/man/man3/IniStatistics.3
 
 examplesdir = $(docdir)/examples
 examples_DATA = \

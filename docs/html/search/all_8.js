@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['libconfini',['libconfini',['../index.html',1,'']]],
-  ['library_20functions_20manual',['Library Functions Manual',['../libconfini.html',1,'']]],
-  ['load_5fini_5ffile',['load_ini_file',['../confini_8c.html#a982a1152767d816df40568af90646bc9',1,'load_ini_file(const char *const path, const IniFormat format, int(*const f_init)(IniStatistics *statistics, void *init_other), int(*const f_foreach)(IniDispatch *dispatch, void *foreach_other), void *user_data):&#160;confini.c'],['../confini_8h.html#a982a1152767d816df40568af90646bc9',1,'load_ini_file(const char *const path, const IniFormat format, int(*const f_init)(IniStatistics *statistics, void *init_other), int(*const f_foreach)(IniDispatch *dispatch, void *foreach_other), void *user_data):&#160;confini.c']]],
-  ['ltrim_5fh',['ltrim_h',['../confini_8c.html#a90c4b547e13b6f2fe259968372c26343',1,'confini.c']]],
-  ['ltrim_5fs',['ltrim_s',['../confini_8c.html#acbec3bb55a4f5f394e4809722b5cf94d',1,'confini.c']]]
+  ['man_2emd',['MAN.md',['../MAN_8md.html',1,'']]],
+  ['members',['members',['../structIniStatistics.html#ab4af1f388bd4109a9a9b1bc449146ec7',1,'IniStatistics']]],
+  ['multiline_5fentries',['multiline_entries',['../structIniFormat.html#a5bdf0e00657ad5521a027e454ec2298e',1,'IniFormat']]]
 ];

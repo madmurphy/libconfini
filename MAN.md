@@ -391,6 +391,42 @@ When an INI file is parsed it is parsed according to a format. The `IniFormat` b
 
 Each format can be represented also as a univocal 24-bit unsigned integer. For converting an `IniFormat` to a number and vice versa please see `ini_format_get_id()`, `ini_format_set_to_id()` and `::IniFormatId`.
 
+### THE MODEL FORMAT
+
+A model format named `INI_DEFAULT_FORMAT` is also available.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+
+IniFormat my_format;
+
+my_format = INI_DEFAULT_FORMAT;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The code above corresponds to:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+
+#define NO 0
+#define YES 1
+
+IniFormat my_format;
+
+my_format.delimiter_symbol = INI_EQUALS;
+my_format.semicolon = INI_PARSE_COMMENT;
+my_format.hash = INI_PARSE_COMMENT;
+my_format.multiline_entries = INI_EVERYTHING_MULTILINE;
+my_format.case_sensitive = NO;
+my_format.no_spaces_in_names = NO;
+my_format.no_single_quotes = NO;
+my_format.no_double_quotes = NO;
+my_format.implicit_is_not_empty = NO;
+my_format.do_not_collapse_values = NO;
+my_format.no_disabled_after_space = NO;
+my_format.disabled_can_be_implicit = NO; 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 ## THE `IniStatistics` AND `IniDispatch` STRUCTURES
 
 When the `load_ini_file()` function reads an INI file, it dispatches the file content to the `f_foreach()` listener. Before the dispatching begins some statistics about the parsed file can be dispatched to the `f_init()` listener (if this is non-`NULL`).

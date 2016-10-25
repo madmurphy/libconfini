@@ -1,0 +1,69 @@
+.TH "IniDispatch" 3 "Tue Oct 25 2016" "libconfini" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IniDispatch \- Dispatch of a single INI member\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <confini\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "const \fBIniFormat\fP \fBformat\fP"
+.br
+.ti -1c
+.RI "unsigned short int \fBtype\fP"
+.br
+.ti -1c
+.RI "char * \fBdata\fP"
+.br
+.ti -1c
+.RI "char * \fBvalue\fP"
+.br
+.ti -1c
+.RI "char * \fBappend_to\fP"
+.br
+.ti -1c
+.RI "unsigned long int \fBd_len\fP"
+.br
+.ti -1c
+.RI "unsigned long int \fBv_len\fP"
+.br
+.ti -1c
+.RI "unsigned long int \fBat_len\fP"
+.br
+.ti -1c
+.RI "unsigned long int \fBdispatch_id\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Dispatch of a single INI member\&. 
+.SH "Field Documentation"
+.PP 
+.SS "IniDispatch::append_to"
+The current path 
+.SS "IniDispatch::at_len"
+The length of the string \fC\fBIniDispatch::append_to\fP\fP 
+.SS "IniDispatch::d_len"
+The length of the string \fC\fBIniDispatch::data\fP\fP 
+.SS "IniDispatch::data"
+It can be a comment, a section or a key 
+.SS "IniDispatch::dispatch_id"
+The dispatch id 
+.SS "IniDispatch::format"
+The format of the INI file (see struct \fC\fBIniFormat\fP\fP) 
+.SS "IniDispatch::type"
+The dispatch type (see enum \fC\fBIniNodeType\fP\fP) 
+.SS "IniDispatch::v_len"
+The length of the string \fC\fBIniDispatch::value\fP\fP 
+.SS "IniDispatch::value"
+It can be a key value or an empty string 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for libconfini from the source code\&.

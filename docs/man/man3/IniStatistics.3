@@ -1,0 +1,39 @@
+.TH "IniStatistics" 3 "Tue Oct 25 2016" "libconfini" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IniStatistics \- Global statistics about an INI file\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <confini\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "const \fBIniFormat\fP \fBformat\fP"
+.br
+.ti -1c
+.RI "const unsigned long int \fBbytes\fP"
+.br
+.ti -1c
+.RI "const unsigned long int \fBmembers\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Global statistics about an INI file\&. 
+.SH "Field Documentation"
+.PP 
+.SS "IniStatistics::bytes"
+The size of the parsed file in bytes 
+.SS "IniStatistics::format"
+The format of the INI file (see struct \fC\fBIniFormat\fP\fP) 
+.SS "IniStatistics::members"
+The size of the parsed file in members (nodes) 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for libconfini from the source code\&.

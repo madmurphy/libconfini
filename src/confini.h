@@ -162,25 +162,25 @@ extern double (* const ini_get_float) (const char *ini_string);
 
 /** @brief	Error codes **/
 enum ConfiniErrorNo {
-	CONFINI_EFEINTR = 1,	/**< Interrupted by the user during `f_foreach()` **/
-	CONFINI_EFEOOR = 2,	/**< The loop is longer than expected (out of range) **/
-	CONFINI_EIINTR = 3,	/**< Interrupted by the user during `f_init()` **/
-	CONFINI_ENOMEM = 4,	/**< Error allocating memory **/
-	CONFINI_EIO = 5,	/**< Error reading the file **/
-	CONFINI_ENOENT = 6	/**< File inaccessible **/
+	CONFINI_EFEINTR = 1,		/**< Interrupted by the user during `f_foreach()` **/
+	CONFINI_EFEOOR = 2,		/**< The loop is longer than expected (out of range) **/
+	CONFINI_EIINTR = 3,		/**< Interrupted by the user during `f_init()` **/
+	CONFINI_ENOMEM = 4,		/**< Error allocating memory **/
+	CONFINI_EIO = 5,		/**< Error reading the file **/
+	CONFINI_ENOENT = 6		/**< File inaccessible **/
 };
 
 /** @brief	Most used delimiters (but a delimiter can also be any other ASCII character) **/
 enum IniDelimiters {
-	INI_ANY_SPACE = '\0',
-	INI_EQUALS = '=',
-	INI_COLON = ':'
+	INI_ANY_SPACE = '\0',		/**< `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/` **/
+	INI_EQUALS = '=',		/**< `=` **/
+	INI_COLON = ':'			/**< `:` **/
 };
 
 /** @brief	INI nodes types **/
 enum IniNodeType {
 	INI_UNKNOWN = 0,
-	INI_DOCUMENT = 1,
+	INI_VALUE = 1,			/**< Not used here but available for user's implementations **/
 	INI_SECTION = 2,
 	INI_KEY = 3,
 	INI_COMMENT = 4,
@@ -191,10 +191,10 @@ enum IniNodeType {
 
 /** @brief	Behaviors of '#' and ';' **/
 enum IniComments {
-	INI_PARSE_COMMENT = 0,
-	INI_SHOW_COMMENT = 1,
-	INI_FORGET_COMMENT = 2,
-	INI_NORMAL_CHARACTER = 3
+	INI_PARSE_COMMENT = 0,		/**< This opens a comment or a disabled entry **/
+	INI_SHOW_COMMENT = 1,		/**< This opens a comment **/
+	INI_FORGET_COMMENT = 2,		/**< This opens a comment that must be ignored **/
+	INI_NORMAL_CHARACTER = 3	/**< This is a normal character **/
 };
 
 /** @brief	Multiline entries **/

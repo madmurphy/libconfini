@@ -1,7 +1,6 @@
 var searchData=
 [
   ['case_5fsensitive',['case_sensitive',['../structIniFormat.html#a50f562eda0d26ed7e0d3c57afeb46d2d',1,'IniFormat']]],
-  ['collapse_5fspaces',['collapse_spaces',['../confini_8c.html#a1ef6f24512f59ad7dd4db4f8e63a647d',1,'confini.c']]],
   ['confini_2ec',['confini.c',['../confini_8c.html',1,'']]],
   ['confini_2eh',['confini.h',['../confini_8h.html',1,'']]],
   ['confini_5fefeintr',['CONFINI_EFEINTR',['../confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325ac1b16fd34464a73e424e31212d7ae8ab',1,'confini.h']]],

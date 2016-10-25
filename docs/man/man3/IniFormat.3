@@ -1,0 +1,101 @@
+.TH "IniFormat" 3 "Tue Oct 25 2016" "libconfini" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IniFormat \- 24-bit bitfield representing a unique format of an INI file (INI dialect) -- \fCsizeof(IniFormat)\fP should be \fC3\fP  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <confini\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "unsigned char \fBdelimiter_symbol\fP: 8"
+.br
+.ti -1c
+.RI "unsigned char \fBsemicolon\fP: 2"
+.br
+.ti -1c
+.RI "unsigned char \fBhash\fP: 2"
+.br
+.ti -1c
+.RI "unsigned char \fBmultiline_entries\fP: 2"
+.br
+.ti -1c
+.RI "unsigned char \fBcase_sensitive\fP: 1"
+.br
+.ti -1c
+.RI "unsigned char \fBno_spaces_in_names\fP: 1"
+.br
+.ti -1c
+.RI "unsigned char \fBno_single_quotes\fP: 1"
+.br
+.ti -1c
+.RI "unsigned char \fBno_double_quotes\fP: 1"
+.br
+.ti -1c
+.RI "unsigned char \fBimplicit_is_not_empty\fP: 1"
+.br
+.ti -1c
+.RI "unsigned char \fBdo_not_collapse_values\fP: 1"
+.br
+.ti -1c
+.RI "unsigned char \fBno_disabled_after_space\fP: 1"
+.br
+.ti -1c
+.RI "unsigned char \fBdisabled_can_be_implicit\fP: 1"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+24-bit bitfield representing a unique format of an INI file (INI dialect) -- \fCsizeof(IniFormat)\fP should be \fC3\fP 
+
+Structure of the bitfield:
+.PP
+.IP "\(bu" 2
+Bits 1-18: INI syntax
+.IP "\(bu" 2
+Bits 19-20: INI semantics
+.IP "\(bu" 2
+Bits 21-22: user's syntax (disabled entries)
+.IP "\(bu" 2
+Bits 23-24: unused 
+.PP
+
+.SH "Field Documentation"
+.PP 
+.SS "IniFormat::case_sensitive"
+If set to \fC1\fP, key- and section- names will not be rendered in lower case 
+.SS "IniFormat::delimiter_symbol"
+The symbol to be used as delimiter; if set to `'\\0'\fC, any space is delimiter (\fP/(?:\\(?:
+.br
+?|
+.br
+?)|[ ])+/`) 
+.SS "IniFormat::disabled_can_be_implicit"
+If set to \fC1\fP, comments non containing a delimiter symbol will not be parsed as disabled implicit keys, but as simple comments 
+.SS "IniFormat::do_not_collapse_values"
+If set to \fC1\fP, sequences of more than one space in values (\fC/\\s{2,}/\fP) will not be collapsed 
+.SS "IniFormat::hash"
+The rule of the hash character (use enum \fC\fBIniComments\fP\fP for this) 
+.SS "IniFormat::implicit_is_not_empty"
+If set to \fC1\fP, the dispatch of implicit keys (see \fBLibrary Functions Manual\fP) will always assign to \fC\fBIniDispatch::value\fP\fP and to \fC\fBIniDispatch::v_len\fP\fP the global variables \fC\fBINI_IMPLICIT_VALUE\fP\fP and \fC\fBINI_IMPLICIT_V_LEN\fP\fP respectively; if set to \fC0\fP, implicit keys will be considered empty keys 
+.SS "IniFormat::multiline_entries"
+The multiline state of the document (use enum \fC\fBIniMultiline\fP\fP for this) 
+.SS "IniFormat::no_disabled_after_space"
+If set to \fC1\fP, prevents that \fC/[#;]\\s+/[^\\s][^\\n]+/\fP be parsed as a disabled entry 
+.SS "IniFormat::no_double_quotes"
+If set to \fC1\fP, the double-quote character (\fC"\fP) will be considered as a normal character 
+.SS "IniFormat::no_single_quotes"
+If set to \fC1\fP, the single-quote character (\fC'\fP) will be considered as a normal character 
+.SS "IniFormat::no_spaces_in_names"
+If set to \fC1\fP, key- and section- names containing spaces will be rendered as \fC\fBINI_UNKNOWN\fP\fP 
+.SS "IniFormat::semicolon"
+The rule of the semicolon character (use enum \fC\fBIniComments\fP\fP for this) 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for libconfini from the source code\&.

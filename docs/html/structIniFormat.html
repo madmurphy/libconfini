@@ -59,8 +59,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="structIniFormat-members.html">List of all members</a>  </div>
+<a href="#pub-attribs">Data Fields</a>  </div>
   <div class="headertitle">
 <div class="title">IniFormat Struct Reference</div>  </div>
 </div><!--header-->
@@ -72,7 +71,7 @@ $(function() {
 <p><code>#include &lt;<a class="el" href="confini_8h_source.html">confini.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
+Data Fields</h2></td></tr>
 <tr class="memitem:a6d9981301f5a16d73e2c38cb80f7f962"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#a6d9981301f5a16d73e2c38cb80f7f962">delimiter_symbol</a>: 8</td></tr>
 <tr class="separator:a6d9981301f5a16d73e2c38cb80f7f962"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90f42c0052d9a45ad137f2f5517fbb3c"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#a90f42c0052d9a45ad137f2f5517fbb3c">semicolon</a>: 2</td></tr>
@@ -107,7 +106,7 @@ Public Attributes</h2></td></tr>
 <li>Bits 21-22: user's syntax (disabled entries)</li>
 <li>Bits 23-24: unused </li>
 </ul>
-</div><h2 class="groupheader">Member Data Documentation</h2>
+</div><h2 class="groupheader">Field Documentation</h2>
 <a id="a50f562eda0d26ed7e0d3c57afeb46d2d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a50f562eda0d26ed7e0d3c57afeb46d2d">&sect;&nbsp;</a></span>case_sensitive</h2>
 
@@ -134,7 +133,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The symbol to be used as delimiter; if set to `'\0'<code>, any space is delimiter (</code>/[]+/`) </p>
+<p>The symbol to be used as delimiter; if set to `'\0'<code>, any space is delimiter (</code>/(?:\(?:<br />
+?|<br />
+?)|[ ])+/`) </p>
 
 </div>
 </div>
@@ -269,7 +270,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to <code>1</code>, key- and section- names containing spaces will be rendered as INI_UNKNOWN </p>
+<p>If set to <code>1</code>, key- and section- names containing spaces will be rendered as <code><a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461baffa9e27deb46c0e436bc75329cc5f7a6">INI_UNKNOWN</a></code> </p>
 
 </div>
 </div>

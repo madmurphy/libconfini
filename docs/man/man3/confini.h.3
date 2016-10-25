@@ -7,7 +7,7 @@ src/confini.h \- libconfini header
 .SH SYNOPSIS
 .br
 .PP
-.SS "Classes"
+.SS "Data Structures"
 
 .in +1c
 .ti -1c
@@ -55,7 +55,7 @@ src/confini.h \- libconfini header
 .RI "Most used delimiters (but a delimiter can also be any other ASCII character) ""
 .br
 .ti -1c
-.RI "enum \fBIniNodeType\fP { \fBINI_UNKNOWN\fP = 0, \fBINI_DOCUMENT\fP = 1, \fBINI_SECTION\fP = 2, \fBINI_KEY\fP = 3, \fBINI_COMMENT\fP = 4, \fBINI_INLINE_COMMENT\fP = 5, \fBINI_DISABLED_SECTION\fP = 6, \fBINI_DISABLED_KEY\fP = 7 }
+.RI "enum \fBIniNodeType\fP { \fBINI_UNKNOWN\fP = 0, \fBINI_VALUE\fP = 1, \fBINI_SECTION\fP = 2, \fBINI_KEY\fP = 3, \fBINI_COMMENT\fP = 4, \fBINI_INLINE_COMMENT\fP = 5, \fBINI_DISABLED_SECTION\fP = 6, \fBINI_DISABLED_KEY\fP = 7 }
 .RI "INI nodes types\&. ""
 .br
 .ti -1c
@@ -109,11 +109,11 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "signed int \fBini_get_bool\fP (const char *const ini_string, const signed int return_value)"
 .br
-.RI "Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\&.\fP"
+.RI "Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\fP\&. "
 .ti -1c
 .RI "signed int \fBini_get_lazy_bool\fP (const char *const ini_string, const signed int return_value)"
 .br
-.RI "Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\&.\fP"
+.RI "Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\fP\&. "
 .in -1c
 .SS "Variables"
 
@@ -130,10 +130,6 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "double(*const \fBini_get_float\fP )(const char *ini_string)"
 .br
-.ti -1c
-.RI "static const \fBIniFormat\fP \fBINI_DEFAULT_FORMAT\fP = { \fBINI_EQUALS\fP , \fBINI_PARSE_COMMENT\fP , \fBINI_PARSE_COMMENT\fP , \fBINI_EVERYTHING_MULTILINE\fP , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }"
-.br
-.RI "A model format\&. "
 .ti -1c
 .RI "char * \fBINI_IMPLICIT_VALUE\fP"
 .br
@@ -219,12 +215,16 @@ Behaviors of '#' and ';'\&.
 .in +1c
 .TP
 \fB\fIINI_PARSE_COMMENT \fP\fP
+This opens a comment or a disabled entry 
 .TP
 \fB\fIINI_SHOW_COMMENT \fP\fP
+This opens a comment 
 .TP
 \fB\fIINI_FORGET_COMMENT \fP\fP
+This opens a comment that must be ignored 
 .TP
 \fB\fIINI_NORMAL_CHARACTER \fP\fP
+This is a normal character 
 .SS "enum \fBIniDelimiters\fP"
 
 .PP
@@ -234,10 +234,13 @@ Most used delimiters (but a delimiter can also be any other ASCII character)
 .in +1c
 .TP
 \fB\fIINI_ANY_SPACE \fP\fP
+\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP 
 .TP
 \fB\fIINI_EQUALS \fP\fP
+\fC=\fP 
 .TP
 \fB\fIINI_COLON \fP\fP
+\fC:\fP 
 .SS "enum \fBIniMultiline\fP"
 
 .PP
@@ -263,7 +266,8 @@ INI nodes types\&.
 .TP
 \fB\fIINI_UNKNOWN \fP\fP
 .TP
-\fB\fIINI_DOCUMENT \fP\fP
+\fB\fIINI_VALUE \fP\fP
+Not used here but available for user's implementations 
 .TP
 \fB\fIINI_SECTION \fP\fP
 .TP
@@ -379,7 +383,7 @@ Nothing
 .SS "signed int ini_get_bool (const char *const ini_string, const signed int return_value)"
 
 .PP
-Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\&.\fP
+Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\fP\&. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -397,7 +401,7 @@ The matching boolean value (0 or 1) or \fCreturn_value\fP if no boolean has been
 .SS "signed int ini_get_lazy_bool (const char *const ini_string, const signed int return_value)"
 
 .PP
-Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\&.\fP
+Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\fP\&. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -498,10 +502,6 @@ Zero for success, otherwise an error code
 
 .SH "Variable Documentation"
 .PP 
-.SS "const \fBIniFormat\fP INI_DEFAULT_FORMAT = { \fBINI_EQUALS\fP , \fBINI_PARSE_COMMENT\fP , \fBINI_PARSE_COMMENT\fP , \fBINI_EVERYTHING_MULTILINE\fP , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }\fC [static]\fP"
-
-.PP
-A model format\&. 
 .SS "double(* const ini_get_float) (const char *ini_string)"
 
 .SS "int(* const ini_get_int) (const char *ini_string)"

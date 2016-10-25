@@ -63,7 +63,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
+<a href="#nested-classes">Data Structures</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a> &#124;
@@ -79,7 +79,7 @@ $(function() {
 <p><a href="confini_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
+Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html">IniFormat</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">24-bit bitfield representing a unique format of an INI file (INI dialect) &ndash; <code>sizeof(IniFormat)</code> should be <code>3</code>  <a href="structIniFormat.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -127,7 +127,7 @@ Enumerations</h2></td></tr>
 <tr class="separator:ad342637c37d95454c9392a8cc73bced8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e394db479f56eaa830ade09c907461b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461b">IniNodeType</a> { <br />
 &#160;&#160;<a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461baffa9e27deb46c0e436bc75329cc5f7a6">INI_UNKNOWN</a> = 0, 
-<a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461baaef81c36965f45b28fa2c7c218d49d59">INI_DOCUMENT</a> = 1, 
+<a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba918d23a1b37bc9f91a79d0d11c221dc9">INI_VALUE</a> = 1, 
 <a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba596f391d896636da6f004a7d010edb50">INI_SECTION</a> = 2, 
 <a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba97333d01dfff8f9a9c690fc559751b45">INI_KEY</a> = 3, 
 <br />
@@ -184,10 +184,10 @@ Functions</h2></td></tr>
 <tr class="memdesc:a740b9707ef68ff4cccfa9e3b9d095334"><td class="mdescLeft">&#160;</td><td class="mdescRight">Splits an INI array and calls a custom function for each member.  <a href="#a740b9707ef68ff4cccfa9e3b9d095334">More...</a><br /></td></tr>
 <tr class="separator:a740b9707ef68ff4cccfa9e3b9d095334"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a8dcc3d8ff26554486691423cce4ea0"><td class="memItemLeft" align="right" valign="top">signed int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a2a8dcc3d8ff26554486691423cce4ea0">ini_get_bool</a> (const char *const ini_string, const signed int return_value)</td></tr>
-<tr class="memdesc:a2a8dcc3d8ff26554486691423cce4ea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_.</a> <a href="#a2a8dcc3d8ff26554486691423cce4ea0">More...</a><br /></td></tr>
+<tr class="memdesc:a2a8dcc3d8ff26554486691423cce4ea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_</a>.  <a href="#a2a8dcc3d8ff26554486691423cce4ea0">More...</a><br /></td></tr>
 <tr class="separator:a2a8dcc3d8ff26554486691423cce4ea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad95262d09842c25e8bb610bf95c42cd3"><td class="memItemLeft" align="right" valign="top">signed int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#ad95262d09842c25e8bb610bf95c42cd3">ini_get_lazy_bool</a> (const char *const ini_string, const signed int return_value)</td></tr>
-<tr class="memdesc:ad95262d09842c25e8bb610bf95c42cd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_.</a> <a href="#ad95262d09842c25e8bb610bf95c42cd3">More...</a><br /></td></tr>
+<tr class="memdesc:ad95262d09842c25e8bb610bf95c42cd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_</a>.  <a href="#ad95262d09842c25e8bb610bf95c42cd3">More...</a><br /></td></tr>
 <tr class="separator:ad95262d09842c25e8bb610bf95c42cd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
@@ -200,9 +200,6 @@ Variables</h2></td></tr>
 <tr class="separator:aaf3640e3632b10bf8dd2e852a7d82630"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a178704d02ede6101f757bbd37e5bd697"><td class="memItemLeft" align="right" valign="top">double(*const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a178704d02ede6101f757bbd37e5bd697">ini_get_float</a> )(const char *ini_string)</td></tr>
 <tr class="separator:a178704d02ede6101f757bbd37e5bd697"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aafa50d590c715f37b74fa5938a35a56f"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a> = { <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f">INI_EQUALS</a> , <a class="el" href="confini_8h.html#a397bfc55d3cf3e2ecd6b044e4d168796a01dfea6f7d0d7c409086448bf31d5218">INI_PARSE_COMMENT</a> , <a class="el" href="confini_8h.html#a397bfc55d3cf3e2ecd6b044e4d168796a01dfea6f7d0d7c409086448bf31d5218">INI_PARSE_COMMENT</a> , <a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa17e1a311cef9d9ea4175de00a8e5f5f2">INI_EVERYTHING_MULTILINE</a> , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }</td></tr>
-<tr class="memdesc:aafa50d590c715f37b74fa5938a35a56f"><td class="mdescLeft">&#160;</td><td class="mdescRight">A model format.  <a href="#aafa50d590c715f37b74fa5938a35a56f">More...</a><br /></td></tr>
-<tr class="separator:aafa50d590c715f37b74fa5938a35a56f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8b0049b3a18c7704ad503ed6ad21927"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#af8b0049b3a18c7704ad503ed6ad21927">INI_IMPLICIT_VALUE</a></td></tr>
 <tr class="memdesc:af8b0049b3a18c7704ad503ed6ad21927"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default value of implicit keys.  <a href="#af8b0049b3a18c7704ad503ed6ad21927">More...</a><br /></td></tr>
 <tr class="separator:af8b0049b3a18c7704ad503ed6ad21927"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -325,10 +322,14 @@ Variables</h2></td></tr>
 
 <p>Behaviors of '#' and ';'. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a397bfc55d3cf3e2ecd6b044e4d168796a01dfea6f7d0d7c409086448bf31d5218"></a>INI_PARSE_COMMENT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a397bfc55d3cf3e2ecd6b044e4d168796a66d9ef884d52ed431e7fbf5b79484280"></a>INI_SHOW_COMMENT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a397bfc55d3cf3e2ecd6b044e4d168796a1896355b58ef9507121d73b55d13da19"></a>INI_FORGET_COMMENT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a397bfc55d3cf3e2ecd6b044e4d168796abcb943630ce718d8d31ad56db57ae7bd"></a>INI_NORMAL_CHARACTER&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a397bfc55d3cf3e2ecd6b044e4d168796a01dfea6f7d0d7c409086448bf31d5218"></a>INI_PARSE_COMMENT&#160;</td><td class="fielddoc"><p>This opens a comment or a disabled entry </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a397bfc55d3cf3e2ecd6b044e4d168796a66d9ef884d52ed431e7fbf5b79484280"></a>INI_SHOW_COMMENT&#160;</td><td class="fielddoc"><p>This opens a comment </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a397bfc55d3cf3e2ecd6b044e4d168796a1896355b58ef9507121d73b55d13da19"></a>INI_FORGET_COMMENT&#160;</td><td class="fielddoc"><p>This opens a comment that must be ignored </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a397bfc55d3cf3e2ecd6b044e4d168796abcb943630ce718d8d31ad56db57ae7bd"></a>INI_NORMAL_CHARACTER&#160;</td><td class="fielddoc"><p>This is a normal character </p>
+</td></tr>
 </table>
 
 </div>
@@ -347,9 +348,12 @@ Variables</h2></td></tr>
 
 <p>Most used delimiters (but a delimiter can also be any other ASCII character) </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd"></a>INI_ANY_SPACE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f"></a>INI_EQUALS&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ad342637c37d95454c9392a8cc73bced8a19ee5c58c00443deea6b1e27d6e4c5fb"></a>INI_COLON&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd"></a>INI_ANY_SPACE&#160;</td><td class="fielddoc"><p><code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code> </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f"></a>INI_EQUALS&#160;</td><td class="fielddoc"><p><code>=</code> </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ad342637c37d95454c9392a8cc73bced8a19ee5c58c00443deea6b1e27d6e4c5fb"></a>INI_COLON&#160;</td><td class="fielddoc"><p><code>:</code> </p>
+</td></tr>
 </table>
 
 </div>
@@ -391,7 +395,8 @@ Variables</h2></td></tr>
 <p>INI nodes types. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a4e394db479f56eaa830ade09c907461baffa9e27deb46c0e436bc75329cc5f7a6"></a>INI_UNKNOWN&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a4e394db479f56eaa830ade09c907461baaef81c36965f45b28fa2c7c218d49d59"></a>INI_DOCUMENT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a4e394db479f56eaa830ade09c907461ba918d23a1b37bc9f91a79d0d11c221dc9"></a>INI_VALUE&#160;</td><td class="fielddoc"><p>Not used here but available for user's implementations </p>
+</td></tr>
 <tr><td class="fieldname"><a id="a4e394db479f56eaa830ade09c907461ba596f391d896636da6f004a7d010edb50"></a>INI_SECTION&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a4e394db479f56eaa830ade09c907461ba97333d01dfff8f9a9c690fc559751b45"></a>INI_KEY&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a4e394db479f56eaa830ade09c907461ba3e1566ae0a227e57db497714ddf274bb"></a>INI_COMMENT&#160;</td><td class="fielddoc"></td></tr>
@@ -644,7 +649,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_.</a></p>
+<p>Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ini_string</td><td>A string to be checked </td></tr>
@@ -682,7 +687,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_.</a></p>
+<p>Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ini_string</td><td>A string to be checked </td></tr>
@@ -889,30 +894,6 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
-<a id="aafa50d590c715f37b74fa5938a35a56f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aafa50d590c715f37b74fa5938a35a56f">&sect;&nbsp;</a></span>INI_DEFAULT_FORMAT</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="structIniFormat.html">IniFormat</a> INI_DEFAULT_FORMAT = { <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f">INI_EQUALS</a> , <a class="el" href="confini_8h.html#a397bfc55d3cf3e2ecd6b044e4d168796a01dfea6f7d0d7c409086448bf31d5218">INI_PARSE_COMMENT</a> , <a class="el" href="confini_8h.html#a397bfc55d3cf3e2ecd6b044e4d168796a01dfea6f7d0d7c409086448bf31d5218">INI_PARSE_COMMENT</a> , <a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa17e1a311cef9d9ea4175de00a8e5f5f2">INI_EVERYTHING_MULTILINE</a> , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>A model format. </p>
-
-</div>
-</div>
 <a id="a178704d02ede6101f757bbd37e5bd697"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a178704d02ede6101f757bbd37e5bd697">&sect;&nbsp;</a></span>ini_get_float</h2>
 

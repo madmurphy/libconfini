@@ -26,67 +26,67 @@
 	- Bits 21-22: user's syntax (disabled entries)
 	- Bits 23-24: unused
 
-	@var		IniFormat::delimiter_symbol
-					The symbol to be used as delimiter; if set to `'\0'`, any space is delimiter (`/[\s]+/`)
-
-	@var		IniFormat::semicolon
+	@property	IniFormat::delimiter_symbol
+					The symbol to be used as delimiter; if set to `'\0'`, any space is delimiter
+					(`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
+	@property	IniFormat::semicolon
 					The rule of the semicolon character (use enum `::IniComments` for this)
-	@var		IniFormat::hash
+	@property	IniFormat::hash
 					The rule of the hash character (use enum `::IniComments` for this)
-	@var		IniFormat::multiline_entries
+	@property	IniFormat::multiline_entries
 					The multiline state of the document (use enum `::IniMultiline` for this)
-	@var		IniFormat::case_sensitive
+	@property	IniFormat::case_sensitive
 					If set to `1`, key- and section- names will not be rendered in lower case
-	@var		IniFormat::no_spaces_in_names
-					If set to `1`, key- and section- names containing spaces will be rendered as INI_UNKNOWN
+	@property	IniFormat::no_spaces_in_names
+					If set to `1`, key- and section- names containing spaces will be rendered as `#INI_UNKNOWN`
 
-	@var		IniFormat::no_single_quotes
+	@property	IniFormat::no_single_quotes
 					If set to `1`, the single-quote character (`'`) will be considered as a normal character
-	@var		IniFormat::no_double_quotes
+	@property	IniFormat::no_double_quotes
 					If set to `1`, the double-quote character (`"`) will be considered as a normal character
-	@var		IniFormat::implicit_is_not_empty
+	@property	IniFormat::implicit_is_not_empty
 					If set to `1`, the dispatch of implicit keys (see @ref libconfini) will always
 					assign to `IniDispatch::value` and to `IniDispatch::v_len` the global variables
 					`::INI_IMPLICIT_VALUE` and `::INI_IMPLICIT_V_LEN` respectively; if set to `0`,
 					implicit keys will be considered empty keys
-	@var		IniFormat::do_not_collapse_values
+	@property	IniFormat::do_not_collapse_values
 					If set to `1`, sequences of more than one space in values (`/\s{2,}/`) will not be collapsed
-	@var		IniFormat::no_disabled_after_space
+	@property	IniFormat::no_disabled_after_space
 					If set to `1`, prevents that `/[#;]\s+/[^\s][^\n]+/` be parsed as a disabled entry
-	@var		IniFormat::disabled_can_be_implicit
+	@property	IniFormat::disabled_can_be_implicit
 					If set to `1`, comments non containing a delimiter symbol will not be parsed as
 					disabled implicit keys, but as simple comments
 
 
 	@struct		IniStatistics
 
-	@var		IniStatistics::format
+	@property	IniStatistics::format
 					The format of the INI file (see struct `::IniFormat`)
-	@var		IniStatistics::bytes
+	@property	IniStatistics::bytes
 					The size of the parsed file in bytes
-	@var		IniStatistics::members
+	@property	IniStatistics::members
 					The size of the parsed file in members (nodes)
 
 
 	@struct		IniDispatch
 
-	@var		IniDispatch::format
+	@property	IniDispatch::format
 					The format of the INI file (see struct `::IniFormat`)
-	@var		IniDispatch::type
+	@property	IniDispatch::type
 					The dispatch type (see enum `::IniNodeType`)
-	@var		IniDispatch::data
+	@property	IniDispatch::data
 					It can be a comment, a section or a key
-	@var		IniDispatch::value
+	@property	IniDispatch::value
 					It can be a key value or an empty string
-	@var		IniDispatch::append_to
+	@property	IniDispatch::append_to
 					The current path
-	@var		IniDispatch::d_len
+	@property	IniDispatch::d_len
 					The length of the string `IniDispatch::data`
-	@var		IniDispatch::v_len
+	@property	IniDispatch::v_len
 					The length of the string `IniDispatch::value`
-	@var		IniDispatch::at_len
+	@property	IniDispatch::at_len
 					The length of the string `IniDispatch::append_to`
-	@var		IniDispatch::dispatch_id
+	@property	IniDispatch::dispatch_id
 					The dispatch id
 
 **/
@@ -212,21 +212,21 @@ static inline _LIBCONFINI_SIZE_ ultrim_h (char * const ult_s, const _LIBCONFINI_
 
 	/*
 
-	Mask `abacus` (4 bits used):
+	Mask `abacus` (5 bits used):
 
-		FLAG_1		This is any space
-		FLAG_2		This is not a backslash
-		FLAG_4		Previous was not a backslash
+		FLAG_1		This is any space (`/[\t \v\f\n\r]/`)
+		FLAG_2		Previous was any space
+		FLAG_4		This is a backslash OR this is a new line and previous was a backslash
 		FLAG_8		Continue the loop
 
 	*/
 
-	for (abacus = 12; ult_s[ult_i] && (abacus & 8); ult_i++) {
+	for (abacus = 10; abacus & 8; ult_i++) {
 
-		abacus	=	(abacus & 4) && is_some_space(ult_s[ult_i], _LIBCONFINI_NO_EOL_) ? 13
-					: ult_s[ult_i] == _LIBCONFINI_LF_ || ult_s[ult_i] == _LIBCONFINI_CR_ ? abacus | 5
-					: (abacus & 4) && ult_s[ult_i] == _LIBCONFINI_BACKSLASH_ ? 10
-					: abacus & 4;
+		abacus	=	(abacus & 2) && is_some_space(ult_s[ult_i], _LIBCONFINI_NO_EOL_) ? 11
+					: ult_s[ult_i] == _LIBCONFINI_LF_ || ult_s[ult_i] == _LIBCONFINI_CR_ ? abacus | 3
+					: (abacus & 2) && ult_s[ult_i] == _LIBCONFINI_BACKSLASH_ ? 12
+					: abacus & 2;
 
 		if (abacus & 1) {
 
@@ -234,15 +234,16 @@ static inline _LIBCONFINI_SIZE_ ultrim_h (char * const ult_s, const _LIBCONFINI_
 
 		}
 
-		if ((abacus & 2) && (abacus & 4)) {
+		if (abacus == 15) {
 
 			ult_s[ult_i - 1] = '\0';
+			abacus &= 11;
 
 		}
 
 	}
 
-	return abacus & 8 ? ult_i : abacus & 4 ? ult_i - 1 : ult_i - 2;
+	return abacus & 2 ? ult_i - 1 : ult_i - 2;
 
 }
 
@@ -252,7 +253,7 @@ static inline _LIBCONFINI_SIZE_ ultrim_h (char * const ult_s, const _LIBCONFINI_
 	@brief			Soft right trim -- does not change the buffer
 	@param			rt_s			The target string
 	@param			length			The length of the string
-	@param			depth			What is actually considered a space -- a subset of @link #_LIBCONFINI_SPACES_ ranging from 1 to 6
+	@param			depth			What is actually considered a space -- a subset of @link #_LIBCONFINI_SPACES_ @endlink ranging from 1 to 6
 	@return			The length of the string until the last non-space character
 
 **/
@@ -408,12 +409,8 @@ static inline _LIBCONFINI_SIZE_ get_delimiter_pos (const char * const str, const
 
 		_LIBCONFINI_BYTE_ abacus = 0;
 
-			idx < len
-			&&
-			!(
-				!(abacus & 6)
-				&&
-				(
+			idx < len && (
+				(abacus & 6) || !(
 					format.delimiter_symbol ?
 						str[idx] == format.delimiter_symbol
 						: is_some_space(str[idx], _LIBCONFINI_NO_EOL_)
@@ -993,12 +990,14 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 					idx = ltrim_s(segment, idx + 1, _LIBCONFINI_WITH_EOL_);
 
 					if (
-							(format.no_disabled_after_space && is_some_space(segment[idx + 1], _LIBCONFINI_NO_EOL_))
-							||
-							!(
-								(is_comm_char(segment[idx], format) && !format.multiline_entries)
-								||
-								(is_parsable_char(segment[idx], format) && format.multiline_entries < 2)
+							(
+								format.no_disabled_after_space && is_some_space(segment[idx + 1], _LIBCONFINI_NO_EOL_)
+							) || !(
+								(
+									is_comm_char(segment[idx], format) && !format.multiline_entries
+								) || (
+									is_parsable_char(segment[idx], format) && format.multiline_entries < 2
+								)
 							)
 						) {
 
@@ -1480,9 +1479,9 @@ unsigned int load_ini_file (
 
 					abacus = 0, tmp_uint = 0;
 
-						this_d.data[tmp_uint]
-						&&
-						((abacus & 6) || this_d.data[tmp_uint] != _LIBCONFINI_CLOSE_SECTION_);
+						this_d.data[tmp_uint] && (
+							(abacus & 6) || this_d.data[tmp_uint] != _LIBCONFINI_CLOSE_SECTION_
+						);
 
 					abacus	=	!(abacus & 3) && !format.no_double_quotes && this_d.data[tmp_uint] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 4
 								: !(abacus & 5) && !format.no_single_quotes && this_d.data[tmp_uint] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 2
@@ -1913,7 +1912,7 @@ unsigned long int ini_collapse_array (char * const ini_string, const char delimi
 		FLAG_2		Unescaped single quotes are odd until now
 		FLAG_4		Unescaped double quotes are odd until now
 		FLAG_8		We met a delimiter
-		FLAG_16		This shift does not contain a delimiter (possible just at the beginning or at the end of the buffer)
+		FLAG_16		This shift shall be without delimiter (possible just at the beginning or at the end of the buffer)
 		FLAG_32		Remember this position
 		FLAG_64		In this area a shift has to be done
 		FLAG_128	Account the shift now
@@ -1936,7 +1935,7 @@ unsigned long int ini_collapse_array (char * const ini_string, const char delimi
 					: !(abacus & 6) && is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_) ?
 
 						(
-							(abacus & 264) ?
+							abacus & 264 ?
 								(abacus & 878) | 616
 							:
 								(abacus & 886) | 608
@@ -1963,13 +1962,17 @@ unsigned long int ini_collapse_array (char * const ini_string, const char delimi
 
 		if (abacus & 128) {
 
-			if (!(abacus & 16)) {
+			if (abacus & 16) {
+
+				lshift += idx - iter;
+
+			} else {
 
 				ini_string[iter - lshift] = delimiter ? delimiter : _LIBCONFINI_SIMPLE_SPACE_;
+				lshift += idx - iter - 1;
 
 			}
 
-			lshift += abacus & 16 ? idx - iter : idx - iter - 1;
 			abacus &= 879;
 
 		}
@@ -2074,7 +2077,7 @@ unsigned int ini_split_array (
 /**
 
 	@brief			Checks whether a string matches *exactly* one of the booleans listed in
-					the private constant @link #_LIBCONFINI_BOOLEANS_
+					the private constant @link #_LIBCONFINI_BOOLEANS_ @endlink
 	@param			ini_string			A string to be checked
 	@param			return_value		A value that is returned if no matching boolean has been found
 	@return			The matching boolean value (0 or 1) or @p return_value if no boolean has been found
@@ -2092,12 +2095,12 @@ signed int ini_get_bool (const char * const ini_string, const signed int return_
 
 				chr_idx = 0;
 
-						(
-							ini_string[chr_idx] > 0x40 && ini_string[chr_idx] < 0x5b ?
-								ini_string[chr_idx] | 0x60
-							:
-								ini_string[chr_idx]
-						) == _LIBCONFINI_BOOLEANS_[pair_idx][bool_idx][chr_idx];
+					(
+						ini_string[chr_idx] > 0x40 && ini_string[chr_idx] < 0x5b ?
+							ini_string[chr_idx] | 0x60
+						:
+							ini_string[chr_idx]
+					) == _LIBCONFINI_BOOLEANS_[pair_idx][bool_idx][chr_idx];
 
 				chr_idx++
 
@@ -2123,7 +2126,7 @@ signed int ini_get_bool (const char * const ini_string, const signed int return_
 /**
 
 	@brief			Checks whether the first letter of a string matches the first letter of one of the
-					booleans listed in the private constant @link #_LIBCONFINI_BOOLEANS_
+					booleans listed in the private constant @link #_LIBCONFINI_BOOLEANS_ @endlink
 	@param			ini_string			A string to be checked
 	@param			return_value		A value that is returned if no matching boolean has been found
 	@return			The matching boolean value (0 or 1) or @p return_value if no boolean has been found
