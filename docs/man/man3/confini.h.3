@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Wed Oct 26 2016" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Fri Oct 28 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -109,11 +109,11 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "signed int \fBini_get_bool\fP (const char *const ini_string, const signed int return_value)"
 .br
-.RI "Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\fP\&. "
+.RI "Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\fP (case insensitive) "
 .ti -1c
 .RI "signed int \fBini_get_lazy_bool\fP (const char *const ini_string, const signed int return_value)"
 .br
-.RI "Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\fP\&. "
+.RI "Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\fP (case insensitive) "
 .in -1c
 .SS "Variables"
 
@@ -371,7 +371,7 @@ Sets all the values of an \fBIniFormat\fP by reading them from an \fBIniFormatId
 .RS 4
 \fIdest_format\fP The \fBIniFormat\fP to be set 
 .br
-\fImask\fP The \fBIniFormatId\fP to be read 
+\fImask\fP The \fC\fBIniFormatId\fP\fP to be read 
 .RE
 .PP
 \fBReturns:\fP
@@ -383,7 +383,7 @@ Nothing
 .SS "signed int ini_get_bool (const char *const ini_string, const signed int return_value)"
 
 .PP
-Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\fP\&. 
+Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\fP (case insensitive) 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -401,7 +401,7 @@ The matching boolean value (0 or 1) or \fCreturn_value\fP if no boolean has been
 .SS "signed int ini_get_lazy_bool (const char *const ini_string, const signed int return_value)"
 
 .PP
-Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\fP\&. 
+Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\fP (case insensitive) 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -425,7 +425,7 @@ Sets the valued used for implicit keys\&.
 .RS 4
 \fIimplicit_value\fP The string to be used as implicit value (usually \fC'YES'\fP, or \fC'TRUE'\fP) 
 .br
-\fIimplicit_v_len\fP The length of \fCimplicit_value\fP (usually 0, independently of its real length) 
+\fIimplicit_v_len\fP The length of \fCimplicit_value\fP (usually \fC0\fP, independently of its real length) 
 .RE
 .PP
 \fBReturns:\fP

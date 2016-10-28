@@ -144,7 +144,7 @@ extern signed int ini_get_lazy_bool (const char * const ini_string, const signed
 
 
 
-/* PUBLIC WRAPPERS */
+/* PUBLIC LINKS */
 
 
 extern int (* const ini_get_int) (const char *ini_string);

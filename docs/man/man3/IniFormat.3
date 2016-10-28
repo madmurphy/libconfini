@@ -1,4 +1,4 @@
-.TH "IniFormat" 3 "Wed Oct 26 2016" "libconfini" \" -*- nroff -*-
+.TH "IniFormat" 3 "Fri Oct 28 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -82,7 +82,7 @@ If set to \fC1\fP, the dispatch of implicit keys (see \fBLibrary Functions Manua
 .SS "IniFormat::multiline_entries"
 The multiline state of the document (use enum \fC\fBIniMultiline\fP\fP for this) 
 .SS "IniFormat::no_disabled_after_space"
-If set to \fC1\fP, prevents that \fC/[#;]\\s+/[^\\s][^\\n]+/\fP be parsed as a disabled entry 
+If set to \fC1\fP, prevents that what follows \fC/(?:^|\\s+)[#;]\\s/\fP be parsed as a disabled entry 
 .SS "IniFormat::no_double_quotes"
 If set to \fC1\fP, the double-quote character (\fC"\fP) will be considered as a normal character 
 .SS "IniFormat::no_single_quotes"

@@ -1,11 +1,12 @@
 # Change Log
 
-## [1.3-2] - 2016-10-25
+## [1.3-2] - 2016-10-27
 
 Changes:
 
-* Added new documentation
+* Not collapsing spaces in implicit keys: bug fixed
 * Code optimization
+* Added new documentation
 
 ## [1.3-1] - 2016-10-24
 

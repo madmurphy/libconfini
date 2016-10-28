@@ -15,7 +15,7 @@ my_array = [comma-delimited array]
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-No errors will be generated if any of the data are absent.
+No errors will be generated if any of the data above are absent.
 
 **/
 

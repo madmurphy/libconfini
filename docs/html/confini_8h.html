@@ -184,10 +184,10 @@ Functions</h2></td></tr>
 <tr class="memdesc:a5fb5875b30fc361127a6d95898a7ed60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Splits an INI array and calls a custom function for each member.  <a href="#a5fb5875b30fc361127a6d95898a7ed60">More...</a><br /></td></tr>
 <tr class="separator:a5fb5875b30fc361127a6d95898a7ed60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a8dcc3d8ff26554486691423cce4ea0"><td class="memItemLeft" align="right" valign="top">signed int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a2a8dcc3d8ff26554486691423cce4ea0">ini_get_bool</a> (const char *const ini_string, const signed int return_value)</td></tr>
-<tr class="memdesc:a2a8dcc3d8ff26554486691423cce4ea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_</a>.  <a href="#a2a8dcc3d8ff26554486691423cce4ea0">More...</a><br /></td></tr>
+<tr class="memdesc:a2a8dcc3d8ff26554486691423cce4ea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_</a> (case insensitive)  <a href="#a2a8dcc3d8ff26554486691423cce4ea0">More...</a><br /></td></tr>
 <tr class="separator:a2a8dcc3d8ff26554486691423cce4ea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad95262d09842c25e8bb610bf95c42cd3"><td class="memItemLeft" align="right" valign="top">signed int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#ad95262d09842c25e8bb610bf95c42cd3">ini_get_lazy_bool</a> (const char *const ini_string, const signed int return_value)</td></tr>
-<tr class="memdesc:ad95262d09842c25e8bb610bf95c42cd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_</a>.  <a href="#ad95262d09842c25e8bb610bf95c42cd3">More...</a><br /></td></tr>
+<tr class="memdesc:ad95262d09842c25e8bb610bf95c42cd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_</a> (case insensitive)  <a href="#ad95262d09842c25e8bb610bf95c42cd3">More...</a><br /></td></tr>
 <tr class="separator:ad95262d09842c25e8bb610bf95c42cd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
@@ -615,7 +615,7 @@ Variables</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dest_format</td><td>The <a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) – sizeof(IniFormat) should...">IniFormat</a> to be set </td></tr>
-    <tr><td class="paramname">mask</td><td>The <a class="el" href="confini_8h.html#ad88dd5ea6ac66d7b1c31c5e26fca8e88" title="24-bit bitmask representing the format of an INI file ">IniFormatId</a> to be read </td></tr>
+    <tr><td class="paramname">mask</td><td>The <code><a class="el" href="confini_8h.html#ad88dd5ea6ac66d7b1c31c5e26fca8e88" title="24-bit bitmask representing the format of an INI file ">IniFormatId</a></code> to be read </td></tr>
   </table>
   </dd>
 </dl>
@@ -649,7 +649,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_</a>. </p>
+<p>Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_</a> (case insensitive) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ini_string</td><td>A string to be checked </td></tr>
@@ -687,7 +687,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_</a>. </p>
+<p>Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_</a> (case insensitive) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ini_string</td><td>A string to be checked </td></tr>
@@ -729,7 +729,7 @@ Variables</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">implicit_value</td><td>The string to be used as implicit value (usually <code>"YES"</code>, or <code>"TRUE"</code>) </td></tr>
-    <tr><td class="paramname">implicit_v_len</td><td>The length of <code>implicit_value</code> (usually 0, independently of its real length) </td></tr>
+    <tr><td class="paramname">implicit_v_len</td><td>The length of <code>implicit_value</code> (usually <code>0</code>, independently of its real length) </td></tr>
   </table>
   </dd>
 </dl>
