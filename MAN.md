@@ -80,7 +80,7 @@ foo = "bar
 
 ~~~~~~~~~~
 
-will always determine the same behaviors as if it had been
+will always determine the same behavior as if it had been
 
 ~~~~~~~~~~~{.ini}
 
@@ -90,7 +90,7 @@ foo = "bar"
 
 The **key part** can contain any character, except the delimiter (which can be enclosed within quotes for not beeing considered as such). The new line sequences must be escaped (ECMAScript regular expression: `/\\(?:\n\r?|\r\n?)/`).
 
-If the **key part** part is missing the element is considered of unknown type, i.e., `INI_UNKNOWN` -- see enum `#IniNodeType` -- (example: `= foo`). If the **value part** is missing the key element is considered empty (example: `foo =`). If the delimiter is missing according to some formats the key can be considered an _implicit key_, typically representing the boolean `TRUE` (example: `foo`). For instance, in the following example from `/etc/pacman.conf`, `IgnorePkg` is an empty key, while `Color` is an implicit key (representing a `TRUE` boolean -- i.e., `Color = YES`):
+If the **key part** part is missing the element is considered of unknown type, i.e., `INI_UNKNOWN` -- see enum `#IniNodeType` -- (example: `= foo`). If the **value part** is missing the key element is considered empty (example: `foo =`). If the delimiter is missing, according to some formats the key element is considered to be an _implicit key_ -- typically representing the boolean `TRUE` (example: `foo`) -- but according to other formats is considered to be an empty key. For instance, in the following example from `/etc/pacman.conf`, `IgnorePkg` is an empty key, while `Color` is an implicit key (representing a `TRUE` boolean -- i.e., `Color = YES`):
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -104,6 +104,18 @@ LocalFileSigLevel = Optional
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **value** part can contain typed data, usually: a boolean (booleans supported by **libconfini** are: `NO`/`YES`, `FALSE`/`TRUE`, `0`/`1`), a string, a number, or an array (typically with commas as members delimiters -- example: `paths = /etc, /usr, "/home/john/Personal Data"`). The new line sequences must be escaped (ECMAScript regular expression: `/\\(?:\n\r?|\r\n?)/`).
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
+
+[my_section]
+
+my_string = "Hello world"
+'my_number' = 42
+my_boolean = NO
+my_implicit_boolean
+my_array = Asia, Africa, 'North America', South America, Antarctica, Europe, Australia
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In order to set the value to be assigned to implicit keys, please use the `ini_set_implicit_value()` function. A _zero-length `TRUE`-boolean_ is usually a good choice:
 
@@ -199,7 +211,7 @@ foo = bar       # this is an inline comment
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Comments can be, in theory, multiline, following the same syntax of multiline disabled entries (see below). This is usually of little utility, except for inline comments that you want to make sure will refer to the previous entry:
+Comments can in theory be multiline, following the same syntax of multiline disabled entries (see below). This is usually of little utility, except for inline comments that you want to make sure will refer to the previous entry:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -263,7 +275,7 @@ A disabled entry is either a section or a key that has been nested inside a comm
 
 ### ENCODINGS
 
-The encodings currently supported by **libconfini** are ASCII and UTF-8 (without BOM). In case the INI file is case-insensitive with respect to keys and section names, **libconfini** will always convert all ASCII letters to lowercase (except within values), _even when these are enclosed within quotes_, but will **not** convert non-ASCII code points to lowercase (for instance, `Ā` will not be rendered as `ā`, but will be rather left untouched). _In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names._
+The encodings currently supported by **libconfini** are ASCII and UTF-8 (without BOM). In case the INI file is case-insensitive with respect to keys and section names, **libconfini** will always convert all ASCII letters to lowercase (except within values) -- _even when these are enclosed within quotes_ -- but will **not** convert non-ASCII code points to lowercase (for instance, `Ā` will not be rendered as `ā`, but will be rather left untouched). _In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names._
 
 # READ AN INI FILE
 
@@ -357,7 +369,7 @@ int main () {
 
 ### RENDERING
 
-The output strings dispatched by **libconfini** will follow some formatting rules depending on their role within the INI file. First, the new line sequence will be unescaped, then
+The output strings dispatched by **libconfini** will follow some formatting rules depending on their role within the INI file. First, the new line sequences will be unescaped, then
 
 * **Section paths** will be rendered according to ECMAScript `section_name.replace(/\.*\s*$|(?:\s*(\.))+\s*|^\s+/g, "$1").replace(/\s+/g, " ")` -- within single or double quotes, if active, the text will be left untouched
 * **Key names** will be rendered according to ECMAScript `key_name.replace(/^[\n\r]\s*|(\s)+/g, " ")` -- within single or double quotes, if active, the text will be left untouched
