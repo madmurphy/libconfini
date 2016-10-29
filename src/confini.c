@@ -517,46 +517,46 @@ static _LIBCONFINI_SIZE_ collapse_spaces (char * const str, const IniFormat form
 
 	Mask `abacus` (6 bits used):
 
-		FLAG_1		More than one space is here
-		FLAG_2		Single quotes are not metacharacters (const)
-		FLAG_4		Double quotes are not metacharacters (const)
-		FLAG_8		Unescaped single quotes are odd until now
-		FLAG_16		Unescaped double quotes are odd until now
-		FLAG_32		We are in an odd sequence of backslashes
+		FLAG_1		Single quotes are not metacharacters (const)
+		FLAG_2		Double quotes are not metacharacters (const)
+		FLAG_4		Unescaped single quotes are odd until now
+		FLAG_8		Unescaped double quotes are odd until now
+		FLAG_16		We are in an odd sequence of backslashes
+		FLAG_32		More than one space is here
 
 	*/
 
-	_LIBCONFINI_BYTE_	abacus	=	(format.no_double_quotes << 2)
-									| (format.no_single_quotes << 1)
-									| is_some_space(*str, _LIBCONFINI_WITH_EOL_);
+	_LIBCONFINI_BYTE_	abacus	=	(is_some_space(*str, _LIBCONFINI_WITH_EOL_) ? 32 : 0)
+									| (format.no_double_quotes << 1)
+									| format.no_single_quotes;
 
 	_LIBCONFINI_SIZE_ idx, lshift;
 
 	for (lshift = 0, idx = 0; str[idx]; idx++) {
 
-		if (!(abacus & 24) && is_some_space(str[idx], _LIBCONFINI_WITH_EOL_)) {
+		if (!(abacus & 12) && is_some_space(str[idx], _LIBCONFINI_WITH_EOL_)) {
 
-			if (abacus & 1) {
+			if (abacus & 32) {
 
 				lshift++;
 
 			} else {
 
 				str[idx - lshift] = _LIBCONFINI_SIMPLE_SPACE_;
-				abacus |= 1;
+				abacus |= 32;
 
 			}
 
-			abacus &= 31;
+			abacus &= 47;
 
 		} else {
 
-			abacus	=	str[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 32
-						: !(abacus & 44) && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 16
-						: !(abacus & 50) && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 8
-						: abacus & 31;
+			abacus	=	str[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 16
+						: !(abacus & 22) && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 8
+						: !(abacus & 25) && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 4
+						: abacus & 47;
 
-			abacus &= 62;
+			abacus &= 31;
 
 			if (lshift) {
 
@@ -568,7 +568,7 @@ static _LIBCONFINI_SIZE_ collapse_spaces (char * const str, const IniFormat form
 
 	}
 
-	for (idx -= abacus & 1 ? ++lshift : lshift; str[idx]; str[idx++] = '\0');
+	for (idx -= abacus & 32 ? ++lshift : lshift; str[idx]; str[idx++] = '\0');
 
 	return idx - lshift;
 
