@@ -7,13 +7,13 @@ Library Functions Manual {#libconfini}
 
 # OVERVIEW
 
-**libconfini** is a simple INI parsing library with the ability to read disabled entries (i.e., commented lines). **libconfini** does not store the data read from an INI file, but rather dispatches it, formatted, to a custom listener.
+**libconfini** is a simple INI parsing library with the ability to read disabled entries (i.e., valid entries nested in comments). **libconfini** does not store the data read from an INI file, but rather dispatches it, formatted, to a custom listener.
 
 The code is written in C and does not depend on any particular library, except for the C standard libraries **stdio.h** and **stdlib.h**.
 
 If you want to start to learn directly from the code, you can find partially self-documented sample usages of **libconfini** under `/usr/share/doc/libconfini/examples/`.
 
-## WHAT IS AN INI FILE
+# WHAT IS AN INI FILE
 
 INI files were introduced with the early versions of Microsoft Windows, where the .ini file name extension stood for INItialization. An INI file can be considered as a string representation of a tree object, with new lines used as delimiters between nodes. A typical INI file is a plain text file looking like the following example:
 
@@ -38,7 +38,7 @@ email = mario.rossi@example.com
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-## SUPPORTED SYNTAX
+## SUPPORTED SYNTAXES
 
 During the years, several interpretations of INI files appeared. In some implementation the colon character (`:`) has been adopted as delimiter (a typical example under GNU/Linux is `/etc/nsswitch.conf`), in other implementation the space (`/[ \t\v\f]+/` or `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`) has been used instead (see for example `/etc/host.conf`), and so on. This library has been born as a general INI parser for GNU, so the support of most of the main _INI dialects_ has been implemented within it.
 
@@ -60,7 +60,7 @@ For several reasons the use of semicolon as node delimiter is not (and will neve
 
 ### KEYS
 
-A **key element** is identified as a string followed by a delimiter -- typically the equals sign (`=`) or the colon sign (`:`) or a space sequence (`/[ \t\v\f]+/`) -- which is followed by a value, which is followed by a new line or an inline comment. 
+A **key element** is identified as a string followed by a delimiter -- typically the equals sign (`=`) or the colon sign (`:`) or a space sequence (`/\s+/`) -- which is followed by a value, which is followed by a new line or an inline comment. 
 
 Both the **key part** and the **value part** may be enclosed within quotes (`'` or `"`):
 
@@ -80,7 +80,7 @@ foo = "bar
 
 ~~~~~~~~~~
 
-will always determine the same behavior as if it had been
+will always determine the same behavior as if it were
 
 ~~~~~~~~~~~{.ini}
 
@@ -90,7 +90,7 @@ foo = "bar"
 
 The **key part** can contain any character, except the delimiter (which can be enclosed within quotes for not beeing considered as such). The new line sequences must be escaped (ECMAScript regular expression: `/\\(?:\n\r?|\r\n?)/`).
 
-If the **key part** part is missing the element is considered of unknown type, i.e., `INI_UNKNOWN` -- see enum `#IniNodeType` -- (example: `= foo`). If the **value part** is missing the key element is considered empty (example: `foo =`). If the delimiter is missing, according to some formats the key element is considered to be an _implicit key_ -- typically representing the boolean `TRUE` (example: `foo`) -- but according to other formats is considered to be an empty key. For instance, in the following example from `/etc/pacman.conf`, `IgnorePkg` is an empty key, while `Color` is an implicit key (representing a `TRUE` boolean -- i.e., `Color = YES`):
+If the **key part** part is missing the element is considered of unknown type, i.e., `INI_UNKNOWN` -- see enum `#IniNodeType` -- (example: `= foo`). If the **value part** is missing the key element is considered empty (example: `foo =`). If the delimiter is missing, according to some formats the key element is considered to be an _implicit key_ -- typically representing the boolean `TRUE` (example: `foo`). For instance, in the following example from `/etc/pacman.conf`, `IgnorePkg` is an empty key, while `Color` is an implicit key (representing a `TRUE` boolean -- i.e., `Color = YES`):
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -113,32 +113,10 @@ my_string = "Hello world"
 'my_number' = 42
 my_boolean = NO
 my_implicit_boolean
-my_array = Asia, Africa, 'North America', South America, Antarctica, Europe, Australia
+my_array = Asia, Africa, 'North America', South America,\
+           Antarctica, Europe, Australia
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-In order to set the value to be assigned to implicit keys, please use the `ini_set_implicit_value()` function. A _zero-length `TRUE`-boolean_ is usually a good choice:
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-
-/* void ini_set_implicit_value (char * implicit_value, unsigned long int implicit_v_len); */
-
-ini_set_implicit_value("YES", 0);
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Alternatively, instead of `ini_set_implicit_value()` you can manually define at the beginning of your code the two global variables `#INI_IMPLICIT_VALUE` and `#INI_IMPLICIT_V_LEN`, which will be retrieved by **libconfini**:
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-
-#include <confini.h>
-
-char *INI_IMPLICIT_VALUE = "YES";
-unsigned long int INI_IMPLICIT_V_LEN = 3;
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If not defined elsewhere, these variables are respectively `NULL` and `0` by default.
 
 ### SECTIONS
 
@@ -170,7 +148,7 @@ foo = bar
 
 ~~~~~~~~~~~~~
 
-Keys appearing before any section path belong to a virtual _root_ node, as the key `foo` in the following example:
+Keys appearing before any section path belong to a virtual _root_ node (with an empty string as path), as the key `foo` in the following example:
 
 ~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -261,7 +239,7 @@ value
 
 ### DISABLED ENTRIES
 
-A disabled entry is either a section or a key that has been nested inside a comment as only child. The syntax for multiline disabled entries is:
+A disabled entry is either a section or a key that has been nested inside a comment as its only child. Disabled entries can be multiline, using `/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]+/` as multiline escaping sequence. For example:
 
 ~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -275,7 +253,7 @@ A disabled entry is either a section or a key that has been nested inside a comm
 
 ### ENCODINGS
 
-The encodings currently supported by **libconfini** are ASCII and UTF-8 (without BOM). In case the INI file is case-insensitive with respect to keys and section names, **libconfini** will always convert all ASCII letters to lowercase (except within values) -- _even when these are enclosed within quotes_ -- but will **not** convert non-ASCII code points to lowercase (for instance, `Ā` will not be rendered as `ā`, but will be rather left untouched). _In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names._
+The encodings currently supported by **libconfini** are ASCII and UTF-8 (without BOM). In case the INI file is case-insensitive with respect to keys and section names, **libconfini** will always convert all ASCII letters to lowercase (except within values) -- _even when these are enclosed within quotes_ -- but will **not** convert non-ASCII code points to lowercase (for instance, `Ā` will not be rendered as `ā`, but will be rather rendered verbatim). _In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names._
 
 # READ AN INI FILE
 
@@ -305,18 +283,18 @@ where
 * `f_foreach` is the callback function that will be invoked for each member of the INI file - it can be `NULL`
 * `user_data` is a pointer to a custom argument -- it can be `NULL`
 
-The function `f_init()` will be invoked with two arguments:
+The function `f_init()` is invoked with two arguments:
 
 * `statistics` -- a pointer to an `IniStatistics` object containing some properties about the file read
   (like its size in bytes and the number of its members)
 * `user_data` -- a pointer to the custom argument previously passed to the `load_ini_file()` function
 
-The function `f_foreach()` will be invoked with two arguments:
+The function `f_foreach()` is invoked with two arguments:
 
 * `dispatch` -- a pointer to an `IniDispatch` object containing the parsed member of the INI file
 * `user_data` -- a pointer to the custom argument previously passed to the `load_ini_file()` function
 
-### HOW IT WORKS
+## HOW IT WORKS
 
 The function `load_ini_file()` dynamically allocates at once the whole INI file into the heap, and the two structures `IniStatistics` and `IniDispatch` into the stack. All the members of the INI file are then dispatched to the listener `f_foreach()`. Finally the allocated memory gets automatically freed.
 
@@ -367,16 +345,40 @@ int main () {
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-### RENDERING
+In order to set the value to be assigned to implicit keys, please use the `ini_set_implicit_value()` function. A _zero-length `TRUE`-boolean_ is usually a good choice:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+
+/* void ini_set_implicit_value (char * implicit_value, unsigned long int implicit_v_len); */
+
+ini_set_implicit_value("YES", 0);
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Alternatively, instead of `ini_set_implicit_value()` you can manually define at the beginning of your code the two global variables `#INI_IMPLICIT_VALUE` and `#INI_IMPLICIT_V_LEN`, which will be retrieved by **libconfini**:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+
+#include <confini.h>
+
+char *INI_IMPLICIT_VALUE = "YES";
+unsigned long int INI_IMPLICIT_V_LEN = 3;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If not defined elsewhere, these variables are respectively `NULL` and `0` by default.
+
+## RENDERING
 
 The output strings dispatched by **libconfini** will follow some formatting rules depending on their role within the INI file. First, the new line sequences will be unescaped, then
 
-* **Section paths** will be rendered according to ECMAScript `section_name.replace(/\.*\s*$|(?:\s*(\.))+\s*|^\s+/g, "$1").replace(/\s+/g, " ")` -- within single or double quotes, if active, the text will be left untouched
-* **Key names** will be rendered according to ECMAScript `key_name.replace(/^[\n\r]\s*|(\s)+/g, " ")` -- within single or double quotes, if active, the text will be left untouched
+* **Section paths** will be rendered according to ECMAScript `section_name.replace(/\.*\s*$|(?:\s*(\.))+\s*|^\s+/g, "$1").replace(/\s+/g, " ")` -- within single or double quotes, if active, the text will be rendered verbatim
+* **Key names** will be rendered according to ECMAScript `key_name.replace(/^[\n\r]\s*|\s+/g, " ")` -- within single or double quotes, if active, the text will be rendered verbatim
 * **Values**, if `format.do_not_collapse_values` is active, will be cleaned of spaces at the beginning and at the end, otherwise will be rendered though the same algorithm used for key names.
-* **Comments**: if multiline, ECMAScript: `comment_string.replace(/(^|\n\r?|\r\n?)[ \t\v\f]*[#;]+/g, "$1")`; otherwise, ECMAScript: `comment_string.replace(/^[ \t\v\f]*[#;]+/, "")`.
+* **Comments**: if multiline, ECMAScript `comment_string.replace(/(^|\n\r?|\r\n?)[ \t\v\f]*[#;]+/g, "$1")`; otherwise, ECMAScript `comment_string.replace(/^[ \t\v\f]*[#;]+/, "")`.
+* **Unknown nodes** will be rendered verbatim.
 
-### SIZE OF THE DISPATCHED DATA
+## SIZE OF THE DISPATCHED DATA
 
 Within an INI file it is granted that if one sums together all the `(dispatch->d_len + 1)` and all the `(dispatch->v_len + 1)` > 1 received, the result will always be less-than or equal-to `statistics->bytes` (where `+ 1` represents the NUL terminators). **If one adds to this also all the `dispatch->at_len` properties, or if the `dispatch->v_len` properties of implicit keys are non-zero, the sum may exceed it.** This can be relevant or irrelevant depending on your code.
 
@@ -448,7 +450,7 @@ When an INI file is parsed it is parsed according to a format. The `IniFormat` b
 
 Each format can be represented also as a univocal 24-bit unsigned integer. For converting an `IniFormat` to an unsigned integer and vice versa please see `ini_format_get_id()`, `ini_format_set_to_id()` and `#IniFormatId`.
 
-### THE MODEL FORMAT
+## THE MODEL FORMAT
 
 A model format named `INI_DEFAULT_FORMAT` is available.
 

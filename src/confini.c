@@ -34,12 +34,13 @@
 	@property	IniFormat::hash
 					The rule of the hash character (use enum `#IniComments` for this)
 	@property	IniFormat::multiline_entries
-					The multiline state of the document (use enum `#IniMultiline` for this)
+					Defines which class of entries are allowed to be multiline (use enum `#IniMultiline` for this)
 	@property	IniFormat::case_sensitive
 					If set to `1`, key- and section- names will not be rendered in lower case
 	@property	IniFormat::no_spaces_in_names
-					If set to `1`, key- and section- names containing spaces will be rendered as `#INI_UNKNOWN`
-
+					If set to `1`, key- and section- names containing spaces will be rendered as `#INI_UNKNOWN`.
+					Note that having `INI_ANY_SPACE` as delimiter will not set this option to `1`: spaces will
+					be still allowed in section names.					
 	@property	IniFormat::no_single_quotes
 					If set to `1`, the single-quote character (`'`) will be considered as a normal character
 	@property	IniFormat::no_double_quotes
@@ -48,7 +49,7 @@
 					If set to `1`, the dispatch of implicit keys (see @ref libconfini) will always
 					assign to `IniDispatch::value` and to `IniDispatch::v_len` the global variables
 					`#INI_IMPLICIT_VALUE` and `#INI_IMPLICIT_V_LEN` respectively; if set to `0`,
-					implicit keys will be considered empty keys
+					implicit keys will be considered to be empty keys
 	@property	IniFormat::do_not_collapse_values
 					If set to `1`, sequences of more than one space in values (`/\s{2,}/`) will not be collapsed
 	@property	IniFormat::no_disabled_after_space
@@ -75,11 +76,11 @@
 	@property	IniDispatch::type
 					The dispatch type (see enum `#IniNodeType`)
 	@property	IniDispatch::data
-					It can be a comment, a section or a key
+					It can be a comment, a section path or a key name
 	@property	IniDispatch::value
-					It can be a key value or an empty string
+					It can be the value of a key element or an empty string
 	@property	IniDispatch::append_to
-					The current path
+					The current section path
 	@property	IniDispatch::d_len
 					The length of the string `IniDispatch::data`
 	@property	IniDispatch::v_len
@@ -309,7 +310,8 @@ static inline _LIBCONFINI_SIZE_ urtrim_s (const char * const urt_s, const _LIBCO
 				abacus	=	urt_l < 1 ? 0
 							: urt_s[urt_l - 1] == _LIBCONFINI_LF_ || urt_s[urt_l - 1] == _LIBCONFINI_CR_ ? 3
 							: urt_s[urt_l - 1] == _LIBCONFINI_BACKSLASH_ ? abacus >> 1
-							: is_some_space(urt_s[urt_l - 1], _LIBCONFINI_NO_EOL_)
+							: is_some_space(urt_s[urt_l - 1], _LIBCONFINI_NO_EOL_) ? 1
+							: 0
 			) & 1;
 
 		urt_l--
@@ -893,7 +895,7 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 
 	}
 
-	if (format.no_spaces_in_names) {
+	if (format.no_spaces_in_names && format.delimiter_symbol) {
 
 		idx = urtrim_s(nodestr, idx) - 1;
 
@@ -1857,7 +1859,7 @@ unsigned int ini_array_foreach (
 	_LIBCONFINI_BYTE_ abacus;
 	_LIBCONFINI_SIZE_ idx, offs, counter;
 
-	/* Mask `abacus` (6 bits used): as in `ini_array_get_length()` */
+	/* Mask `abacus` (8 bits used): as in `ini_array_get_length()` */
 
 	abacus	=	(delimiter ? 4 : 0)
 				| (format.no_double_quotes << 1)
@@ -1912,7 +1914,7 @@ unsigned int ini_array_foreach (
 	@param			format				The format of the INI file
 	@return			The new length of the string containing the array
 
-	Out of quotes similar to ECMAScript `ini_string.replace(new RegExp("^\\s+|\\s*(?:(" + delimiter + ")\\s*|($))", "g"), "$1$2")`
+	Out of quotes similar to ECMAScript `ini_string.replace(new RegExp("^\\s+|\\s*(?:(" + delimiter + ")\\s*|($))", "g"), "$1$2")`.
 	If `INI_ANY_SPACE` (`0`) is used as delimiter one or more different spaces (`/[\t \v\f\n\r]+/`) will always be
 	collapsed to one space (' '), independently of their position.
 
@@ -2050,7 +2052,7 @@ unsigned int ini_split_array (
 	_LIBCONFINI_BYTE_ abacus;
 	_LIBCONFINI_SIZE_ offs, idx, counter;
 
-	/* Mask `abacus` (6 bits used): as in `ini_array_get_length()` */
+	/* Mask `abacus` (8 bits used): as in `ini_array_get_length()` */
 
 	abacus	=	(delimiter ? 4 : 0)
 				| (format.no_double_quotes << 1)
@@ -2190,8 +2192,6 @@ long int (* const ini_get_lint) (const char *ini_string) = &atol;
 long long int (* const ini_get_llint) (const char *ini_string) = &atoll;
 
 double (* const ini_get_float) (const char *ini_string) = &atof;
-
-/* long double (* const ini_getlfloat)(const char *ini_string) = &atolf; */
 
 
 

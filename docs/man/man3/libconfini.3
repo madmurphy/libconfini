@@ -1,4 +1,4 @@
-.TH "libconfini" 3 "Fri Oct 28 2016" "libconfini" \" -*- nroff -*-
+.TH "libconfini" 3 "Sat Oct 29 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -18,13 +18,14 @@ GNU Public License v3
 .SH "OVERVIEW"
 .PP
 .PP
-\fBlibconfini\fP is a simple INI parsing library with the ability to read disabled entries (i\&.e\&., commented lines)\&. \fBlibconfini\fP does not store the data read from an INI file, but rather dispatches it, formatted, to a custom listener\&.
+\fBlibconfini\fP is a simple INI parsing library with the ability to read disabled entries (i\&.e\&., valid entries nested in comments)\&. \fBlibconfini\fP does not store the data read from an INI file, but rather dispatches it, formatted, to a custom listener\&.
 .PP
 The code is written in C and does not depend on any particular library, except for the C standard libraries \fBstdio\&.h\fP and \fBstdlib\&.h\fP\&.
 .PP
 If you want to start to learn directly from the code, you can find partially self-documented sample usages of \fBlibconfini\fP under \fC/usr/share/doc/libconfini/examples/\fP\&.
 .PP
-.SS "WHAT IS AN INI FILE"
+.SH "WHAT IS AN INI FILE"
+.PP
 .PP
 INI files were introduced with the early versions of Microsoft Windows, where the \&.ini file name extension stood for INItialization\&. An INI file can be considered as a string representation of a tree object, with new lines used as delimiters between nodes\&. A typical INI file is a plain text file looking like the following example:
 .PP
@@ -49,7 +50,7 @@ email = mario\&.rossi@example\&.com
 .fi
 .PP
 .PP
-.SS "SUPPORTED SYNTAX"
+.SS "SUPPORTED SYNTAXES"
 .PP
 During the years, several interpretations of INI files appeared\&. In some implementation the colon character (\fC:\fP) has been adopted as delimiter (a typical example under GNU/Linux is \fC/etc/nsswitch\&.conf\fP), in other implementation the space (\fC/[ \\t\\v\\f]+/\fP or \fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) has been used instead (see for example \fC/etc/host\&.conf\fP), and so on\&. This library has been born as a general INI parser for GNU, so the support of most of the main \fIINI dialects\fP has been implemented within it\&.
 .PP
@@ -71,7 +72,7 @@ For several reasons the use of semicolon as node delimiter is not (and will neve
 .PP
 .SS "KEYS"
 .PP
-A \fBkey element\fP is identified as a string followed by a delimiter -- typically the equals sign (\fC=\fP) or the colon sign (\fC:\fP) or a space sequence (\fC/[ \\t\\v\\f]+/\fP) -- which is followed by a value, which is followed by a new line or an inline comment\&.
+A \fBkey element\fP is identified as a string followed by a delimiter -- typically the equals sign (\fC=\fP) or the colon sign (\fC:\fP) or a space sequence (\fC/\\s+/\fP) -- which is followed by a value, which is followed by a new line or an inline comment\&.
 .PP
 Both the \fBkey part\fP and the \fBvalue part\fP may be enclosed within quotes (\fC'\fP or \fC"\fP):
 .PP
@@ -91,7 +92,7 @@ foo = "bar
 .fi
 .PP
 .PP
-will always determine the same behavior as if it had been
+will always determine the same behavior as if it were
 .PP
 .PP
 .nf
@@ -101,7 +102,7 @@ foo = "bar"
 .PP
 The \fBkey part\fP can contain any character, except the delimiter (which can be enclosed within quotes for not beeing considered as such)\&. The new line sequences must be escaped (ECMAScript regular expression: \fC/\\\\(?:\\n\\r?|\\r\\n?)/\fP)\&.
 .PP
-If the \fBkey part\fP part is missing the element is considered of unknown type, i\&.e\&., \fCINI_UNKNOWN\fP -- see enum \fC\fBIniNodeType\fP\fP -- (example: \fC= foo\fP)\&. If the \fBvalue part\fP is missing the key element is considered empty (example: \fCfoo =\fP)\&. If the delimiter is missing, according to some formats the key element is considered to be an \fIimplicit key\fP -- typically representing the boolean \fCTRUE\fP (example: \fCfoo\fP) -- but according to other formats is considered to be an empty key\&. For instance, in the following example from \fC/etc/pacman\&.conf\fP, \fCIgnorePkg\fP is an empty key, while \fCColor\fP is an implicit key (representing a \fCTRUE\fP boolean -- i\&.e\&., \fCColor = YES\fP):
+If the \fBkey part\fP part is missing the element is considered of unknown type, i\&.e\&., \fCINI_UNKNOWN\fP -- see enum \fC\fBIniNodeType\fP\fP -- (example: \fC= foo\fP)\&. If the \fBvalue part\fP is missing the key element is considered empty (example: \fCfoo =\fP)\&. If the delimiter is missing, according to some formats the key element is considered to be an \fIimplicit key\fP -- typically representing the boolean \fCTRUE\fP (example: \fCfoo\fP)\&. For instance, in the following example from \fC/etc/pacman\&.conf\fP, \fCIgnorePkg\fP is an empty key, while \fCColor\fP is an implicit key (representing a \fCTRUE\fP boolean -- i\&.e\&., \fCColor = YES\fP):
 .PP
 .PP
 .nf
@@ -124,32 +125,10 @@ my_string = "Hello world"
 'my_number' = 42
 my_boolean = NO
 my_implicit_boolean
-my_array = Asia, Africa, 'North America', South America, Antarctica, Europe, Australia
+my_array = Asia, Africa, 'North America', South America,\
+           Antarctica, Europe, Australia
 .fi
 .PP
-.PP
-In order to set the value to be assigned to implicit keys, please use the \fC\fBini_set_implicit_value()\fP\fP function\&. A \fIzero-length \fCTRUE\fP-boolean\fP is usually a good choice:
-.PP
-.PP
-.nf
-/* void ini_set_implicit_value (char * implicit_value, unsigned long int implicit_v_len); */
-
-ini_set_implicit_value("YES", 0);
-.fi
-.PP
-.PP
-Alternatively, instead of \fC\fBini_set_implicit_value()\fP\fP you can manually define at the beginning of your code the two global variables \fC\fBINI_IMPLICIT_VALUE\fP\fP and \fC\fBINI_IMPLICIT_V_LEN\fP\fP, which will be retrieved by \fBlibconfini\fP:
-.PP
-.PP
-.nf
-#include <confini\&.h>
-
-char *INI_IMPLICIT_VALUE = "YES";
-unsigned long int INI_IMPLICIT_V_LEN = 3;
-.fi
-.PP
-.PP
-If not defined elsewhere, these variables are respectively \fCNULL\fP and \fC0\fP by default\&.
 .PP
 .SS "SECTIONS"
 .PP
@@ -181,7 +160,7 @@ foo = bar
 .fi
 .PP
 .PP
-Keys appearing before any section path belong to a virtual \fIroot\fP node, as the key \fCfoo\fP in the following example:
+Keys appearing before any section path belong to a virtual \fIroot\fP node (with an empty string as path), as the key \fCfoo\fP in the following example:
 .PP
 .PP
 .nf
@@ -272,7 +251,7 @@ value
 .PP
 .SS "DISABLED ENTRIES"
 .PP
-A disabled entry is either a section or a key that has been nested inside a comment as only child\&. The syntax for multiline disabled entries is:
+A disabled entry is either a section or a key that has been nested inside a comment as its only child\&. Disabled entries can be multiline, using \fC/\\\\(?:\\n\\r?|\\r\\n?)[\\t \\v\\f]*[;#]+/\fP as multiline escaping sequence\&. For example:
 .PP
 .PP
 .nf
@@ -286,7 +265,7 @@ A disabled entry is either a section or a key that has been nested inside a comm
 .PP
 .SS "ENCODINGS"
 .PP
-The encodings currently supported by \fBlibconfini\fP are ASCII and UTF-8 (without BOM)\&. In case the INI file is case-insensitive with respect to keys and section names, \fBlibconfini\fP will always convert all ASCII letters to lowercase (except within values) -- \fIeven when these are enclosed within quotes\fP -- but will \fBnot\fP convert non-ASCII code points to lowercase (for instance, \fCĀ\fP will not be rendered as \fCā\fP, but will be rather left untouched)\&. \fIIn general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names\&.\fP
+The encodings currently supported by \fBlibconfini\fP are ASCII and UTF-8 (without BOM)\&. In case the INI file is case-insensitive with respect to keys and section names, \fBlibconfini\fP will always convert all ASCII letters to lowercase (except within values) -- \fIeven when these are enclosed within quotes\fP -- but will \fBnot\fP convert non-ASCII code points to lowercase (for instance, \fCĀ\fP will not be rendered as \fCā\fP, but will be rather rendered verbatim)\&. \fIIn general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names\&.\fP
 .PP
 .SH "READ AN INI FILE"
 .PP
@@ -325,7 +304,7 @@ where
 \fCuser_data\fP is a pointer to a custom argument -- it can be \fCNULL\fP
 .PP
 .PP
-The function \fCf_init()\fP will be invoked with two arguments:
+The function \fCf_init()\fP is invoked with two arguments:
 .PP
 .IP "\(bu" 2
 \fCstatistics\fP -- a pointer to an \fC\fBIniStatistics\fP\fP object containing some properties about the file read (like its size in bytes and the number of its members)
@@ -333,7 +312,7 @@ The function \fCf_init()\fP will be invoked with two arguments:
 \fCuser_data\fP -- a pointer to the custom argument previously passed to the \fC\fBload_ini_file()\fP\fP function
 .PP
 .PP
-The function \fCf_foreach()\fP will be invoked with two arguments:
+The function \fCf_foreach()\fP is invoked with two arguments:
 .PP
 .IP "\(bu" 2
 \fCdispatch\fP -- a pointer to an \fC\fBIniDispatch\fP\fP object containing the parsed member of the INI file
@@ -397,18 +376,43 @@ int main () {
 .fi
 .PP
 .PP
+In order to set the value to be assigned to implicit keys, please use the \fC\fBini_set_implicit_value()\fP\fP function\&. A \fIzero-length \fCTRUE\fP-boolean\fP is usually a good choice:
+.PP
+.PP
+.nf
+/* void ini_set_implicit_value (char * implicit_value, unsigned long int implicit_v_len); */
+
+ini_set_implicit_value("YES", 0);
+.fi
+.PP
+.PP
+Alternatively, instead of \fC\fBini_set_implicit_value()\fP\fP you can manually define at the beginning of your code the two global variables \fC\fBINI_IMPLICIT_VALUE\fP\fP and \fC\fBINI_IMPLICIT_V_LEN\fP\fP, which will be retrieved by \fBlibconfini\fP:
+.PP
+.PP
+.nf
+#include <confini\&.h>
+
+char *INI_IMPLICIT_VALUE = "YES";
+unsigned long int INI_IMPLICIT_V_LEN = 3;
+.fi
+.PP
+.PP
+If not defined elsewhere, these variables are respectively \fCNULL\fP and \fC0\fP by default\&.
+.PP
 .SS "RENDERING"
 .PP
 The output strings dispatched by \fBlibconfini\fP will follow some formatting rules depending on their role within the INI file\&. First, the new line sequences will be unescaped, then
 .PP
 .IP "\(bu" 2
-\fBSection paths\fP will be rendered according to ECMAScript \fCsection_name\&.replace(/\\\&.*\\s*$|(?:\\s*(\\\&.))+\\s*|^\\s+/g, '$1')\&.replace(/\\s+/g, ' ')\fP -- within single or double quotes, if active, the text will be left untouched
+\fBSection paths\fP will be rendered according to ECMAScript \fCsection_name\&.replace(/\\\&.*\\s*$|(?:\\s*(\\\&.))+\\s*|^\\s+/g, '$1')\&.replace(/\\s+/g, ' ')\fP -- within single or double quotes, if active, the text will be rendered verbatim
 .IP "\(bu" 2
-\fBKey names\fP will be rendered according to ECMAScript \fCkey_name\&.replace(/^[\\n\\r]\\s*|(\\s)+/g, ' ')\fP -- within single or double quotes, if active, the text will be left untouched
+\fBKey names\fP will be rendered according to ECMAScript \fCkey_name\&.replace(/^[\\n\\r]\\s*|\\s+/g, ' ')\fP -- within single or double quotes, if active, the text will be rendered verbatim
 .IP "\(bu" 2
 \fBValues\fP, if \fCformat\&.do_not_collapse_values\fP is active, will be cleaned of spaces at the beginning and at the end, otherwise will be rendered though the same algorithm used for key names\&.
 .IP "\(bu" 2
-\fBComments\fP: if multiline, ECMAScript: \fCcomment_string\&.replace(/(^|\\n\\r?|\\r\\n?)[ \\t\\v\\f]*[#;]+/g, '$1')\fP; otherwise, ECMAScript: \fCcomment_string\&.replace(/^[ \\t\\v\\f]*[#;]+/, '')\fP\&.
+\fBComments\fP: if multiline, ECMAScript \fCcomment_string\&.replace(/(^|\\n\\r?|\\r\\n?)[ \\t\\v\\f]*[#;]+/g, '$1')\fP; otherwise, ECMAScript \fCcomment_string\&.replace(/^[ \\t\\v\\f]*[#;]+/, '')\fP\&.
+.IP "\(bu" 2
+\fBUnknown nodes\fP will be rendered verbatim\&.
 .PP
 .PP
 .SS "SIZE OF THE DISPATCHED DATA"

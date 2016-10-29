@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Fri Oct 28 2016" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Sat Oct 29 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -345,7 +345,7 @@ Removes spaces around all the delimiters of a stringified array\&.
 The new length of the string containing the array
 .RE
 .PP
-Out of quotes similar to ECMAScript \fCini_string\&.replace(new RegExp('^\\\\s+|\\\\s*(?:(' + delimiter + ')\\\\s*|($))', 'g'), '$1$2')\fP If \fCINI_ANY_SPACE\fP (\fC0\fP) is used as delimiter one or more different spaces (\fC/[\\t \\v\\f\\n\\r]+/\fP) will always be collapsed to one space (' '), independently of their position\&. 
+Out of quotes similar to ECMAScript \fCini_string\&.replace(new RegExp('^\\\\s+|\\\\s*(?:(' + delimiter + ')\\\\s*|($))', 'g'), '$1$2')\fP\&. If \fCINI_ANY_SPACE\fP (\fC0\fP) is used as delimiter one or more different spaces (\fC/[\\t \\v\\f\\n\\r]+/\fP) will always be collapsed to one space (' '), independently of their position\&. 
 .SS "\fBIniFormatId\fP ini_format_get_id (const \fBIniFormat\fP source)"
 
 .PP

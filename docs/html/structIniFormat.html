@@ -193,7 +193,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to <code>1</code>, the dispatch of implicit keys (see <a class="el" href="libconfini.html">Library Functions Manual</a>) will always assign to <code><a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></code> and to <code><a class="el" href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">IniDispatch::v_len</a></code> the global variables <code><a class="el" href="confini_8h.html#af8b0049b3a18c7704ad503ed6ad21927" title="Default value of implicit keys. ">INI_IMPLICIT_VALUE</a></code> and <code><a class="el" href="confini_8h.html#a0e1d42f056971f855c8130bc542d0ee9" title="Default length of implicit keys&#39; value – it can be set to any unsigned number, independently of INI_...">INI_IMPLICIT_V_LEN</a></code> respectively; if set to <code>0</code>, implicit keys will be considered empty keys </p>
+<p>If set to <code>1</code>, the dispatch of implicit keys (see <a class="el" href="libconfini.html">Library Functions Manual</a>) will always assign to <code><a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></code> and to <code><a class="el" href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">IniDispatch::v_len</a></code> the global variables <code><a class="el" href="confini_8h.html#af8b0049b3a18c7704ad503ed6ad21927" title="Default value of implicit keys. ">INI_IMPLICIT_VALUE</a></code> and <code><a class="el" href="confini_8h.html#a0e1d42f056971f855c8130bc542d0ee9" title="Default length of implicit keys&#39; value – it can be set to any unsigned number, independently of INI_...">INI_IMPLICIT_V_LEN</a></code> respectively; if set to <code>0</code>, implicit keys will be considered to be empty keys </p>
 
 </div>
 </div>
@@ -208,7 +208,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The multiline state of the document (use enum <code><a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55f" title="Multiline entries. ">IniMultiline</a></code> for this) </p>
+<p>Defines which class of entries are allowed to be multiline (use enum <code><a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55f" title="Multiline entries. ">IniMultiline</a></code> for this) </p>
 
 </div>
 </div>
@@ -268,7 +268,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to <code>1</code>, key- and section- names containing spaces will be rendered as <code><a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461baffa9e27deb46c0e436bc75329cc5f7a6">INI_UNKNOWN</a></code> </p>
+<p>If set to <code>1</code>, key- and section- names containing spaces will be rendered as <code><a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461baffa9e27deb46c0e436bc75329cc5f7a6">INI_UNKNOWN</a></code>. Note that having <code>INI_ANY_SPACE</code> as delimiter will not set this option to <code>1</code>: spaces will be still allowed in section names. </p>
 
 </div>
 </div>
