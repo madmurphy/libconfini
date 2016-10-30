@@ -1,4 +1,4 @@
-.TH "libconfini" 3 "Sat Oct 29 2016" "libconfini" \" -*- nroff -*-
+.TH "libconfini" 3 "Sun Oct 30 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -225,7 +225,7 @@ comedy3 = The Merchant of Venice
 .PP
 .SS "ESCAPING SEQUENCES"
 .PP
-For maximizing the flexibility of the data, only four escaping sequences are supported by \fBlibconfini\fP: \fC\\'\fP, \fC\\"\fP \fC\\\\\fP and the multiline escaping sequence (ECMAScript regular expression: \fC/\\\\(?:\\n\\r?|\\r\\n?)/\fP)\&.
+For maximizing the flexibility of the data, only four escaping sequences are supported by \fBlibconfini\fP: \fC\\'\fP, \fC\\"\fP, \fC\\\\\fP and the multiline escaping sequence (ECMAScript regular expression: \fC/\\\\(?:\\n\\r?|\\r\\n?)/\fP)\&.
 .PP
 The first three escaping sequences are left untouched by all functions except \fC\fBini_unquote()\fP\fP\&. Nevertheless, the characters \fC'\fP, \fC"\fP and \fC\\\fP can determine different behaviors during the parsing depending on whether they are escaped or unescaped\&. For instance, the string \fC#johnsmith\fP in the following example will not be parsed as a comment:
 .PP

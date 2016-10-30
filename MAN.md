@@ -213,7 +213,7 @@ comedy3 = The Merchant of Venice
 
 ### ESCAPING SEQUENCES
 
-For maximizing the flexibility of the data, only four escaping sequences are supported by **libconfini**: `\'`, `\"` `\\` and the multiline escaping sequence (ECMAScript regular expression: `/\\(?:\n\r?|\r\n?)/`).
+For maximizing the flexibility of the data, only four escaping sequences are supported by **libconfini**: `\'`, `\"`, `\\` and the multiline escaping sequence (ECMAScript regular expression: `/\\(?:\n\r?|\r\n?)/`).
 
 The first three escaping sequences are left untouched by all functions except `ini_unquote()`. Nevertheless, the characters `'`, `"` and `\` can determine different behaviors during the parsing depending on whether they are escaped or unescaped. For instance, the string `#johnsmith` in the following example will not be parsed as a comment:
 
@@ -450,7 +450,7 @@ When an INI file is parsed it is parsed according to a format. The `IniFormat` b
 
 Each format can be represented also as a univocal 24-bit unsigned integer. For converting an `IniFormat` to an unsigned integer and vice versa please see `ini_format_get_id()`, `ini_format_set_to_id()` and `#IniFormatId`.
 
-### THE MODEL FORMAT
+## THE MODEL FORMAT
 
 A model format named `INI_DEFAULT_FORMAT` is available.
 

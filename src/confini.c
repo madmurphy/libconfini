@@ -732,7 +732,7 @@ static _LIBCONFINI_SIZE_ uncomment (char * const commstr, _LIBCONFINI_SIZE_ len,
 							(abacus & 16) | ((abacus << 1) & 4)
 						: !(abacus & 32) && is_comm_char(commstr[idx], format) ?
 							(abacus & 40) | 8
-						: !(abacus & 40) && is_some_space(commstr[idx], _LIBCONFINI_NO_EOL_)?
+						: !(abacus & 40) && is_some_space(commstr[idx], _LIBCONFINI_NO_EOL_) ?
 							(abacus & 57) | 16
 						:
 							(abacus & 33) | 32;
@@ -1526,8 +1526,18 @@ unsigned int load_ini_file (
 
 				} else {
 
-					curr_parent_str = this_d.data + (!curr_parent_len && *this_d.data == _LIBCONFINI_SUBSECTION_);
-					curr_parent_len = this_d.d_len - (!curr_parent_len && *this_d.data == _LIBCONFINI_SUBSECTION_);
+					if (!curr_parent_len && *this_d.data == _LIBCONFINI_SUBSECTION_) {
+
+						curr_parent_str = this_d.data + 1;
+						curr_parent_len = this_d.d_len - 1;
+
+					} else {
+
+						curr_parent_str = this_d.data;
+						curr_parent_len = this_d.d_len;
+
+					}
+
 					subparent_str = cache + idx;
 					this_d.append_to = subparent_str;
 					this_d.at_len = 0;
