@@ -184,10 +184,10 @@ Functions</h2></td></tr>
 <tr class="memdesc:a5fb5875b30fc361127a6d95898a7ed60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Splits an INI array and calls a custom function for each member.  <a href="#a5fb5875b30fc361127a6d95898a7ed60">More...</a><br /></td></tr>
 <tr class="separator:a5fb5875b30fc361127a6d95898a7ed60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a8dcc3d8ff26554486691423cce4ea0"><td class="memItemLeft" align="right" valign="top">signed int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a2a8dcc3d8ff26554486691423cce4ea0">ini_get_bool</a> (const char *const ini_string, const signed int return_value)</td></tr>
-<tr class="memdesc:a2a8dcc3d8ff26554486691423cce4ea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_</a> (case insensitive)  <a href="#a2a8dcc3d8ff26554486691423cce4ea0">More...</a><br /></td></tr>
+<tr class="memdesc:a2a8dcc3d8ff26554486691423cce4ea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <code>_LIBCONFINI_BOOLEANS_</code> (case insensitive)  <a href="#a2a8dcc3d8ff26554486691423cce4ea0">More...</a><br /></td></tr>
 <tr class="separator:a2a8dcc3d8ff26554486691423cce4ea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad95262d09842c25e8bb610bf95c42cd3"><td class="memItemLeft" align="right" valign="top">signed int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#ad95262d09842c25e8bb610bf95c42cd3">ini_get_lazy_bool</a> (const char *const ini_string, const signed int return_value)</td></tr>
-<tr class="memdesc:ad95262d09842c25e8bb610bf95c42cd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_</a> (case insensitive)  <a href="#ad95262d09842c25e8bb610bf95c42cd3">More...</a><br /></td></tr>
+<tr class="memdesc:ad95262d09842c25e8bb610bf95c42cd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <code>_LIBCONFINI_BOOLEANS_</code> (case insensitive)  <a href="#ad95262d09842c25e8bb610bf95c42cd3">More...</a><br /></td></tr>
 <tr class="separator:ad95262d09842c25e8bb610bf95c42cd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
@@ -463,7 +463,8 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Zero for success, otherwise an error code </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Zero for success, otherwise an error code</dd></dl>
+<p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI member. ">IniDispatch</a></code>, but any other string can be used as well. </p>
 
 </div>
 </div>
@@ -508,7 +509,8 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The length of the INI array </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The length of the INI array</dd></dl>
+<p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI member. ">IniDispatch</a></code>, but any other string can be used as well. </p>
 
 </div>
 </div>
@@ -554,7 +556,8 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The new length of the string containing the array</dd></dl>
-<p>Out of quotes similar to ECMAScript <code>ini_string.replace(new RegExp("^\\s+|\\s*(?:(" + delimiter + ")\\s*|($))", "g"), "$1$2")</code>. If <code>INI_ANY_SPACE</code> (<code>0</code>) is used as delimiter one or more different spaces (<code>/[\t \v\f\n\r]+/</code>) will always be collapsed to one space (' '), independently of their position. </p>
+<p>Out of quotes similar to ECMAScript <code>ini_string.replace(new RegExp("^\\s+|\\s*(?:(" + delimiter + ")\\s*|($))", "g"), "$1$2")</code>. If <code>INI_ANY_SPACE</code> (<code>0</code>) is used as delimiter one or more different spaces (<code>/[\t \v\f\n\r]+/</code>) will always be collapsed to one space (' '), independently of their position.</p>
+<p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI member. ">IniDispatch</a></code>, but any other string can be used as well. </p>
 
 </div>
 </div>
@@ -649,7 +652,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_</a> (case insensitive) </p>
+<p>Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <code>_LIBCONFINI_BOOLEANS_</code> (case insensitive) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ini_string</td><td>A string to be checked </td></tr>
@@ -657,7 +660,8 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The matching boolean value (0 or 1) or <code>return_value</code> if no boolean has been found </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The matching boolean value (0 or 1) or <code>return_value</code> if no boolean has been found</dd></dl>
+<p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI member. ">IniDispatch</a></code>, but any other string can be used as well. </p>
 
 </div>
 </div>
@@ -687,7 +691,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <a class="el" href="">_LIBCONFINI_BOOLEANS_</a> (case insensitive) </p>
+<p>Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <code>_LIBCONFINI_BOOLEANS_</code> (case insensitive) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ini_string</td><td>A string to be checked </td></tr>
@@ -695,7 +699,8 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The matching boolean value (0 or 1) or <code>return_value</code> if no boolean has been found </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The matching boolean value (0 or 1) or <code>return_value</code> if no boolean has been found</dd></dl>
+<p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI member. ">IniDispatch</a></code>, but any other string can be used as well. </p>
 
 </div>
 </div>
@@ -792,7 +797,8 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Zero for success, otherwise an error code </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Zero for success, otherwise an error code</dd></dl>
+<p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI member. ">IniDispatch</a></code>, but any other string can be used as well. </p>
 
 </div>
 </div>
@@ -830,7 +836,8 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The new length of the string </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The new length of the string</dd></dl>
+<p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI member. ">IniDispatch</a></code>, but any other string can be used as well. If the string does not contain quotes, or if quotes are considered to be normal characters, no changes will be made. </p>
 
 </div>
 </div>

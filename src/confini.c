@@ -154,7 +154,7 @@ static const char * const _LIBCONFINI_BOOLEANS_[][2] = {
 
 static const char _LIBCONFINI_SPACES_[] = { _LIBCONFINI_SIMPLE_SPACE_, '\t', '\v', '\f', _LIBCONFINI_LF_, _LIBCONFINI_CR_ };
 
-/* Possible lengths of array #_LIBCONFINI_SPACES_ */
+/* Possible lengths of array `_LIBCONFINI_SPACES_` */
 #define _LIBCONFINI_JUST_S_T_ 2
 #define _LIBCONFINI_NO_EOL_ 4
 #define _LIBCONFINI_WITH_EOL_ 6
@@ -203,7 +203,7 @@ static inline _LIBCONFINI_SIZE_ ltrim_h (char * const lt_s, const _LIBCONFINI_SI
 	@brief			Unescaped hard left trim (left trim of `/^(\s+|\\[\n\r])+/`) -- **does** change the buffer
 	@param			ult_s			The target string
 	@param			start_from		The offset where to start the left trim
-	@return			The offset of the first non matching character
+	@return			The offset of the first non-space character
 
 **/
 static inline _LIBCONFINI_SIZE_ ultrim_h (char * const ult_s, const _LIBCONFINI_SIZE_ start_from) {
@@ -254,7 +254,7 @@ static inline _LIBCONFINI_SIZE_ ultrim_h (char * const ult_s, const _LIBCONFINI_
 	@brief			Soft right trim -- does not change the buffer
 	@param			rt_s			The target string
 	@param			length			The length of the string
-	@param			depth			What is actually considered a space -- a subset of @link #_LIBCONFINI_SPACES_ @endlink ranging from 1 to 6
+	@param			depth			What is actually considered a space -- a subset of `_LIBCONFINI_SPACES_` ranging from 1 to 6
 	@return			The length of the string until the last non-space character
 
 **/
@@ -683,8 +683,8 @@ static _LIBCONFINI_SIZE_ sanitize_section_name (char * const str, const IniForma
 	@param			format		The format of the INI file
 	@return			The new length of the string
 
-	For multiline comments: `commstr.replace(/(^|\n\r?|\r\n?)[ \t\v\f]*[#;]+/g, "$1")`
-	For single line comments: `commstr.replace(/^[ \t\v\f]*[#;]+/, "")`
+	- In multiline comments: `commstr.replace(/(^|\n\r?|\r\n?)[ \t\v\f]*[#;]+/g, "$1")`
+	- In single-line comments: `commstr.replace(/^[ \t\v\f]*[#;]+/, "")`
 
 **/
 static _LIBCONFINI_SIZE_ uncomment (char * const commstr, _LIBCONFINI_SIZE_ len, const IniFormat format) {
@@ -1708,6 +1708,9 @@ void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id) {
 	@param			format			The format of the INI file
 	@return			The new length of the string
 
+	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well. If the	string does
+	not contain quotes, or if quotes are considered to be normal characters, no changes will be made.
+
 **/
 unsigned long int ini_unquote (char * const ini_string, const IniFormat format) {
 
@@ -1781,6 +1784,8 @@ unsigned long int ini_unquote (char * const ini_string, const IniFormat format) 
 	@param			format			The format of the INI file
 	@return			The length of the INI array
 
+	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well.
+
 **/
 unsigned long int ini_array_get_length (const char * const ini_string, const char delimiter, const IniFormat format) {
 
@@ -1849,6 +1854,8 @@ unsigned long int ini_array_get_length (const char * const ini_string, const cha
 	@param			f_foreach			The function that will be invoked for each array member
 	@param			user_data			A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
+
+	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well.
 
 **/
 unsigned int ini_array_foreach (
@@ -1927,6 +1934,8 @@ unsigned int ini_array_foreach (
 	Out of quotes similar to ECMAScript `ini_string.replace(new RegExp("^\\s+|\\s*(?:(" + delimiter + ")\\s*|($))", "g"), "$1$2")`.
 	If `INI_ANY_SPACE` (`0`) is used as delimiter one or more different spaces (`/[\t \v\f\n\r]+/`) will always be
 	collapsed to one space (' '), independently of their position.
+
+	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well.
 
 **/
 unsigned long int ini_collapse_array (char * const ini_string, const char delimiter, const IniFormat format) {
@@ -2044,6 +2053,8 @@ unsigned long int ini_collapse_array (char * const ini_string, const char delimi
 	@param			user_data		A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
 
+	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well.
+
 **/
 unsigned int ini_split_array (
 	char * const ini_string,
@@ -2113,10 +2124,12 @@ unsigned int ini_split_array (
 /**
 
 	@brief			Checks whether a string matches *exactly* one of the booleans listed in
-					the private constant @link #_LIBCONFINI_BOOLEANS_ @endlink (case insensitive)
+					the private constant `_LIBCONFINI_BOOLEANS_` (case insensitive)
 	@param			ini_string			A string to be checked
 	@param			return_value		A value that is returned if no matching boolean has been found
 	@return			The matching boolean value (0 or 1) or @p return_value if no boolean has been found
+
+	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well.
 
 **/
 signed int ini_get_bool (const char * const ini_string, const signed int return_value) {
@@ -2162,10 +2175,12 @@ signed int ini_get_bool (const char * const ini_string, const signed int return_
 /**
 
 	@brief			Checks whether the first letter of a string matches the first letter of one of the
-					booleans listed in the private constant @link #_LIBCONFINI_BOOLEANS_ @endlink (case insensitive)
+					booleans listed in the private constant `_LIBCONFINI_BOOLEANS_` (case insensitive)
 	@param			ini_string			A string to be checked
 	@param			return_value		A value that is returned if no matching boolean has been found
 	@return			The matching boolean value (0 or 1) or @p return_value if no boolean has been found
+
+	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well.
 
 **/
 signed int ini_get_lazy_bool (const char * const ini_string, const signed int return_value) {

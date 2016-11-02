@@ -1,4 +1,4 @@
-.TH "libconfini" 3 "Sun Oct 30 2016" "libconfini" \" -*- nroff -*-
+.TH "libconfini" 3 "Wed Nov 2 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -398,6 +398,57 @@ unsigned long int INI_IMPLICIT_V_LEN = 3;
 .PP
 .PP
 If not defined elsewhere, these variables are respectively \fCNULL\fP and \fC0\fP by default\&.
+.PP
+After having set the value to be assigned to implicit key elements, it is possible to test whether a dispatched key is implicit or not by comparing the address of its \fCvalue\fP property with the global variable \fC\fBINI_IMPLICIT_VALUE\fP\fP:
+.PP
+.PP
+.nf
+#include <stdio\&.h>
+#include <confini\&.h>
+
+#define NO 0
+#define YES 1
+
+int ini_listener (IniDispatch *dispatch, void *user_data) {
+
+  if (dispatch->value == INI_IMPLICIT_VALUE) {
+
+    printf(
+      "\nDATA: %s\nVALUE: %s\n(This is an implicit key element)\n",
+      dispatch->data, dispatch->value
+    );
+
+  } else {
+
+    printf("\nDATA: %s\nVALUE: %s\n", dispatch->data, dispatch->value);
+
+  }
+
+  return 0;
+
+}
+
+int main () {
+
+  IniFormat my_format;
+
+  ini_set_implicit_value("[implicit default value]", 0);
+
+  /* Without setting this, implicit keys will be anyway considered empty: */
+  my_format\&.implicit_is_not_empty = YES;
+
+  if (load_ini_file("my_file\&.conf", my_format, NULL, ini_listener, NULL)) {
+
+    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    return 1;
+
+  }
+
+  return 0;
+
+}
+.fi
+.PP
 .PP
 .SS "RENDERING"
 .PP

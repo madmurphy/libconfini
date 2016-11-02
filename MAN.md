@@ -368,6 +368,57 @@ unsigned long int INI_IMPLICIT_V_LEN = 3;
 
 If not defined elsewhere, these variables are respectively `NULL` and `0` by default.
 
+After having set the value to be assigned to implicit key elements, it is possible to test whether a dispatched key is implicit or not by comparing the address of its `value` property with the global variable `#INI_IMPLICIT_VALUE`:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+
+#include <stdio.h>
+#include <confini.h>
+
+#define NO 0
+#define YES 1
+
+int ini_listener (IniDispatch *dispatch, void *user_data) {
+
+  if (dispatch->value == INI_IMPLICIT_VALUE) {
+
+    printf(
+      "\nDATA: %s\nVALUE: %s\n(This is an implicit key element)\n",
+      dispatch->data, dispatch->value
+    );
+
+  } else {
+
+    printf("\nDATA: %s\nVALUE: %s\n", dispatch->data, dispatch->value);
+
+  }
+
+  return 0;
+
+}
+
+int main () {
+
+  IniFormat my_format;
+
+  ini_set_implicit_value("[implicit default value]", 0);
+
+  /* Without setting this, implicit keys will be anyway considered empty: */
+  my_format.implicit_is_not_empty = YES;
+
+  if (load_ini_file("my_file.conf", my_format, NULL, ini_listener, NULL)) {
+
+    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    return 1;
+
+  }
+
+  return 0;
+
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 ## RENDERING
 
 The output strings dispatched by **libconfini** will follow some formatting rules depending on their role within the INI file. First, the new line sequences will be unescaped, then

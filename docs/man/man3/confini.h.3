@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Sun Oct 30 2016" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Wed Nov 2 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -109,11 +109,11 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "signed int \fBini_get_bool\fP (const char *const ini_string, const signed int return_value)"
 .br
-.RI "Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\fP (case insensitive) "
+.RI "Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fC_LIBCONFINI_BOOLEANS_\fP (case insensitive) "
 .ti -1c
 .RI "signed int \fBini_get_lazy_bool\fP (const char *const ini_string, const signed int return_value)"
 .br
-.RI "Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\fP (case insensitive) "
+.RI "Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fC_LIBCONFINI_BOOLEANS_\fP (case insensitive) "
 .in -1c
 .SS "Variables"
 
@@ -302,10 +302,10 @@ Calls a custom function for each member of an INI array -- useful for read-only 
 .PP
 \fBReturns:\fP
 .RS 4
-Zero for success, otherwise an error code 
+Zero for success, otherwise an error code
 .RE
 .PP
-
+Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP, but any other string can be used as well\&. 
 .SS "unsigned long int ini_array_get_length (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 
 .PP
@@ -322,10 +322,10 @@ Gets the length of an INI array\&.
 .PP
 \fBReturns:\fP
 .RS 4
-The length of the INI array 
+The length of the INI array
 .RE
 .PP
-
+Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP, but any other string can be used as well\&. 
 .SS "unsigned long int ini_collapse_array (char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 
 .PP
@@ -345,7 +345,9 @@ Removes spaces around all the delimiters of a stringified array\&.
 The new length of the string containing the array
 .RE
 .PP
-Out of quotes similar to ECMAScript \fCini_string\&.replace(new RegExp('^\\\\s+|\\\\s*(?:(' + delimiter + ')\\\\s*|($))', 'g'), '$1$2')\fP\&. If \fCINI_ANY_SPACE\fP (\fC0\fP) is used as delimiter one or more different spaces (\fC/[\\t \\v\\f\\n\\r]+/\fP) will always be collapsed to one space (' '), independently of their position\&. 
+Out of quotes similar to ECMAScript \fCini_string\&.replace(new RegExp('^\\\\s+|\\\\s*(?:(' + delimiter + ')\\\\s*|($))', 'g'), '$1$2')\fP\&. If \fCINI_ANY_SPACE\fP (\fC0\fP) is used as delimiter one or more different spaces (\fC/[\\t \\v\\f\\n\\r]+/\fP) will always be collapsed to one space (' '), independently of their position\&.
+.PP
+Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP, but any other string can be used as well\&. 
 .SS "\fBIniFormatId\fP ini_format_get_id (const \fBIniFormat\fP source)"
 
 .PP
@@ -383,7 +385,7 @@ Nothing
 .SS "signed int ini_get_bool (const char *const ini_string, const signed int return_value)"
 
 .PP
-Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\fP (case insensitive) 
+Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fC_LIBCONFINI_BOOLEANS_\fP (case insensitive) 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -394,14 +396,14 @@ Checks whether a string matches \fIexactly\fP one of the booleans listed in the 
 .PP
 \fBReturns:\fP
 .RS 4
-The matching boolean value (0 or 1) or \fCreturn_value\fP if no boolean has been found 
+The matching boolean value (0 or 1) or \fCreturn_value\fP if no boolean has been found
 .RE
 .PP
-
+Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP, but any other string can be used as well\&. 
 .SS "signed int ini_get_lazy_bool (const char *const ini_string, const signed int return_value)"
 
 .PP
-Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fB_LIBCONFINI_BOOLEANS_\fP (case insensitive) 
+Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fC_LIBCONFINI_BOOLEANS_\fP (case insensitive) 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -412,10 +414,10 @@ Checks whether the first letter of a string matches the first letter of one of t
 .PP
 \fBReturns:\fP
 .RS 4
-The matching boolean value (0 or 1) or \fCreturn_value\fP if no boolean has been found 
+The matching boolean value (0 or 1) or \fCreturn_value\fP if no boolean has been found
 .RE
 .PP
-
+Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP, but any other string can be used as well\&. 
 .SS "void ini_set_implicit_value (char *const implicit_value, const unsigned long int implicit_v_len)"
 
 .PP
@@ -454,10 +456,10 @@ Splits an INI array and calls a custom function for each member\&.
 .PP
 \fBReturns:\fP
 .RS 4
-Zero for success, otherwise an error code 
+Zero for success, otherwise an error code
 .RE
 .PP
-
+Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP, but any other string can be used as well\&. 
 .SS "unsigned long int ini_unquote (char *const ini_string, const \fBIniFormat\fP format)"
 
 .PP
@@ -472,10 +474,10 @@ Unescapes \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP and removes all unescaped quotes (
 .PP
 \fBReturns:\fP
 .RS 4
-The new length of the string 
+The new length of the string
 .RE
 .PP
-
+Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP, but any other string can be used as well\&. If the string does not contain quotes, or if quotes are considered to be normal characters, no changes will be made\&. 
 .SS "unsigned int load_ini_file (const char *const path, const \fBIniFormat\fP format, int(*)(\fBIniStatistics\fP *statistics, void *init_other) f_init, int(*)(\fBIniDispatch\fP *dispatch, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
