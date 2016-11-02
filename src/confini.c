@@ -1299,6 +1299,8 @@ unsigned int load_ini_file (
 
 	}
 
+	_LIBCONFINI_MEMBERS_ += further_cuts(cache + ultrim_h(cache, node_at), format);
+
 	IniStatistics this_doc = {
 		.format = format,
 		.bytes = len,
@@ -1310,9 +1312,10 @@ unsigned int load_ini_file (
 	#undef _LIBCONFINI_IS_ESCAPED_
 
 	/* Debug */
+
 	/*
 
-	for (_LIBCONFINI_SIZE_ tmp = 0; tmp < len; tmp++) {
+	for (_LIBCONFINI_SIZE_ tmp = 0; tmp < len + 1; tmp++) {
 		putchar(cache[tmp] > 0 ? cache[tmp] : '$');
 	}
 	putchar(_LIBCONFINI_LF_);
