@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.3-4] - 2016-11-03
+
+Changes:
+
+* Removed recursion in private function `further_cuts()`
+* `INI_FORGET_COMMENT`: bug fixed
+* Unparsed quotes in disabled entries: bug fixed
+
 ## [1.3-3] - 2016-11-02
 
 Changes:

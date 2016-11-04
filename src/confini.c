@@ -152,7 +152,8 @@ static const char * const _LIBCONFINI_BOOLEANS_[][2] = {
 
 /* ABSTRACT UTILITIES */
 
-static const char _LIBCONFINI_SPACES_[] = { _LIBCONFINI_SIMPLE_SPACE_, '\t', '\v', '\f', _LIBCONFINI_LF_, _LIBCONFINI_CR_ };
+/* The list of space characters -- do not change its order! */
+static const char _LIBCONFINI_SPACES_[] = { _LIBCONFINI_SIMPLE_SPACE_, '\t', '\f', '\v', _LIBCONFINI_LF_, _LIBCONFINI_CR_ };
 
 /* Possible lengths of array `_LIBCONFINI_SPACES_` */
 #define _LIBCONFINI_JUST_S_T_ 2
@@ -918,86 +919,104 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 
 /**
 
-	@brief			Recursive function, examines a (single-/multi- line) segment and searches for sub-segments.
-	@param			segment		Segment to examine
-	@param			format		The format of the INI file
-	@return			Number of sub-segments found, included itself
+	@brief			Examines a (single-/multi- line) segment and checks whether it contains sub-segments.
+	@param			segment			Segment to examine
+	@param			format			The format of the INI file
+	@return			Number of sub-segments found including itself
 
 **/
 static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat format) {
 
-	if (!*segment) { return 0; }
-
-	_LIBCONFINI_BOOL_ show_comments = !is_erase_char(*segment, format);
-	_LIBCONFINI_BYTE_ abacus;
-	_LIBCONFINI_SIZE_ idx, focus_at, search_at = 0, unparse_at = 0, fragm_size = show_comments;
+	_LIBCONFINI_SIZE_ idx, focus_at, active_at, unparsable_at, search_at = 0, segm_size = 0;
 
 	/*
 
-	Mask `abacus` (7 bits used):
+	Mask `abacus` (9 bits used):
 
-		FLAG_1		We are in an odd sequence of backslashes
-		FLAG_2		Unescaped single quotes are odd until now
-		FLAG_4		Unescaped double quotes are odd until now
-		FLAG_8		This does not immediately follow `[\n\r]\s*`
-		FLAG_16		The previous character was a space
-		FLAG_32		This can be a disabled entry
-		FLAG_64		This is nothing but a (multiline) comment
+		FLAG_1		Single quotes are not metacharacters (const)
+		FLAG_2		Double quotes are not metacharacters (const)
+		FLAG_4		Unescaped single quotes are odd until now
+		FLAG_8		Unescaped double quotes are odd until now
+		FLAG_16		We are in an odd sequence of backslashes
+		FLAG_32		This does not immediately follow `[\n\r]\s*`
+		FLAG_64		The previous character was a space
+		FLAG_128	This can be a disabled entry
+		FLAG_256	This is nothing but a (multiline) comment
 
 	*/
 
-	abacus		=	is_parsable_char(*segment, format) && !(
-						format.no_disabled_after_space && is_some_space(segment[1], _LIBCONFINI_NO_EOL_)
-					) ?
-						46
-					: !format.multiline_entries && (
-						is_comm_char(*segment, format) || *segment == _LIBCONFINI_INLINE_MARKER_
-					) ?
-						78
-					:
-						14;
+	unsigned int abacus = (format.no_double_quotes << 1) | format.no_single_quotes;
 
-	if (abacus & 96) {
+	search_for_cuts:
 
-		for (idx = ltrim_s(segment, 1, _LIBCONFINI_NO_EOL_); segment[idx]; idx++) {
+	if (!segment[search_at]) {
+
+		goto no_more_cuts;
+
+	}
+
+	active_at = unparsable_at = 0;
+
+	if (!is_erase_char(segment[search_at], format)) {
+
+		segm_size++;
+
+	}
+
+	abacus		=	(abacus & 3) | (
+						is_parsable_char(segment[search_at], format) && !(
+							format.no_disabled_after_space && is_some_space(segment[search_at + 1], _LIBCONFINI_NO_EOL_)
+						) ?
+							160
+						: !format.multiline_entries && (
+							is_comm_char(segment[search_at], format) || segment[search_at] == _LIBCONFINI_INLINE_MARKER_
+						) ?
+							288
+						:
+							32
+					);
+
+	if (abacus & 384) {
+
+		for (idx = ltrim_s(segment, search_at + 1, _LIBCONFINI_NO_EOL_); segment[idx]; idx++) {
 
 			if (is_comm_char(segment[idx], format)) {
 
 				/* Search for inline comments in (supposedly) disabled items */
 
-				if (abacus == 62) {
+				if ((abacus | 3) == 227 /* or...: `!((abacus & 284) | (~abacus & 224))` */) {
 
-					focus_at = ltrim_s(segment, 1, _LIBCONFINI_NO_EOL_);
+					focus_at = ltrim_s(segment, search_at + 1, _LIBCONFINI_NO_EOL_);
 
 					if (get_type_as_active(segment + focus_at, idx - focus_at, _LIBCONFINI_TRUE_, format)) {
 
-						segment[idx] = _LIBCONFINI_INLINE_MARKER_;
-						segment[idx - 1] = '\0';
+						if (!is_erase_char(segment[idx], format)) {
 
-						if (show_comments) {
-
-							fragm_size++;
+							segment[idx] = _LIBCONFINI_INLINE_MARKER_;
+							segm_size++;
 
 						}
 
+						segment[idx - 1] = '\0';
+
 						if (format.multiline_entries) {
 
-							unparse_at = idx + 1;
+							unparsable_at = idx + 1;
 							break;
 
 						}
 
 					} else if (format.multiline_entries) {
 
-						unparse_at = 1;
+						unparsable_at = search_at + 1;
 						break;
 
 					}
 
 				}
 
-				abacus &= 102;
-				abacus |= 8;
+				abacus &= 431;
+				abacus |= 32;
 
 			} else if (segment[idx] == _LIBCONFINI_LF_ || segment[idx] == _LIBCONFINI_CR_) {
 
@@ -1021,11 +1040,11 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 					if (segment[idx]) {
 
-						search_at = idx + 1;
+						active_at = idx + 1;
 
-						if (show_comments) {
+						if (!is_erase_char(segment[idx], format)) {
 
-							fragm_size++;
+							segm_size++;
 
 						}
 
@@ -1035,64 +1054,61 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 				}
 
-				abacus &= 102;
+				abacus &= 399;
 
 			} else if (is_some_space(segment[idx], _LIBCONFINI_NO_EOL_)) {
 
-				abacus &= 102;
-				abacus |= 24;
+				abacus &= 399;
+				abacus |= 96;
 
 			} else {
 
-				abacus	=	!(abacus & 3) && !format.no_double_quotes && segment[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
-								abacus ^ 4
-							: !(abacus & 5) && !format.no_single_quotes && segment[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
-								abacus ^ 2
-							: segment[idx] == _LIBCONFINI_BACKSLASH_ ?
-								abacus ^ 1
-							:
-								abacus & 126;
+				abacus	=	segment[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 16
+							: !(abacus & 22) && segment[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 8
+							: !(abacus & 25) && segment[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 4
+							: abacus & 495;
 
-				abacus &= 111;
-				abacus |= 8;
+				abacus &= 447;
+				abacus |= 32;
 
 			}
 
 		}
 
-		if (format.multiline_entries && !unparse_at) {
+		if (format.multiline_entries && !unparsable_at) {
 
-			focus_at = ltrim_s(segment, 1, _LIBCONFINI_NO_EOL_);
+			focus_at = ltrim_s(segment, search_at + 1, _LIBCONFINI_NO_EOL_);
 
 			if (segment[focus_at] && !get_type_as_active(segment + focus_at, idx - focus_at, _LIBCONFINI_TRUE_, format)) {
 
-				unparse_at = 1;
+				unparsable_at = search_at + 1;
+
 			}
 
 		}
 
-	} else if (is_comm_char(*segment, format)) {
+	} else if (is_comm_char(segment[search_at], format)) {
 
-		unparse_at = 1;
+		unparsable_at = search_at + 1;
 
 	} else {
 
-		search_at = 1;
+		active_at = search_at + 1;
 
 	}
 
-	if (unparse_at) {
+	if (unparsable_at) {
 
 		/* Cut unparsable multiline comments */
 
 		cut_unparsable:
 
-		for (idx = unparse_at; segment[idx]; idx++) {
+		for (idx = unparsable_at; segment[idx]; idx++) {
 
 			if (segment[idx] == _LIBCONFINI_LF_ || segment[idx] == _LIBCONFINI_CR_) {
 
-				fragm_size += further_cuts(segment + ultrim_h(segment, idx), format);
-				break;
+				search_at = ultrim_h(segment, idx);
+				goto search_for_cuts;
 
 			}
 
@@ -1100,7 +1116,7 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 	}
 
-	if (search_at) {
+	if (active_at) {
 
 		/* Search for inline comments in active items */
 
@@ -1118,7 +1134,7 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 		*/
 
-		for (abacus = 96 | (format.no_double_quotes << 1) | format.no_single_quotes, idx = search_at; segment[idx]; idx++) {
+		for (abacus = (abacus & 3) | 96, idx = active_at; segment[idx]; idx++) {
 
 			abacus	=	is_comm_char(segment[idx], format) ?
 							abacus & 79
@@ -1135,25 +1151,30 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 			if (!(abacus & 124)) {
 
-				segment[idx] = _LIBCONFINI_INLINE_MARKER_;
 				segment[idx - 1] = '\0';
-				search_at = 0;
+				active_at = 0;
 
-				if (format.multiline_entries) {
+				if (!is_erase_char(segment[idx], format)) {
 
-					if (show_comments) {
+					segment[idx] = _LIBCONFINI_INLINE_MARKER_;
 
-						fragm_size++;
+					if (format.multiline_entries) {
+
+						segm_size++;
 
 					}
 
-					unparse_at = idx + 1;
+				}
+
+				if (format.multiline_entries) {
+
+					unparsable_at = idx + 1;
 					goto cut_unparsable;
 
 				}
 
-				fragm_size += further_cuts(segment + idx, format);
-				break;
+				search_at = idx;
+				goto search_for_cuts;
 
 			}
 
@@ -1161,7 +1182,8 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 	}
 
-	return fragm_size;
+	no_more_cuts:
+	return segm_size;
 
 }
 
@@ -1341,6 +1363,7 @@ unsigned int load_ini_file (
 
 	_LIBCONFINI_SIZE_ parse_at, real_parent_len = 0, curr_parent_len = 0;
 	char *curr_parent_str = cache + len, *subparent_str = curr_parent_str, *real_parent_str = curr_parent_str;
+
 	IniDispatch this_d = {
 		.format = format,
 		.dispatch_id = 0
@@ -1382,20 +1405,46 @@ unsigned int load_ini_file (
 
 			/*
 
-			Mask `abacus` (3 bits used):
-
-				FLAG_1		Continue the loop
-				FLAG_2		We are not in `\n[ \t\v\f]*`
-				FLAG_4		This is a space and FLAG_2 == TRUE
+				Search for inline comments left unmarked within a parsable comment: if found
+				it means that the comment is not parsable.
 
 			*/
 
-			for (abacus = 1, tmp_uint = 1; abacus && tmp_uint < this_d.d_len; tmp_uint++) {
+			/*
 
-				abacus	=	this_d.data[tmp_uint] == _LIBCONFINI_LF_ || this_d.data[tmp_uint] == _LIBCONFINI_CR_ ? 1
-							: (abacus & 4) && is_comm_char(this_d.data[tmp_uint], format) ? 0
-							: (abacus & 2) && is_some_space(this_d.data[tmp_uint], _LIBCONFINI_NO_EOL_) ? 7
-							: 3;
+			Mask `abacus` (8 bits used):
+
+				FLAG_1		Single quotes are not metacharacters (const)
+				FLAG_2		Double quotes are not metacharacters (const)
+				FLAG_4		Unescaped single quotes are odd until now
+				FLAG_8		Unescaped double quotes are odd until now
+				FLAG_16		We are in an odd sequence of backslashes
+				FLAG_32		We are not in `\n[ \t\v\f]*`
+				FLAG_64		This is not a space nor FLAG_32 == TRUE
+				FLAG_128	Continue the loop
+
+			*/
+
+			abacus	=	192
+						| (format.no_double_quotes << 1)
+						| format.no_single_quotes;
+
+			for (tmp_uint = 1; (abacus & 128) && tmp_uint < this_d.d_len; tmp_uint++) {
+
+				abacus	=	this_d.data[tmp_uint] == _LIBCONFINI_LF_ || this_d.data[tmp_uint] == _LIBCONFINI_CR_ ?
+								(abacus & 207) | 192
+							: (abacus & 32) && is_some_space(this_d.data[tmp_uint], _LIBCONFINI_NO_EOL_) ?
+								(abacus & 175) | 160
+							: !(abacus & 76) && is_comm_char(this_d.data[tmp_uint], format) ?
+								abacus & 127
+							: this_d.data[tmp_uint] == _LIBCONFINI_BACKSLASH_ ?
+								(abacus | 224) ^ 16
+							: !(abacus & 22) && this_d.data[tmp_uint] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+								(abacus | 224) ^ 8
+							: !(abacus & 25) && this_d.data[tmp_uint] == _LIBCONFINI_SINGLE_QUOTES_ ?
+								(abacus | 224) ^ 4
+							:
+								(abacus & 239) | 224;
 
 			}
 
