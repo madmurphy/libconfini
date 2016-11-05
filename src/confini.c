@@ -691,8 +691,8 @@ static _LIBCONFINI_SIZE_ sanitize_section_name (char * const str, const IniForma
 	@param			format		The format of the INI file
 	@return			The new length of the string
 
-	- In multiline comments: `commstr.replace(/(^|\n\r?|\r\n?)[ \t\v\f]*[#;]+/g, "$1")`
-	- In single-line comments: `commstr.replace(/^[ \t\v\f]*[#;]+/, "")`
+	- In multiline comments: `commstr.replace(/(^|\n\r?|\r\n?)[\t \v\f]*[#;]+/g, "$1")`
+	- In single-line comments: `commstr.replace(/^[\t \v\f]*[#;]+/, "")`
 
 **/
 static _LIBCONFINI_SIZE_ uncomment (char * const commstr, _LIBCONFINI_SIZE_ len, const IniFormat format) {
@@ -773,7 +773,7 @@ static _LIBCONFINI_SIZE_ uncomment (char * const commstr, _LIBCONFINI_SIZE_ len,
 	@brief			Tries to determine the type of a member "as if it was active"
 	@param			string				String containing an individual node
 	@param			length				Length of the node
-	@param			allow_implicit		A boolean: TRUE if we are in an disabled node, FALSE otherwise
+	@param			allow_implicit		A boolean: `TRUE` if keys without a delimiter are allowed, `FALSE` otherwise
 	@param			format				The format of the INI file
 	@return			The node type (see header)
 
@@ -1423,8 +1423,8 @@ unsigned int load_ini_file (
 				FLAG_4		Unescaped single quotes are odd until now
 				FLAG_8		Unescaped double quotes are odd until now
 				FLAG_16		We are in an odd sequence of backslashes
-				FLAG_32		We are not in `\n[ \t\v\f]*`
-				FLAG_64		Last was not a space AND FLAG_32 == TRUE
+				FLAG_32		We are not in `\n[\t \v\f]*`
+				FLAG_64		Last was not `[\t \v\f]` OR FLAG_32 == FALSE
 				FLAG_128	Continue the loop
 
 			*/
