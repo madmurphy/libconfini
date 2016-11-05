@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Fri Nov 4 2016" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Sat Nov 5 2016" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -215,13 +215,13 @@ Behaviors of '#' and ';'\&.
 .in +1c
 .TP
 \fB\fIINI_PARSE_COMMENT \fP\fP
-This opens a comment or a disabled entry 
+This character opens a comment or a disabled entry 
 .TP
 \fB\fIINI_SHOW_COMMENT \fP\fP
-This opens a comment 
+This character opens a comment 
 .TP
 \fB\fIINI_FORGET_COMMENT \fP\fP
-This opens a comment that must be ignored 
+This character opens a comment that must be ignored 
 .TP
 \fB\fIINI_NORMAL_CHARACTER \fP\fP
 This is a normal character 
@@ -234,7 +234,7 @@ Most used delimiters (but a delimiter can also be any other ASCII character)
 .in +1c
 .TP
 \fB\fIINI_ANY_SPACE \fP\fP
-\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP 
+In multiline INIs: \fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP; in non-multiline INIs: \fC/[\\t \\v\\f])+/\fP 
 .TP
 \fB\fIINI_EQUALS \fP\fP
 \fC=\fP 

@@ -172,7 +172,7 @@ enum ConfiniErrorNo {
 
 /** @brief	Most used delimiters (but a delimiter can also be any other ASCII character) **/
 enum IniDelimiters {
-	INI_ANY_SPACE = 0,		/**< `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/` **/
+	INI_ANY_SPACE = 0,		/**< In multiline INIs: `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`; in non-multiline INIs: `/[\t \v\f])+/` **/
 	INI_EQUALS = '=',		/**< `=` **/
 	INI_COLON = ':'			/**< `:` **/
 };
@@ -191,9 +191,9 @@ enum IniNodeType {
 
 /** @brief	Behaviors of '#' and ';' **/
 enum IniComments {
-	INI_PARSE_COMMENT = 0,		/**< This opens a comment or a disabled entry **/
-	INI_SHOW_COMMENT = 1,		/**< This opens a comment **/
-	INI_FORGET_COMMENT = 2,		/**< This opens a comment that must be ignored **/
+	INI_PARSE_COMMENT = 0,		/**< This character opens a comment or a disabled entry **/
+	INI_SHOW_COMMENT = 1,		/**< This character opens a comment **/
+	INI_FORGET_COMMENT = 2,		/**< This character opens a comment that must be ignored **/
 	INI_NORMAL_CHARACTER = 3	/**< This is a normal character **/
 };
 

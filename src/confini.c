@@ -160,9 +160,9 @@ static const char _LIBCONFINI_SPACES_[] = { _LIBCONFINI_SIMPLE_SPACE_, '\t', '\f
 #define _LIBCONFINI_NO_EOL_ 4
 #define _LIBCONFINI_WITH_EOL_ 6
 
-static inline _LIBCONFINI_BOOL_ is_some_space (const char ch, const _LIBCONFINI_BYTE_ depth) {
+static inline _LIBCONFINI_BOOL_ is_some_space (const char chr, const _LIBCONFINI_BYTE_ depth) {
 	_LIBCONFINI_BYTE_ idx;
-	for (idx = 0; idx < depth && ch != _LIBCONFINI_SPACES_[idx]; idx++);
+	for (idx = 0; idx < depth && chr != _LIBCONFINI_SPACES_[idx]; idx++);
 	return idx < depth;
 }
 
@@ -346,41 +346,66 @@ static inline void string_tolower (char * const str) {
 
 	@brief			Checks whether a character can represent the opening of a disabled entry
 					within a given format
-	@param			ch			The character to check
+	@param			chr			The character to check
 	@param			format		The format of the INI file
-	@return			1 if @p ch matches, 0 otherwise
+	@return			1 if @p chr matches, 0 otherwise
 
 **/
-static inline _LIBCONFINI_BOOL_ is_parsable_char (const char ch, const IniFormat format) {
-	return (format.semicolon == INI_PARSE_COMMENT && ch == _LIBCONFINI_SEMICOLON_) || (format.hash == INI_PARSE_COMMENT && ch == _LIBCONFINI_HASH_);
+static inline _LIBCONFINI_BOOL_ is_parsable_char (const char chr, const IniFormat format) {
+	return	(
+				chr == _LIBCONFINI_SEMICOLON_ && format.semicolon == INI_PARSE_COMMENT
+			) || (
+				chr == _LIBCONFINI_HASH_ && format.hash == INI_PARSE_COMMENT
+			);
 }
 
 
 /**
 
-	@brief			Checks whether a character can represent the opening of a comment within
+	@brief			Checks whether a character represents the opening of an unparsable comment within
 					a given format
-	@param			ch			The character to check
+	@param			chr			The character to check
 	@param			format		The format of the INI file
-	@return			1 if @p ch matches, 0 otherwise
+	@return			1 if @p chr matches, 0 otherwise
 
 **/
-static inline _LIBCONFINI_BOOL_ is_comm_char (const char ch, const IniFormat format) {
-	return (format.semicolon != INI_NORMAL_CHARACTER && ch == _LIBCONFINI_SEMICOLON_) || (format.hash != INI_NORMAL_CHARACTER && ch == _LIBCONFINI_HASH_);
+static inline _LIBCONFINI_BOOL_ is_unparsable_char (const char chr, const IniFormat format) {
+	return	(
+				chr == _LIBCONFINI_SEMICOLON_ && format.semicolon != INI_PARSE_COMMENT && format.semicolon != INI_NORMAL_CHARACTER
+			) || (
+				chr == _LIBCONFINI_HASH_ && format.hash != INI_PARSE_COMMENT && format.hash != INI_NORMAL_CHARACTER
+			);
 }
 
 
 /**
 
-	@brief			Checks whether a character can represent the opening of a comment that
-					has to be ignored within a given format
-	@param			ch			The character to check
+	@brief			Checks whether a character represents the opening of a comment within a given format
+	@param			chr			The character to check
 	@param			format		The format of the INI file
-	@return			1 if @p ch matches, 0 otherwise
+	@return			1 if @p chr matches, 0 otherwise
 
 **/
-static inline _LIBCONFINI_BOOL_ is_erase_char (const char ch, const IniFormat format) {
-	return (format.semicolon == INI_FORGET_COMMENT && ch == _LIBCONFINI_SEMICOLON_) || (format.hash == INI_FORGET_COMMENT && ch == _LIBCONFINI_HASH_);
+static inline _LIBCONFINI_BOOL_ is_comm_char (const char chr, const IniFormat format) {
+	return	(
+				chr == _LIBCONFINI_SEMICOLON_ && format.semicolon != INI_NORMAL_CHARACTER
+			) || (
+				chr == _LIBCONFINI_HASH_ && format.hash != INI_NORMAL_CHARACTER
+			);
+}
+
+
+/**
+
+	@brief			Checks whether a character represents the opening of a comment that must be ignored
+					within a given format
+	@param			chr			The character to check
+	@param			format		The format of the INI file
+	@return			1 if @p chr matches, 0 otherwise
+
+**/
+static inline _LIBCONFINI_BOOL_ is_forget_char (const char chr, const IniFormat format) {
+	return (format.semicolon == INI_FORGET_COMMENT && chr == _LIBCONFINI_SEMICOLON_) || (format.hash == INI_FORGET_COMMENT && chr == _LIBCONFINI_HASH_);
 }
 
 
@@ -766,7 +791,7 @@ static _LIBCONFINI_SIZE_ uncomment (char * const commstr, _LIBCONFINI_SIZE_ len,
 	@brief			Tries to determine the type of a member "as if it was active"
 	@param			string				String containing an individual node
 	@param			length				Length of the node
-	@param			wanna_be_active		A boolean: TRUE if we are in an disabled node, FALSE otherwise
+	@param			allow_implicit		A boolean: TRUE if we are in an disabled node, FALSE otherwise
 	@param			format				The format of the INI file
 	@return			The node type (see header)
 
@@ -774,7 +799,7 @@ static _LIBCONFINI_SIZE_ uncomment (char * const commstr, _LIBCONFINI_SIZE_ len,
 static _LIBCONFINI_BYTE_ get_type_as_active (
 	const char * const nodestr,
 	const _LIBCONFINI_SIZE_ len,
-	const _LIBCONFINI_BOOL_ wanna_be_active,
+	const _LIBCONFINI_BOOL_ allow_implicit,
 	const IniFormat format
 ) {
 
@@ -890,7 +915,7 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 
 	idx = get_delimiter_pos(nodestr, len, format);
 
-	if (wanna_be_active && !format.disabled_can_be_implicit && idx == len) {
+	if (!allow_implicit && idx == len) {
 
 		return INI_UNKNOWN;
 
@@ -927,7 +952,26 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 **/
 static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat format) {
 
-	_LIBCONFINI_SIZE_ idx, focus_at, active_at, unparsable_at, search_at = 0, segm_size = 0;
+	_LIBCONFINI_BOOL_ forget_me;
+	unsigned int abacus = (format.no_double_quotes << 1) | format.no_single_quotes;
+	_LIBCONFINI_SIZE_ idx, focus_at, unparsable_at, search_at = 0, segm_size = 0;
+
+	search_for_cuts:
+
+	if (!segment[search_at]) {
+
+		goto no_more_cuts;
+
+	}
+
+	unparsable_at = 0;
+	forget_me = is_forget_char(segment[search_at], format);
+
+	if (!forget_me) {
+
+		segm_size++;
+
+	}
 
 	/*
 
@@ -945,31 +989,13 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 	*/
 
-	unsigned int abacus = (format.no_double_quotes << 1) | format.no_single_quotes;
-
-	search_for_cuts:
-
-	if (!segment[search_at]) {
-
-		goto no_more_cuts;
-
-	}
-
-	active_at = unparsable_at = 0;
-
-	if (!is_erase_char(segment[search_at], format)) {
-
-		segm_size++;
-
-	}
-
 	abacus		=	(abacus & 3) | (
 						is_parsable_char(segment[search_at], format) && !(
 							format.no_disabled_after_space && is_some_space(segment[search_at + 1], _LIBCONFINI_NO_EOL_)
 						) ?
 							160
 						: !format.multiline_entries && (
-							is_comm_char(segment[search_at], format) || segment[search_at] == _LIBCONFINI_INLINE_MARKER_
+							segment[search_at] == _LIBCONFINI_INLINE_MARKER_ || is_comm_char(segment[search_at], format)
 						) ?
 							288
 						:
@@ -988,9 +1014,9 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 					focus_at = ltrim_s(segment, search_at + 1, _LIBCONFINI_NO_EOL_);
 
-					if (get_type_as_active(segment + focus_at, idx - focus_at, _LIBCONFINI_TRUE_, format)) {
+					if (get_type_as_active(segment + focus_at, idx - focus_at, format.disabled_can_be_implicit, format)) {
 
-						if (!is_erase_char(segment[idx], format)) {
+						if (!is_forget_char(segment[idx], format)) {
 
 							segment[idx] = _LIBCONFINI_INLINE_MARKER_;
 							segm_size++;
@@ -1022,35 +1048,36 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 				/* Search for `/\\(?:\n\r?|\r\n?)\s*[^;#]/` in multiline disabled items */
 
+				focus_at = ltrim_s(segment, search_at + 1, _LIBCONFINI_NO_EOL_);
 				idx = ltrim_s(segment, idx + 1, _LIBCONFINI_WITH_EOL_);
 
 				if (
-						(
-							format.no_disabled_after_space && is_some_space(segment[idx + 1], _LIBCONFINI_NO_EOL_)
-						) || !(
+					forget_me ?
+						!is_forget_char(segment[idx], format)
+					:
+						is_forget_char(segment[idx], format) || !(
 							(
-								is_comm_char(segment[idx], format) && !format.multiline_entries
+								format.multiline_entries < 2 && is_parsable_char(segment[idx], format) && !(
+									format.no_disabled_after_space && (abacus & 128) && is_some_space(segment[idx + 1], _LIBCONFINI_NO_EOL_)
+								)
 							) || (
-								is_parsable_char(segment[idx], format) && format.multiline_entries < 2
+								!format.multiline_entries && is_comm_char(segment[idx], format) && (
+									(abacus & 256) || (
+										(abacus & 128) && !get_type_as_active(
+											segment + focus_at,
+											idx - focus_at,
+											format.disabled_can_be_implicit,
+											format
+										)
+									)
+								)
 							)
 						)
 					) {
 
 					rtrim_h(segment, idx, _LIBCONFINI_WITH_EOL_);
-
-					if (segment[idx]) {
-
-						active_at = idx + 1;
-
-						if (!is_erase_char(segment[idx], format)) {
-
-							segm_size++;
-
-						}
-
-					}
-
-					break;
+					search_at = idx;
+					goto search_for_cuts;
 
 				}
 
@@ -1079,7 +1106,7 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 			focus_at = ltrim_s(segment, search_at + 1, _LIBCONFINI_NO_EOL_);
 
-			if (segment[focus_at] && !get_type_as_active(segment + focus_at, idx - focus_at, _LIBCONFINI_TRUE_, format)) {
+			if (segment[focus_at] && !get_type_as_active(segment + focus_at, idx - focus_at, format.disabled_can_be_implicit, format)) {
 
 				unparsable_at = search_at + 1;
 
@@ -1092,31 +1119,6 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 		unparsable_at = search_at + 1;
 
 	} else {
-
-		active_at = search_at + 1;
-
-	}
-
-	if (unparsable_at) {
-
-		/* Cut unparsable multiline comments */
-
-		cut_unparsable:
-
-		for (idx = unparsable_at; segment[idx]; idx++) {
-
-			if (segment[idx] == _LIBCONFINI_LF_ || segment[idx] == _LIBCONFINI_CR_) {
-
-				search_at = ultrim_h(segment, idx);
-				goto search_for_cuts;
-
-			}
-
-		}
-
-	}
-
-	if (active_at) {
 
 		/* Search for inline comments in active items */
 
@@ -1134,7 +1136,7 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 		*/
 
-		for (abacus = (abacus & 3) | 96, idx = active_at; segment[idx]; idx++) {
+		for (abacus = (abacus & 3) | 96, idx = search_at + 1; segment[idx]; idx++) {
 
 			abacus	=	is_comm_char(segment[idx], format) ?
 							abacus & 79
@@ -1152,9 +1154,8 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 			if (!(abacus & 124)) {
 
 				segment[idx - 1] = '\0';
-				active_at = 0;
 
-				if (!is_erase_char(segment[idx], format)) {
+				if (!is_forget_char(segment[idx], format)) {
 
 					segment[idx] = _LIBCONFINI_INLINE_MARKER_;
 
@@ -1169,11 +1170,28 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 				if (format.multiline_entries) {
 
 					unparsable_at = idx + 1;
-					goto cut_unparsable;
+					break;
 
 				}
 
 				search_at = idx;
+				goto search_for_cuts;
+
+			}
+
+		}
+
+	}
+
+	if (unparsable_at) {
+
+		/* Cut unparsable multiline comments */
+
+		for (idx = unparsable_at; segment[idx]; idx++) {
+
+			if (segment[idx] == _LIBCONFINI_LF_ || segment[idx] == _LIBCONFINI_CR_) {
+
+				search_at = ultrim_h(segment, idx);
 				goto search_for_cuts;
 
 			}
@@ -1268,13 +1286,13 @@ unsigned int load_ini_file (
 	/* PART ONE: Examine and isolate each segment */
 
 	#define _LIBCONFINI_IS_ESCAPED_ tmp_bool
-	#define _LIBCONFINI_NL_ID_ abacus
+	#define _LIBCONFINI_EOL_ID_ abacus
 	#define _LIBCONFINI_MEMBERS_ tmp_uint
 
 	for (
 
 		_LIBCONFINI_MEMBERS_ = 0,
-		_LIBCONFINI_NL_ID_ = 5,
+		_LIBCONFINI_EOL_ID_ = 5,
 		_LIBCONFINI_IS_ESCAPED_ = _LIBCONFINI_FALSE_,
 		node_at = 0,
 		idx = 0;
@@ -1285,11 +1303,11 @@ unsigned int load_ini_file (
 
 	) {
 
-		if (cache[idx] == _LIBCONFINI_SPACES_[_LIBCONFINI_NL_ID_] || cache[idx] == _LIBCONFINI_SPACES_[_LIBCONFINI_NL_ID_ ^= 1]) {
+		if (cache[idx] == _LIBCONFINI_SPACES_[_LIBCONFINI_EOL_ID_] || cache[idx] == _LIBCONFINI_SPACES_[_LIBCONFINI_EOL_ID_ ^= 1]) {
 
 			if (format.multiline_entries < 3 && _LIBCONFINI_IS_ESCAPED_) {
 
-				idx += cache[idx + 1] == _LIBCONFINI_SPACES_[_LIBCONFINI_NL_ID_ ^ 1];
+				idx += cache[idx + 1] == _LIBCONFINI_SPACES_[_LIBCONFINI_EOL_ID_ ^ 1];
 
 			} else {
 
@@ -1330,7 +1348,7 @@ unsigned int load_ini_file (
 	};
 
 	#undef _LIBCONFINI_MEMBERS_
-	#undef _LIBCONFINI_NL_ID_
+	#undef _LIBCONFINI_EOL_ID_
 	#undef _LIBCONFINI_IS_ESCAPED_
 
 	/* Debug */
@@ -1379,7 +1397,7 @@ unsigned int load_ini_file (
 
 		}
 
-		if (!cache[node_at] || is_erase_char(cache[node_at], format)) {
+		if (!cache[node_at] || is_forget_char(cache[node_at], format)) {
 
 			node_at = idx + 1;
 			continue;
@@ -1399,14 +1417,18 @@ unsigned int load_ini_file (
 		this_d.d_len = idx - node_at;
 		this_d.v_len = 0;
 
-		if (is_parsable_char(*this_d.data, format)) {
+		if (
+			is_parsable_char(*this_d.data, format) && !(
+				format.no_disabled_after_space && is_some_space(this_d.data[1], _LIBCONFINI_NO_EOL_)
+			)
+		) {
 
 			parse_at = ltrim_s(cache, node_at + 1, _LIBCONFINI_NO_EOL_);
 
 			/*
 
-				Search for inline comments left unmarked within a parsable comment: if found
-				it means that the comment is not parsable.
+				Search for unparsable or inline comments left unmarked within a parsable comment:
+				if found it means that the comment is not parsable.
 
 			*/
 
@@ -1420,7 +1442,7 @@ unsigned int load_ini_file (
 				FLAG_8		Unescaped double quotes are odd until now
 				FLAG_16		We are in an odd sequence of backslashes
 				FLAG_32		We are not in `\n[ \t\v\f]*`
-				FLAG_64		This is not a space nor FLAG_32 == TRUE
+				FLAG_64		Last was not a space AND FLAG_32 == TRUE
 				FLAG_128	Continue the loop
 
 			*/
@@ -1449,7 +1471,7 @@ unsigned int load_ini_file (
 			}
 
 			this_d.type		=	tmp_uint == this_d.d_len ?
-									get_type_as_active(cache + parse_at, idx - parse_at, _LIBCONFINI_TRUE_, format)
+									get_type_as_active(cache + parse_at, idx - parse_at, format.disabled_can_be_implicit, format)
 								:
 									0;
 
@@ -1472,7 +1494,7 @@ unsigned int load_ini_file (
 
 		} else {
 
-			this_d.type = get_type_as_active(this_d.data, this_d.d_len, _LIBCONFINI_FALSE_, format);
+			this_d.type = get_type_as_active(this_d.data, this_d.d_len, _LIBCONFINI_TRUE_, format);
 
 		}
 
@@ -2238,13 +2260,13 @@ signed int ini_get_bool (const char * const ini_string, const signed int return_
 signed int ini_get_lazy_bool (const char * const ini_string, const signed int return_value) {
 
 	unsigned short int pair_idx, bool_idx;
-	const char ch = *ini_string > 0x40 && *ini_string < 0x5b ? *ini_string | 0x60 : *ini_string;
+	const char chr = *ini_string > 0x40 && *ini_string < 0x5b ? *ini_string | 0x60 : *ini_string;
 
 	for (pair_idx = 0; pair_idx < sizeof(_LIBCONFINI_BOOLEANS_) / 2 / sizeof(char *); pair_idx++) {
 
 		for (bool_idx = 0; bool_idx < 2; bool_idx++) {
 
-			if (ch == *_LIBCONFINI_BOOLEANS_[pair_idx][bool_idx]) {
+			if (chr == *_LIBCONFINI_BOOLEANS_[pair_idx][bool_idx]) {
 
 				return bool_idx;
 

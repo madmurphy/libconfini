@@ -322,11 +322,11 @@ Variables</h2></td></tr>
 
 <p>Behaviors of '#' and ';'. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a397bfc55d3cf3e2ecd6b044e4d168796a01dfea6f7d0d7c409086448bf31d5218"></a>INI_PARSE_COMMENT&#160;</td><td class="fielddoc"><p>This opens a comment or a disabled entry </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a397bfc55d3cf3e2ecd6b044e4d168796a01dfea6f7d0d7c409086448bf31d5218"></a>INI_PARSE_COMMENT&#160;</td><td class="fielddoc"><p>This character opens a comment or a disabled entry </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a397bfc55d3cf3e2ecd6b044e4d168796a66d9ef884d52ed431e7fbf5b79484280"></a>INI_SHOW_COMMENT&#160;</td><td class="fielddoc"><p>This opens a comment </p>
+<tr><td class="fieldname"><a id="a397bfc55d3cf3e2ecd6b044e4d168796a66d9ef884d52ed431e7fbf5b79484280"></a>INI_SHOW_COMMENT&#160;</td><td class="fielddoc"><p>This character opens a comment </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a397bfc55d3cf3e2ecd6b044e4d168796a1896355b58ef9507121d73b55d13da19"></a>INI_FORGET_COMMENT&#160;</td><td class="fielddoc"><p>This opens a comment that must be ignored </p>
+<tr><td class="fieldname"><a id="a397bfc55d3cf3e2ecd6b044e4d168796a1896355b58ef9507121d73b55d13da19"></a>INI_FORGET_COMMENT&#160;</td><td class="fielddoc"><p>This character opens a comment that must be ignored </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a397bfc55d3cf3e2ecd6b044e4d168796abcb943630ce718d8d31ad56db57ae7bd"></a>INI_NORMAL_CHARACTER&#160;</td><td class="fielddoc"><p>This is a normal character </p>
 </td></tr>
@@ -348,7 +348,7 @@ Variables</h2></td></tr>
 
 <p>Most used delimiters (but a delimiter can also be any other ASCII character) </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd"></a>INI_ANY_SPACE&#160;</td><td class="fielddoc"><p><code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code> </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd"></a>INI_ANY_SPACE&#160;</td><td class="fielddoc"><p>In multiline INIs: <code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code>; in non-multiline INIs: <code>/[\t \v\f])+/</code> </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f"></a>INI_EQUALS&#160;</td><td class="fielddoc"><p><code>=</code> </p>
 </td></tr>

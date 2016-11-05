@@ -8,7 +8,7 @@
 
 ## MOTIVATION
 
-I have to confess that I have never had any particular interest in INI files. But I always had interest in GNU/Linux.
+I have to confess that I have never had any particular interest in INI files. But on the other hand I always had interest in GNU/Linux.
 
 The motivation behind this library came from the observation that many system applications in GNU/Linux rely on _INI-like_ files (systemd, pacman, networkmanager, etc.), and for many users who approach GNU/Linux for the first time it can be frustrating not to have a GUI for configuring their system. So, I thought, a general .conf/.ini editor for GNOME _in dconf-style_ had to be done.
 
