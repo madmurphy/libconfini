@@ -362,24 +362,6 @@ static inline _LIBCONFINI_BOOL_ is_parsable_char (const char chr, const IniForma
 
 /**
 
-	@brief			Checks whether a character represents the opening of an unparsable comment within
-					a given format
-	@param			chr			The character to check
-	@param			format		The format of the INI file
-	@return			1 if @p chr matches, 0 otherwise
-
-**/
-static inline _LIBCONFINI_BOOL_ is_unparsable_char (const char chr, const IniFormat format) {
-	return	(
-				chr == _LIBCONFINI_SEMICOLON_ && format.semicolon != INI_PARSE_COMMENT && format.semicolon != INI_NORMAL_CHARACTER
-			) || (
-				chr == _LIBCONFINI_HASH_ && format.hash != INI_PARSE_COMMENT && format.hash != INI_NORMAL_CHARACTER
-			);
-}
-
-
-/**
-
 	@brief			Checks whether a character represents the opening of a comment within a given format
 	@param			chr			The character to check
 	@param			format		The format of the INI file
