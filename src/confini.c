@@ -1037,20 +1037,18 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 					forget_me ?
 						!is_forget_char(segment[idx], format)
 					:
-						is_forget_char(segment[idx], format) || !(
+						is_forget_char(segment[idx], format) || is_comm_char(segment[idx + 1], format) || !(
 							(
 								format.multiline_entries < 2 && is_parsable_char(segment[idx], format) && !(
 									format.no_disabled_after_space && (abacus & 128) && is_some_space(segment[idx + 1], _LIBCONFINI_NO_EOL_)
 								)
 							) || (
-								!format.multiline_entries && is_comm_char(segment[idx], format) && (
-									(abacus & 256) || !(
-										(abacus & 128) && get_type_as_active(
-											segment + focus_at,
-											idx - focus_at,
-											format.disabled_can_be_implicit,
-											format
-										)
+								!format.multiline_entries && is_comm_char(segment[idx], format) && !(
+									(abacus & 128) && get_type_as_active(
+										segment + focus_at,
+										idx - focus_at,
+										format.disabled_can_be_implicit,
+										format
 									)
 								)
 							)
