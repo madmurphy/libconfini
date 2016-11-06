@@ -1262,7 +1262,7 @@ unsigned int load_ini_file (
 	cache[len] = '\0';
 
 	_LIBCONFINI_BOOL_ tmp_bool;
-	_LIBCONFINI_BYTE_ abacus;
+	unsigned int abacus;
 	_LIBCONFINI_SIZE_ tmp_uint, idx, node_at;
 
 	/* PART ONE: Examine and isolate each segment */
@@ -1409,46 +1409,63 @@ unsigned int load_ini_file (
 
 			/*
 
-				Search for unparsable or inline comments left unmarked within a parsable comment:
+				Search for inline comments left unmarked _inside_ a parsable comment:
 				if found it means that the comment is not parsable.
 
 			*/
 
 			/*
 
-			Mask `abacus` (8 bits used):
+			Mask `abacus` (10 bits used):
 
 				FLAG_1		Single quotes are not metacharacters (const)
 				FLAG_2		Double quotes are not metacharacters (const)
-				FLAG_4		Unescaped single quotes are odd until now
-				FLAG_8		Unescaped double quotes are odd until now
-				FLAG_16		We are in an odd sequence of backslashes
-				FLAG_32		We are not in `\n[\t \v\f]*`
-				FLAG_64		Last was not `[\t \v\f]` OR FLAG_32 == FALSE
-				FLAG_128	Continue the loop
+				FLAG_4		Allow disabled after space (const)
+				FLAG_8		Unescaped single quotes are odd until now
+				FLAG_16		Unescaped double quotes are odd until now
+				FLAG_32		We are in an odd sequence of backslashes
+				FLAG_64		We are in `\n[\t \v\f]*`
+				FLAG_128	Last was not `[\t \v\f]` OR `FLAG_64 == FALSE`
+				FLAG_256	Last was not `\s[;#]`, or was it but was semantic rather than syntactic
+				FLAG_512	Continue the loop
 
 			*/
 
-			abacus	=	192
-						| (format.no_double_quotes << 1)
-						| format.no_single_quotes;
+			abacus	=	960 |
+						(format.no_disabled_after_space ? 0 : 4) |
+						(format.no_double_quotes << 1) |
+						format.no_single_quotes;
 
-			for (tmp_uint = 1; (abacus & 128) && tmp_uint < this_d.d_len; tmp_uint++) {
+			for (tmp_uint = 1; (abacus & 512) && tmp_uint < this_d.d_len; tmp_uint++) {
 
 				abacus	=	this_d.data[tmp_uint] == _LIBCONFINI_LF_ || this_d.data[tmp_uint] == _LIBCONFINI_CR_ ?
-								(abacus & 207) | 192
-							: (abacus & 32) && is_some_space(this_d.data[tmp_uint], _LIBCONFINI_NO_EOL_) ?
-								(abacus & 175) | 160
-							: !(abacus & 76) && is_comm_char(this_d.data[tmp_uint], format) ?
-								abacus & 127
+								abacus | 448
+							: is_comm_char(this_d.data[tmp_uint], format) ?
+								(
+									abacus & 128 ?
+										abacus & 543
+									: abacus & 24 ?
+										(abacus & 799) | 256
+									:
+										abacus & 287
+								)
+							: is_some_space(this_d.data[tmp_uint], _LIBCONFINI_NO_EOL_) ?
+								(
+									abacus & 64 ?
+										(abacus & 991) | 448
+									: abacus & 260 ?
+										(abacus & 799) | 256
+									:
+										abacus & 31
+								)
 							: this_d.data[tmp_uint] == _LIBCONFINI_BACKSLASH_ ?
-								(abacus | 224) ^ 16
-							: !(abacus & 22) && this_d.data[tmp_uint] == _LIBCONFINI_DOUBLE_QUOTES_ ?
-								(abacus | 224) ^ 8
-							: !(abacus & 25) && this_d.data[tmp_uint] == _LIBCONFINI_SINGLE_QUOTES_ ?
-								(abacus | 224) ^ 4
+								((abacus & 831) | 256) ^ 32
+							: !(abacus & 42) && this_d.data[tmp_uint] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+								((abacus & 799) | 256) ^ 16
+							: !(abacus & 49) && this_d.data[tmp_uint] == _LIBCONFINI_SINGLE_QUOTES_ ?
+								((abacus & 799) | 256) ^ 8
 							:
-								(abacus & 239) | 224;
+								(abacus & 799 | 256);
 
 			}
 
