@@ -1465,7 +1465,7 @@ unsigned int load_ini_file (
 							: !(abacus & 49) && this_d.data[tmp_uint] == _LIBCONFINI_SINGLE_QUOTES_ ?
 								((abacus & 799) | 256) ^ 8
 							:
-								(abacus & 799 | 256);
+								(abacus & 799) | 256;
 
 			}
 
