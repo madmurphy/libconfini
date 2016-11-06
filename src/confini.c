@@ -1044,8 +1044,8 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 								)
 							) || (
 								!format.multiline_entries && is_comm_char(segment[idx], format) && (
-									(abacus & 256) || (
-										(abacus & 128) && !get_type_as_active(
+									(abacus & 256) || !(
+										(abacus & 128) && get_type_as_active(
 											segment + focus_at,
 											idx - focus_at,
 											format.disabled_can_be_implicit,
