@@ -368,7 +368,7 @@ static inline _LIBCONFINI_BOOL_ is_parsable_char (const char chr, const IniForma
 	@return			1 if @p chr matches, 0 otherwise
 
 **/
-static inline _LIBCONFINI_BOOL_ is_comm_char (const char chr, const IniFormat format) {
+static inline _LIBCONFINI_BOOL_ is_comment_char (const char chr, const IniFormat format) {
 	return	(
 				chr == _LIBCONFINI_SEMICOLON_ && format.semicolon != INI_NORMAL_CHARACTER
 			) || (
@@ -534,9 +534,9 @@ static _LIBCONFINI_SIZE_ collapse_spaces (char * const str, const IniFormat form
 
 	*/
 
-	_LIBCONFINI_BYTE_	abacus	=	(is_some_space(*str, _LIBCONFINI_WITH_EOL_) ? 32 : 0)
-									| (format.no_double_quotes << 1)
-									| format.no_single_quotes;
+	_LIBCONFINI_BYTE_	abacus	=	(is_some_space(*str, _LIBCONFINI_WITH_EOL_) ? 32 : 0) |
+									(format.no_double_quotes << 1) |
+									format.no_single_quotes;
 
 	_LIBCONFINI_SIZE_ idx, lshift;
 
@@ -619,9 +619,9 @@ static _LIBCONFINI_SIZE_ sanitize_section_name (char * const str, const IniForma
 
 	*/
 
-	abacus	=	(is_some_space(*str, _LIBCONFINI_WITH_EOL_) ? 256 : 32)
-				| (format.no_double_quotes << 1)
-				| format.no_single_quotes;
+	abacus	=	(is_some_space(*str, _LIBCONFINI_WITH_EOL_) ? 256 : 32) |
+				(format.no_double_quotes << 1) |
+				format.no_single_quotes;
 
 	for (lshift = 0, idx = 0; str[idx]; idx++) {
 
@@ -703,7 +703,7 @@ static _LIBCONFINI_SIZE_ uncomment (char * const commstr, _LIBCONFINI_SIZE_ len,
 
 		/* The comment is not multiline */
 
-		for (lshift = 0; lshift < len && is_comm_char(commstr[lshift], format); lshift++);
+		for (lshift = 0; lshift < len && is_comment_char(commstr[lshift], format); lshift++);
 
 		if (!lshift) {
 
@@ -738,7 +738,7 @@ static _LIBCONFINI_SIZE_ uncomment (char * const commstr, _LIBCONFINI_SIZE_ len,
 							((abacus & 35) | 32) ^ 2
 						: commstr[idx] == _LIBCONFINI_LF_ || commstr[idx] == _LIBCONFINI_CR_ ?
 							(abacus & 16) | ((abacus << 1) & 4)
-						: !(abacus & 32) && is_comm_char(commstr[idx], format) ?
+						: !(abacus & 32) && is_comment_char(commstr[idx], format) ?
 							(abacus & 40) | 8
 						: !(abacus & 40) && is_some_space(commstr[idx], _LIBCONFINI_NO_EOL_) ?
 							(abacus & 57) | 16
@@ -785,7 +785,7 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 	const IniFormat format
 ) {
 
-	if (!len || *nodestr == format.delimiter_symbol || is_comm_char(*nodestr, format)) {
+	if (!len || *nodestr == format.delimiter_symbol || is_comment_char(*nodestr, format)) {
 
 		return INI_UNKNOWN;
 
@@ -828,7 +828,7 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 			for (abacus = (format.no_double_quotes << 3) | (format.no_single_quotes << 2), idx = 1; idx < len; idx++) {
 
 				abacus	=	nodestr[idx] == _LIBCONFINI_BACKSLASH_ ?
-								(abacus ^ 1) | (((abacus << 1) & 2) & (~abacus & 2))
+								(abacus | (((abacus << 1) & 2) & (~abacus & 2))) ^ 1
 							: !(abacus & 51) && nodestr[idx] == _LIBCONFINI_SUBSECTION_ ?
 								abacus & 1968
 							: !(abacus & 49) && is_some_space(nodestr[idx], _LIBCONFINI_NO_EOL_) ?
@@ -883,7 +883,7 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 				abacus	=	nodestr[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 16
 							: !(abacus & 22) && nodestr[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 8
 							: !(abacus & 25) && nodestr[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 4
-							: abacus & 15;;
+							: abacus & 15;
 
 			}
 
@@ -895,27 +895,43 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 
 	/* It can be just a key... */
 
-	idx = get_delimiter_pos(nodestr, len, format);
+	/*
 
-	if (!allow_implicit && idx == len) {
+	Mask `abacus` (2 bits used):
 
-		return INI_UNKNOWN;
+		FLAG_1		The delimiter **must** be present
+		FLAG_2		Search for spaces in names
 
-	}
+	*/
 
-	if (format.no_spaces_in_names && format.delimiter_symbol) {
+	abacus	=	(format.no_spaces_in_names && format.delimiter_symbol ? 2 : 0) |
+				(allow_implicit ? 0 : 1);
 
-		idx = urtrim_s(nodestr, idx) - 1;
+	if (abacus) {
 
-		do {
+		idx = get_delimiter_pos(nodestr, len, format);
 
-			if (is_some_space(nodestr[idx], _LIBCONFINI_WITH_EOL_)) {
+		if ((abacus & 1) && idx == len) {
 
-				return INI_UNKNOWN;
+			return INI_UNKNOWN;
 
-			}
+		}
 
-		} while (idx-- > 0);
+		if (abacus & 2) {
+
+			idx = urtrim_s(nodestr, idx) - 1;
+
+			do {
+
+				if (is_some_space(nodestr[idx], _LIBCONFINI_WITH_EOL_)) {
+
+					return INI_UNKNOWN;
+
+				}
+
+			} while (idx-- > 0);
+
+		}
 
 	}
 
@@ -935,7 +951,7 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat format) {
 
 	_LIBCONFINI_BOOL_ forget_me;
-	unsigned int abacus = (format.no_double_quotes << 1) | format.no_single_quotes;
+	_LIBCONFINI_BYTE_ abacus = (format.no_double_quotes << 1) | format.no_single_quotes;
 	_LIBCONFINI_SIZE_ idx, focus_at, unparsable_at, search_at = 0, segm_size = 0;
 
 	search_for_cuts:
@@ -957,42 +973,39 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 	/*
 
-	Mask `abacus` (9 bits used):
+	Mask `abacus` (8 bits used):
 
 		FLAG_1		Single quotes are not metacharacters (const)
 		FLAG_2		Double quotes are not metacharacters (const)
 		FLAG_4		Unescaped single quotes are odd until now
 		FLAG_8		Unescaped double quotes are odd until now
 		FLAG_16		We are in an odd sequence of backslashes
-		FLAG_32		This does not immediately follow `[\n\r]\s*`
-		FLAG_64		The previous character was a space
-		FLAG_128	This can be a disabled entry
-		FLAG_256	This is nothing but a (multiline) comment
+		FLAG_32		The previous character was not a space
+		FLAG_64		This can be a disabled entry
+		FLAG_128	This is nothing but a (multiline) comment
 
 	*/
 
-	abacus		=	(abacus & 3) | (
-						is_parsable_char(segment[search_at], format) && !(
-							format.no_disabled_after_space && is_some_space(segment[search_at + 1], _LIBCONFINI_NO_EOL_)
-						) ?
-							160
-						: !format.multiline_entries && (
-							segment[search_at] == _LIBCONFINI_INLINE_MARKER_ || is_comm_char(segment[search_at], format)
-						) ?
-							288
-						:
-							32
-					);
+	abacus		=	is_parsable_char(segment[search_at], format) && !(
+						format.no_disabled_after_space && is_some_space(segment[search_at + 1], _LIBCONFINI_NO_EOL_)
+					) ?
+						(abacus & 3) | 64
+					: !format.multiline_entries && (
+						segment[search_at] == _LIBCONFINI_INLINE_MARKER_ || is_comment_char(segment[search_at], format)
+					) ?
+						(abacus & 3) | 128
+					:
+						abacus & 3;
 
-	if (abacus & 384) {
+	if (abacus & 192) {
 
 		for (idx = ltrim_s(segment, search_at + 1, _LIBCONFINI_NO_EOL_); segment[idx]; idx++) {
 
-			if (is_comm_char(segment[idx], format)) {
+			if (is_comment_char(segment[idx], format)) {
 
 				/* Search for inline comments in (supposedly) disabled items */
 
-				if ((abacus | 3) == 227 /* or...: `!((abacus & 284) | (~abacus & 224))` */) {
+				if (!(abacus & 172)) {
 
 					focus_at = ltrim_s(segment, search_at + 1, _LIBCONFINI_NO_EOL_);
 
@@ -1023,7 +1036,7 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 				}
 
-				abacus &= 431;
+				abacus &= 239;
 				abacus |= 32;
 
 			} else if (segment[idx] == _LIBCONFINI_LF_ || segment[idx] == _LIBCONFINI_CR_) {
@@ -1037,14 +1050,14 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 					forget_me ?
 						!is_forget_char(segment[idx], format)
 					:
-						is_forget_char(segment[idx], format) || is_comm_char(segment[idx + 1], format) || !(
+						is_forget_char(segment[idx], format) || !(
 							(
 								format.multiline_entries < 2 && is_parsable_char(segment[idx], format) && !(
-									format.no_disabled_after_space && (abacus & 128) && is_some_space(segment[idx + 1], _LIBCONFINI_NO_EOL_)
+									format.no_disabled_after_space && (abacus & 64) && is_some_space(segment[idx + 1], _LIBCONFINI_NO_EOL_)
 								)
 							) || (
-								!format.multiline_entries && is_comm_char(segment[idx], format) && !(
-									(abacus & 128) && get_type_as_active(
+								!format.multiline_entries && is_comment_char(segment[idx], format) && !(
+									(abacus & 64) && get_type_as_active(
 										segment + focus_at,
 										idx - focus_at,
 										format.disabled_can_be_implicit,
@@ -1061,22 +1074,18 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 				}
 
-				abacus &= 399;
+				abacus &= 207;
 
 			} else if (is_some_space(segment[idx], _LIBCONFINI_NO_EOL_)) {
 
-				abacus &= 399;
-				abacus |= 96;
+				abacus &= 207;
 
 			} else {
 
-				abacus	=	segment[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 16
-							: !(abacus & 22) && segment[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 8
-							: !(abacus & 25) && segment[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 4
-							: abacus & 495;
-
-				abacus &= 447;
-				abacus |= 32;
+				abacus	=	segment[idx] == _LIBCONFINI_BACKSLASH_ ? (abacus | 32) ^ 16
+							: !(abacus & 22) && segment[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? (abacus | 32) ^ 8
+							: !(abacus & 25) && segment[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? (abacus | 32) ^ 4
+							: (abacus & 239) | 32;
 
 			}
 
@@ -1094,7 +1103,7 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 		}
 
-	} else if (is_comm_char(segment[search_at], format)) {
+	} else if (is_comment_char(segment[search_at], format)) {
 
 		unparsable_at = search_at + 1;
 
@@ -1118,7 +1127,7 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 		for (abacus = (abacus & 3) | 96, idx = search_at + 1; segment[idx]; idx++) {
 
-			abacus	=	is_comm_char(segment[idx], format) ?
+			abacus	=	is_comment_char(segment[idx], format) ?
 							abacus & 79
 						: is_some_space(segment[idx], _LIBCONFINI_WITH_EOL_) ?
 							(abacus & 47) | 32
@@ -1397,11 +1406,7 @@ unsigned int load_ini_file (
 		this_d.d_len = idx - node_at;
 		this_d.v_len = 0;
 
-		if (
-			is_parsable_char(*this_d.data, format) && !(
-				format.no_disabled_after_space && is_some_space(this_d.data[1], _LIBCONFINI_NO_EOL_)
-			)
-		) {
+		if (is_parsable_char(*this_d.data, format)) {
 
 			parse_at = ltrim_s(cache, node_at + 1, _LIBCONFINI_NO_EOL_);
 
@@ -1429,7 +1434,7 @@ unsigned int load_ini_file (
 
 			*/
 
-			abacus	=	960 |
+			abacus	=	512 |
 						(format.no_disabled_after_space ? 0 : 4) |
 						(format.no_double_quotes << 1) |
 						format.no_single_quotes;
@@ -1438,9 +1443,11 @@ unsigned int load_ini_file (
 
 				abacus	=	this_d.data[tmp_uint] == _LIBCONFINI_LF_ || this_d.data[tmp_uint] == _LIBCONFINI_CR_ ?
 								abacus | 448
-							: is_comm_char(this_d.data[tmp_uint], format) ?
+							: is_comment_char(this_d.data[tmp_uint], format) ?
 								(
-									abacus & 128 ?
+									(abacus & 64) && !is_parsable_char(this_d.data[tmp_uint], format) ?
+										abacus & 31
+									: abacus & 128 ?
 										abacus & 543
 									: abacus & 24 ?
 										(abacus & 799) | 256
@@ -1481,7 +1488,7 @@ unsigned int load_ini_file (
 
 			this_d.type |= 4;
 
-		} else if (is_comm_char(*this_d.data, format)) {
+		} else if (is_comment_char(*this_d.data, format)) {
 
 			this_d.type = INI_COMMENT;
 
@@ -1879,9 +1886,9 @@ unsigned long int ini_array_get_length (const char * const ini_string, const cha
 
 	*/
 
-	abacus	=	(delimiter ? 4 : 0)
-				| (format.no_double_quotes << 1)
-				| format.no_single_quotes;
+	abacus	=	(delimiter ? 4 : 0) |
+				(format.no_double_quotes << 1) |
+				format.no_single_quotes;
 
 	for (idx = 0; !(abacus & 128); idx++) {
 
@@ -1949,9 +1956,9 @@ unsigned int ini_array_foreach (
 
 	/* Mask `abacus` (8 bits used): as in `ini_array_get_length()` */
 
-	abacus	=	(delimiter ? 4 : 0)
-				| (format.no_double_quotes << 1)
-				| format.no_single_quotes;
+	abacus	=	(delimiter ? 4 : 0) |
+				(format.no_double_quotes << 1) |
+				format.no_single_quotes;
 
 	for (offs = 0, counter = 0, idx = 0; !(abacus & 128); idx++) {
 
@@ -2034,9 +2041,9 @@ unsigned long int ini_collapse_array (char * const ini_string, const char delimi
 
 	*/
 
-	abacus	=	(delimiter ? 2176 : 2180)
-				| (format.no_double_quotes << 1)
-				| format.no_single_quotes;
+	abacus	=	(delimiter ? 2176 : 2180) |
+				(format.no_double_quotes << 1) |
+				format.no_single_quotes;
 
 	for (lshift = 0, iter = 0, idx = 0; abacus & 2048; idx++) {
 
@@ -2146,9 +2153,9 @@ unsigned int ini_split_array (
 
 	/* Mask `abacus` (8 bits used): as in `ini_array_get_length()` */
 
-	abacus	=	(delimiter ? 4 : 0)
-				| (format.no_double_quotes << 1)
-				| format.no_single_quotes;
+	abacus	=	(delimiter ? 4 : 0) |
+				(format.no_double_quotes << 1) |
+				format.no_single_quotes;
 
 	for (offs = 0, counter = 0, idx = 0; !(abacus & 128); idx++) {
 
