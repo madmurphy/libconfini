@@ -344,7 +344,7 @@ static inline void string_tolower (char * const str) {
 
 /**
 
-	@brief			Checks whether a character can represent the opening of a disabled entry
+	@brief			Checks whether a character can represent the beginning of a disabled entry
 					within a given format
 	@param			chr			The character to check
 	@param			format		The format of the INI file
@@ -379,7 +379,7 @@ static inline _LIBCONFINI_BOOL_ is_comment_char (const char chr, const IniFormat
 
 /**
 
-	@brief			Checks whether a character represents the opening of a comment that must be ignored
+	@brief			Checks whether a character represents the beginning of a comment that must be ignored
 					within a given format
 	@param			chr			The character to check
 	@param			format		The format of the INI file
@@ -445,13 +445,14 @@ static inline _LIBCONFINI_SIZE_ get_delimiter_pos (const char * const str, const
 /**
 
 	@brief			Replaces `/\\(\n\r?|\r\n?)s*[#;]/` or `/\\(\n\r?|\r\n?)/` with `"$1"`.
-	@param			string			Target string
-	@param			length			Length of the string
+	@param			str				Target string
+	@param			len				Length of the string
 	@param			is_disabled		The string represents a disabled entry
-	@return			Number of characters removed
+	@param			format			The format of the INI file
+	@return			The new length of the string
 
 **/
-static _LIBCONFINI_SIZE_ unescape_cr_lf (char * const nstr, const _LIBCONFINI_SIZE_ len, const _LIBCONFINI_BOOL_ is_disabled, const IniFormat format) {
+static _LIBCONFINI_SIZE_ unescape_cr_lf (char * const str, const _LIBCONFINI_SIZE_ len, const _LIBCONFINI_BOOL_ is_disabled, const IniFormat format) {
 
 	_LIBCONFINI_SIZE_ idx, iter, lshift;
 	_LIBCONFINI_BOOL_ is_escaped = _LIBCONFINI_FALSE_;
@@ -459,16 +460,16 @@ static _LIBCONFINI_SIZE_ unescape_cr_lf (char * const nstr, const _LIBCONFINI_SI
 
 	for (is_escaped = _LIBCONFINI_FALSE_, idx = 0, lshift = 0; idx < len; idx++) {
 
-		if (is_escaped && (nstr[idx] == _LIBCONFINI_SPACES_[cr_or_lf] || nstr[idx] == _LIBCONFINI_SPACES_[cr_or_lf ^= 1])) {
+		if (is_escaped && (str[idx] == _LIBCONFINI_SPACES_[cr_or_lf] || str[idx] == _LIBCONFINI_SPACES_[cr_or_lf ^= 1])) {
 
 			for (
 
 				iter = idx,
-				idx += nstr[idx + 1] == _LIBCONFINI_SPACES_[cr_or_lf ^ 1];
+				idx += str[idx + 1] == _LIBCONFINI_SPACES_[cr_or_lf ^ 1];
 
 					iter < idx + 1;
 
-				nstr[iter - lshift - 1] = nstr[iter],
+				str[iter - lshift - 1] = str[iter],
 				iter++
 
 			);
@@ -477,9 +478,9 @@ static _LIBCONFINI_SIZE_ unescape_cr_lf (char * const nstr, const _LIBCONFINI_SI
 
 			if (is_disabled) {
 
-				iter = ltrim_s(nstr, iter, _LIBCONFINI_NO_EOL_);
+				iter = ltrim_s(str, iter, _LIBCONFINI_NO_EOL_);
 
-				if (is_parsable_char(nstr[iter], format)) {
+				if (is_parsable_char(str[iter], format)) {
 
 					lshift += iter - idx;
 					idx = iter;
@@ -492,11 +493,11 @@ static _LIBCONFINI_SIZE_ unescape_cr_lf (char * const nstr, const _LIBCONFINI_SI
 
 		} else {
 
-			is_escaped = nstr[idx] == _LIBCONFINI_BACKSLASH_ ? !is_escaped : _LIBCONFINI_FALSE_;
+			is_escaped = str[idx] == _LIBCONFINI_BACKSLASH_ ? !is_escaped : _LIBCONFINI_FALSE_;
 
 			if (lshift) {
 
-				nstr[idx - lshift] = nstr[idx];
+				str[idx - lshift] = str[idx];
 
 			}
 
@@ -504,7 +505,7 @@ static _LIBCONFINI_SIZE_ unescape_cr_lf (char * const nstr, const _LIBCONFINI_SI
 
 	}
 
-	for (idx = len - lshift; idx < len; nstr[idx++] = '\0');
+	for (idx = len - lshift; idx < len; str[idx++] = '\0');
 
 	return len - lshift;
 
@@ -514,7 +515,7 @@ static _LIBCONFINI_SIZE_ unescape_cr_lf (char * const nstr, const _LIBCONFINI_SI
 /**
 
 	@brief			Out of quotes similar to ECMAScript `string.replace(/^[\n\r]\s*|(\s)+/g, " ")`
-	@param			string		The string to collapse
+	@param			str			The string to collapse
 	@param			format		The format of the INI file
 	@return			The new length of the string
 
@@ -586,8 +587,8 @@ static _LIBCONFINI_SIZE_ collapse_spaces (char * const str, const IniFormat form
 /**
 
 	@brief			Sanitizes the name of a section
-	@param			section_name		The target string
-	@param			format				The format of the INI file
+	@param			str			The target string
+	@param			format		The format of the INI file
 	@return			The new length of the string
 
 	Out of quotes, similar to ECMAScript `section_name.replace(/\.*\s*$|(?:\s*(\.))+\s*|^\s+/g, "$1").replace(/\s+/g, " ")`
@@ -771,8 +772,8 @@ static _LIBCONFINI_SIZE_ uncomment (char * const commstr, _LIBCONFINI_SIZE_ len,
 /**
 
 	@brief			Tries to determine the type of a member "as if it was active"
-	@param			string				String containing an individual node
-	@param			length				Length of the node
+	@param			nodestr				String containing an individual node
+	@param			len					Length of the node
 	@param			allow_implicit		A boolean: `TRUE` if keys without a delimiter are allowed, `FALSE` otherwise
 	@param			format				The format of the INI file
 	@return			The node type (see header)
@@ -943,8 +944,8 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 /**
 
 	@brief			Examines a (single-/multi- line) segment and checks whether it contains sub-segments.
-	@param			segment			Segment to examine
-	@param			format			The format of the INI file
+	@param			segment		Segment to examine
+	@param			format		The format of the INI file
 	@return			Number of sub-segments found including itself
 
 **/
@@ -1242,10 +1243,10 @@ unsigned int load_ini_file (
 
 	}
 
-	_LIBCONFINI_SIZE_ len;
-
 	fseek(config_file, 0, SEEK_END);
-	len = ftell(config_file);
+
+	const _LIBCONFINI_SIZE_ len = ftell(config_file);
+
 	rewind(config_file);
 
 	char * const cache = (char *) malloc((len + 1) * sizeof(char));
@@ -1729,13 +1730,13 @@ IniFormatId ini_format_get_id (const IniFormat source) {
 	unsigned short int bitpos = 0;
 	IniFormatId mask = 0;
 
-	#define _LIBCONFINI_READ_FORMAT_ID_ID_(SIZE, PROPERTY, IGNORE_ME) \
+	#define _LIBCONFINI_CALC_FORMAT_ID_(SIZE, PROPERTY, IGNORE_ME) \
 		mask |= source.PROPERTY << bitpos;\
 		bitpos += SIZE;
 
-	_LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(_LIBCONFINI_READ_FORMAT_ID_ID_)
+	_LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(_LIBCONFINI_CALC_FORMAT_ID_)
 
-	#undef _LIBCONFINI_READ_FORMAT_ID_ID_
+	#undef _LIBCONFINI_CALC_FORMAT_ID_
 
 	return mask;
 
