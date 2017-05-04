@@ -4,12 +4,13 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-[[ -z $OSTYPE ]] && OSTYPE=$(uname -s)
-[[ $OSTYPE =~ ^[Dd]arwin* ]] && APPLE=1
+OSISAPPLE=0
 
+[[ -z $OSTYPE ]] && OSTYPE=$(uname -s)
+[[ $OSTYPE =~ ^[Dd]arwin* ]] && OSISAPPLE=1
 
 if [[ -z $LIBTOOL ]]; then
-  if [ $APPLE -eq 1 ]; then
+  if [ $OSISAPPLE -eq 1 ]; then
     LIBTOOL=glibtool
     echo "macOS detected. Using glibtool."
   else
@@ -18,7 +19,7 @@ if [[ -z $LIBTOOL ]]; then
 fi
 
 if [[ -z $LIBTOOLIZE ]]; then
-  if [ $APPLE -eq 1 ]; then
+  if [ $OSISAPPLE -eq 1 ]; then
     LIBTOOLIZE=glibtoolize
     echo "macOS detected. Using glibtoolize."
   else
