@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.3-5] - 2017-05-04
+
+Changes:
+
+* Fix for macOS compilation -- see: https://github.com/madmurphy/libconfini/commit/4c3e6ec0b73ab5a0449cf08d3504f73fdf5c0edd
+
 ## [1.3-4] - 2016-11-10
 
 Changes:
