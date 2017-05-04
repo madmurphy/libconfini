@@ -1,8 +1,30 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Run this to generate all the initial makefiles, etc.
 
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
+
+[[ -z $OSTYPE ]] && OSTYPE=$(uname -s)
+[[ $OSTYPE =~ ^[Dd]arwin* ]] && APPLE=1
+
+
+if [[ -z $LIBTOOL ]]; then
+  if [ $APPLE -eq 1 ]; then
+    LIBTOOL=glibtool
+    echo "macOS detected. Using glibtool."
+  else
+    LIBTOOL=libtool
+  fi
+fi
+
+if [[ -z $LIBTOOLIZE ]]; then
+  if [ $APPLE -eq 1 ]; then
+    LIBTOOLIZE=glibtoolize
+    echo "macOS detected. Using glibtoolize."
+  else
+    LIBTOOLIZE=libtoolize
+  fi
+fi
 
 DIE=0
 
@@ -49,7 +71,7 @@ fi
 }
 
 (grep "^LT_INIT" $srcdir/configure.ac >/dev/null) && {
-  (libtool --version) < /dev/null > /dev/null 2>&1 || {
+  ($LIBTOOL --version) < /dev/null > /dev/null 2>&1 || {
     echo
     echo "**Error**: You must have \`libtool' installed."
     echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/"
@@ -131,7 +153,7 @@ do
       if grep "^LT_INIT" configure.ac >/dev/null; then
 	if test -z "$NO_LIBTOOLIZE" ; then 
 	  echo "Running libtoolize..."
-	  libtoolize --force --copy
+	  $LIBTOOLIZE --force --copy
 	fi
       fi
       echo "Running aclocal $aclocalinclude ..."
