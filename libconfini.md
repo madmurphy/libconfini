@@ -1,11 +1,7 @@
 Library Functions Manual {#libconfini}
 ======================================
 
-@copyright GNU Public License v3
-
-@date 2016
-
-# OVERVIEW
+## DESCRIPTION
 
 **libconfini** is a simple INI parsing library with the ability to read disabled entries (i.e., valid entries nested in comments). **libconfini** does not store the data read from an INI file, but rather dispatches it, formatted, to a custom listener.
 
@@ -13,7 +9,7 @@ The code is written in C and does not depend on any particular library, except f
 
 If you want to start to learn directly from the code, you can find partially self-documented sample usages of **libconfini** under `/usr/share/doc/libconfini/examples/`.
 
-# WHAT IS AN INI FILE
+## WHAT IS AN INI FILE
 
 INI files were introduced with the early versions of Microsoft Windows, where the .ini file name extension stood for INItialization. An INI file can be considered as a string representation of a tree object, with new lines used as delimiters between nodes. A typical INI file is a plain text file looking like the following example:
 
@@ -255,7 +251,7 @@ A disabled entry is either a section or a key that has been nested inside a comm
 
 The encodings currently supported by **libconfini** are ASCII and UTF-8. In case the INI file is case-insensitive with respect to keys and section names, **libconfini** will always convert all ASCII letters to lowercase (except within values) -- _even when these are enclosed within quotes_ -- but will **not** convert non-ASCII code points to lowercase (for instance, `Ā` will not be rendered as `ā`, but will be rather rendered verbatim). _In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names._
 
-# READ AN INI FILE
+## READ AN INI FILE
 
 The syntax of **libconfini**'s main functions is:
 
@@ -297,9 +293,8 @@ int load_ini_path (
 
 where
 
-* Respectively
-  1. `ini_file` in `load_ini_file()` is the `FILE` struct pointing to the INI file
-  2. `path` in `load_ini_path()` is the path where the INI file is located (pointer to a char array, a.k.a. a "C string")
+* `ini_file` in `load_ini_file()` is the `FILE` struct pointing to the INI file
+* `path` in `load_ini_path()` is the path where the INI file is located (pointer to a char array, a.k.a. a "C string")
 * `format` is a bitfield structure defining the syntax of the INI file (see the `IniFormat` struct)
 * `f_init` is the function that will be invoked _before_ any dispatching begins -- it can be `NULL`
 * `f_foreach` is the callback function that will be invoked for each member of the INI file - it can be `NULL`
