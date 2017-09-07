@@ -1,6 +1,4 @@
 # List of source files containing translatable strings.
 
-MAN.md
-README.md
 src/confini.h
 src/confini.c
