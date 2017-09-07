@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv='content-type' value='text/html;charset=utf8'>
   <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
-  <title>libconfini</title>
+  <title>Library Functions Manual {#libconfini}</title>
   <style type='text/css' media='all'>
   /* style: man */
   body#manpage {margin:0}
@@ -53,7 +53,6 @@
   <div class='mp' id='man'>
 
   <div class='man-navigation' style='display:none'>
-    <a href="#NAME">NAME</a>
     <a href="#DESCRIPTION">DESCRIPTION</a>
     <a href="#WHAT-IS-AN-INI-FILE">WHAT IS AN INI FILE</a>
     <a href="#SUPPORTED-SYNTAXES">SUPPORTED SYNTAXES</a>
@@ -77,10 +76,7 @@
     <li class='tr'>libconfini</li>
   </ol>
 
-  <h2 id="NAME">NAME</h2>
-<p class="man-name">
-  <code>libconfini</code>
-</p>
+  <h1>Library Functions Manual {#libconfini}</h1>
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
 
 <p><strong>libconfini</strong> is a simple INI parsing library with the ability to read disabled entries (i.e., valid entries nested in comments). <strong>libconfini</strong> does not store the data read from an INI file, but rather dispatches it, formatted, to a custom listener.</p>
@@ -412,12 +408,16 @@ int ini_listener (IniDispatch *dispatch, void *user_data) {
 
 int main () {
 
-  if (load_ini_file(fopen("my_file.conf", "r"), INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
+  FILE * const ini_file = fopen("my_file.conf", "r");
+
+  if (load_ini_file(ini_file, INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;
 
   }
+
+  fclose(ini_file);
 
   return 0;
 
@@ -430,7 +430,7 @@ int main () {
 
 <p>The function <code>load_ini_file()</code> dynamically allocates at once the whole INI file into the heap, and the two structures <code>IniStatistics</code> and <code>IniDispatch</code> into the stack. All the members of the INI file are then dispatched to the listener <code>f_foreach()</code>. Finally the allocated memory gets automatically freed.</p>
 
-<p>Because of this mechanism <em>it is very important that all the dispatched data be <strong>immediately</strong> copied by the user (when needed), and no pointers to the passed data be saved</em>: after the end of the function <code>load_ini_file()</code> or <code>load_ini_path()</code> all the allocated data will be destroyed indeed.</p>
+<p>Because of this mechanism <em>it is very important that all the dispatched data be <strong>immediately</strong> copied by the user (when needed), and no pointers to the passed data be saved</em>: after the end of the functions <code>load_ini_file()</code> / <code>load_ini_path()</code> all the allocated data will be destroyed indeed.</p>
 
 <p>Within a dispatching cycle, the structure containing each dispatch (<code>IniDispatch *dispatch</code>) is always the same <code>struct</code> that gets constantly updated with new information.</p>
 
@@ -704,7 +704,7 @@ my_format.disabled_can_be_implicit = NO;
 
 <h2 id="PERFORMANCE">PERFORMANCE</h2>
 
-<p>The the algorithms used by <strong>libconfini</strong> stand in a delicate equilibrium between flexibility, speed and code readability, with flexibility as primary target. Performance can vary with the format used for parsing an INI file, but in most of the cases is not a concern.</p>
+<p>The algorithms used by <strong>libconfini</strong> stand in a delicate equilibrium between flexibility, speed and code readability, with flexibility as primary target. Performance can vary with the format used to parse an INI file, but in most of the cases is not a concern.</p>
 
 <p>One can measure the performance of the library by doing something like:</p>
 
@@ -755,7 +755,7 @@ Number of bytes parsed per second: 20315930.139089
 
 
   <ol class='man-decor man-foot man foot'>
-    <li class='tl'>madmurphy</li>
+    <li class='tl'>Stefano Gioffré</li>
     <li class='tc'>September 2017</li>
     <li class='tr'>libconfini</li>
   </ol>

@@ -360,12 +360,16 @@ int ini_listener (IniDispatch *dispatch, void *user_data) {
 
 int main () {
 
-  if (load_ini_file(fopen("my_file.conf", "r"), INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
+  FILE * const ini_file = fopen("my_file.conf", "r");
+
+  if (load_ini_file(ini_file, INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;
 
   }
+
+  fclose(ini_file);
 
   return 0;
 
@@ -379,7 +383,7 @@ The function `load_ini_path()` is a shortcut to the function `load_ini_file()` u
 
 The function `load_ini_file()` dynamically allocates at once the whole INI file into the heap, and the two structures `IniStatistics` and `IniDispatch` into the stack. All the members of the INI file are then dispatched to the listener `f_foreach()`. Finally the allocated memory gets automatically freed.
 
-Because of this mechanism _it is very important that all the dispatched data be **immediately** copied by the user (when needed), and no pointers to the passed data be saved_: after the end of the function `load_ini_file()` or `load_ini_path()` all the allocated data will be destroyed indeed.
+Because of this mechanism _it is very important that all the dispatched data be **immediately** copied by the user (when needed), and no pointers to the passed data be saved_: after the end of the functions `load_ini_file()` / `load_ini_path()` all the allocated data will be destroyed indeed.
 
 Within a dispatching cycle, the structure containing each dispatch (`IniDispatch *dispatch`) is always the same `struct` that gets constantly updated with new information.
 
@@ -655,7 +659,7 @@ It may be required that the function `ini_unquote()` be applied to each part of 
 
 ## PERFORMANCE
 
-The the algorithms used by **libconfini** stand in a delicate equilibrium between flexibility, speed and code readability, with flexibility as primary target. Performance can vary with the format used for parsing an INI file, but in most of the cases is not a concern.
+The algorithms used by **libconfini** stand in a delicate equilibrium between flexibility, speed and code readability, with flexibility as primary target. Performance can vary with the format used to parse an INI file, but in most of the cases is not a concern.
 
 One can measure the performance of the library by doing something like:
 

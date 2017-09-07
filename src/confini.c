@@ -127,7 +127,7 @@
 
 	@brief	 A list of possible string representations of boolean pairs
 
-	There can be infinite pairs here, but be aware of the lazy behavior of ini_get_lazy_bool().
+	There may be infinite pairs here, but be aware of the lazy behavior of ini_get_lazy_bool().
 	Everything lowercase in this list!
 
 **/
@@ -141,7 +141,7 @@ static const char * const _LIBCONFINI_BOOLEANS_[][2] = {
 static const char _LIBCONFINI_UTF8_BOM_[] = { 0xEF, 0xBB, 0xBF };
 
 /*
-	This can be any character, in theory... But after the left-trim of each line a leading
+	This may be any character, in theory... But after the left-trim of each line a leading
 	space works pretty well as metacharacter.
 */
 #define _LIBCONFINI_INLINE_MARKER_ '\t'
@@ -324,7 +324,7 @@ static inline size_t urtrim_s (const char * const urt_s, const size_t length) {
 
 /**
 
-	@brief			Converts a string to lower case
+	@brief			Converts an ASCII string to lower case
 	@param			string		The target string
 	@return			Nothing
 
@@ -943,7 +943,7 @@ static uint8_t get_type_as_active (
 	@brief			Examines a (single-/multi- line) segment and checks whether it contains sub-segments.
 	@param			segment		Segment to examine
 	@param			format		The format of the INI file
-	@return			Number of sub-segments found including itself
+	@return			Number of segments found
 
 **/
 static size_t further_cuts (char * const segment, const IniFormat format) {
@@ -1244,8 +1244,6 @@ int load_ini_file (
 
 	#define __N_BYTES__ tmp_size_1
 
-	rewind(ini_file);
-
 	char * const cache = (char *) malloc((__N_BYTES__ + 1) * sizeof(char));
 
 	if (cache == NULL) {
@@ -1256,6 +1254,8 @@ int load_ini_file (
 
 	int return_value = 0;
 
+	rewind(ini_file);
+
 	if (fread(cache, sizeof(char), __N_BYTES__, ini_file) < __N_BYTES__) {
 
 		return_value = CONFINI_EIO;
@@ -1263,7 +1263,6 @@ int load_ini_file (
 
 	}
 
-	fclose(ini_file);
 	cache[__N_BYTES__] = '\0';
 
 	_LIBCONFINI_BOOL_ tmp_bool;
@@ -1274,7 +1273,7 @@ int load_ini_file (
 
 	#define __IS_ESCAPED__ tmp_bool
 	#define __EOL_ID__ abacus
-	#define __MEMBERS__ tmp_size_2
+	#define __N_MEMBERS__ tmp_size_2
 	#define __SHIFT_LEN__ tmp_size_3
 
 	__SHIFT_LEN__ = /* UTF-8 BOM */ *cache == *_LIBCONFINI_UTF8_BOM_ && cache[1] == _LIBCONFINI_UTF8_BOM_[1] && cache[2] == _LIBCONFINI_UTF8_BOM_[2] ? 3 : 0;
@@ -1289,7 +1288,7 @@ int load_ini_file (
 
 	for (
 
-		__MEMBERS__ = 0,
+		__N_MEMBERS__ = 0,
 		__EOL_ID__ = 5,
 		__IS_ESCAPED__ = _LIBCONFINI_FALSE_,
 		node_at = 0,
@@ -1312,7 +1311,7 @@ int load_ini_file (
 			} else {
 
 				cache[idx] = '\0';
-				__MEMBERS__ += further_cuts(cache + ultrim_h(cache, node_at), format);
+				__N_MEMBERS__ += further_cuts(cache + ultrim_h(cache, node_at), format);
 				node_at = idx + 1;
 
 			}
@@ -1345,17 +1344,17 @@ int load_ini_file (
 
 	}
 
-	__MEMBERS__ += further_cuts(cache + ultrim_h(cache, node_at), format);
+	__N_MEMBERS__ += further_cuts(cache + ultrim_h(cache, node_at), format);
 
 	IniStatistics this_doc = {
 		.format = format,
 		.bytes = __N_BYTES__,
-		.members = __MEMBERS__
+		.members = __N_MEMBERS__
 	};
 
 	#undef __N_BYTES__
 	#undef __SHIFT_LEN__
-	#undef __MEMBERS__
+	#undef __N_MEMBERS__
 	#undef __EOL_ID__
 	#undef __IS_ESCAPED__
 
@@ -1748,7 +1747,13 @@ int load_ini_path (
 	void *user_data
 ) {
 
-	return load_ini_file(fopen(path, "r"), format, f_init, f_foreach, user_data);
+	FILE * const ini_file = fopen(path, "r");
+
+	int return_value = load_ini_file(ini_file, format, f_init, f_foreach, user_data);
+
+	fclose(ini_file);
+
+	return return_value;
 
 }
 
@@ -1842,7 +1847,7 @@ void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id) {
 	@param			format			The format of the INI file
 	@return			The new length of the string
 
-	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well. If the	string does
+	Usually @p ini_string comes from an `IniDispatch`, but any other string may be used as well. If the	string does
 	not contain quotes, or if quotes are considered to be normal characters, no changes will be made.
 
 **/
@@ -1918,7 +1923,7 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 	@param			format			The format of the INI file
 	@return			The length of the INI array
 
-	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well.
+	Usually @p ini_string comes from an `IniDispatch`, but any other string may be used as well.
 
 **/
 size_t ini_array_get_length (const char * const ini_string, const char delimiter, const IniFormat format) {
@@ -1989,7 +1994,7 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 	@param			user_data			A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
 
-	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well.
+	Usually @p ini_string comes from an `IniDispatch`, but any other string may be used as well.
 
 **/
 int ini_array_foreach (
@@ -2069,7 +2074,7 @@ int ini_array_foreach (
 	If `INI_ANY_SPACE` (`0`) is used as delimiter one or more different spaces (`/[\t \v\f\n\r]+/`) will always be
 	collapsed to one space (' '), independently of their position.
 
-	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well.
+	Usually @p ini_string comes from an `IniDispatch`, but any other string may be used as well.
 
 **/
 size_t ini_collapse_array (char * const ini_string, const char delimiter, const IniFormat format) {
@@ -2187,7 +2192,7 @@ size_t ini_collapse_array (char * const ini_string, const char delimiter, const 
 	@param			user_data		A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
 
-	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well.
+	Usually @p ini_string comes from an `IniDispatch`, but any other string may be used as well.
 
 **/
 int ini_split_array (
@@ -2263,7 +2268,7 @@ int ini_split_array (
 	@param			return_value		A value that is returned if no matching boolean has been found
 	@return			The matching boolean value (0 or 1) or @p return_value if no boolean has been found
 
-	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well.
+	Usually @p ini_string comes from an `IniDispatch`, but any other string may be used as well.
 
 **/
 signed int ini_get_bool (const char * const ini_string, const signed int return_value) {
@@ -2314,7 +2319,7 @@ signed int ini_get_bool (const char * const ini_string, const signed int return_
 	@param			return_value		A value that is returned if no matching boolean has been found
 	@return			The matching boolean value (0 or 1) or @p return_value if no boolean has been found
 
-	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well.
+	Usually @p ini_string comes from an `IniDispatch`, but any other string may be used as well.
 
 **/
 signed int ini_get_lazy_bool (const char * const ini_string, const signed int return_value) {
