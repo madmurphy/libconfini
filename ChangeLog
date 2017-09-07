@@ -1,10 +1,18 @@
 # Change Log
 
-## [1.3-5] - 2017-05-04
+## [1.4.0] - 2017-09-07
 
 Changes:
 
-* Fix for macOS compilation -- see: https://github.com/madmurphy/libconfini/commit/4c3e6ec0b73ab5a0449cf08d3504f73fdf5c0edd
+* Function `load_ini_file()` now uses a `FILE` structure instead of a path. In order to use a path (a string), the shortcut `load_ini_path()` has been created.
+* Added `#include <stdint.h>` to `confini.c`
+* Moved `#include <stdio.h>` from `confini.c` to `confini.h`
+* `nul` characters found in INI files will be skipped
+* `unsigned long int` replaced with `size_t` in return values of `ini_unquote()`, `ini_array_get_length()` and `ini_collapse_array()`
+* `unsigned int` replaced with `int` in return values of `load_ini_file()`, `ini_array_foreach()` and `ini_split_array()`
+* UTF-8 BOM recognized and skipped
+* Version numbering standardized (`${major}.${minor}.${revision}` instead of `${major}.${minor}-${release}`)
+* Documentation
 
 ## [1.3-4] - 2016-11-10
 

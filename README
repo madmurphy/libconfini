@@ -8,8 +8,6 @@
 
 ## MOTIVATION
 
-I have to confess that I have never had any particular interest in INI files. But on the other hand I always had interest in GNU/Linux.
-
 The motivation behind this library came from the observation that many system applications in GNU/Linux rely on _INI-like_ files (systemd, pacman, networkmanager, etc.), and for many users who approach GNU/Linux for the first time it can be frustrating not to have a GUI for configuring their system. So, I thought, a general .conf/.ini editor for GNOME _in dconf-style_ had to be done.
 
 One obstacle to a GUI editor was that configuration files often contain commented suggestions on how to write key/values pairs, what the default values are, etc.; and these suggestions can make a clear sense when editing a plain text, but normally disappear when the text is parsed by some application. So, eventually, an editor would have to be able to not loose the comments, and also to recognize among comments a disabled (commented) key or an entire disabled section, and being flexible enough to support the numerous INI dialects (multiline INI files, support for single/double quotes, different delimiter symbols, nesting sections, etc.).
@@ -22,4 +20,4 @@ It can be synthetized as a parser smart enough to allow a complete lossless anal
 
 Despite highly configurable and flexible, **libconfini** is still a small piece of work. I really don't know if it will be useful to the community. For sure it does the right job for my editor.
 
-@note For more details, please read the [Library Functions Manual](https://madmurphy.github.io/libconfini/html/libconfini.html) (`man libconfini`) and the manual of the header file (`man confini.h`). The code is available on [GitHub](https://github.com/) under [madmurphy/libconfini](https://github.com/madmurphy/libconfini).
+@note For more details, please read the [Library Functions Manual](@ref libconfini) (`man libconfini`) and the manual of the header file (`man confini.h`). The code is available on [GitHub](https://github.com/) under [madmurphy/libconfini](https://github.com/madmurphy/libconfini).

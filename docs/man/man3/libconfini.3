@@ -1,9 +1,9 @@
-.TH "libconfini" 3 "Sat Nov 5 2016" "libconfini" \" -*- nroff -*-
+.TH "libconfini" 3 "Thu Sep 7 2017" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
-libconfini \- Library Functions Manual 
-
+libconfiniLibrary Functions Manual 
+ \- 
 .PP
 \fBCopyright:\fP
 .RS 4
@@ -20,7 +20,7 @@ GNU Public License v3
 .PP
 \fBlibconfini\fP is a simple INI parsing library with the ability to read disabled entries (i\&.e\&., valid entries nested in comments)\&. \fBlibconfini\fP does not store the data read from an INI file, but rather dispatches it, formatted, to a custom listener\&.
 .PP
-The code is written in C and does not depend on any particular library, except for the C standard libraries \fBstdio\&.h\fP and \fBstdlib\&.h\fP\&.
+The code is written in C and does not depend on any particular library, except for the C standard libraries \fBstdio\&.h\fP, \fBstdlib\&.h\fP and \fBstdint\&.h\fP\&.
 .PP
 If you want to start to learn directly from the code, you can find partially self-documented sample usages of \fBlibconfini\fP under \fC/usr/share/doc/libconfini/examples/\fP\&.
 .PP
@@ -52,7 +52,7 @@ email = mario\&.rossi@example\&.com
 .PP
 .SS "SUPPORTED SYNTAXES"
 .PP
-During the years, several interpretations of INI files appeared\&. In some implementation the colon character (\fC:\fP) has been adopted as delimiter (a typical example under GNU/Linux is \fC/etc/nsswitch\&.conf\fP), in other implementation the space (\fC/[ \\t\\v\\f]+/\fP or \fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) has been used instead (see for example \fC/etc/host\&.conf\fP), and so on\&. This library has been born as a general INI parser for GNU, so the support of most of the main \fIINI dialects\fP has been implemented within it\&.
+During the years, several interpretations of INI files appeared\&. In some implementation the colon character (\fC:\fP) has been adopted as delimiter (a typical example under GNU/Linux is \fC/etc/nsswitch\&.conf\fP), in other implementation the space (\fC/[ \\t\\v\\f]+/\fP or \fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) has been used instead (see for example \fC/etc/host\&.conf\fP), and so on\&. This library has been born as a general INI parser for GNU, so the support of most of the main INI dialects has been implemented within it\&.
 .PP
 Especially in Microsoft Windows, a more radical syntax variation has been implemented: the use of the semicolon, instead of new lines, as node delimiter, as in the following example:
 .PP
@@ -100,7 +100,7 @@ foo = "bar"
 .fi
 .PP
 .PP
-The \fBkey part\fP can contain any character, except the delimiter (which can be enclosed within quotes for not beeing considered as such)\&. The new line sequences must be escaped (ECMAScript regular expression: \fC/\\\\(?:\\n\\r?|\\r\\n?)/\fP)\&.
+The \fBkey part\fP can contain any character, except the delimiter (which can be enclosed within quotes for not beeing considered as such)\&. Internal new line sequences must be escaped (ECMAScript regular expression: \fC/\\\\(?:\\n\\r?|\\r\\n?)/\fP)\&.
 .PP
 If the \fBkey part\fP part is missing the element is considered of unknown type, i\&.e\&., \fCINI_UNKNOWN\fP -- see enum \fC\fBIniNodeType\fP\fP -- (example: \fC= foo\fP)\&. If the \fBvalue part\fP is missing the key element is considered empty (example: \fCfoo =\fP)\&. If the delimiter is missing, according to some formats the key element is considered to be an \fIimplicit key\fP -- typically representing the boolean \fCTRUE\fP (example: \fCfoo\fP)\&. For instance, in the following example from \fC/etc/pacman\&.conf\fP, \fCIgnorePkg\fP is an empty key, while \fCColor\fP is an implicit key (representing a \fCTRUE\fP boolean -- i\&.e\&., \fCColor = YES\fP):
 .PP
@@ -115,7 +115,7 @@ LocalFileSigLevel = Optional
 .fi
 .PP
 .PP
-The \fBvalue\fP part can contain typed data, usually: a boolean (booleans supported by \fBlibconfini\fP are: \fCNO\fP/\fCYES\fP, \fCFALSE\fP/\fCTRUE\fP, \fC0\fP/\fC1\fP), a string, a number, or an array (typically with commas as members delimiters -- example: \fCpaths = /etc, /usr, '/home/john/Personal Data'\fP)\&. The new line sequences must be escaped (ECMAScript regular expression: \fC/\\\\(?:\\n\\r?|\\r\\n?)/\fP)\&.
+The \fBvalue\fP part can contain typed data, usually: a boolean (booleans supported by \fBlibconfini\fP are: \fCNO\fP/\fCYES\fP, \fCFALSE\fP/\fCTRUE\fP, \fC0\fP/\fC1\fP), a string, a number, or an array (typically with commas as members delimiters -- example: \fCpaths = /etc, /usr, '/home/john/Personal Data'\fP)\&. Internal new line sequences must be escaped (ECMAScript regular expression: \fC/\\\\(?:\\n\\r?|\\r\\n?)/\fP)\&.
 .PP
 .PP
 .nf
@@ -225,7 +225,7 @@ comedy3 = The Merchant of Venice
 .PP
 .SS "ESCAPING SEQUENCES"
 .PP
-For maximizing the flexibility of the data, only four escaping sequences are supported by \fBlibconfini\fP: \fC\\'\fP, \fC\\"\fP, \fC\\\\\fP and the multiline escaping sequence (ECMAScript regular expression: \fC/\\\\(?:\\n\\r?|\\r\\n?)/\fP)\&.
+In order to maximize the flexibility of the data, only four escaping sequences are supported by \fBlibconfini\fP: \fC\\'\fP, \fC\\"\fP, \fC\\\\\fP and the multiline escaping sequence (ECMAScript regular expression: \fC/\\\\(?:\\n\\r?|\\r\\n?)/\fP)\&.
 .PP
 The first three escaping sequences are left untouched by all functions except \fC\fBini_unquote()\fP\fP\&. Nevertheless, the characters \fC'\fP, \fC"\fP and \fC\\\fP can determine different behaviors during the parsing depending on whether they are escaped or unescaped\&. For instance, the string \fC#johnsmith\fP in the following example will not be parsed as a comment:
 .PP
@@ -237,7 +237,7 @@ comment = "hey! have a look at my hashtag #johnsmith !"
 .fi
 .PP
 .PP
-A particular case of escaping sequence is the multiline escaping sequence (\fC/\\\\(?:\\n\\r?|\\r\\n?)/\fP), which gets \fIalways automatically unescaped by \fBlibconfini\fP\fP\&.
+A particular case of escaping sequence is the multiline escaping sequence (\fC/\\\\(?:\\n\\r?|\\r\\n?)/\fP), which in multiline INI files gets \fIimmediately unescaped by \fBlibconfini\fP\fP\&.
 .PP
 .PP
 .nf
@@ -265,17 +265,39 @@ A disabled entry is either a section or a key that has been nested inside a comm
 .PP
 .SS "ENCODINGS"
 .PP
-The encodings currently supported by \fBlibconfini\fP are ASCII and UTF-8 (without BOM)\&. In case the INI file is case-insensitive with respect to keys and section names, \fBlibconfini\fP will always convert all ASCII letters to lowercase (except within values) -- \fIeven when these are enclosed within quotes\fP -- but will \fBnot\fP convert non-ASCII code points to lowercase (for instance, \fCĀ\fP will not be rendered as \fCā\fP, but will be rather rendered verbatim)\&. \fIIn general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names\&.\fP
+The encodings currently supported by \fBlibconfini\fP are ASCII and UTF-8\&. In case the INI file is case-insensitive with respect to keys and section names, \fBlibconfini\fP will always convert all ASCII letters to lowercase (except within values) -- \fIeven when these are enclosed within quotes\fP -- but will \fBnot\fP convert non-ASCII code points to lowercase (for instance, \fCĀ\fP will not be rendered as \fCā\fP, but will be rather rendered verbatim)\&. \fIIn general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names\&.\fP
 .PP
 .SH "READ AN INI FILE"
 .PP
 .PP
-The syntax of \fBlibconfini\fP's main function is:
+The syntax of \fBlibconfini\fP's main functions is:
+.PP
+#1
 .PP
 .PP
 .nf
-unsigned int load_ini_file (
-    const char *path,
+int load_ini_file (
+    FILE * ini_file,
+    IniFormat format,
+    int (*f_init)(
+        IniStatistics *statistics,
+        void *user_data
+    ),
+    int (*f_foreach)(
+        IniDispatch *dispatch,
+        void *user_data
+    ),
+    void *user_data
+)
+.fi
+.PP
+.PP
+#2
+.PP
+.PP
+.nf
+int load_ini_path (
+    char *path,
     IniFormat format,
     int (*f_init)(
         IniStatistics *statistics,
@@ -293,7 +315,13 @@ unsigned int load_ini_file (
 where
 .PP
 .IP "\(bu" 2
-\fCpath\fP is the path where the INI file is located (pointer to a char array, a\&.k\&.a\&. a 'C string')
+Respectively
+.IP "  1." 6
+\fCini_file\fP in \fC\fBload_ini_file()\fP\fP is the \fCFILE\fP struct pointing to the INI file
+.IP "  2." 6
+\fCpath\fP in \fC\fBload_ini_path()\fP\fP is the path where the INI file is located (pointer to a char array, a\&.k\&.a\&. a 'C string')
+.PP
+
 .IP "\(bu" 2
 \fCformat\fP is a bitfield structure defining the syntax of the INI file (see the \fC\fBIniFormat\fP\fP struct)
 .IP "\(bu" 2
@@ -309,7 +337,7 @@ The function \fCf_init()\fP is invoked with two arguments:
 .IP "\(bu" 2
 \fCstatistics\fP -- a pointer to an \fC\fBIniStatistics\fP\fP object containing some properties about the file read (like its size in bytes and the number of its members)
 .IP "\(bu" 2
-\fCuser_data\fP -- a pointer to the custom argument previously passed to the \fC\fBload_ini_file()\fP\fP function
+\fCuser_data\fP -- a pointer to the custom argument previously passed to the \fC\fBload_ini_file()\fP\fP / \fC\fBload_ini_path()\fP\fP functions
 .PP
 .PP
 The function \fCf_foreach()\fP is invoked with two arguments:
@@ -317,14 +345,78 @@ The function \fCf_foreach()\fP is invoked with two arguments:
 .IP "\(bu" 2
 \fCdispatch\fP -- a pointer to an \fC\fBIniDispatch\fP\fP object containing the parsed member of the INI file
 .IP "\(bu" 2
-\fCuser_data\fP -- a pointer to the custom argument previously passed to the \fC\fBload_ini_file()\fP\fP function
+\fCuser_data\fP -- a pointer to the custom argument previously passed to the \fC\fBload_ini_file()\fP\fP / \fC\fBload_ini_path()\fP\fP functions
+.PP
+.PP
+.SS "BASIC EXAMPLES"
+.PP
+#1
+.PP
+.PP
+.nf
+#include <stdio\&.h>
+#include <confini\&.h>
+
+int ini_listener (IniDispatch *dispatch, void *user_data) {
+
+  printf("DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n", dispatch->data, dispatch->value, dispatch->type);
+
+  return 0;
+
+}
+
+int main () {
+
+  if (load_ini_path("my_file\&.conf", INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
+
+    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    return 1;
+
+  }
+
+  return 0;
+
+}
+.fi
+.PP
+.PP
+#2
+.PP
+.PP
+.nf
+#include <stdio\&.h>
+#include <confini\&.h>
+
+int ini_listener (IniDispatch *dispatch, void *user_data) {
+
+  printf("DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n", dispatch->data, dispatch->value, dispatch->type);
+
+  return 0;
+
+}
+
+int main () {
+
+  if (load_ini_file(fopen("my_file\&.conf", "r"), INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
+
+    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    return 1;
+
+  }
+
+  return 0;
+
+}
+.fi
 .PP
 .PP
 .SS "HOW IT WORKS"
 .PP
+The function \fC\fBload_ini_path()\fP\fP is a shortcut to the function \fC\fBload_ini_file()\fP\fP using a path instead of a \fCFILE\fP struct\&.
+.PP
 The function \fC\fBload_ini_file()\fP\fP dynamically allocates at once the whole INI file into the heap, and the two structures \fC\fBIniStatistics\fP\fP and \fC\fBIniDispatch\fP\fP into the stack\&. All the members of the INI file are then dispatched to the listener \fCf_foreach()\fP\&. Finally the allocated memory gets automatically freed\&.
 .PP
-Because of this mechanism \fIit is very important that all the dispatched data be \fBimmediately\fP copied by the user, if needed, and no pointers to the passed data be saved\fP: after the end of the \fC\fBload_ini_file()\fP\fP function all the allocated data will be destroyed indeed\&.
+Because of this mechanism \fIit is very important that all the dispatched data be \fBimmediately\fP copied by the user (when needed), and no pointers to the passed data be saved\fP: after the end of the function \fC\fBload_ini_file()\fP\fP or \fC\fBload_ini_path()\fP\fP all the allocated data will be destroyed indeed\&.
 .PP
 Within a dispatching cycle, the structure containing each dispatch (\fC\fBIniDispatch\fP *dispatch\fP) is always the same \fCstruct\fP that gets constantly updated with new information\&.
 .PP
@@ -363,7 +455,7 @@ int ini_listener (IniDispatch *dispatch, void *user_data) {
 
 int main () {
 
-  if (load_ini_file("my_file\&.ini", INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
+  if (load_ini_path("my_file\&.ini", INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;
@@ -437,7 +529,7 @@ int main () {
   /* Without setting this, implicit keys will be anyway considered empty: */
   my_format\&.implicit_is_not_empty = YES;
 
-  if (load_ini_file("my_file\&.conf", my_format, NULL, ini_listener, NULL)) {
+  if (load_ini_path("my_file\&.conf", my_format, NULL, ini_listener, NULL)) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;
@@ -452,7 +544,7 @@ int main () {
 .PP
 .SS "RENDERING"
 .PP
-The output strings dispatched by \fBlibconfini\fP will follow some formatting rules depending on their role within the INI file\&. First, the new line sequences will be unescaped, then
+The output strings dispatched by \fBlibconfini\fP will follow some formatting rules depending on their role within the INI file\&. First, the multiline sequences will be unescaped, then
 .PP
 .IP "\(bu" 2
 \fBSection paths\fP will be rendered according to ECMAScript \fCsection_name\&.replace(/\\\&.*\\s*$|(?:\\s*(\\\&.))+\\s*|^\\s+/g, '$1')\&.replace(/\\s+/g, ' ')\fP -- within single or double quotes, if active, the text will be rendered verbatim
@@ -498,7 +590,7 @@ int main () {
 
   struct size_check check;
 
-  if (load_ini_file("my_file\&.ini", INI_DEFAULT_FORMAT, ini_init, ini_listener, &check)) {
+  if (load_ini_path("my_file\&.ini", INI_DEFAULT_FORMAT, ini_init, ini_listener, &check)) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;
@@ -536,7 +628,7 @@ For a correct use of this library it is fundamental to understand the \fC\fBIniF
 .PP
 When an INI file is parsed it is parsed according to a format\&. The \fC\fBIniFormat\fP\fP bitfield is a description of such format\&.
 .PP
-Each format can be represented also as a univocal 24-bit unsigned integer\&. For converting an \fC\fBIniFormat\fP\fP to an unsigned integer and vice versa please see \fC\fBini_format_get_id()\fP\fP, \fC\fBini_format_set_to_id()\fP\fP and \fC\fBIniFormatId\fP\fP\&.
+Each format can be represented also as a univocal 24-bit unsigned integer\&. In order to convert an \fC\fBIniFormat\fP\fP to an unsigned integer and vice versa please see \fC\fBini_format_get_id()\fP\fP, \fC\fBini_format_set_to_id()\fP\fP and \fC\fBIniFormatId\fP\fP\&.
 .PP
 .SS "THE MODEL FORMAT"
 .PP
@@ -576,7 +668,7 @@ my_format\&.disabled_can_be_implicit = NO;
 .PP
 .SS "THE \fC\fBIniStatistics\fP\fP AND \fC\fBIniDispatch\fP\fP STRUCTURES"
 .PP
-When the \fC\fBload_ini_file()\fP\fP function reads an INI file, it dispatches the file content to the \fCf_foreach()\fP listener\&. Before the dispatching begins some statistics about the parsed file can be dispatched to the \fCf_init()\fP listener (if this is non-\fCNULL\fP)\&.
+When the function \fC\fBload_ini_file()\fP\fP / \fC\fBload_ini_path()\fP\fP reads an INI file, it dispatches the file content to the \fCf_foreach()\fP listener\&. Before the dispatching begins some statistics about the parsed file can be dispatched to the \fCf_init()\fP listener (if this is non-\fCNULL\fP)\&.
 .PP
 The information passed to \fCf_init()\fP is passed through an \fC\fBIniStatistics\fP\fP structure, while the information passed to \fCf_foreach()\fP is passed through an \fC\fBIniDispatch\fP\fP structure\&.
 .PP
@@ -618,7 +710,7 @@ The function \fC\fBini_unquote()\fP\fP may be useful for key names enclosed with
 .PP
 .SS "FORMATTING THE SECTION PATHS"
 .PP
-For retrieving the parts of a section path the functions \fC\fBini_array_get_length()\fP\fP, \fC\fBini_array_foreach()\fP\fP and \fC\fBini_split_array()\fP\fP can be used with '\&.' as delimiter\&. Note that section paths dispatched by \fBlibconfini\fP are \fIalways\fP collapsed arrays, therefore calling the function \fC\fBini_collapse_array()\fP\fP on them will have no effects\&.
+In order to retrieve the parts of a section path the functions \fC\fBini_array_get_length()\fP\fP, \fC\fBini_array_foreach()\fP\fP and \fC\fBini_split_array()\fP\fP can be used with '\&.' as delimiter\&. Note that section paths dispatched by \fBlibconfini\fP are \fIalways\fP collapsed arrays, therefore calling the function \fC\fBini_collapse_array()\fP\fP on them will have no effects\&.
 .PP
 It may be required that the function \fC\fBini_unquote()\fP\fP be applied to each part of a section path, depending on the content and the format of the INI file\&.
 .PP
@@ -651,7 +743,7 @@ int main () {
   clock_t start, end;
   IniFormat my_format = INI_DEFAULT_FORMAT;
   start = clock();
-  if (load_ini_file("big_ini_file\&.conf", my_format, get_ini_size, empty_listener, &bytes)) {
+  if (load_ini_path("big_ini_file\&.conf", my_format, get_ini_size, empty_listener, &bytes)) {
     return 1;
   }
   end = clock();

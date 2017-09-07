@@ -87,7 +87,7 @@ int main () {
 	ini_set_implicit_value("YES", 0);
 
 	/* Load INI file */
-	if (load_ini_file("example.conf", my_format, print_ini_stats, my_ini_listener, &my_other)) {
+	if (load_ini_path("example.conf", my_format, print_ini_stats, my_ini_listener, &my_other)) {
 
 		fprintf(stderr, "Sorry, something went wrong :-(\n");
 		return 1;

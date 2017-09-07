@@ -10,8 +10,8 @@
 
 **/
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "confini.h"
 
 
@@ -105,11 +105,6 @@
 /* ALIASES */
 
 #define _LIBCONFINI_BOOL_ unsigned char
-#define _LIBCONFINI_BYTE_ unsigned char
-
-/* _LIBCONFINI_SIZE_ must be able to express at least the size of an INI file */
-#define _LIBCONFINI_SIZE_ unsigned long int
-
 #define _LIBCONFINI_FALSE_ 0
 #define _LIBCONFINI_TRUE_ 1
 #define _LIBCONFINI_BACKSLASH_ '\\'
@@ -130,7 +125,7 @@
 
 /**
 
-	@brief A list of possible string representations of boolean pairs
+	@brief	 A list of possible string representations of boolean pairs
 
 	There can be infinite pairs here, but be aware of the lazy behavior of ini_get_lazy_bool().
 	Everything lowercase in this list!
@@ -141,6 +136,9 @@ static const char * const _LIBCONFINI_BOOLEANS_[][2] = {
 	{ "false", "true" },
 	{ "0", "1" }
 };
+
+/** @brief	 UTF-8 BOM **/
+static const char _LIBCONFINI_UTF8_BOM_[] = { 0xEF, 0xBB, 0xBF };
 
 /*
 	This can be any character, in theory... But after the left-trim of each line a leading
@@ -160,8 +158,8 @@ static const char _LIBCONFINI_SPACES_[] = { _LIBCONFINI_SIMPLE_SPACE_, '\t', '\f
 #define _LIBCONFINI_NO_EOL_ 4
 #define _LIBCONFINI_WITH_EOL_ 6
 
-static inline _LIBCONFINI_BOOL_ is_some_space (const char chr, const _LIBCONFINI_BYTE_ depth) {
-	_LIBCONFINI_BYTE_ idx;
+static inline _LIBCONFINI_BOOL_ is_some_space (const char chr, const uint8_t depth) {
+	uint8_t idx;
 	for (idx = 0; idx < depth && chr != _LIBCONFINI_SPACES_[idx]; idx++);
 	return idx < depth;
 }
@@ -176,8 +174,8 @@ static inline _LIBCONFINI_BOOL_ is_some_space (const char chr, const _LIBCONFINI
 	@return			The offset of the first non-space character
 
 **/
-static inline _LIBCONFINI_SIZE_ ltrim_s (const char * const lt_s, const _LIBCONFINI_SIZE_ start_from, const _LIBCONFINI_BYTE_ depth) {
-	_LIBCONFINI_SIZE_ lt_i = start_from;
+static inline size_t ltrim_s (const char * const lt_s, const size_t start_from, const uint8_t depth) {
+	size_t lt_i = start_from;
 	for (; lt_s[lt_i] && is_some_space(lt_s[lt_i], depth); lt_i++);
 	return lt_i;
 }
@@ -192,8 +190,8 @@ static inline _LIBCONFINI_SIZE_ ltrim_s (const char * const lt_s, const _LIBCONF
 	@return			The offset of the first non-space character
 
 **/
-static inline _LIBCONFINI_SIZE_ ltrim_h (char * const lt_s, const _LIBCONFINI_SIZE_ start_from, const _LIBCONFINI_BYTE_ depth) {
-	_LIBCONFINI_SIZE_ lt_i = start_from;
+static inline size_t ltrim_h (char * const lt_s, const size_t start_from, const uint8_t depth) {
+	size_t lt_i = start_from;
 	for (; lt_s[lt_i] && is_some_space(lt_s[lt_i], depth); lt_s[lt_i++] = '\0');
 	return lt_i;
 }
@@ -207,10 +205,10 @@ static inline _LIBCONFINI_SIZE_ ltrim_h (char * const lt_s, const _LIBCONFINI_SI
 	@return			The offset of the first non-space character
 
 **/
-static inline _LIBCONFINI_SIZE_ ultrim_h (char * const ult_s, const _LIBCONFINI_SIZE_ start_from) {
+static inline size_t ultrim_h (char * const ult_s, const size_t start_from) {
 
-	_LIBCONFINI_BYTE_ abacus;
-	_LIBCONFINI_SIZE_ ult_i = start_from;
+	uint8_t abacus;
+	size_t ult_i = start_from;
 
 	/*
 
@@ -259,8 +257,8 @@ static inline _LIBCONFINI_SIZE_ ultrim_h (char * const ult_s, const _LIBCONFINI_
 	@return			The length of the string until the last non-space character
 
 **/
-static inline _LIBCONFINI_SIZE_ rtrim_s (const char * const rt_s, const _LIBCONFINI_SIZE_ length, const _LIBCONFINI_BYTE_ depth) {
-	_LIBCONFINI_SIZE_ rt_l = length;
+static inline size_t rtrim_s (const char * const rt_s, const size_t length, const uint8_t depth) {
+	size_t rt_l = length;
 	for (; rt_l > 0 && is_some_space(rt_s[rt_l - 1], depth); rt_l--);
 	return rt_l;
 }
@@ -275,8 +273,8 @@ static inline _LIBCONFINI_SIZE_ rtrim_s (const char * const rt_s, const _LIBCONF
 	@return			The length of the string until the last non-space character
 
 **/
-static inline _LIBCONFINI_SIZE_ rtrim_h (char * const rt_s, const _LIBCONFINI_SIZE_ length, const _LIBCONFINI_BYTE_ depth) {
-	_LIBCONFINI_SIZE_ rt_l = length;
+static inline size_t rtrim_h (char * const rt_s, const size_t length, const uint8_t depth) {
+	size_t rt_l = length;
 	for (; rt_l > 0 && is_some_space(rt_s[rt_l - 1], depth); rt_s[--rt_l] = '\0');
 	return rt_l;
 }
@@ -290,9 +288,9 @@ static inline _LIBCONFINI_SIZE_ rtrim_h (char * const rt_s, const _LIBCONFINI_SI
 	@return			The length of the string until the last non-space character
 
 **/
-static inline _LIBCONFINI_SIZE_ urtrim_s (const char * const urt_s, const _LIBCONFINI_SIZE_ length) {
+static inline size_t urtrim_s (const char * const urt_s, const size_t length) {
 
-	_LIBCONFINI_SIZE_ urt_l = length;
+	size_t urt_l = length;
 
 	/*
 
@@ -305,7 +303,7 @@ static inline _LIBCONFINI_SIZE_ urtrim_s (const char * const urt_s, const _LIBCO
 
 	for (
 
-		_LIBCONFINI_BYTE_ abacus = 1;
+		uint8_t abacus = 1;
 
 			(
 				abacus	=	urt_l < 1 ? 0
@@ -401,9 +399,9 @@ static inline _LIBCONFINI_BOOL_ is_forget_char (const char chr, const IniFormat 
 					been not found
 
 **/
-static inline _LIBCONFINI_SIZE_ get_delimiter_pos (const char * const str, const _LIBCONFINI_SIZE_ len, const IniFormat format) {
+static inline size_t get_delimiter_pos (const char * const str, const size_t len, const IniFormat format) {
 
-	_LIBCONFINI_SIZE_ idx = 0;
+	size_t idx = 0;
 
 	/*
 
@@ -419,7 +417,7 @@ static inline _LIBCONFINI_SIZE_ get_delimiter_pos (const char * const str, const
 
 	for (
 
-		_LIBCONFINI_BYTE_ abacus = (format.no_double_quotes << 1) | format.no_single_quotes;
+		uint8_t abacus = (format.no_double_quotes << 1) | format.no_single_quotes;
 
 			idx < len && (
 				(abacus & 12) || !(
@@ -452,11 +450,11 @@ static inline _LIBCONFINI_SIZE_ get_delimiter_pos (const char * const str, const
 	@return			The new length of the string
 
 **/
-static _LIBCONFINI_SIZE_ unescape_cr_lf (char * const str, const _LIBCONFINI_SIZE_ len, const _LIBCONFINI_BOOL_ is_disabled, const IniFormat format) {
+static size_t unescape_cr_lf (char * const str, const size_t len, const _LIBCONFINI_BOOL_ is_disabled, const IniFormat format) {
 
-	_LIBCONFINI_SIZE_ idx, iter, lshift;
+	size_t idx, iter, lshift;
 	_LIBCONFINI_BOOL_ is_escaped = _LIBCONFINI_FALSE_;
-	_LIBCONFINI_BYTE_ cr_or_lf = 5;
+	uint8_t cr_or_lf = 5;
 
 	for (is_escaped = _LIBCONFINI_FALSE_, idx = 0, lshift = 0; idx < len; idx++) {
 
@@ -520,7 +518,7 @@ static _LIBCONFINI_SIZE_ unescape_cr_lf (char * const str, const _LIBCONFINI_SIZ
 	@return			The new length of the string
 
 **/
-static _LIBCONFINI_SIZE_ collapse_spaces (char * const str, const IniFormat format) {
+static size_t collapse_spaces (char * const str, const IniFormat format) {
 
 	/*
 
@@ -535,11 +533,11 @@ static _LIBCONFINI_SIZE_ collapse_spaces (char * const str, const IniFormat form
 
 	*/
 
-	_LIBCONFINI_BYTE_	abacus	=	(is_some_space(*str, _LIBCONFINI_WITH_EOL_) ? 32 : 0) |
+	uint8_t	abacus	=	(is_some_space(*str, _LIBCONFINI_WITH_EOL_) ? 32 : 0) |
 									(format.no_double_quotes << 1) |
 									format.no_single_quotes;
 
-	_LIBCONFINI_SIZE_ idx, lshift;
+	size_t idx, lshift;
 
 	for (lshift = 0, idx = 0; str[idx]; idx++) {
 
@@ -597,10 +595,9 @@ static _LIBCONFINI_SIZE_ collapse_spaces (char * const str, const IniFormat form
 	will be removed. Single quotes or double quotes (if active and present) prevent changes.
 
 **/
-static _LIBCONFINI_SIZE_ sanitize_section_name (char * const str, const IniFormat format) {
+static size_t sanitize_section_name (char * const str, const IniFormat format) {
 
-	_LIBCONFINI_SIZE_ idx, lshift;
-	unsigned int abacus;
+	size_t idx, lshift;
 
 	/*
 
@@ -620,7 +617,7 @@ static _LIBCONFINI_SIZE_ sanitize_section_name (char * const str, const IniForma
 
 	*/
 
-	abacus	=	(is_some_space(*str, _LIBCONFINI_WITH_EOL_) ? 256 : 32) |
+	uint16_t abacus	=	(is_some_space(*str, _LIBCONFINI_WITH_EOL_) ? 256 : 32) |
 				(format.no_double_quotes << 1) |
 				format.no_single_quotes;
 
@@ -696,9 +693,9 @@ static _LIBCONFINI_SIZE_ sanitize_section_name (char * const str, const IniForma
 	- In single-line comments: `commstr.replace(/^[\t \v\f]*[#;]+/, "")`
 
 **/
-static _LIBCONFINI_SIZE_ uncomment (char * const commstr, _LIBCONFINI_SIZE_ len, const IniFormat format) {
+static size_t uncomment (char * const commstr, size_t len, const IniFormat format) {
 
-	_LIBCONFINI_SIZE_ lshift, idx;
+	size_t lshift, idx;
 
 	if (format.multiline_entries) {
 
@@ -718,7 +715,7 @@ static _LIBCONFINI_SIZE_ uncomment (char * const commstr, _LIBCONFINI_SIZE_ len,
 
 		/* The comment is multiline */
 
-		_LIBCONFINI_BYTE_ abacus;
+		uint8_t abacus;
 
 		/*
 
@@ -779,9 +776,9 @@ static _LIBCONFINI_SIZE_ uncomment (char * const commstr, _LIBCONFINI_SIZE_ len,
 	@return			The node type (see header)
 
 **/
-static _LIBCONFINI_BYTE_ get_type_as_active (
+static uint8_t get_type_as_active (
 	const char * const nodestr,
-	const _LIBCONFINI_SIZE_ len,
+	const size_t len,
 	const _LIBCONFINI_BOOL_ allow_implicit,
 	const IniFormat format
 ) {
@@ -792,8 +789,8 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 
 	}
 
-	unsigned int abacus;
-	_LIBCONFINI_SIZE_ idx;
+	uint16_t abacus;
+	size_t idx;
 
 	if (*nodestr == _LIBCONFINI_OPEN_SECTION_) {
 
@@ -949,11 +946,11 @@ static _LIBCONFINI_BYTE_ get_type_as_active (
 	@return			Number of sub-segments found including itself
 
 **/
-static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat format) {
+static size_t further_cuts (char * const segment, const IniFormat format) {
 
 	_LIBCONFINI_BOOL_ forget_me;
-	_LIBCONFINI_BYTE_ abacus = (format.no_double_quotes << 1) | format.no_single_quotes;
-	_LIBCONFINI_SIZE_ idx, focus_at, unparsable_at, search_at = 0, segm_size = 0;
+	uint8_t abacus = (format.no_double_quotes << 1) | format.no_single_quotes;
+	size_t idx, focus_at, unparsable_at, search_at = 0, segm_size = 0;
 
 	search_for_cuts:
 
@@ -1208,12 +1205,12 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 
 
 
-/* LIBRARY'S MAIN FUNCTION */
+/* LIBRARY'S MAIN FUNCTIONS */
 
 /**
 
 	@brief			Parses an INI file and dispatches its content
-	@param			path			The path of the INI file
+	@param			ini_file		The `FILE` structure pointing to the INI file to parse
 	@param			format			The format of the INI file
 	@param			f_init			The function that will be invoked before the dispatch, or NULL
 	@param			f_foreach		The function that will be invoked for each dispatch, or NULL
@@ -1221,35 +1218,35 @@ static _LIBCONFINI_SIZE_ further_cuts (char * const segment, const IniFormat for
 	@return			Zero for success, otherwise an error code
 
 **/
-unsigned int load_ini_file (
-	const char * const path,
+int load_ini_file (
+	FILE * const ini_file,
 	const IniFormat format,
-	int (* const f_init) (
+	const int (* const f_init) (
 		IniStatistics *statistics,
 		void *init_other
 	),
-	int (* const f_foreach) (
+	const int (* const f_foreach) (
 		IniDispatch *dispatch,
 		void *foreach_other
 	),
 	void *user_data
 ) {
 
-	FILE * const config_file = fopen(path, "r");
-
-	if (config_file == NULL) {
+	if (ini_file == NULL) {
 
 		return CONFINI_ENOENT;
 
 	}
 
-	fseek(config_file, 0, SEEK_END);
+	fseek(ini_file, 0, SEEK_END);
 
-	const _LIBCONFINI_SIZE_ len = ftell(config_file);
+	size_t tmp_size_1 = ftell(ini_file);
 
-	rewind(config_file);
+	#define __N_BYTES__ tmp_size_1
 
-	char * const cache = (char *) malloc((len + 1) * sizeof(char));
+	rewind(ini_file);
+
+	char * const cache = (char *) malloc((__N_BYTES__ + 1) * sizeof(char));
 
 	if (cache == NULL) {
 
@@ -1257,96 +1254,117 @@ unsigned int load_ini_file (
 
 	}
 
-	unsigned int return_value = 0;
+	int return_value = 0;
 
-	if (fread(cache, sizeof(char), len, config_file) < len) {
+	if (fread(cache, sizeof(char), __N_BYTES__, ini_file) < __N_BYTES__) {
 
 		return_value = CONFINI_EIO;
 		goto free_and_exit;
 
 	}
 
-	fclose(config_file);
-	cache[len] = '\0';
+	fclose(ini_file);
+	cache[__N_BYTES__] = '\0';
 
 	_LIBCONFINI_BOOL_ tmp_bool;
-	unsigned int abacus;
-	_LIBCONFINI_SIZE_ tmp_uint, idx, node_at;
+	uint16_t abacus;
+	size_t tmp_size_2, tmp_size_3, idx, node_at;
 
 	/* PART ONE: Examine and isolate each segment */
 
-	#define _LIBCONFINI_IS_ESCAPED_ tmp_bool
-	#define _LIBCONFINI_EOL_ID_ abacus
-	#define _LIBCONFINI_MEMBERS_ tmp_uint
+	#define __IS_ESCAPED__ tmp_bool
+	#define __EOL_ID__ abacus
+	#define __MEMBERS__ tmp_size_2
+	#define __SHIFT_LEN__ tmp_size_3
+
+	__SHIFT_LEN__ = /* UTF-8 BOM */ *cache == *_LIBCONFINI_UTF8_BOM_ && cache[1] == _LIBCONFINI_UTF8_BOM_[1] && cache[2] == _LIBCONFINI_UTF8_BOM_[2] ? 3 : 0;
+
+	/* Alternatively... */
+
+	/*
+
+	_LIBCONFINI_SHIFT_LEN_ = (uint32_t) ((unsigned char) *cache << 16 | ((unsigned char) cache[1]) << 8 | ((unsigned char) cache[2])) == 0xEFBBBF ? 3 : 0;
+
+	*/
 
 	for (
 
-		_LIBCONFINI_MEMBERS_ = 0,
-		_LIBCONFINI_EOL_ID_ = 5,
-		_LIBCONFINI_IS_ESCAPED_ = _LIBCONFINI_FALSE_,
+		__MEMBERS__ = 0,
+		__EOL_ID__ = 5,
+		__IS_ESCAPED__ = _LIBCONFINI_FALSE_,
 		node_at = 0,
-		idx = 0;
+		idx = __SHIFT_LEN__;
 
-			idx < len;
+			idx < __N_BYTES__;
 
 		idx++
 
 	) {
 
-		if (cache[idx] == _LIBCONFINI_SPACES_[_LIBCONFINI_EOL_ID_] || cache[idx] == _LIBCONFINI_SPACES_[_LIBCONFINI_EOL_ID_ ^= 1]) {
+		cache[idx - __SHIFT_LEN__] = cache[idx];
 
-			if (format.multiline_entries < 3 && _LIBCONFINI_IS_ESCAPED_) {
+		if (cache[idx] == _LIBCONFINI_SPACES_[__EOL_ID__] || cache[idx] == _LIBCONFINI_SPACES_[__EOL_ID__ ^= 1]) {
 
-				idx += cache[idx + 1] == _LIBCONFINI_SPACES_[_LIBCONFINI_EOL_ID_ ^ 1];
+			if (format.multiline_entries < 3 && __IS_ESCAPED__) {
+
+				idx += cache[idx + 1] == _LIBCONFINI_SPACES_[__EOL_ID__ ^ 1];
 
 			} else {
 
 				cache[idx] = '\0';
-				_LIBCONFINI_MEMBERS_ += further_cuts(cache + ultrim_h(cache, node_at), format);
+				__MEMBERS__ += further_cuts(cache + ultrim_h(cache, node_at), format);
 				node_at = idx + 1;
 
 			}
 
-			_LIBCONFINI_IS_ESCAPED_ = _LIBCONFINI_FALSE_;
+			__IS_ESCAPED__ = _LIBCONFINI_FALSE_;
 
 		} else if (cache[idx] == _LIBCONFINI_BACKSLASH_) {
 
-			_LIBCONFINI_IS_ESCAPED_ = !_LIBCONFINI_IS_ESCAPED_;
+			__IS_ESCAPED__ = !__IS_ESCAPED__;
+
+		} else if (cache[idx]) {
+
+			__IS_ESCAPED__ = _LIBCONFINI_FALSE_;
 
 		} else {
 
-			/* Replace `NUL` characters in the buffer (if any) with simple spaces */
+			/* Remove `NUL` characters in the buffer (if any) */
 
-			if (!cache[idx]) {
-
-				cache[idx] = _LIBCONFINI_SIMPLE_SPACE_;
-
-			}
-
-			_LIBCONFINI_IS_ESCAPED_ = _LIBCONFINI_FALSE_;
+			__SHIFT_LEN__++;
 
 		}
 
 	}
 
-	_LIBCONFINI_MEMBERS_ += further_cuts(cache + ultrim_h(cache, node_at), format);
+	const size_t len = idx - __SHIFT_LEN__;
+
+	while (idx > len) {
+
+		cache[--idx] = '\0';
+
+	}
+
+	__MEMBERS__ += further_cuts(cache + ultrim_h(cache, node_at), format);
 
 	IniStatistics this_doc = {
 		.format = format,
-		.bytes = len,
-		.members = _LIBCONFINI_MEMBERS_
+		.bytes = __N_BYTES__,
+		.members = __MEMBERS__
 	};
 
-	#undef _LIBCONFINI_MEMBERS_
-	#undef _LIBCONFINI_EOL_ID_
-	#undef _LIBCONFINI_IS_ESCAPED_
+	#undef __N_BYTES__
+	#undef __SHIFT_LEN__
+	#undef __MEMBERS__
+	#undef __EOL_ID__
+	#undef __IS_ESCAPED__
 
 	/* Debug */
 
 	/*
 
-	for (_LIBCONFINI_SIZE_ tmp = 0; tmp < len + 1; tmp++) {
-		putchar(cache[tmp] > 0 ? cache[tmp] : '$');
+	for (size_t tmp = 0; tmp < len + 1; tmp++) {
+		putchar(cache[tmp] == 0 ? '$' : cache[tmp]);
 	}
 	putchar(_LIBCONFINI_LF_);
 
@@ -1367,9 +1385,13 @@ unsigned int load_ini_file (
 
 	/* PART TWO: Dispatch the parsed input */
 
-	#define _LIBCONFINI_PARENT_IS_DISABLED_ tmp_bool
+	#define __PARENT_IS_DISABLED__ tmp_bool
+	#define __REAL_PARENT_LEN__ tmp_size_2
+	#define __CURR_PARENT_LEN__ tmp_size_3
 
-	_LIBCONFINI_SIZE_ parse_at, real_parent_len = 0, curr_parent_len = 0;
+	__REAL_PARENT_LEN__ = 0, __CURR_PARENT_LEN__ = 0;
+
+	size_t parse_at;
 	char *curr_parent_str = cache + len, *subparent_str = curr_parent_str, *real_parent_str = curr_parent_str;
 
 	IniDispatch this_d = {
@@ -1377,7 +1399,7 @@ unsigned int load_ini_file (
 		.dispatch_id = 0
 	};
 
-	_LIBCONFINI_PARENT_IS_DISABLED_ = _LIBCONFINI_FALSE_;
+	__PARENT_IS_DISABLED__ = _LIBCONFINI_FALSE_;
 
 	for (node_at = 0, idx = 0; idx <= len; idx++) {
 
@@ -1440,13 +1462,13 @@ unsigned int load_ini_file (
 						(format.no_double_quotes << 1) |
 						format.no_single_quotes;
 
-			for (tmp_uint = 1; (abacus & 512) && tmp_uint < this_d.d_len; tmp_uint++) {
+			for (tmp_size_1 = 1; (abacus & 512) && tmp_size_1 < this_d.d_len; tmp_size_1++) {
 
-				abacus	=	this_d.data[tmp_uint] == _LIBCONFINI_LF_ || this_d.data[tmp_uint] == _LIBCONFINI_CR_ ?
+				abacus	=	this_d.data[tmp_size_1] == _LIBCONFINI_LF_ || this_d.data[tmp_size_1] == _LIBCONFINI_CR_ ?
 								abacus | 448
-							: is_comment_char(this_d.data[tmp_uint], format) ?
+							: is_comment_char(this_d.data[tmp_size_1], format) ?
 								(
-									(abacus & 64) && !is_parsable_char(this_d.data[tmp_uint], format) ?
+									(abacus & 64) && !is_parsable_char(this_d.data[tmp_size_1], format) ?
 										abacus & 31
 									: abacus & 128 ?
 										abacus & 543
@@ -1455,7 +1477,7 @@ unsigned int load_ini_file (
 									:
 										abacus & 287
 								)
-							: is_some_space(this_d.data[tmp_uint], _LIBCONFINI_NO_EOL_) ?
+							: is_some_space(this_d.data[tmp_size_1], _LIBCONFINI_NO_EOL_) ?
 								(
 									abacus & 64 ?
 										(abacus & 991) | 448
@@ -1464,18 +1486,18 @@ unsigned int load_ini_file (
 									:
 										abacus & 31
 								)
-							: this_d.data[tmp_uint] == _LIBCONFINI_BACKSLASH_ ?
+							: this_d.data[tmp_size_1] == _LIBCONFINI_BACKSLASH_ ?
 								((abacus & 831) | 256) ^ 32
-							: !(abacus & 42) && this_d.data[tmp_uint] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+							: !(abacus & 42) && this_d.data[tmp_size_1] == _LIBCONFINI_DOUBLE_QUOTES_ ?
 								((abacus & 799) | 256) ^ 16
-							: !(abacus & 49) && this_d.data[tmp_uint] == _LIBCONFINI_SINGLE_QUOTES_ ?
+							: !(abacus & 49) && this_d.data[tmp_size_1] == _LIBCONFINI_SINGLE_QUOTES_ ?
 								((abacus & 799) | 256) ^ 8
 							:
 								(abacus & 799) | 256;
 
 			}
 
-			this_d.type		=	tmp_uint == this_d.d_len ?
+			this_d.type		=	tmp_size_1 == this_d.d_len ?
 									get_type_as_active(cache + parse_at, idx - parse_at, format.disabled_can_be_implicit, format)
 								:
 									0;
@@ -1503,38 +1525,38 @@ unsigned int load_ini_file (
 
 		}
 
-		if (curr_parent_len && *subparent_str) {
+		if (__CURR_PARENT_LEN__ && *subparent_str) {
 
-			tmp_uint = 0;
+			tmp_size_1 = 0;
 
 			do {
 
-				curr_parent_str[tmp_uint + curr_parent_len] = subparent_str[tmp_uint];
+				curr_parent_str[tmp_size_1 + __CURR_PARENT_LEN__] = subparent_str[tmp_size_1];
 
-			} while (subparent_str[tmp_uint++]);
+			} while (subparent_str[tmp_size_1++]);
 
-			curr_parent_len += tmp_uint - 1;
-			subparent_str = curr_parent_str + curr_parent_len;
+			__CURR_PARENT_LEN__ += tmp_size_1 - 1;
+			subparent_str = curr_parent_str + __CURR_PARENT_LEN__;
 
 		}
 
-		if (_LIBCONFINI_PARENT_IS_DISABLED_ && !(this_d.type & 4)) {
+		if (__PARENT_IS_DISABLED__ && !(this_d.type & 4)) {
 
-			real_parent_str[real_parent_len] = '\0';
-			curr_parent_len = real_parent_len;
+			real_parent_str[__REAL_PARENT_LEN__] = '\0';
+			__CURR_PARENT_LEN__ = __REAL_PARENT_LEN__;
 			curr_parent_str = real_parent_str;
-			_LIBCONFINI_PARENT_IS_DISABLED_ = _LIBCONFINI_FALSE_;
+			__PARENT_IS_DISABLED__ = _LIBCONFINI_FALSE_;
 
-		} else if (!_LIBCONFINI_PARENT_IS_DISABLED_ && this_d.type == INI_DISABLED_SECTION) {
+		} else if (!__PARENT_IS_DISABLED__ && this_d.type == INI_DISABLED_SECTION) {
 
-			real_parent_len = curr_parent_len;
+			__REAL_PARENT_LEN__ = __CURR_PARENT_LEN__;
 			real_parent_str = curr_parent_str;
-			_LIBCONFINI_PARENT_IS_DISABLED_ = _LIBCONFINI_TRUE_;
+			__PARENT_IS_DISABLED__ = _LIBCONFINI_TRUE_;
 
 		}
 
 		this_d.append_to = curr_parent_str;
-		this_d.at_len = curr_parent_len;
+		this_d.at_len = __CURR_PARENT_LEN__;
 
 		this_d.d_len		=	this_d.type == INI_COMMENT ? 
 									uncomment(this_d.data, idx - node_at, format)
@@ -1576,44 +1598,44 @@ unsigned int load_ini_file (
 
 				for (
 
-					abacus = (format.no_double_quotes << 1) | format.no_single_quotes, tmp_uint = 0;
+					abacus = (format.no_double_quotes << 1) | format.no_single_quotes, tmp_size_1 = 0;
 
-						this_d.data[tmp_uint] && (
-							(abacus & 12) || this_d.data[tmp_uint] != _LIBCONFINI_CLOSE_SECTION_
+						this_d.data[tmp_size_1] && (
+							(abacus & 12) || this_d.data[tmp_size_1] != _LIBCONFINI_CLOSE_SECTION_
 						);
 
-					abacus	=	this_d.data[tmp_uint] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 16
-								: !(abacus & 22) && this_d.data[tmp_uint] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 8
-								: !(abacus & 25) && this_d.data[tmp_uint] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 4
+					abacus	=	this_d.data[tmp_size_1] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 16
+								: !(abacus & 22) && this_d.data[tmp_size_1] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 8
+								: !(abacus & 25) && this_d.data[tmp_size_1] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 4
 								: abacus & 15,
 
-					tmp_uint++
+					tmp_size_1++
 
 				);
 
-				while (this_d.data[tmp_uint]) {
+				while (this_d.data[tmp_size_1]) {
 
-					this_d.data[tmp_uint++] = '\0';
+					this_d.data[tmp_size_1++] = '\0';
 
 				}
 
 				this_d.d_len = sanitize_section_name(this_d.data, format);
 
-				if (curr_parent_len && *this_d.data == _LIBCONFINI_SUBSECTION_) {
+				if (__CURR_PARENT_LEN__ && *this_d.data == _LIBCONFINI_SUBSECTION_) {
 
 					subparent_str = this_d.data;
 
 				} else {
 
-					if (!curr_parent_len && *this_d.data == _LIBCONFINI_SUBSECTION_) {
+					if (!__CURR_PARENT_LEN__ && *this_d.data == _LIBCONFINI_SUBSECTION_) {
 
 						curr_parent_str = this_d.data + 1;
-						curr_parent_len = this_d.d_len - 1;
+						__CURR_PARENT_LEN__ = this_d.d_len - 1;
 
 					} else {
 
 						curr_parent_str = this_d.data;
-						curr_parent_len = this_d.d_len;
+						__CURR_PARENT_LEN__ = this_d.d_len;
 
 					}
 
@@ -1634,20 +1656,20 @@ unsigned int load_ini_file (
 			case INI_KEY:
 			case INI_DISABLED_KEY:
 
-				tmp_uint = get_delimiter_pos(this_d.data, this_d.d_len, format);
+				tmp_size_1 = get_delimiter_pos(this_d.data, this_d.d_len, format);
 
-				if (this_d.d_len && tmp_uint && tmp_uint < this_d.d_len) {
+				if (this_d.d_len && tmp_size_1 && tmp_size_1 < this_d.d_len) {
 
-					this_d.data[tmp_uint] = '\0';
+					this_d.data[tmp_size_1] = '\0';
 
 					if (format.do_not_collapse_values) {
 
-						this_d.value = this_d.data + ltrim_h(this_d.data, tmp_uint + 1, _LIBCONFINI_WITH_EOL_);
+						this_d.value = this_d.data + ltrim_h(this_d.data, tmp_size_1 + 1, _LIBCONFINI_WITH_EOL_);
 						this_d.v_len = rtrim_h(this_d.value, this_d.d_len + this_d.data - this_d.value, _LIBCONFINI_WITH_EOL_);
 
 					} else {
 
-						this_d.value = this_d.data + tmp_uint + 1;
+						this_d.value = this_d.data + tmp_size_1 + 1;
 						this_d.v_len = collapse_spaces(this_d.value, format);
 
 					}
@@ -1690,10 +1712,43 @@ unsigned int load_ini_file (
 
 	free_and_exit:
 
-	#undef _LIBCONFINI_PARENT_IS_DISABLED_
+	#undef __PARENT_IS_DISABLED__
+	#undef __REAL_PARENT_LEN__
+	#undef __CURR_PARENT_LEN__
 
 	free(cache);
 	return return_value;
+
+
+}
+
+
+/**
+
+	@brief			Parses an INI file and dispatches its content
+	@param			path			The path of the INI file
+	@param			format			The format of the INI file
+	@param			f_init			The function that will be invoked before the dispatch, or NULL
+	@param			f_foreach		The function that will be invoked for each dispatch, or NULL
+	@param			user_data		A custom argument, or NULL
+	@return			Zero for success, otherwise an error code
+
+**/
+int load_ini_path (
+	const char * const path,
+	const IniFormat format,
+	const int (* const f_init) (
+		IniStatistics *statistics,
+		void *init_other
+	),
+	const int (* const f_foreach) (
+		IniDispatch *dispatch,
+		void *foreach_other
+	),
+	void *user_data
+) {
+
+	return load_ini_file(fopen(path, "r"), format, f_init, f_foreach, user_data);
 
 }
 
@@ -1710,7 +1765,7 @@ unsigned int load_ini_file (
 	@return			Nothing
 
 **/
-void ini_set_implicit_value (char * const implicit_value, const unsigned long int implicit_v_len) {
+void ini_set_implicit_value (char * const implicit_value, const size_t implicit_v_len) {
 
 	INI_IMPLICIT_VALUE = implicit_value;
 	INI_IMPLICIT_V_LEN = implicit_v_len;
@@ -1730,13 +1785,13 @@ IniFormatId ini_format_get_id (const IniFormat source) {
 	unsigned short int bitpos = 0;
 	IniFormatId mask = 0;
 
-	#define _LIBCONFINI_CALC_FORMAT_ID_(SIZE, PROPERTY, IGNORE_ME) \
+	#define __CALC_FORMAT_ID__(SIZE, PROPERTY, IGNORE_ME) \
 		mask |= source.PROPERTY << bitpos;\
 		bitpos += SIZE;
 
-	_LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(_LIBCONFINI_CALC_FORMAT_ID_)
+	_LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(__CALC_FORMAT_ID__)
 
-	#undef _LIBCONFINI_CALC_FORMAT_ID_
+	#undef __CALC_FORMAT_ID__
 
 	return mask;
 
@@ -1753,29 +1808,29 @@ IniFormatId ini_format_get_id (const IniFormat source) {
 **/
 void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id) {
 
-	#define _LIBCONFINI_MAX_1_BITS_ 1
-	#define _LIBCONFINI_MAX_2_BITS_ 3
-	#define _LIBCONFINI_MAX_3_BITS_ 7
-	#define _LIBCONFINI_MAX_4_BITS_ 15
-	#define _LIBCONFINI_MAX_5_BITS_ 31
-	#define _LIBCONFINI_MAX_6_BITS_ 63
-	#define _LIBCONFINI_MAX_7_BITS_ 127
-	#define _LIBCONFINI_MAX_8_BITS_ 255
-	#define _LIBCONFINI_READ_FORMAT_ID_(SIZE, PROPERTY, IGNORE_ME) \
-		dest_format->PROPERTY = format_id & _LIBCONFINI_MAX_##SIZE##_BITS_;\
+	#define __MAX_1_BITS__ 1
+	#define __MAX_2_BITS__ 3
+	#define __MAX_3_BITS__ 7
+	#define __MAX_4_BITS__ 15
+	#define __MAX_5_BITS__ 31
+	#define __MAX_6_BITS__ 63
+	#define __MAX_7_BITS__ 127
+	#define __MAX_8_BITS__ 255
+	#define __READ_FORMAT_ID__(SIZE, PROPERTY, IGNORE_ME) \
+		dest_format->PROPERTY = format_id & __MAX_##SIZE##_BITS__;\
 		format_id >>= SIZE;
 
-	_LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(_LIBCONFINI_READ_FORMAT_ID_)
+	_LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(__READ_FORMAT_ID__)
 
-	#undef _LIBCONFINI_READ_FORMAT_ID_
-	#undef _LIBCONFINI_MAX_8_BITS_
-	#undef _LIBCONFINI_MAX_7_BITS_
-	#undef _LIBCONFINI_MAX_6_BITS_
-	#undef _LIBCONFINI_MAX_5_BITS_
-	#undef _LIBCONFINI_MAX_4_BITS_
-	#undef _LIBCONFINI_MAX_3_BITS_
-	#undef _LIBCONFINI_MAX_2_BITS_
-	#undef _LIBCONFINI_MAX_1_BITS_
+	#undef __READ_FORMAT_ID__
+	#undef __MAX_8_BITS__
+	#undef __MAX_7_BITS__
+	#undef __MAX_6_BITS__
+	#undef __MAX_5_BITS__
+	#undef __MAX_4_BITS__
+	#undef __MAX_3_BITS__
+	#undef __MAX_2_BITS__
+	#undef __MAX_1_BITS__
 
 }
 
@@ -1791,10 +1846,10 @@ void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id) {
 	not contain quotes, or if quotes are considered to be normal characters, no changes will be made.
 
 **/
-unsigned long int ini_unquote (char * const ini_string, const IniFormat format) {
+size_t ini_unquote (char * const ini_string, const IniFormat format) {
 
-	_LIBCONFINI_BYTE_ qmask;
-	_LIBCONFINI_SIZE_ lshift, nbacksl, idx;
+	uint8_t qmask;
+	size_t lshift, nbacksl, idx;
 
 	/*
 
@@ -1866,11 +1921,11 @@ unsigned long int ini_unquote (char * const ini_string, const IniFormat format) 
 	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well.
 
 **/
-unsigned long int ini_array_get_length (const char * const ini_string, const char delimiter, const IniFormat format) {
+size_t ini_array_get_length (const char * const ini_string, const char delimiter, const IniFormat format) {
 
-	unsigned long int arr_length = 0;
-	_LIBCONFINI_SIZE_ idx;
-	_LIBCONFINI_BYTE_ abacus;
+	size_t arr_length = 0;
+	size_t idx;
+	uint8_t abacus;
 
 	/*
 
@@ -1937,23 +1992,23 @@ unsigned long int ini_array_get_length (const char * const ini_string, const cha
 	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well.
 
 **/
-unsigned int ini_array_foreach (
+int ini_array_foreach (
 	const char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
 	int (* const f_foreach) (
 		const char *member,
-		unsigned int offset,
-		unsigned int memb_length,
-		unsigned int index,
+		size_t offset,
+		size_t memb_length,
+		size_t index,
 		IniFormat format,
 		void *user_data
 	),
 	void *user_data
 ) {
 
-	_LIBCONFINI_BYTE_ abacus;
-	_LIBCONFINI_SIZE_ idx, offs, counter;
+	uint8_t abacus;
+	size_t idx, offs, counter;
 
 	/* Mask `abacus` (8 bits used): as in `ini_array_get_length()` */
 
@@ -2017,11 +2072,11 @@ unsigned int ini_array_foreach (
 	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well.
 
 **/
-unsigned long int ini_collapse_array (char * const ini_string, const char delimiter, const IniFormat format) {
+size_t ini_collapse_array (char * const ini_string, const char delimiter, const IniFormat format) {
 
-	unsigned int abacus;
-	unsigned long int iter;
-	_LIBCONFINI_SIZE_ idx, lshift;
+	uint16_t abacus;
+	size_t iter;
+	size_t idx, lshift;
 
 	/*
 
@@ -2135,22 +2190,22 @@ unsigned long int ini_collapse_array (char * const ini_string, const char delimi
 	Usually @p ini_string comes from an `IniDispatch`, but any other string can be used as well.
 
 **/
-unsigned int ini_split_array (
+int ini_split_array (
 	char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
 	int (* const f_foreach) (
 		char *member,
-		unsigned int memb_length,
-		unsigned int index,
+		size_t memb_length,
+		size_t index,
 		IniFormat format,
 		void *user_data
 	),
 	void *user_data
 ) {
 
-	_LIBCONFINI_BYTE_ abacus;
-	_LIBCONFINI_SIZE_ offs, idx, counter;
+	uint8_t abacus;
+	size_t offs, idx, counter;
 
 	/* Mask `abacus` (8 bits used): as in `ini_array_get_length()` */
 
@@ -2302,7 +2357,7 @@ double (* const ini_get_float) (const char *ini_string) = &atof;
 /* VARIABLES */
 
 char *INI_IMPLICIT_VALUE = (char *) 0;
-unsigned long int INI_IMPLICIT_V_LEN = 0;
+size_t INI_IMPLICIT_V_LEN = 0;
 
 
 

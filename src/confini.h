@@ -10,6 +10,7 @@
 
 #ifndef _LIBCONFINI_HEADER_
 #define _LIBCONFINI_HEADER_
+#include <stdio.h>
 
 
 
@@ -58,8 +59,8 @@ typedef _LIBCONFINI_FORMAT_STRUCT_ IniFormat;
 /** @brief	Global statistics about an INI file **/
 typedef struct IniStatistics {
 	const IniFormat format;
-	const unsigned long int bytes;
-	const unsigned long int members;
+	const size_t bytes;
+	const size_t members;
 } IniStatistics;
 
 /** @brief	Dispatch of a single INI member **/
@@ -69,69 +70,83 @@ typedef struct IniDispatch {
 	char *data;
 	char *value;
 	char *append_to;
-	unsigned long int d_len;
-	unsigned long int v_len;
-	unsigned long int at_len;
-	unsigned long int dispatch_id;
+	size_t d_len;
+	size_t v_len;
+	size_t at_len;
+	size_t dispatch_id;
 } IniDispatch;
 
 /** @brief	24-bit bitmask representing the format of an INI file **/
-typedef unsigned long int IniFormatId;
+typedef size_t IniFormatId;
 
 
 
 /* PUBLIC FUNCTIONS */
 
 
-extern unsigned int load_ini_file (
-	const char * const path,
+extern int load_ini_file (
+	FILE * const ini_file,
 	const IniFormat format,
-	int (* const f_init) (
+	const int (* const f_init) (
 		IniStatistics *statistics,
 		void *init_other
 	),
-	int (* const f_foreach) (
+	const int (* const f_foreach) (
 		IniDispatch *dispatch,
 		void *foreach_other
 	),
 	void *user_data
 );
 
-extern void ini_set_implicit_value (char * const implicit_value, const unsigned long int implicit_v_len);
+extern int load_ini_path (
+	const char * const path,
+	const IniFormat format,
+	const int (* const f_init) (
+		IniStatistics *statistics,
+		void *init_other
+	),
+	const int (* const f_foreach) (
+		IniDispatch *dispatch,
+		void *foreach_other
+	),
+	void *user_data
+);
+
+extern void ini_set_implicit_value (char * const implicit_value, const size_t implicit_v_len);
 
 extern IniFormatId ini_format_get_id (const IniFormat format);
 
 extern void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id);
 
-extern unsigned long int ini_unquote (char * const ini_string, const IniFormat format);
+extern size_t ini_unquote (char * const ini_string, const IniFormat format);
 
-extern unsigned long int ini_array_get_length (const char * const ini_string, const char delimiter, const IniFormat format);
+extern size_t ini_array_get_length (const char * const ini_string, const char delimiter, const IniFormat format);
 
-extern unsigned long int ini_collapse_array (char * const ini_string, const char delimiter, const IniFormat format);
+extern size_t ini_collapse_array (char * const ini_string, const char delimiter, const IniFormat format);
 
-extern unsigned int ini_array_foreach (
+extern int ini_array_foreach (
 	const char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
 	int (* const f_foreach) (
 		const char *member,
-		unsigned int offset,
-		unsigned int memb_length,
-		unsigned int index,
+		size_t offset,
+		size_t memb_length,
+		size_t index,
 		IniFormat format,
 		void *user_data
 	),
 	void *user_data
 );
 
-extern unsigned int ini_split_array (
+extern int ini_split_array (
 	char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
 	int (* const f_foreach) (
 		char *member,
-		unsigned int memb_length,
-		unsigned int index,
+		size_t memb_length,
+		size_t index,
 		IniFormat format,
 		void *user_data
 	),
@@ -212,7 +227,7 @@ static const IniFormat INI_DEFAULT_FORMAT = _LIBCONFINI_DEFAULT_FORMAT_;
 extern char *INI_IMPLICIT_VALUE;
 
 /** @brief	Default length of implicit keys' value -- it can be set to any unsigned number, independently of #INI_IMPLICIT_VALUE **/
-extern unsigned long int INI_IMPLICIT_V_LEN;
+extern size_t INI_IMPLICIT_V_LEN;
 
 
 

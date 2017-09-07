@@ -9,7 +9,7 @@ Library Functions Manual {#libconfini}
 
 **libconfini** is a simple INI parsing library with the ability to read disabled entries (i.e., valid entries nested in comments). **libconfini** does not store the data read from an INI file, but rather dispatches it, formatted, to a custom listener.
 
-The code is written in C and does not depend on any particular library, except for the C standard libraries **stdio.h** and **stdlib.h**.
+The code is written in C and does not depend on any particular library, except for the C standard libraries **stdio.h**, **stdlib.h** and **stdint.h**.
 
 If you want to start to learn directly from the code, you can find partially self-documented sample usages of **libconfini** under `/usr/share/doc/libconfini/examples/`.
 
@@ -40,7 +40,7 @@ email = mario.rossi@example.com
 
 ## SUPPORTED SYNTAXES
 
-During the years, several interpretations of INI files appeared. In some implementation the colon character (`:`) has been adopted as delimiter (a typical example under GNU/Linux is `/etc/nsswitch.conf`), in other implementation the space (`/[ \t\v\f]+/` or `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`) has been used instead (see for example `/etc/host.conf`), and so on. This library has been born as a general INI parser for GNU, so the support of most of the main _INI dialects_ has been implemented within it.
+During the years, several interpretations of INI files appeared. In some implementation the colon character (`:`) has been adopted as delimiter (a typical example under GNU/Linux is `/etc/nsswitch.conf`), in other implementation the space (`/[ \t\v\f]+/` or `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`) has been used instead (see for example `/etc/host.conf`), and so on. This library has been born as a general INI parser for GNU, so the support of most of the main INI dialects has been implemented within it.
 
 Especially in Microsoft Windows, a more radical syntax variation has been implemented: the use of the semicolon, instead of new lines, as node delimiter, as in the following example:
 
@@ -88,7 +88,7 @@ foo = "bar"
 
 ~~~~~~~~~~~
 
-The **key part** can contain any character, except the delimiter (which can be enclosed within quotes for not beeing considered as such). The new line sequences must be escaped (ECMAScript regular expression: `/\\(?:\n\r?|\r\n?)/`).
+The **key part** can contain any character, except the delimiter (which can be enclosed within quotes for not beeing considered as such). Internal new line sequences must be escaped (ECMAScript regular expression: `/\\(?:\n\r?|\r\n?)/`).
 
 If the **key part** part is missing the element is considered of unknown type, i.e., `INI_UNKNOWN` -- see enum `#IniNodeType` -- (example: `= foo`). If the **value part** is missing the key element is considered empty (example: `foo =`). If the delimiter is missing, according to some formats the key element is considered to be an _implicit key_ -- typically representing the boolean `TRUE` (example: `foo`). For instance, in the following example from `/etc/pacman.conf`, `IgnorePkg` is an empty key, while `Color` is an implicit key (representing a `TRUE` boolean -- i.e., `Color = YES`):
 
@@ -103,7 +103,7 @@ LocalFileSigLevel = Optional
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The **value** part can contain typed data, usually: a boolean (booleans supported by **libconfini** are: `NO`/`YES`, `FALSE`/`TRUE`, `0`/`1`), a string, a number, or an array (typically with commas as members delimiters -- example: `paths = /etc, /usr, "/home/john/Personal Data"`). The new line sequences must be escaped (ECMAScript regular expression: `/\\(?:\n\r?|\r\n?)/`).
+The **value** part can contain typed data, usually: a boolean (booleans supported by **libconfini** are: `NO`/`YES`, `FALSE`/`TRUE`, `0`/`1`), a string, a number, or an array (typically with commas as members delimiters -- example: `paths = /etc, /usr, "/home/john/Personal Data"`). Internal new line sequences must be escaped (ECMAScript regular expression: `/\\(?:\n\r?|\r\n?)/`).
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -213,7 +213,7 @@ comedy3 = The Merchant of Venice
 
 ### ESCAPING SEQUENCES
 
-For maximizing the flexibility of the data, only four escaping sequences are supported by **libconfini**: `\'`, `\"`, `\\` and the multiline escaping sequence (ECMAScript regular expression: `/\\(?:\n\r?|\r\n?)/`).
+In order to maximize the flexibility of the data, only four escaping sequences are supported by **libconfini**: `\'`, `\"`, `\\` and the multiline escaping sequence (ECMAScript regular expression: `/\\(?:\n\r?|\r\n?)/`).
 
 The first three escaping sequences are left untouched by all functions except `ini_unquote()`. Nevertheless, the characters `'`, `"` and `\` can determine different behaviors during the parsing depending on whether they are escaped or unescaped. For instance, the string `#johnsmith` in the following example will not be parsed as a comment:
 
@@ -225,7 +225,7 @@ comment = "hey! have a look at my hashtag #johnsmith !"
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A particular case of escaping sequence is the multiline escaping sequence (`/\\(?:\n\r?|\r\n?)/`), which gets _always automatically unescaped by **libconfini**_.
+A particular case of escaping sequence is the multiline escaping sequence (`/\\(?:\n\r?|\r\n?)/`), which in multiline INI files gets _immediately unescaped by **libconfini**_.
 
 ~~~~~~~~~~~{.ini}
 
@@ -253,15 +253,35 @@ A disabled entry is either a section or a key that has been nested inside a comm
 
 ### ENCODINGS
 
-The encodings currently supported by **libconfini** are ASCII and UTF-8 (without BOM). In case the INI file is case-insensitive with respect to keys and section names, **libconfini** will always convert all ASCII letters to lowercase (except within values) -- _even when these are enclosed within quotes_ -- but will **not** convert non-ASCII code points to lowercase (for instance, `Ā` will not be rendered as `ā`, but will be rather rendered verbatim). _In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names._
+The encodings currently supported by **libconfini** are ASCII and UTF-8. In case the INI file is case-insensitive with respect to keys and section names, **libconfini** will always convert all ASCII letters to lowercase (except within values) -- _even when these are enclosed within quotes_ -- but will **not** convert non-ASCII code points to lowercase (for instance, `Ā` will not be rendered as `ā`, but will be rather rendered verbatim). _In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names._
 
 # READ AN INI FILE
 
-The syntax of **libconfini**'s main function is:
+The syntax of **libconfini**'s main functions is:
+
+\#1
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-unsigned int load_ini_file (
-	const char *path,
+int load_ini_file (
+	FILE * ini_file,
+	IniFormat format,
+	int (*f_init)(
+		IniStatistics *statistics,
+		void *user_data
+	),
+	int (*f_foreach)(
+		IniDispatch *dispatch,
+		void *user_data
+	),
+	void *user_data
+)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\#2
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+int load_ini_path (
+	char *path,
 	IniFormat format,
 	int (*f_init)(
 		IniStatistics *statistics,
@@ -277,7 +297,9 @@ unsigned int load_ini_file (
 
 where
 
-* `path` is the path where the INI file is located (pointer to a char array, a.k.a. a "C string")
+* Respectively
+  1. `ini_file` in `load_ini_file()` is the `FILE` struct pointing to the INI file
+  2. `path` in `load_ini_path()` is the path where the INI file is located (pointer to a char array, a.k.a. a "C string")
 * `format` is a bitfield structure defining the syntax of the INI file (see the `IniFormat` struct)
 * `f_init` is the function that will be invoked _before_ any dispatching begins -- it can be `NULL`
 * `f_foreach` is the callback function that will be invoked for each member of the INI file - it can be `NULL`
@@ -287,18 +309,82 @@ The function `f_init()` is invoked with two arguments:
 
 * `statistics` -- a pointer to an `IniStatistics` object containing some properties about the file read
   (like its size in bytes and the number of its members)
-* `user_data` -- a pointer to the custom argument previously passed to the `load_ini_file()` function
+* `user_data` -- a pointer to the custom argument previously passed to the `load_ini_file()` / `load_ini_path()` functions
 
 The function `f_foreach()` is invoked with two arguments:
 
 * `dispatch` -- a pointer to an `IniDispatch` object containing the parsed member of the INI file
-* `user_data` -- a pointer to the custom argument previously passed to the `load_ini_file()` function
+* `user_data` -- a pointer to the custom argument previously passed to the `load_ini_file()` / `load_ini_path()` functions
+
+## BASIC EXAMPLES
+
+\#1
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+
+#include <stdio.h>
+#include <confini.h>
+
+int ini_listener (IniDispatch *dispatch, void *user_data) {
+
+  printf("DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n", dispatch->data, dispatch->value, dispatch->type);
+
+  return 0;
+
+}
+
+int main () {
+
+  if (load_ini_path("my_file.conf", INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
+
+    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    return 1;
+
+  }
+
+  return 0;
+
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\#2
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+
+#include <stdio.h>
+#include <confini.h>
+
+int ini_listener (IniDispatch *dispatch, void *user_data) {
+
+  printf("DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n", dispatch->data, dispatch->value, dispatch->type);
+
+  return 0;
+
+}
+
+int main () {
+
+  if (load_ini_file(fopen("my_file.conf", "r"), INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
+
+    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    return 1;
+
+  }
+
+  return 0;
+
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ## HOW IT WORKS
 
+The function `load_ini_path()` is a shortcut to the function `load_ini_file()` using a path instead of a `FILE` struct.
+
 The function `load_ini_file()` dynamically allocates at once the whole INI file into the heap, and the two structures `IniStatistics` and `IniDispatch` into the stack. All the members of the INI file are then dispatched to the listener `f_foreach()`. Finally the allocated memory gets automatically freed.
 
-Because of this mechanism _it is very important that all the dispatched data be **immediately** copied by the user, if needed, and no pointers to the passed data be saved_: after the end of the `load_ini_file()` function all the allocated data will be destroyed indeed.
+Because of this mechanism _it is very important that all the dispatched data be **immediately** copied by the user (when needed), and no pointers to the passed data be saved_: after the end of the function `load_ini_file()` or `load_ini_path()` all the allocated data will be destroyed indeed.
 
 Within a dispatching cycle, the structure containing each dispatch (`IniDispatch *dispatch`) is always the same `struct` that gets constantly updated with new information.
 
@@ -332,7 +418,7 @@ int ini_listener (IniDispatch *dispatch, void *user_data) {
 
 int main () {
 
-  if (load_ini_file("my_file.ini", INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
+  if (load_ini_path("my_file.ini", INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;
@@ -406,7 +492,7 @@ int main () {
   /* Without setting this, implicit keys will be anyway considered empty: */
   my_format.implicit_is_not_empty = YES;
 
-  if (load_ini_file("my_file.conf", my_format, NULL, ini_listener, NULL)) {
+  if (load_ini_path("my_file.conf", my_format, NULL, ini_listener, NULL)) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;
@@ -421,7 +507,7 @@ int main () {
 
 ## RENDERING
 
-The output strings dispatched by **libconfini** will follow some formatting rules depending on their role within the INI file. First, the new line sequences will be unescaped, then
+The output strings dispatched by **libconfini** will follow some formatting rules depending on their role within the INI file. First, the multiline sequences will be unescaped, then
 
 * **Section paths** will be rendered according to ECMAScript `section_name.replace(/\.*\s*$|(?:\s*(\.))+\s*|^\s+/g, "$1").replace(/\s+/g, " ")` -- within single or double quotes, if active, the text will be rendered verbatim
 * **Key names** will be rendered according to ECMAScript `key_name.replace(/^[\n\r]\s*|\s+/g, " ")` -- within single or double quotes, if active, the text will be rendered verbatim
@@ -461,7 +547,7 @@ int main () {
 
   struct size_check check;
 
-  if (load_ini_file("my_file.ini", INI_DEFAULT_FORMAT, ini_init, ini_listener, &check)) {
+  if (load_ini_path("my_file.ini", INI_DEFAULT_FORMAT, ini_init, ini_listener, &check)) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;
@@ -499,7 +585,7 @@ For a correct use of this library it is fundamental to understand the `IniFormat
 
 When an INI file is parsed it is parsed according to a format. The `IniFormat` bitfield is a description of such format.
 
-Each format can be represented also as a univocal 24-bit unsigned integer. For converting an `IniFormat` to an unsigned integer and vice versa please see `ini_format_get_id()`, `ini_format_set_to_id()` and `#IniFormatId`.
+Each format can be represented also as a univocal 24-bit unsigned integer. In order to convert an `IniFormat` to an unsigned integer and vice versa please see `ini_format_get_id()`, `ini_format_set_to_id()` and `#IniFormatId`.
 
 ## THE MODEL FORMAT
 
@@ -539,7 +625,7 @@ my_format.disabled_can_be_implicit = NO;
 
 ## THE `IniStatistics` AND `IniDispatch` STRUCTURES
 
-When the `load_ini_file()` function reads an INI file, it dispatches the file content to the `f_foreach()` listener. Before the dispatching begins some statistics about the parsed file can be dispatched to the `f_init()` listener (if this is non-`NULL`).
+When the function `load_ini_file()` / `load_ini_path()` reads an INI file, it dispatches the file content to the `f_foreach()` listener. Before the dispatching begins some statistics about the parsed file can be dispatched to the `f_init()` listener (if this is non-`NULL`).
 
 The information passed to `f_init()` is passed through an `IniStatistics` structure, while the information passed to `f_foreach()` is passed through an `IniDispatch` structure.
 
@@ -568,7 +654,7 @@ The function `ini_unquote()` may be useful for key names enclosed within quotes.
 
 ## FORMATTING THE SECTION PATHS
 
-For retrieving the parts of a section path the functions `ini_array_get_length()`, `ini_array_foreach()` and `ini_split_array()` can be used with '.' as delimiter. Note that section paths dispatched by **libconfini** are _always_ collapsed arrays, therefore calling the function `ini_collapse_array()` on them will have no effects.
+In order to retrieve the parts of a section path the functions `ini_array_get_length()`, `ini_array_foreach()` and `ini_split_array()` can be used with '.' as delimiter. Note that section paths dispatched by **libconfini** are _always_ collapsed arrays, therefore calling the function `ini_collapse_array()` on them will have no effects.
 
 It may be required that the function `ini_unquote()` be applied to each part of a section path, depending on the content and the format of the INI file.
 
@@ -601,7 +687,7 @@ int main () {
   clock_t start, end;
   IniFormat my_format = INI_DEFAULT_FORMAT;
   start = clock();
-  if (load_ini_file("big_ini_file.conf", my_format, get_ini_size, empty_listener, &bytes)) {
+  if (load_ini_path("big_ini_file.conf", my_format, get_ini_size, empty_listener, &bytes)) {
     return 1;
   }
   end = clock();

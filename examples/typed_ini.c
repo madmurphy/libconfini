@@ -41,10 +41,12 @@ struct ini_store {
 	int _read_status_;
 };
 
-static int populate_array (char *part, unsigned int part_len, unsigned int idx, IniFormat format, void *other) {
+static int populate_array (char *part, size_t part_len, size_t idx, IniFormat format, void *other) {
+
 	ini_unquote(part, format);
 	((char **) other)[idx] = part;
 	return 0;
+
 }
 
 static int my_ini_listener (IniDispatch *this, void *other) {
@@ -148,7 +150,7 @@ int main () {
 	my_format.semicolon = my_format.hash = INI_FORGET_COMMENT;
 	my_format.implicit_is_not_empty = TRUE;
 
-	if (load_ini_file("typed_ini.conf", my_format, NULL, my_ini_listener, &my_store)) {
+	if (load_ini_path("typed_ini.conf", my_format, NULL, my_ini_listener, &my_store)) {
 
 		fprintf(stderr, "Sorry, something went wrong :-(\n");
 		return 1;
