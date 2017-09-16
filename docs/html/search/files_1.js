@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['libconfini_2emd',['libconfini.md',['../libconfini_8md.html',1,'']]]
+  ['man_2emd',['MAN.md',['../MAN_8md.html',1,'']]]
 ];

@@ -36,9 +36,9 @@ email = mario.rossi@example.com
 
 ## SUPPORTED SYNTAXES
 
-During the years, several interpretations of INI files appeared. In some implementation the colon character (`:`) has been adopted as delimiter (a typical example under GNU/Linux is `/etc/nsswitch.conf`), in other implementation the space (`/[ \t\v\f]+/` or `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`) has been used instead (see for example `/etc/host.conf`), and so on. This library has been born as a general INI parser for GNU, so the support of most of the main INI dialects has been implemented within it.
+During the years, several interpretations of INI files appeared. In some implementation the colon character (`:`) has been adopted as delimiter between keys and values (a typical example under GNU/Linux is `/etc/nsswitch.conf`), in other implementation the space (`/[ \t\v\f]+/` or `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`) has been used instead (see for example `/etc/host.conf`), and so on. This library has been born as a general INI parser for GNU, so the support of most of the main INI dialects has been implemented within it.
 
-Especially in Microsoft Windows, a more radical syntax variation has been implemented: the use of the semicolon, instead of new lines, as node delimiter, as in the following example:
+Especially in Microsoft Windows, a more radical syntax variation has been implemented: the use of the semicolon, instead of new lines, as delimiter between nodes, as in the following example:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -84,7 +84,7 @@ foo = "bar"
 
 ~~~~~~~~~~~
 
-The **key part** can contain any character, except the delimiter (which can be enclosed within quotes for not beeing considered as such). Internal new line sequences must be escaped (ECMAScript regular expression: `/\\(?:\n\r?|\r\n?)/`).
+The **key part** can contain any character, except the delimiter (which may be enclosed within quotes for not beeing considered as such). Internal new line sequences must be escaped (`/\\(?:\n\r?|\r\n?)/`).
 
 If the **key part** part is missing the element is considered of unknown type, i.e., `INI_UNKNOWN` -- see enum `#IniNodeType` -- (example: `= foo`). If the **value part** is missing the key element is considered empty (example: `foo =`). If the delimiter is missing, according to some formats the key element is considered to be an _implicit key_ -- typically representing the boolean `TRUE` (example: `foo`). For instance, in the following example from `/etc/pacman.conf`, `IgnorePkg` is an empty key, while `Color` is an implicit key (representing a `TRUE` boolean -- i.e., `Color = YES`):
 
@@ -99,7 +99,7 @@ LocalFileSigLevel = Optional
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The **value** part can contain typed data, usually: a boolean (booleans supported by **libconfini** are: `NO`/`YES`, `FALSE`/`TRUE`, `0`/`1`), a string, a number, or an array (typically with commas as members delimiters -- example: `paths = /etc, /usr, "/home/john/Personal Data"`). Internal new line sequences must be escaped (ECMAScript regular expression: `/\\(?:\n\r?|\r\n?)/`).
+The **value** part can contain typed data, usually: a boolean (booleans supported by **libconfini** are: `NO`/`YES`, `FALSE`/`TRUE`, `0`/`1`), a string, a number, or an array (typically with commas as delimiters between members -- example: `paths = /etc, /usr, "/home/john/Personal Data"`). Internal new line sequences must be escaped (`/\\(?:\n\r?|\r\n?)/`).
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -116,7 +116,7 @@ my_array = Asia, Africa, 'North America', South America,\
 
 ### SECTIONS
 
-A **section** can ben imagined like a directory. A **section path** is identified as the string `"$1"` in the regular expression (ECMAScript regular expression) `/(?:^|\n)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\]/` globally applied to an INI file. A section path expresses nesting through the 'dot' character, as in the following example:
+A **section** may ben imagined like a directory. A **section path** is identified as the string `"$1"` in the regular expression `/(?:^|\n)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\]/` globally applied to an INI file. A section path expresses nesting through the 'dot' character, as in the following example:
 
 ~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -161,7 +161,7 @@ port = 80
 
 ~~~~~~~~~~~~~~~~~~~
 
-Section parts can be enclosed within quotes:
+Section parts may be enclosed within quotes:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -185,22 +185,22 @@ foo = bar       # this is an inline comment
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Comments can in theory be multiline, following the same syntax of multiline disabled entries (see below). This is usually of little utility, except for inline comments that you want to make sure will refer to the previous entry:
+Comments may in theory be multiline, following the same syntax of multiline disabled entries (see below). This is usually of little utility, except for inline comments that you want to make sure will refer to the previous entry:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 
 comedy1 = The Tempest
 
-comedy2 = Twelfth Night      #  If music be the food of love, play on;        \
-                             #  Give me excess of it; that, surfeiting,       \
-                             #  The appetite may sicken, and so die. --       \
-                             #  That strain again; it had a dying fall:       \
-                             #  O, it came oer my ear, like the sweet sound   \
-                             #  That breathes upon a bank of violets,         \
-                             #  Stealing, and giving odour! Enough! No more.  \
-                             #  'Tis not so sweet now as it was before.       \
-                             #                                                \
-                             #      Orsino, scene I
+comedy2 = Twelfth Night  # If music be the food of love, play on;      \
+                         # Give me excess of it; that, surfeiting,     \
+                         # The appetite may sicken, and so die.        \
+                         # That strain again; it had a dying fall:     \
+                         # O, it came oer my ear, like the sweet sound \
+                         # That breathes upon a bank of violets,       \
+                         # Stealing, and giving odour! Enough! No more.\
+                         # 'Tis not so sweet now as it was before.     \
+                         #                                             \
+                         #     Orsino, scene I
 
 # This is also a masterpiece!
 comedy3 = The Merchant of Venice
@@ -209,9 +209,9 @@ comedy3 = The Merchant of Venice
 
 ### ESCAPING SEQUENCES
 
-In order to maximize the flexibility of the data, only four escaping sequences are supported by **libconfini**: `\'`, `\"`, `\\` and the multiline escaping sequence (ECMAScript regular expression: `/\\(?:\n\r?|\r\n?)/`).
+In order to maximize the flexibility of the data, only four escaping sequences are supported by **libconfini**: `\'`, `\"`, `\\` and the multiline escaping sequence (`/\\(?:\n\r?|\r\n?)/`).
 
-The first three escaping sequences are left untouched by all functions except `ini_unquote()`. Nevertheless, the characters `'`, `"` and `\` can determine different behaviors during the parsing depending on whether they are escaped or unescaped. For instance, the string `#johnsmith` in the following example will not be parsed as a comment:
+The first three escaping sequences are left untouched by all functions except `ini_unquote()`. Nevertheless, the characters `'`, `"` and `\` can determine different behaviors during the parsing depending on whether they are escaped or unescaped. For instance, the string `johnsmith !&quot;` in the following example will not be parsed as a comment:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -235,7 +235,7 @@ value
 
 ### DISABLED ENTRIES
 
-A disabled entry is either a section or a key that has been nested inside a comment as its only child. Disabled entries can be multiline, using `/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]+/` as multiline escaping sequence. For example:
+A disabled entry is either a section or a key that has been nested inside a non-inline comment as its only child. Disabled entries can be multiline, using `/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]+/` as multiline escaping sequence. For example:
 
 ~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -247,13 +247,9 @@ A disabled entry is either a section or a key that has been nested inside a comm
 
 ~~~~~~~~~~~~~~~~~~~
 
-### ENCODINGS
-
-The encodings currently supported by **libconfini** are ASCII and UTF-8. In case the INI file is case-insensitive with respect to keys and section names, **libconfini** will always convert all ASCII letters to lowercase (except within values) -- _even when these are enclosed within quotes_ -- but will **not** convert non-ASCII code points to lowercase (for instance, `Ā` will not be rendered as `ā`, but will be rather rendered verbatim). _In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names._
-
 ## READ AN INI FILE
 
-The syntax of **libconfini**'s main functions is:
+The syntax of **libconfini**'s parsing functions is:
 
 \#1
 
@@ -624,7 +620,7 @@ my_format.disabled_can_be_implicit = NO;
 
 ## THE `IniStatistics` AND `IniDispatch` STRUCTURES
 
-When the function `load_ini_file()` / `load_ini_path()` reads an INI file, it dispatches the file content to the `f_foreach()` listener. Before the dispatching begins some statistics about the parsed file can be dispatched to the `f_init()` listener (if this is non-`NULL`).
+When the functions `load_ini_file()` / `load_ini_path()` read an INI file, they dispatches the file content to the `f_foreach()` listener. Before the dispatching begins some statistics about the parsed file can be dispatched to the `f_init()` listener (if this is non-`NULL`).
 
 The information passed to `f_init()` is passed through an `IniStatistics` structure, while the information passed to `f_foreach()` is passed through an `IniDispatch` structure.
 
@@ -657,7 +653,93 @@ In order to retrieve the parts of a section path the functions `ini_array_get_le
 
 It may be required that the function `ini_unquote()` be applied to each part of a section path, depending on the content and the format of the INI file.
 
-## PERFORMANCE
+## THE FORMATTING FUNCTIONS
+
+The functions `ini_unquote()`, `ini_collapse_array()` and `ini_split_array()` change the content of the given string. It is important to point out that the edit is always performed within the length of the buffer given.
+
+The behavior of these functions depends on the format given. In particular, using `ini_unquote()` as model one obtains the following scheme:
+
+1.	**Condition:** `!format.no_single_quotes && !format.no_double_quotes && format.multiline_entries != INI_NO_MULTILINE`<br />
+	⇒ **Escape sequences:** `\\`, `\"`, `\'`<br />
+	⇒ **Behavior of `ini_unquote()`:** `\\`, `\'` and `\"` will be unescaped, all unescaped single and double quotes will be removed,&nbsp;then the new length of the string will be returned.
+2.	**Condition:** `format.no_double_quotes`<br />
+	⇒ **Escape sequences:** `\\`, `\'`<br />
+	⇒ **Behavior of `ini_unquote()`:** `\\` and `\'` will be unescaped, all unescaped single quotes will be removed,&nbsp;then the new length of the string will be returned.
+3.	**Condition:** `format.no_single_quotes`<br />
+	⇒ **Escape sequences:** `\\`, `\"`<br />
+	⇒ **Behavior of `ini_unquote()`:** `\\` and `\"` will be unescaped, all unescaped double quotes will be removed,&nbsp;then the new length of the string will be returned.
+4.	`format.no_single_quotes && format.no_double_quotes && format.multiline_entries == INI_NO_MULTILINE`<br />
+	⇒ **Escape sequences:** No escape sequences<br />
+	⇒ **Behavior of `ini_unquote()`:** No changes will be performed, only the length of the string will be counted and returned.
+
+## STRING COMPARISONS
+
+In order to perform comparisons between string the function `ini_string_match_ss()`, `ini_string_match_si()` and `ini_string_match_ii()` are available. The function `ini_string_match_ss()` compares two simple strings, the function `ini_string_match_si()` compares a simple string with an unparsed INI string, and the function `ini_string_match_ii()` compares two unparsed INI strings. INI strings are the strings typically dispatched by `load_ini_file()` and `load_ini_path()`, which may contain quotes and the three escaping sequences `\\`, `\'`, `\"`. Simple strings are user-given strings or the result of `ini_unquote()`.
+
+Because of this, the functions `ini_string_match_si()`, `ini_string_match_ii()` do not perform literal comparisons of equality between strings. For example, in the following (absurd) INI file the two keys `foo` and `hello` belong to the same section named `this is a double quotation mark: "!` (after parsed by `ini_unquote()`).
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
+
+[this is a double quotation mark: \"!]
+
+foo = bar
+
+[this is a double quotation mark: '"'!]
+
+hello = world
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Therefore...
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+
+char
+	string1[] = "This is a double quotation mark: \\\"!",
+	string2[] = "This is a double quotation mark: \'\"\'!";
+
+printf("%s\n", ini_string_match_ii(string1, string2, my_format) ? "They match" : "They don't match");	// "They match"
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The three functions `ini_string_match_ss()`, `ini_string_match_si()`, `ini_string_match_ii()` perform case-sensitive or case-insensitive comparisons depending on the format given.
+
+Remember that the multiline escaping sequence (`/\\(?:\n\r?|\r\n?)/`) is **not** considered as such in INI strings, since this is the only escaping sequence automatically unescaped by **libconfini** _before_ each dispatch.
+
+## CODE CONSIDERATIONS
+
+### THE LISTENERS
+
+The functions `load_ini_file()`, `load_ini_path()`, `ini_array_foreach()` and `ini_split_array()` require some listeners defined by the user. Such listeners must return an `int` value. When this is non-zero the caller function is interrupted and its loop stopped.
+
+### OTHER GLOBAL SETTINGS
+
+Besides the two global variables `#INI_IMPLICIT_VALUE` and `#INI_IMPLICIT_V_LEN`, a third variable named `#INI_INSENSITIVE_LOWERCASE` tells **libconfini** whether to dispatch key names and section paths lower-case or not in case-insensitive INI files.
+
+As with the other global variables, the variable `#INI_INSENSITIVE_LOWERCASE` can be declared at the beginning of your code:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+
+#define FALSE 0
+#define TRUE 1
+
+#include <confini.h>
+
+int INI_INSENSITIVE_LOWERCASE = FALSE;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Alternatively, it can be set through the function `ini_dispatch_case_insensitive_lowercase()` without being explicitly declared.
+
+When the variable `#INI_INSENSITIVE_LOWERCASE` is set to any non-zero value, **libconfini** will always convert all ASCII letters to lowercase (except within values) -- _even when these are enclosed within quotes_ -- but will **not** convert UTF-8 code points to lowercase (for instance, `Ā` will not be rendered as `ā`, but will be rather rendered verbatim). _In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names._
+
+### THREAD SAFETY
+
+Depending on the format of the INI file, **libconfini** may use up to three global variables (`#INI_IMPLICIT_VALUE`, `#INI_IMPLICIT_V_LEN` and `#INI_INSENSITIVE_LOWERCASE`). In order to be thread-safe these three variables (if needed) should be defined only once (either directly, or through their modifier functions `ini_set_implicit_value()` and `ini_dispatch_case_insensitive_lowercase()`), or otherwise a mutex logic must be introduced.
+
+Apart from the three variables above, each parsing allocates and frees its own memory, therefore the library must be considered thread-safe.
+
+### PERFORMANCE
 
 The algorithms used by **libconfini** stand in a delicate equilibrium between flexibility, speed and code readability, with flexibility as primary target. Performance can vary with the format used to parse an INI file, but in most of the cases is not a concern.
 

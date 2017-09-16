@@ -45,10 +45,10 @@ email = mario\.rossi@example\.com
 .IP "" 0
 .
 .SH "SUPPORTED SYNTAXES"
-During the years, several interpretations of INI files appeared\. In some implementation the colon character (\fB:\fR) has been adopted as delimiter (a typical example under GNU/Linux is \fB/etc/nsswitch\.conf\fR), in other implementation the space (\fB/[ \et\ev\ef]+/\fR or \fB/(?:\e\e(?:\en\er?|\er\en?)|[\et \ev\ef])+/\fR) has been used instead (see for example \fB/etc/host\.conf\fR), and so on\. This library has been born as a general INI parser for GNU, so the support of most of the main INI dialects has been implemented within it\.
+During the years, several interpretations of INI files appeared\. In some implementation the colon character (\fB:\fR) has been adopted as delimiter between keys and values (a typical example under GNU/Linux is \fB/etc/nsswitch\.conf\fR), in other implementation the space (\fB/[ \et\ev\ef]+/\fR or \fB/(?:\e\e(?:\en\er?|\er\en?)|[\et \ev\ef])+/\fR) has been used instead (see for example \fB/etc/host\.conf\fR), and so on\. This library has been born as a general INI parser for GNU, so the support of most of the main INI dialects has been implemented within it\.
 .
 .P
-Especially in Microsoft Windows, a more radical syntax variation has been implemented: the use of the semicolon, instead of new lines, as node delimiter, as in the following example:
+Especially in Microsoft Windows, a more radical syntax variation has been implemented: the use of the semicolon, instead of new lines, as delimiter between nodes, as in the following example:
 .
 .IP "" 4
 .
@@ -71,7 +71,7 @@ email = mario\.rossi@example\.com
 For several reasons the use of semicolon as node delimiter is not (and will never be) supported by \fBlibconfini\fR\.
 .
 .SS "KEYS"
-A \fBkey element\fR is identified as a string followed by a delimiter \-\- typically the equals sign (\fB=\fR) or the colon sign (\fB:\fR) or a space sequence (\fB/\es+/\fR) \-\- which is followed by a value, which is followed by a new line or an inline comment\.
+A \fBkey element\fR is identified as a string followed by a delimiter – typically the equals sign (\fB=\fR) or the colon sign (\fB:\fR) or a space sequence (\fB/\es+/\fR) – which is followed by a value, which is followed by a new line or an inline comment\.
 .
 .P
 Both the \fBkey part\fR and the \fBvalue part\fR may be enclosed within quotes (\fB\'\fR or \fB"\fR):
@@ -118,10 +118,10 @@ foo = "bar"
 .IP "" 0
 .
 .P
-The \fBkey part\fR can contain any character, except the delimiter (which can be enclosed within quotes for not beeing considered as such)\. Internal new line sequences must be escaped (ECMAScript regular expression: \fB/\e\e(?:\en\er?|\er\en?)/\fR)\.
+The \fBkey part\fR can contain any character, except the delimiter (which may be enclosed within quotes for not beeing considered as such)\. Internal new line sequences must be escaped (\fB/\e\e(?:\en\er?|\er\en?)/\fR)\.
 .
 .P
-If the \fBkey part\fR part is missing the element is considered of unknown type, i\.e\., \fBINI_UNKNOWN\fR \-\- see enum \fB#IniNodeType\fR \-\- (example: \fB= foo\fR)\. If the \fBvalue part\fR is missing the key element is considered empty (example: \fBfoo =\fR)\. If the delimiter is missing, according to some formats the key element is considered to be an \fIimplicit key\fR \-\- typically representing the boolean \fBTRUE\fR (example: \fBfoo\fR)\. For instance, in the following example from \fB/etc/pacman\.conf\fR, \fBIgnorePkg\fR is an empty key, while \fBColor\fR is an implicit key (representing a \fBTRUE\fR boolean \-\- i\.e\., \fBColor = YES\fR):
+If the \fBkey part\fR part is missing the element is considered of unknown type, i\.e\., \fBINI_UNKNOWN\fR – see enum \fBIniNodeType\fR – (example: \fB= foo\fR)\. If the \fBvalue part\fR is missing the key element is considered empty (example: \fBfoo =\fR)\. If the delimiter is missing, according to some formats the key element is considered to be an \fIimplicit key\fR – typically representing the boolean \fBTRUE\fR (example: \fBfoo\fR)\. For instance, in the following example from \fB/etc/pacman\.conf\fR, \fBIgnorePkg\fR is an empty key, while \fBColor\fR is an implicit key (representing a \fBTRUE\fR boolean – i\.e\., \fBColor = YES\fR):
 .
 .IP "" 4
 .
@@ -140,7 +140,7 @@ LocalFileSigLevel = Optional
 .IP "" 0
 .
 .P
-The \fBvalue\fR part can contain typed data, usually: a boolean (booleans supported by \fBlibconfini\fR are: \fBNO\fR/\fBYES\fR, \fBFALSE\fR/\fBTRUE\fR, \fB0\fR/\fB1\fR), a string, a number, or an array (typically with commas as members delimiters \-\- example: \fBpaths = /etc, /usr, "/home/john/Personal Data"\fR)\. Internal new line sequences must be escaped (ECMAScript regular expression: \fB/\e\e(?:\en\er?|\er\en?)/\fR)\.
+The \fBvalue\fR part can contain typed data, usually: a boolean (booleans supported by \fBlibconfini\fR are: \fBNO\fR/\fBYES\fR, \fBFALSE\fR/\fBTRUE\fR, \fB0\fR/\fB1\fR), a string, a number, or an array (typically with commas as delimiters between members – example: \fBpaths = /etc, /usr, "/home/john/Personal Data"\fR)\. Internal new line sequences must be escaped (\fB/\e\e(?:\en\er?|\er\en?)/\fR)\.
 .
 .IP "" 4
 .
@@ -161,7 +161,7 @@ my_array = Asia, Africa, \'North America\', South America,\e
 .IP "" 0
 .
 .SS "SECTIONS"
-A \fBsection\fR can ben imagined like a directory\. A \fBsection path\fR is identified as the string \fB"$1"\fR in the regular expression (ECMAScript regular expression) \fB/(?:^|\en)[ \et\ev\ef]*\e[[ \et\ev\ef]*([^\e]]*)[ \et\ev\ef]*\e]/\fR globally applied to an INI file\. A section path expresses nesting through the \'dot\' character, as in the following example:
+A \fBsection\fR may ben imagined like a directory\. A \fBsection path\fR is identified as the string \fB"$1"\fR in the regular expression \fB/(?:^|\en)[ \et\ev\ef]*\e[[ \et\ev\ef]*([^\e]]*)[ \et\ev\ef]*\e]/\fR globally applied to an INI file\. A section path expresses nesting through the \'dot\' character, as in the following example:
 .
 .IP "" 4
 .
@@ -224,7 +224,7 @@ port = 80
 .IP "" 0
 .
 .P
-Section parts can be enclosed within quotes:
+Section parts may be enclosed within quotes:
 .
 .IP "" 4
 .
@@ -258,7 +258,7 @@ foo = bar       # this is an inline comment
 .IP "" 0
 .
 .P
-Comments can in theory be multiline, following the same syntax of multiline disabled entries (see below)\. This is usually of little utility, except for inline comments that you want to make sure will refer to the previous entry:
+Comments may in theory be multiline, following the same syntax of multiline disabled entries (see below)\. This is usually of little utility, except for inline comments that you want to make sure will refer to the previous entry:
 .
 .IP "" 4
 .
@@ -267,16 +267,16 @@ Comments can in theory be multiline, following the same syntax of multiline disa
 
 comedy1 = The Tempest
 
-comedy2 = Twelfth Night      #  If music be the food of love, play on;        \e
-                             #  Give me excess of it; that, surfeiting,       \e
-                             #  The appetite may sicken, and so die\. \-\-       \e
-                             #  That strain again; it had a dying fall:       \e
-                             #  O, it came oer my ear, like the sweet sound   \e
-                             #  That breathes upon a bank of violets,         \e
-                             #  Stealing, and giving odour! Enough! No more\.  \e
-                             #  \'Tis not so sweet now as it was before\.       \e
-                             #                                                \e
-                             #      Orsino, scene I
+comedy2 = Twelfth Night  # If music be the food of love, play on;      \e
+                         # Give me excess of it; that, surfeiting,     \e
+                         # The appetite may sicken, and so die\.        \e
+                         # That strain again; it had a dying fall:     \e
+                         # O, it came oer my ear, like the sweet sound \e
+                         # That breathes upon a bank of violets,       \e
+                         # Stealing, and giving odour! Enough! No more\.\e
+                         # \'Tis not so sweet now as it was before\.     \e
+                         #                                             \e
+                         #     Orsino, scene I
 
 # This is also a masterpiece!
 comedy3 = The Merchant of Venice
@@ -286,10 +286,10 @@ comedy3 = The Merchant of Venice
 .IP "" 0
 .
 .SS "ESCAPING SEQUENCES"
-In order to maximize the flexibility of the data, only four escaping sequences are supported by \fBlibconfini\fR: \fB\e\'\fR, \fB\e"\fR, \fB\e\e\fR and the multiline escaping sequence (ECMAScript regular expression: \fB/\e\e(?:\en\er?|\er\en?)/\fR)\.
+In order to maximize the flexibility of the data, only four escaping sequences are supported by \fBlibconfini\fR: \fB\e\'\fR, \fB\e"\fR, \fB\e\e\fR and the multiline escaping sequence (\fB/\e\e(?:\en\er?|\er\en?)/\fR)\.
 .
 .P
-The first three escaping sequences are left untouched by all functions except \fBini_unquote()\fR\. Nevertheless, the characters \fB\'\fR, \fB"\fR and \fB\e\fR can determine different behaviors during the parsing depending on whether they are escaped or unescaped\. For instance, the string \fB#johnsmith\fR in the following example will not be parsed as a comment:
+The first three escaping sequences are left untouched by all functions except \fBini_unquote()\fR\. Nevertheless, the characters \fB\'\fR, \fB"\fR and \fB\e\fR can determine different behaviors during the parsing depending on whether they are escaped or unescaped\. For instance, the string \fBjohnsmith !"\fR in the following example will not be parsed as a comment:
 .
 .IP "" 4
 .
@@ -323,7 +323,7 @@ value
 .IP "" 0
 .
 .SS "DISABLED ENTRIES"
-A disabled entry is either a section or a key that has been nested inside a comment as its only child\. Disabled entries can be multiline, using \fB/\e\e(?:\en\er?|\er\en?)[\et \ev\ef]*[;#]+/\fR as multiline escaping sequence\. For example:
+A disabled entry is either a section or a key that has been nested inside a non\-inline comment as its only child\. Disabled entries can be multiline, using \fB/\e\e(?:\en\er?|\er\en?)[\et \ev\ef]*[;#]+/\fR as multiline escaping sequence\. For example:
 .
 .IP "" 4
 .
@@ -340,11 +340,8 @@ A disabled entry is either a section or a key that has been nested inside a comm
 .
 .IP "" 0
 .
-.SS "ENCODINGS"
-The encodings currently supported by \fBlibconfini\fR are ASCII and UTF\-8\. In case the INI file is case\-insensitive with respect to keys and section names, \fBlibconfini\fR will always convert all ASCII letters to lowercase (except within values) \-\- \fIeven when these are enclosed within quotes\fR \-\- but will \fBnot\fR convert non\-ASCII code points to lowercase (for instance, \fBĀ\fR will not be rendered as \fBā\fR, but will be rather rendered verbatim)\. \fIIn general it is a good practice to use UTF\-8 within values, but to use ASCII only within keys names and sections names\.\fR
-.
 .SH "READ AN INI FILE"
-The syntax of \fBlibconfini\fR\'s main functions is:
+The syntax of \fBlibconfini\fR\'s parsing functions is:
 .
 .P
 #1
@@ -409,13 +406,13 @@ where
 \fBformat\fR is a bitfield structure defining the syntax of the INI file (see the \fBIniFormat\fR struct)
 .
 .IP "\(bu" 4
-\fBf_init\fR is the function that will be invoked \fIbefore\fR any dispatching begins \-\- it can be \fBNULL\fR
+\fBf_init\fR is the function that will be invoked \fIbefore\fR any dispatching begins – it can be \fBNULL\fR
 .
 .IP "\(bu" 4
 \fBf_foreach\fR is the callback function that will be invoked for each member of the INI file \- it can be \fBNULL\fR
 .
 .IP "\(bu" 4
-\fBuser_data\fR is a pointer to a custom argument \-\- it can be \fBNULL\fR
+\fBuser_data\fR is a pointer to a custom argument – it can be \fBNULL\fR
 .
 .IP "" 0
 .
@@ -423,10 +420,10 @@ where
 The function \fBf_init()\fR is invoked with two arguments:
 .
 .IP "\(bu" 4
-\fBstatistics\fR \-\- a pointer to an \fBIniStatistics\fR object containing some properties about the file read (like its size in bytes and the number of its members)
+\fBstatistics\fR – a pointer to an \fBIniStatistics\fR object containing some properties about the file read (like its size in bytes and the number of its members)
 .
 .IP "\(bu" 4
-\fBuser_data\fR \-\- a pointer to the custom argument previously passed to the \fBload_ini_file()\fR / \fBload_ini_path()\fR functions
+\fBuser_data\fR – a pointer to the custom argument previously passed to the \fBload_ini_file()\fR / \fBload_ini_path()\fR functions
 .
 .IP "" 0
 .
@@ -434,10 +431,10 @@ The function \fBf_init()\fR is invoked with two arguments:
 The function \fBf_foreach()\fR is invoked with two arguments:
 .
 .IP "\(bu" 4
-\fBdispatch\fR \-\- a pointer to an \fBIniDispatch\fR object containing the parsed member of the INI file
+\fBdispatch\fR – a pointer to an \fBIniDispatch\fR object containing the parsed member of the INI file
 .
 .IP "\(bu" 4
-\fBuser_data\fR \-\- a pointer to the custom argument previously passed to the \fBload_ini_file()\fR / \fBload_ini_path()\fR functions
+\fBuser_data\fR – a pointer to the custom argument previously passed to the \fBload_ini_file()\fR / \fBload_ini_path()\fR functions
 .
 .IP "" 0
 .
@@ -542,12 +539,12 @@ If you want to edit the content of \fBIniDispatch::data\fR and this contains a s
 Regarding \fBIniDispatch::value\fR, the buffer will not be shared between dispatches, so feel free to edit it\.
 .
 .IP "4." 4
-Regarding \fBIniDispatch::append_to\fR, this buffer is likely to be shared with other dispatches: again, you will not destroy the world nor generate errors, but you will make the next \fBIniDispatch::append_to\fRs useless\. Therefore, \fBthe property \fBIniDispatch::append_to\fR should be considered read\-only\fR \-\- this is just a logical imposition (and this is why \fBIniDispatch::append_to\fR is not passed as \fBconst\fR)\.
+Regarding \fBIniDispatch::append_to\fR, this buffer is likely to be shared with other dispatches: again, you will not destroy the world nor generate errors, but you will make the next \fBIniDispatch::append_to\fRs useless\. Therefore, \fBthe property \fBIniDispatch::append_to\fR should be considered read\-only\fR – this is just a logical imposition (and this is why \fBIniDispatch::append_to\fR is not passed as \fBconst\fR)\.
 .
 .IP "" 0
 .
 .P
-Typical peaceful edits are the calls of the functions \fBini_collapse_array()\fR and \fBini_unquote()\fR directly on the buffer \fBIniDispatch::value\fR (but make sure that you are not going to edit the global string \fB#INI_IMPLICIT_VALUE\fR):
+Typical peaceful edits are the calls of the functions \fBini_collapse_array()\fR and \fBini_unquote()\fR directly on the buffer \fBIniDispatch::value\fR (but make sure that you are not going to edit the global string \fBINI_IMPLICIT_VALUE\fR):
 .
 .IP "" 4
 .
@@ -605,7 +602,7 @@ ini_set_implicit_value("YES", 0);
 .IP "" 0
 .
 .P
-Alternatively, instead of \fBini_set_implicit_value()\fR you can manually define at the beginning of your code the two global variables \fB#INI_IMPLICIT_VALUE\fR and \fB#INI_IMPLICIT_V_LEN\fR, which will be retrieved by \fBlibconfini\fR:
+Alternatively, instead of \fBini_set_implicit_value()\fR you can manually define at the beginning of your code the two global variables \fBINI_IMPLICIT_VALUE\fR and \fBINI_IMPLICIT_V_LEN\fR, which will be retrieved by \fBlibconfini\fR:
 .
 .IP "" 4
 .
@@ -625,7 +622,7 @@ unsigned long int INI_IMPLICIT_V_LEN = 3;
 If not defined elsewhere, these variables are respectively \fBNULL\fR and \fB0\fR by default\.
 .
 .P
-After having set the value to be assigned to implicit key elements, it is possible to test whether a dispatched key is implicit or not by comparing the address of its \fBvalue\fR property with the global variable \fB#INI_IMPLICIT_VALUE\fR:
+After having set the value to be assigned to implicit key elements, it is possible to test whether a dispatched key is implicit or not by comparing the address of its \fBvalue\fR property with the global variable \fBINI_IMPLICIT_VALUE\fR:
 .
 .IP "" 4
 .
@@ -685,10 +682,10 @@ int main () {
 The output strings dispatched by \fBlibconfini\fR will follow some formatting rules depending on their role within the INI file\. First, the multiline sequences will be unescaped, then
 .
 .IP "\(bu" 4
-\fBSection paths\fR will be rendered according to ECMAScript \fBsection_name\.replace(/\e\.*\es*$|(?:\es*(\e\.))+\es*|^\es+/g, "$1")\.replace(/\es+/g, " ")\fR \-\- within single or double quotes, if active, the text will be rendered verbatim
+\fBSection paths\fR will be rendered according to ECMAScript \fBsection_name\.replace(/\e\.*\es*$|(?:\es*(\e\.))+\es*|^\es+/g, "$1")\.replace(/\es+/g, " ")\fR – within single or double quotes, if active, the text will be rendered verbatim
 .
 .IP "\(bu" 4
-\fBKey names\fR will be rendered according to ECMAScript \fBkey_name\.replace(/^[\en\er]\es*|\es+/g, " ")\fR \-\- within single or double quotes, if active, the text will be rendered verbatim
+\fBKey names\fR will be rendered according to ECMAScript \fBkey_name\.replace(/^[\en\er]\es*|\es+/g, " ")\fR – within single or double quotes, if active, the text will be rendered verbatim
 .
 .IP "\(bu" 4
 \fBValues\fR, if \fBformat\.do_not_collapse_values\fR is active, will be cleaned of spaces at the beginning and at the end, otherwise will be rendered though the same algorithm used for key names\.
@@ -769,14 +766,14 @@ int main () {
 .
 .IP "" 0
 .
-.SH "THE <code>IniFormat</code> BITFIELD"
+.SH "THE `IniFormat` BITFIELD"
 For a correct use of this library it is fundamental to understand the \fBIniFormat\fR bitfield\. \fBlibconfini\fR has been born as a general INI parser, with the main purpose of \fIbeing able to understand INI files written by other programs\fR (see README)\. Therefore some flexibility was required\.
 .
 .P
 When an INI file is parsed it is parsed according to a format\. The \fBIniFormat\fR bitfield is a description of such format\.
 .
 .P
-Each format can be represented also as a univocal 24\-bit unsigned integer\. In order to convert an \fBIniFormat\fR to an unsigned integer and vice versa please see \fBini_format_get_id()\fR, \fBini_format_set_to_id()\fR and \fB#IniFormatId\fR\.
+Each format can be represented also as a univocal 24\-bit unsigned integer\. In order to convert an \fBIniFormat\fR to an unsigned integer and vice versa please see \fBini_format_get_id()\fR, \fBini_format_set_to_id()\fR and \fBIniFormatId\fR\.
 .
 .SH "THE MODEL FORMAT"
 A model format named \fBINI_DEFAULT_FORMAT\fR is available\.
@@ -824,8 +821,8 @@ my_format\.disabled_can_be_implicit = NO;
 .
 .IP "" 0
 .
-.SH "THE <code>IniStatistics</code> AND <code>IniDispatch</code> STRUCTURES"
-When the function \fBload_ini_file()\fR / \fBload_ini_path()\fR reads an INI file, it dispatches the file content to the \fBf_foreach()\fR listener\. Before the dispatching begins some statistics about the parsed file can be dispatched to the \fBf_init()\fR listener (if this is non\-\fBNULL\fR)\.
+.SH "THE `IniStatistics` AND `IniDispatch` STRUCTURES"
+When the functions \fBload_ini_file()\fR / \fBload_ini_path()\fR read an INI file, they dispatches the file content to the \fBf_foreach()\fR listener\. Before the dispatching begins some statistics about the parsed file can be dispatched to the \fBf_init()\fR listener (if this is non\-\fBNULL\fR)\.
 .
 .P
 The information passed to \fBf_init()\fR is passed through an \fBIniStatistics\fR structure, while the information passed to \fBf_foreach()\fR is passed through an \fBIniDispatch\fR structure\.
@@ -857,7 +854,7 @@ Once your listener starts to receive the parsed data you may want to parse and b
 .IP "" 0
 .
 .P
-Together with the functions listed above the following links are available, in case you don\'t want to \fB#include <stdlib\.h>\fR in your source:
+Together with the functions listed above the following links are available, in case you don\'t want to \fBinclude <stdlib\.h>\fR in your source:
 .
 .IP "\(bu" 4
 \fBini_get_int()\fR = \fBatoi()\fR \fIhttp://www\.gnu\.org/software/libc/manual/html_node/Parsing\-of\-Integers\.html#index\-atoi\fR
@@ -882,7 +879,137 @@ In order to retrieve the parts of a section path the functions \fBini_array_get_
 .P
 It may be required that the function \fBini_unquote()\fR be applied to each part of a section path, depending on the content and the format of the INI file\.
 .
-.SH "PERFORMANCE"
+.SH "THE FORMATTING FUNCTIONS"
+The functions \fBini_unquote()\fR, \fBini_collapse_array()\fR and \fBini_split_array()\fR change the content of the given string\. It is important to point out that the edit is always performed within the length of the buffer given\.
+.
+.P
+The behavior of these functions depends on the format given\. In particular, using \fBini_unquote()\fR as model one obtains the following scheme:
+.
+.IP "1." 4
+\fBCondition:\fR \fB!format\.no_single_quotes && !format\.no_double_quotes && format\.multiline_entries != INI_NO_MULTILINE\fR
+.
+.br
+⇒ \fBEscape sequences:\fR \fB\e\e\fR, \fB\e"\fR, \fB\e\'\fR
+.
+.br
+⇒ \fBBehavior of \fBini_unquote()\fR:\fR \fB\e\e\fR, \fB\e\'\fR and \fB\e"\fR will be unescaped, all unescaped single and double quotes will be removed,\~then the new length of the string will be returned\.
+.
+.IP "2." 4
+\fBCondition:\fR \fBformat\.no_double_quotes\fR
+.
+.br
+⇒ \fBEscape sequences:\fR \fB\e\e\fR, \fB\e\'\fR
+.
+.br
+⇒ \fBBehavior of \fBini_unquote()\fR:\fR \fB\e\e\fR and \fB\e\'\fR will be unescaped, all unescaped single quotes will be removed,\~then the new length of the string will be returned\.
+.
+.IP "3." 4
+\fBCondition:\fR \fBformat\.no_single_quotes\fR
+.
+.br
+⇒ \fBEscape sequences:\fR \fB\e\e\fR, \fB\e"\fR
+.
+.br
+⇒ \fBBehavior of \fBini_unquote()\fR:\fR \fB\e\e\fR and \fB\e"\fR will be unescaped, all unescaped double quotes will be removed,\~then the new length of the string will be returned\.
+.
+.IP "4." 4
+\fBformat\.no_single_quotes && format\.no_double_quotes && format\.multiline_entries == INI_NO_MULTILINE\fR
+.
+.br
+⇒ \fBEscape sequences:\fR No escape sequences
+.
+.br
+⇒ \fBBehavior of \fBini_unquote()\fR:\fR No changes will be performed, only the length of the string will be counted and returned\.
+.
+.IP "" 0
+.
+.SH "STRING COMPARISONS"
+In order to perform comparisons between string the function \fBini_string_match_ss()\fR, \fBini_string_match_si()\fR and \fBini_string_match_ii()\fR are available\. The function \fBini_string_match_ss()\fR compares two simple strings, the function \fBini_string_match_si()\fR compares a simple string with an unparsed INI string, and the function \fBini_string_match_ii()\fR compares two unparsed INI strings\. INI strings are the strings typically dispatched by \fBload_ini_file()\fR and \fBload_ini_path()\fR, which may contain quotes and the three escaping sequences \fB\e\e\fR, \fB\e\'\fR, \fB\e"\fR\. Simple strings are user\-given strings or the result of \fBini_unquote()\fR\.
+.
+.P
+Because of this, the functions \fBini_string_match_si()\fR, \fBini_string_match_ii()\fR do not perform literal comparisons of equality between strings\. For example, in the following (absurd) INI file the two keys \fBfoo\fR and \fBhello\fR belong to the same section named \fBthis is a double quotation mark: "!\fR (after parsed by \fBini_unquote()\fR)\.
+.
+.IP "" 4
+.
+.nf
+
+
+[this is a double quotation mark: \e"!]
+
+foo = bar
+
+[this is a double quotation mark: \'"\'!]
+
+hello = world
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Therefore\.\.\.
+.
+.IP "" 4
+.
+.nf
+
+
+char
+    string1[] = "This is a double quotation mark: \e\e\e"!",
+    string2[] = "This is a double quotation mark: \e\'\e"\e\'!";
+
+printf("%s\en", ini_string_match_ii(string1, string2, my_format) ? "They match" : "They don\'t match");   // "They match"
+.
+.fi
+.
+.IP "" 0
+.
+.P
+The three functions \fBini_string_match_ss()\fR, \fBini_string_match_si()\fR, \fBini_string_match_ii()\fR perform case\-sensitive or case\-insensitive comparisons depending on the format given\.
+.
+.P
+Remember that the multiline escaping sequence (\fB/\e\e(?:\en\er?|\er\en?)/\fR) is \fBnot\fR considered as such in INI strings, since this is the only escaping sequence automatically unescaped by \fBlibconfini\fR \fIbefore\fR each dispatch\.
+.
+.SH "CODE CONSIDERATIONS"
+.
+.SS "THE LISTENERS"
+The functions \fBload_ini_file()\fR, \fBload_ini_path()\fR, \fBini_array_foreach()\fR and \fBini_split_array()\fR require some listeners defined by the user\. Such listeners must return an \fBint\fR value\. When this is non\-zero the caller function is interrupted and its loop stopped\.
+.
+.SS "OTHER GLOBAL SETTINGS"
+Besides the two global variables \fBINI_IMPLICIT_VALUE\fR and \fBINI_IMPLICIT_V_LEN\fR, a third variable named \fBINI_INSENSITIVE_LOWERCASE\fR tells \fBlibconfini\fR whether to dispatch key names and section paths lower\-case or not in case\-insensitive INI files\.
+.
+.P
+As with the other global variables, the variable \fBINI_INSENSITIVE_LOWERCASE\fR can be declared at the beginning of your code:
+.
+.IP "" 4
+.
+.nf
+
+
+#define FALSE 0
+#define TRUE 1
+
+#include <confini\.h>
+
+int INI_INSENSITIVE_LOWERCASE = FALSE;
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Alternatively, it can be set through the function \fBini_dispatch_case_insensitive_lowercase()\fR without being explicitly declared\.
+.
+.P
+When the variable \fBINI_INSENSITIVE_LOWERCASE\fR is set to any non\-zero value, \fBlibconfini\fR will always convert all ASCII letters to lowercase (except within values) – \fIeven when these are enclosed within quotes\fR – but will \fBnot\fR convert UTF\-8 code points to lowercase (for instance, \fBĀ\fR will not be rendered as \fBā\fR, but will be rather rendered verbatim)\. \fIIn general it is a good practice to use UTF\-8 within values, but to use ASCII only within keys names and sections names\.\fR
+.
+.SS "THREAD SAFETY"
+Depending on the format of the INI file, \fBlibconfini\fR may use up to three global variables (\fBINI_IMPLICIT_VALUE\fR, \fBINI_IMPLICIT_V_LEN\fR and \fBINI_INSENSITIVE_LOWERCASE\fR)\. In order to be thread\-safe these three variables (if needed) should be defined only once (either directly, or through their modifier functions \fBini_set_implicit_value()\fR and \fBini_dispatch_case_insensitive_lowercase()\fR), or otherwise a mutex logic must be introduced\.
+.
+.P
+Apart from the three variables above, each parsing allocates and frees its own memory, therefore the library must be considered thread\-safe\.
+.
+.SS "PERFORMANCE"
 The algorithms used by \fBlibconfini\fR stand in a delicate equilibrium between flexibility, speed and code readability, with flexibility as primary target\. Performance can vary with the format used to parse an INI file, but in most of the cases is not a concern\.
 .
 .P

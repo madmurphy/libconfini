@@ -36,11 +36,11 @@
 	@property	IniFormat::multiline_entries
 					Defines which class of entries are allowed to be multiline (use enum `#IniMultiline` for this)
 	@property	IniFormat::case_sensitive
-					If set to `1`, key- and section- names will not be rendered in lower case
+					If set to `1`, key and section names will not be rendered in lower case
 	@property	IniFormat::no_spaces_in_names
-					If set to `1`, key- and section- names containing spaces will be rendered as `#INI_UNKNOWN`.
-					Note that having `INI_ANY_SPACE` as delimiter will not set this option to `1`: spaces will
-					be still allowed in section names.					
+					If set to `1`, key and section names containing spaces will be rendered as `#INI_UNKNOWN`.
+					Note that setting `IniFormat::delimiter_symbol` to `INI_ANY_SPACE` will not automatically set
+					this option to `1` (spaces will be still allowed in section names).					
 	@property	IniFormat::no_single_quotes
 					If set to `1`, the single-quote character (`'`) will be considered as a normal character
 	@property	IniFormat::no_double_quotes
@@ -72,7 +72,7 @@
 	@struct		IniDispatch
 
 	@property	IniDispatch::format
-					The format of the INI file (see struct `#IniFormat`)
+					The format of the INI file (see struct `IniFormat`)
 	@property	IniDispatch::type
 					The dispatch type (see enum `#IniNodeType`)
 	@property	IniDispatch::data
@@ -118,7 +118,8 @@
 #define _LIBCONFINI_HASH_ '#'
 #define _LIBCONFINI_LF_ '\n'
 #define _LIBCONFINI_CR_ '\r'
-
+/* In the future there will maybe be support for UTF-8 casefold, but for now only ASCII... */
+#define _LIBCONFINI_CHR_CASEFOLD_(CHR) (CHR > 0x40 && CHR < 0x5b ? CHR | 0x60 : CHR)
 
 
 /* FUNCTIONAL CONSTANTS */
@@ -331,7 +332,7 @@ static inline size_t urtrim_s (const char * const urt_s, const size_t length) {
 **/
 static inline void string_tolower (char * const str) {
 	for (char *ch_ptr = str; *ch_ptr; ++ch_ptr) {
-		*ch_ptr = *ch_ptr > 0x40 && *ch_ptr < 0x5b ? *ch_ptr | 0x60 : *ch_ptr;
+		*ch_ptr = _LIBCONFINI_CHR_CASEFOLD_(*ch_ptr);
 	}
 }
 
@@ -422,7 +423,7 @@ static inline size_t get_delimiter_pos (const char * const str, const size_t len
 			idx < len && (
 				(abacus & 12) || !(
 					format.delimiter_symbol ?
-						str[idx] == format.delimiter_symbol
+						str[idx] == (char /* Neutralize the `unsigned` keyword used in the bitfield */) format.delimiter_symbol
 						: is_some_space(str[idx], _LIBCONFINI_NO_EOL_)
 				)
 			);
@@ -783,7 +784,7 @@ static uint8_t get_type_as_active (
 	const IniFormat format
 ) {
 
-	if (!len || *nodestr == format.delimiter_symbol || is_comment_char(*nodestr, format)) {
+	if (!len || *nodestr == (char /* Neutralize the `unsigned` keyword used in the bitfield */) format.delimiter_symbol || is_comment_char(*nodestr, format)) {
 
 		return INI_UNKNOWN;
 
@@ -1217,6 +1218,14 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 	@param			user_data		A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
 
+	The function @p f_init will be invoked with two arguments: `statistics` (a pointer to an `IniStatistics`
+	object containing some properties about the file read) and `init_other` (the custom argument @p user_data
+	previously passed). If @p f_init returns a non-zero value the caller function will be interrupted.
+
+	The function @p f_foreach will be invoked with two arguments: `dispatch` (a pointer to an `IniDispatch`
+	object containing the parsed member of the INI file) and `foreach_other` (the custom argument @p user_data
+	previously passed). If @p f_foreach returns a non-zero value the caller function will be interrupted.
+
 **/
 int load_ini_file (
 	FILE * const ini_file,
@@ -1282,7 +1291,7 @@ int load_ini_file (
 
 	/*
 
-	_LIBCONFINI_SHIFT_LEN_ = (uint32_t) ((unsigned char) *cache << 16 | ((unsigned char) cache[1]) << 8 | ((unsigned char) cache[2])) == 0xEFBBBF ? 3 : 0;
+	__SHIFT_LEN__ = (uint32_t) (((unsigned char) *cache) << 16 | ((unsigned char) cache[1]) << 8 | ((unsigned char) cache[2])) == 0xEFBBBF ? 3 : 0;
 
 	*/
 
@@ -1644,7 +1653,7 @@ int load_ini_file (
 
 				}
 
-				if (!format.case_sensitive) {
+				if (INI_INSENSITIVE_LOWERCASE && !format.case_sensitive) {
 
 					string_tolower(this_d.data);
 
@@ -1681,7 +1690,7 @@ int load_ini_file (
 
 				this_d.d_len = collapse_spaces(this_d.data, format);
 
-				if (!format.case_sensitive) {
+				if (INI_INSENSITIVE_LOWERCASE && !format.case_sensitive) {
 
 					string_tolower(this_d.data);
 
@@ -1732,6 +1741,8 @@ int load_ini_file (
 	@param			user_data		A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
 
+	For the two parameters @p f_init and @p f_foreach see function `load_ini_file()`.
+
 **/
 int load_ini_path (
 	const char * const path,
@@ -1760,6 +1771,22 @@ int load_ini_path (
 
 
 /* FUNCTIONS FOR THE USER (NOT USED BY LIBCONFINI) */
+
+
+/**
+
+	@brief			Sets the value of the global variable `#INI_INSENSITIVE_LOWERCASE`
+	@param			b_lowercase			The new value 
+	@return			Nothing
+
+	If @p b_lowercase is any non-zero value key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: non-zero).
+
+**/
+void ini_dispatch_case_insensitive_lowercase (int b_lowercase) {
+
+	INI_INSENSITIVE_LOWERCASE = b_lowercase;
+
+}
 
 
 /**
@@ -1842,42 +1869,322 @@ void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id) {
 
 /**
 
+	@brief			Compares two simple strings and checks if they match
+	@param			simple_string_a		The first simple string
+	@param			simple_string_b		The second simple string
+	@return			A boolean: `TRUE` if the two strings match, `FALSE` otherwise
+
+	Simple strings are user-given strings or the result of `ini_unquote()`. The following properties are read
+	from argument @p format:
+
+	- `format.case_sensitive`
+
+**/
+short int ini_string_match_ss (const char * const simple_string_a, const char * const simple_string_b, const IniFormat format) {
+
+	short int are_equal = _LIBCONFINI_TRUE_;
+	size_t idx = 0;
+
+	if (format.case_sensitive) {
+
+		do {
+
+			are_equal = simple_string_a[idx] == simple_string_b[idx];
+
+		} while (are_equal && simple_string_a[idx++]);
+
+	} else {
+
+		do {
+
+			are_equal = _LIBCONFINI_CHR_CASEFOLD_(simple_string_a[idx]) == _LIBCONFINI_CHR_CASEFOLD_(simple_string_b[idx]);
+
+		} while (are_equal && simple_string_a[idx++]);
+
+	}
+
+
+	return are_equal;
+}
+
+
+/**
+
+	@brief			Compares an INI string with a simple string and checks if they match according to a format
+	@param			ini_string			The INI string escaped according to @p format
+	@param			simple_string		The simple string
+	@param			format			The format of the INI file
+	@return			A boolean: `TRUE` if the two strings match, `FALSE` otherwise
+
+	INI strings are the strings typically dispatched by `load_ini_file()` and `load_ini_path()`, which may contain quotes and
+	the three escaping sequences `\\`, `\'` and `\"`. Simple strings are user-given strings or the result of `ini_unquote()`.
+
+	The following properties are read from argument @p format:
+
+	- `format.no_double_quotes`
+	- `format.no_single_quotes`
+	- `format.multiline_entries`
+	- `format.case_sensitive`
+
+**/
+short int ini_string_match_si (const char * const simple_string, const char * const ini_string, const IniFormat format) {
+
+	if (format.no_double_quotes && format.no_single_quotes && format.multiline_entries == INI_NO_MULTILINE) {
+
+		/* There are no escape sequences. I will perform a simple comparison between strings. */
+
+		return ini_string_match_ss(simple_string, ini_string, format);
+
+	}
+
+	uint8_t abacus;
+	short int are_equal = _LIBCONFINI_TRUE_;
+	size_t idx_i = 0, idx_s = 0, nbacksl = 0;
+
+	abacus = (format.no_double_quotes << 1) | format.no_single_quotes;
+
+	/*
+
+	Mask `abacus` (6 bits used):
+
+		FLAG_1		Single quotes are not metacharacters (const)
+		FLAG_2		Double quotes are not metacharacters (const)
+		FLAG_4		Unescaped single quotes are odd until now
+		FLAG_8		Unescaped double quotes are odd until now
+		FLAG_16		This is an unescaped single quote and format supports single quotes
+		FLAG_32		This is an unescaped double quote and format supports double quotes
+
+	*/
+
+	do {
+
+		abacus &= 3;
+
+		check_metachr:
+
+		while (ini_string[idx_i] == _LIBCONFINI_BACKSLASH_) {
+
+			nbacksl++;
+			idx_i++;
+
+		}
+
+		abacus	=	!(abacus & 6) && ini_string[idx_i] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+						(abacus & 15) | 32
+					: !(abacus & 9) && ini_string[idx_i] == _LIBCONFINI_SINGLE_QUOTES_ ?
+						(abacus & 15) | 16
+					:
+						abacus & 15;
+
+		if (((abacus ^ 32) & 36) && ((abacus ^ 16) & 24)) {
+
+			nbacksl++;
+
+		} else if (!(nbacksl & 1)) {
+
+			abacus ^= (abacus >> 2) & 12;
+			idx_i++;
+			goto check_metachr;
+
+		}
+
+		nbacksl = (nbacksl >> 1) + 1;
+
+		while (--nbacksl && are_equal) {
+
+			are_equal = simple_string[idx_s] && simple_string[idx_s++] == _LIBCONFINI_BACKSLASH_;
+
+		}
+
+		if (
+			are_equal && (
+				format.case_sensitive ?
+					ini_string[idx_i] == simple_string[idx_s]
+				:
+					_LIBCONFINI_CHR_CASEFOLD_(ini_string[idx_i]) == _LIBCONFINI_CHR_CASEFOLD_(simple_string[idx_s])
+			)
+		) {
+
+			nbacksl = 0;
+			idx_s++;
+
+		} else {
+
+			are_equal = _LIBCONFINI_FALSE_;
+
+		}
+
+	} while (are_equal && ini_string[idx_i++]);
+
+	return are_equal;
+
+}
+
+
+/**
+
+	@brief			Compares two INI strings and checks if they match according to a format
+	@param			ini_string_a			The first INI string unescaped according to @p format
+	@param			ini_string_b			The second INI string unescaped according to @p format
+	@param			format			The format of the INI file
+	@return			A boolean: `TRUE` if the two strings match, `FALSE` otherwise
+
+	INI strings are the strings typically dispatched by `load_ini_file()` and `load_ini_path()`, which may contain quotes and
+	the three escaping sequences `\\`, `\'` and `\"`.
+
+	The following properties are read from argument @p format:
+
+	- `format.no_double_quotes`
+	- `format.no_single_quotes`
+	- `format.multiline_entries`
+	- `format.case_sensitive`
+
+**/
+short int ini_string_match_ii (const char * const ini_string_a, const char * const ini_string_b, const IniFormat format) {
+
+	if (format.no_double_quotes && format.no_single_quotes && format.multiline_entries == INI_NO_MULTILINE) {
+
+		/* There are no escape sequences. I will perform a simple comparison between strings. */
+
+		return ini_string_match_ss(ini_string_a, ini_string_b, format);
+
+	}
+
+	uint8_t side = 0, a_abacus[2];
+	const char * const a_str[2] = { ini_string_a, ini_string_b };
+	short int are_equal = _LIBCONFINI_TRUE_;
+	size_t a_idx[2] = { 0, 0 }, a_nbacksl[2] = { 0, 0 };
+
+	a_abacus[1] = *a_abacus = (format.no_double_quotes << 1) | format.no_single_quotes;
+
+	/*
+
+	Mask `a_abacus` (6 bits used):
+
+		FLAG_1		Single quotes are not metacharacters (const)
+		FLAG_2		Double quotes are not metacharacters (const)
+		FLAG_4		Unescaped single quotes are odd until now
+		FLAG_8		Unescaped double quotes are odd until now
+		FLAG_16		This is an unescaped single quote and format supports single quotes
+		FLAG_32		This is an unescaped double quote and format supports double quotes
+
+	*/
+
+	do {
+
+		change_side:
+
+		side ^= 1;
+		a_abacus[side] &= 3;
+
+		check_metachr:
+
+		while (a_str[side][a_idx[side]] == _LIBCONFINI_BACKSLASH_) {
+
+			a_nbacksl[side]++;
+			a_idx[side]++;
+
+		}
+
+		a_abacus[side]	=	!(a_abacus[side] & 6) && a_str[side][a_idx[side]] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+								(a_abacus[side] & 15) | 32
+							: !(a_abacus[side] & 9) && a_str[side][a_idx[side]] == _LIBCONFINI_SINGLE_QUOTES_ ?
+								(a_abacus[side] & 15) | 16
+							:
+								a_abacus[side] & 15;
+
+		if (!(a_nbacksl[side] & 1) && !(((a_abacus[side] ^ 32) & 36) && ((a_abacus[side] ^ 16) & 24))) {
+
+			a_abacus[side] ^= (a_abacus[side] >> 2) & 12;
+			a_idx[side]++;
+			goto check_metachr;
+
+		}
+
+		if (side) {
+
+			goto change_side;
+
+		}
+
+		if (
+			a_nbacksl[1] >> 1 == *a_nbacksl >> 1 && (
+				format.case_sensitive ?
+					ini_string_a[*a_idx] == ini_string_b[a_idx[1]]
+				:
+					_LIBCONFINI_CHR_CASEFOLD_(ini_string_a[*a_idx]) == _LIBCONFINI_CHR_CASEFOLD_(ini_string_b[a_idx[1]])
+			)
+		) {
+
+			a_nbacksl[1] = *a_nbacksl = 0;
+			a_idx[1]++;
+
+		} else {
+
+			are_equal = _LIBCONFINI_FALSE_;
+
+		}
+
+	} while (are_equal && ini_string_a[(*a_idx)++]);
+
+	return are_equal;
+
+}
+
+
+/**
+
 	@brief			Unescapes `\\`, `\'` and `\"` and removes all unescaped quotes (if single/double quotes are active)
 	@param			ini_string		The string to be unescaped
 	@param			format			The format of the INI file
 	@return			The new length of the string
 
-	Usually @p ini_string comes from an `IniDispatch`, but any other string may be used as well. If the	string does
+	Usually @p ini_string comes from an `IniDispatch` (but any other string may be used as well). If the string does
 	not contain quotes, or if quotes are considered to be normal characters, no changes will be made.
 
 **/
 size_t ini_unquote (char * const ini_string, const IniFormat format) {
 
-	uint8_t qmask;
-	size_t lshift, nbacksl, idx;
+	size_t idx;
+
+	if (format.no_double_quotes && format.no_single_quotes && format.multiline_entries == INI_NO_MULTILINE) {
+
+		/* There are no escape sequences. I will just return the length of the string. */
+
+		for (idx = 0; ini_string[idx]; idx++);
+
+		return idx;
+
+	}
+
+	uint8_t abacus = (format.no_double_quotes << 1) | format.no_single_quotes;
+	size_t lshift, nbacksl;
 
 	/*
 
-	Mask `qmask` (4 bits used):
+	Mask `abacus` (6 bits used):
 
-		FLAG_1		Unescaped single quotes are even until now
-		FLAG_2		Unescaped double quotes are even until now
-		FLAG_4		This is an unescaped single quote and format supports single quotes
-		FLAG_8		This is an unescaped double quote and format supports double quotes
+		FLAG_1		Single quotes are not metacharacters (const)
+		FLAG_2		Double quotes are not metacharacters (const)
+		FLAG_4		Unescaped single quotes are odd until now
+		FLAG_8		Unescaped double quotes are odd until now
+		FLAG_16		This is an unescaped single quote and format supports single quotes
+		FLAG_32		This is an unescaped double quote and format supports double quotes
 
 	*/
 
-	for (qmask = 3, lshift = 0, nbacksl = 0, idx = 0; ini_string[idx]; idx++) {
+	for (lshift = 0, nbacksl = 0, idx = 0; ini_string[idx]; idx++) {
 
-		qmask	=	(qmask & 3) | (
-						!format.no_double_quotes && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? 8
-						: !format.no_single_quotes && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? 4
-						: 0
-					);
+		abacus		=	!(abacus & 6) && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+							(abacus & 15) | 32
+						: !(abacus & 9) && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
+							(abacus & 15) | 16
+						:
+							abacus & 15;
 
-		if (!(nbacksl & 1) && !((~qmask & 9) && (~qmask & 6))) {
+		if (!(nbacksl & 1) && !(((abacus ^ 32) & 36) && ((abacus ^ 16) & 24))) {
 
-			qmask ^= qmask >> 2;
+			abacus ^= (abacus >> 2) & 12; 
 			lshift++;
 			continue;
 
@@ -1889,7 +2196,7 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 
 		} else {
 
-			if ((nbacksl & 1) && (qmask & 12)) {
+			if ((nbacksl & 1) && (abacus & 48)) {
 
 				lshift++;
 
@@ -1923,7 +2230,7 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 	@param			format			The format of the INI file
 	@return			The length of the INI array
 
-	Usually @p ini_string comes from an `IniDispatch`, but any other string may be used as well.
+	Usually @p ini_string comes from an `IniDispatch` (but any other string may be used as well).
 
 **/
 size_t ini_array_get_length (const char * const ini_string, const char delimiter, const IniFormat format) {
@@ -1994,7 +2301,13 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 	@param			user_data			A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
 
-	Usually @p ini_string comes from an `IniDispatch`, but any other string may be used as well.
+	Usually @p ini_string comes from an `IniDispatch` (but any other string may be used as well).
+
+	The function @p f_foreach will be invoked with six arguments: `fullstring` (a pointer to @p ini_string),
+	`memb_offset` (the offset of the member in bytes), `memb_length` (the length of the member in bytes),
+	`index` (the index of the member in number of members), `format` (the format of the INI file),
+	`foreach_other` (the custom argument @p user_data previously passed). If @p f_foreach returns a non-zero
+	value the function `ini_array_foreach()` will be interrupted.
 
 **/
 int ini_array_foreach (
@@ -2002,12 +2315,12 @@ int ini_array_foreach (
 	const char delimiter,
 	const IniFormat format,
 	int (* const f_foreach) (
-		const char *member,
-		size_t offset,
+		const char *fullstring,
+		size_t memb_offset,
 		size_t memb_length,
 		size_t index,
 		IniFormat format,
-		void *user_data
+		void *foreach_other
 	),
 	void *user_data
 ) {
@@ -2071,10 +2384,10 @@ int ini_array_foreach (
 	@return			The new length of the string containing the array
 
 	Out of quotes similar to ECMAScript `ini_string.replace(new RegExp("^\\s+|\\s*(?:(" + delimiter + ")\\s*|($))", "g"), "$1$2")`.
-	If `INI_ANY_SPACE` (`0`) is used as delimiter one or more different spaces (`/[\t \v\f\n\r]+/`) will always be
+	If `INI_ANY_SPACE` (`0`) is used as delimiter, one or more different spaces (`/[\t \v\f\n\r]+/`) will always be
 	collapsed to one space (' '), independently of their position.
 
-	Usually @p ini_string comes from an `IniDispatch`, but any other string may be used as well.
+	Usually @p ini_string comes from an `IniDispatch` (but any other string may be used as well).
 
 **/
 size_t ini_collapse_array (char * const ini_string, const char delimiter, const IniFormat format) {
@@ -2192,7 +2505,13 @@ size_t ini_collapse_array (char * const ini_string, const char delimiter, const 
 	@param			user_data		A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
 
-	Usually @p ini_string comes from an `IniDispatch`, but any other string may be used as well.
+	Usually @p ini_string comes from an `IniDispatch` (but any other string may be used as well).
+
+	The function @p f_foreach will be invoked with five arguments: `member` (a pointer to @p ini_string),
+	`memb_length` (the length of the member in bytes), `index` (the index of the member in number of
+	members), `format` (the format of the INI file), `foreach_other` (the custom argument @p user_data
+	previously passed). If @p f_foreach returns a non-zero value the function `ini_split_array()` will be
+	interrupted.
 
 **/
 int ini_split_array (
@@ -2204,7 +2523,7 @@ int ini_split_array (
 		size_t memb_length,
 		size_t index,
 		IniFormat format,
-		void *user_data
+		void *foreach_other
 	),
 	void *user_data
 ) {
@@ -2268,7 +2587,7 @@ int ini_split_array (
 	@param			return_value		A value that is returned if no matching boolean has been found
 	@return			The matching boolean value (0 or 1) or @p return_value if no boolean has been found
 
-	Usually @p ini_string comes from an `IniDispatch`, but any other string may be used as well.
+	Usually @p ini_string comes from an `IniDispatch` (but any other string may be used as well).
 
 **/
 signed int ini_get_bool (const char * const ini_string, const signed int return_value) {
@@ -2279,20 +2598,7 @@ signed int ini_get_bool (const char * const ini_string, const signed int return_
 
 		for (bool_idx = 0; bool_idx < 2; bool_idx++) {
 
-			for (
-
-				chr_idx = 0;
-
-					(
-						ini_string[chr_idx] > 0x40 && ini_string[chr_idx] < 0x5b ?
-							ini_string[chr_idx] | 0x60
-						:
-							ini_string[chr_idx]
-					) == _LIBCONFINI_BOOLEANS_[pair_idx][bool_idx][chr_idx];
-
-				chr_idx++
-
-			) {
+			for (chr_idx = 0; _LIBCONFINI_CHR_CASEFOLD_(ini_string[chr_idx]) == _LIBCONFINI_BOOLEANS_[pair_idx][bool_idx][chr_idx]; chr_idx++) {
 
 				if (!ini_string[chr_idx]) {
 
@@ -2319,19 +2625,18 @@ signed int ini_get_bool (const char * const ini_string, const signed int return_
 	@param			return_value		A value that is returned if no matching boolean has been found
 	@return			The matching boolean value (0 or 1) or @p return_value if no boolean has been found
 
-	Usually @p ini_string comes from an `IniDispatch`, but any other string may be used as well.
+	Usually @p ini_string comes from an `IniDispatch` (but any other string may be used as well).
 
 **/
 signed int ini_get_lazy_bool (const char * const ini_string, const signed int return_value) {
 
 	unsigned short int pair_idx, bool_idx;
-	const char chr = *ini_string > 0x40 && *ini_string < 0x5b ? *ini_string | 0x60 : *ini_string;
 
 	for (pair_idx = 0; pair_idx < sizeof(_LIBCONFINI_BOOLEANS_) / 2 / sizeof(char *); pair_idx++) {
 
 		for (bool_idx = 0; bool_idx < 2; bool_idx++) {
 
-			if (chr == *_LIBCONFINI_BOOLEANS_[pair_idx][bool_idx]) {
+			if (_LIBCONFINI_CHR_CASEFOLD_(*ini_string) == *_LIBCONFINI_BOOLEANS_[pair_idx][bool_idx]) {
 
 				return bool_idx;
 
@@ -2361,6 +2666,7 @@ double (* const ini_get_float) (const char *ini_string) = &atof;
 
 /* VARIABLES */
 
+int INI_INSENSITIVE_LOWERCASE = _LIBCONFINI_TRUE_;
 char *INI_IMPLICIT_VALUE = (char *) 0;
 size_t INI_IMPLICIT_V_LEN = 0;
 

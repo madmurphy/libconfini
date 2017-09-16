@@ -1,10 +1,19 @@
 # Change Log
 
+## [1.4.1] - 2017-09-16
+
+Changes:
+
+* Created global variable `INI_NAMES_LOWERCASE`
+* Created functions `ini_dispatch_names_lowercase()`, `ini_string_match_ss()`, `ini_string_match_is()` and `ini_string_match_ii()`
+* Code review (`ini_unquote()`)
+* Documentation
+
 ## [1.4.0] - 2017-09-07
 
 Changes:
 
-* Function `load_ini_file()` now uses a `FILE` structure instead of a path. In order to use a path (a string), the shortcut `load_ini_path()` has been created.
+* Function `load_ini_file()` now uses a `FILE` structure instead of a path -- in order to use a path (a string), the shortcut `load_ini_path()` has been created
 * Added `#include <stdint.h>` to `confini.c`
 * Moved `#include <stdio.h>` from `confini.c` to `confini.h`
 * `nul` characters found in INI files will be skipped
@@ -91,8 +100,6 @@ Changes:
 * `IniFormat::preserve_spaces_in_values` has been renamed to `IniFormat::no_collapsed_values`
 
 ## [1.0-1] - 2016-10-10
-
-Major version change, due to the renaming of several public functions.
 
 Changes:
 

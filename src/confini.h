@@ -112,32 +112,40 @@ extern int load_ini_path (
 	void *user_data
 );
 
+extern void ini_dispatch_case_insensitive_lowercase (int b_lowercase);
+
 extern void ini_set_implicit_value (char * const implicit_value, const size_t implicit_v_len);
 
 extern IniFormatId ini_format_get_id (const IniFormat format);
 
 extern void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id);
 
+extern short int ini_string_match_ss (const char * const simple_string_a, const char * const simple_string_b, const IniFormat format);
+
+extern short int ini_string_match_si (const char * const simple_string, const char * const ini_string, const IniFormat format);
+
+extern short int ini_string_match_ii (const char * const ini_string_a, const char * const ini_string_b, const IniFormat format);
+
 extern size_t ini_unquote (char * const ini_string, const IniFormat format);
 
 extern size_t ini_array_get_length (const char * const ini_string, const char delimiter, const IniFormat format);
-
-extern size_t ini_collapse_array (char * const ini_string, const char delimiter, const IniFormat format);
 
 extern int ini_array_foreach (
 	const char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
 	int (* const f_foreach) (
-		const char *member,
-		size_t offset,
+		const char *fullstring,
+		size_t memb_offset,
 		size_t memb_length,
 		size_t index,
 		IniFormat format,
-		void *user_data
+		void *foreach_other
 	),
 	void *user_data
 );
+
+extern size_t ini_collapse_array (char * const ini_string, const char delimiter, const IniFormat format);
 
 extern int ini_split_array (
 	char * const ini_string,
@@ -148,7 +156,7 @@ extern int ini_split_array (
 		size_t memb_length,
 		size_t index,
 		IniFormat format,
-		void *user_data
+		void *foreach_other
 	),
 	void *user_data
 );
@@ -223,10 +231,13 @@ enum IniMultiline {
 /** @brief	A model format **/
 static const IniFormat INI_DEFAULT_FORMAT = _LIBCONFINI_DEFAULT_FORMAT_;
 
-/** @brief	Default value of implicit keys **/
+/** @brief	If set to any non-zero value key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: non-zero) **/
+extern int INI_INSENSITIVE_LOWERCASE;
+
+/** @brief	Value to be dispatched in case of implicit keys (default value: `NULL`) **/
 extern char *INI_IMPLICIT_VALUE;
 
-/** @brief	Default length of implicit keys' value -- it can be set to any unsigned number, independently of #INI_IMPLICIT_VALUE **/
+/** @brief	Length of the value dispatched in case of implicit keys -- it can be set to any unsigned number, independently of #INI_IMPLICIT_VALUE (default value: `0`) **/
 extern size_t INI_IMPLICIT_V_LEN;
 
 

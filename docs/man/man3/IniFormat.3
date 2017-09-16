@@ -1,4 +1,4 @@
-.TH "IniFormat" 3 "Thu Sep 7 2017" "libconfini" \" -*- nroff -*-
+.TH "IniFormat" 3 "Sat Sep 16 2017" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -68,7 +68,7 @@ Bits 23-24: unused
 .SH "Field Documentation"
 .PP 
 .SS "IniFormat::case_sensitive"
-If set to \fC1\fP, key- and section- names will not be rendered in lower case 
+If set to \fC1\fP, key and section names will not be rendered in lower case 
 .SS "IniFormat::delimiter_symbol"
 The symbol to be used as delimiter; if set to \fC0\fP, any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
 .SS "IniFormat::disabled_can_be_implicit"
@@ -88,7 +88,7 @@ If set to \fC1\fP, the double-quote character (\fC"\fP) will be considered as a 
 .SS "IniFormat::no_single_quotes"
 If set to \fC1\fP, the single-quote character (\fC'\fP) will be considered as a normal character 
 .SS "IniFormat::no_spaces_in_names"
-If set to \fC1\fP, key- and section- names containing spaces will be rendered as \fC\fBINI_UNKNOWN\fP\fP\&. Note that having \fCINI_ANY_SPACE\fP as delimiter will not set this option to \fC1\fP: spaces will be still allowed in section names\&. 
+If set to \fC1\fP, key and section names containing spaces will be rendered as \fC\fBINI_UNKNOWN\fP\fP\&. Note that setting \fC\fBIniFormat::delimiter_symbol\fP\fP to \fCINI_ANY_SPACE\fP will not automatically set this option to \fC1\fP (spaces will be still allowed in section names)\&. 
 .SS "IniFormat::semicolon"
 The rule of the semicolon character (use enum \fC\fBIniComments\fP\fP for this) 
 

@@ -10,7 +10,7 @@ dist_doc_DATA = \
 	INSTALL \
 	NEWS \
 	README \
-	libconfini.md
+	MAN.md
 
 man_MANS = docs/man/man3/confini.h.3 \
 	docs/man/man3/libconfini.3 \
@@ -20,9 +20,9 @@ man_MANS = docs/man/man3/confini.h.3 \
 
 examplesdir = $(docdir)/examples
 examples_DATA = \
-        examples/example.c \
+        examples/basic_example.c \
 	examples/example.conf \
-	examples/compile_example_c.sh \
+	examples/compile_basic_example_c.sh \
 	examples/compile_typed_ini_c.sh \
 	examples/typed_ini.c \
 	examples/typed_ini.conf
