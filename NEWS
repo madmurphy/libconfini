@@ -1,6 +1,6 @@
 # News
 
-## [1.4.1] - 2017-09-07
+## [1.4.1] - 2017-09-17
 
 * Created string comparison functions `ini_string_match_ss()`, `ini_string_match_is()`, `ini_string_match_ii()`
 

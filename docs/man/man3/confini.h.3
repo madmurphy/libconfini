@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Sat Sep 16 2017" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Sun Sep 17 2017" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -318,7 +318,7 @@ Calls a custom function for each member of an INI array -- useful for read-only 
 .RS 4
 \fIini_string\fP The stringified array 
 .br
-\fIdelimiter\fP The delimiter of the array members 
+\fIdelimiter\fP The delimiter between the array members -- if zero (\fCINI_ANY_SPACE\fP) any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
 .br
 \fIformat\fP The format of the INI file 
 .br
@@ -344,7 +344,7 @@ Gets the length of an INI array\&.
 .RS 4
 \fIini_string\fP The stringified array 
 .br
-\fIdelimiter\fP The delimiter of the array members 
+\fIdelimiter\fP The delimiter between the array members -- if zero (\fCINI_ANY_SPACE\fP) any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
 .br
 \fIformat\fP The format of the INI file 
 .RE
@@ -364,7 +364,7 @@ Removes spaces around all the delimiters of a stringified array\&.
 .RS 4
 \fIini_string\fP The stringified array 
 .br
-\fIdelimiter\fP The delimiter of the array members 
+\fIdelimiter\fP The delimiter between the array members -- if zero (\fCINI_ANY_SPACE\fP) any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
 .br
 \fIformat\fP The format of the INI file 
 .RE
@@ -490,7 +490,7 @@ Splits an INI array and calls a custom function for each member\&.
 .RS 4
 \fIini_string\fP The stringified array 
 .br
-\fIdelimiter\fP The delimiter of the array members 
+\fIdelimiter\fP The delimiter between the array members -- if zero (\fCINI_ANY_SPACE\fP) any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
 .br
 \fIformat\fP The format of the INI file 
 .br

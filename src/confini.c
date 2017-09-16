@@ -1241,12 +1241,6 @@ int load_ini_file (
 	void *user_data
 ) {
 
-	if (ini_file == NULL) {
-
-		return CONFINI_ENOENT;
-
-	}
-
 	fseek(ini_file, 0, SEEK_END);
 
 	size_t tmp_size_1 = ftell(ini_file);
@@ -1760,6 +1754,12 @@ int load_ini_path (
 
 	FILE * const ini_file = fopen(path, "r");
 
+	if (ini_file == NULL) {
+
+		return CONFINI_ENOENT;
+
+	}
+
 	int return_value = load_ini_file(ini_file, format, f_init, f_foreach, user_data);
 
 	fclose(ini_file);
@@ -2226,7 +2226,8 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 
 	@brief			Gets the length of an INI array
 	@param			ini_string		The stringified array
-	@param			delimiter		The delimiter of the array members
+	@param			delimiter		The delimiter between the array members -- if zero (`INI_ANY_SPACE`)
+									any space is delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
 	@param			format			The format of the INI file
 	@return			The length of the INI array
 
@@ -2293,12 +2294,14 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 
 /**
 
-	@brief			Calls a custom function for each member of an INI array -- useful for read-only (const) stringified arrays
-	@param			ini_string			The stringified array
-	@param			delimiter			The delimiter of the array members
-	@param			format				The format of the INI file
-	@param			f_foreach			The function that will be invoked for each array member
-	@param			user_data			A custom argument, or NULL
+	@brief			Calls a custom function for each member of an INI array -- useful for read-only (const)
+					stringified arrays
+	@param			ini_string		The stringified array
+	@param			delimiter		The delimiter between the array members -- if zero (`INI_ANY_SPACE`) any
+									space is delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
+	@param			format			The format of the INI file
+	@param			f_foreach		The function that will be invoked for each array member
+	@param			user_data		A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
 
 	Usually @p ini_string comes from an `IniDispatch` (but any other string may be used as well).
@@ -2378,14 +2381,15 @@ int ini_array_foreach (
 /**
 
 	@brief			Removes spaces around all the delimiters of a stringified array
-	@param			ini_string			The stringified array
-	@param			delimiter			The delimiter of the array members
-	@param			format				The format of the INI file
+	@param			ini_string		The stringified array
+	@param			delimiter		The delimiter between the array members -- if zero (`INI_ANY_SPACE`) any
+									space is delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
+	@param			format			The format of the INI file
 	@return			The new length of the string containing the array
 
 	Out of quotes similar to ECMAScript `ini_string.replace(new RegExp("^\\s+|\\s*(?:(" + delimiter + ")\\s*|($))", "g"), "$1$2")`.
-	If `INI_ANY_SPACE` (`0`) is used as delimiter, one or more different spaces (`/[\t \v\f\n\r]+/`) will always be
-	collapsed to one space (' '), independently of their position.
+	If `INI_ANY_SPACE` (`0`) is used as delimiter, one or more different spaces (`/[\t \v\f\n\r]+/`) will
+	always be collapsed to one space (' '), independently of their position.
 
 	Usually @p ini_string comes from an `IniDispatch` (but any other string may be used as well).
 
@@ -2497,9 +2501,10 @@ size_t ini_collapse_array (char * const ini_string, const char delimiter, const 
 
 /**
 
-	@brief			Splits an INI array and calls a custom function for each member.
+	@brief			Splits an INI array and calls a custom function for each member
 	@param			ini_string		The stringified array
-	@param			delimiter		The delimiter of the array members
+	@param			delimiter		The delimiter between the array members -- if zero (`INI_ANY_SPACE`)
+									any space is delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
 	@param			format			The format of the INI file
 	@param			f_foreach		The function that will be invoked for each array member
 	@param			user_data		A custom argument, or NULL

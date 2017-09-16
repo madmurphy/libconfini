@@ -110,15 +110,15 @@ email = john.smith@example.com
 
 [receiver]
 
-name = Mario Rossi      # He's a fat guy
+name = Mario Rossi   # He's a fat guy
 email = mario.rossi@example.com
 </code></pre>
 
 <h2 id="SUPPORTED-SYNTAXES">SUPPORTED SYNTAXES</h2>
 
-<p>During the years, several interpretations of INI files appeared. In some implementation the colon character (<code>:</code>) has been adopted as delimiter between keys and values (a typical example under GNU/Linux is <code>/etc/nsswitch.conf</code>), in other implementation the space (<code>/[ \t\v\f]+/</code> or <code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code>) has been used instead (see for example <code>/etc/host.conf</code>), and so on. This library has been born as a general INI parser for GNU, so the support of most of the main INI dialects has been implemented within it.</p>
+<p>During the years, several interpretations of INI files appeared. In some implementations the colon character (<code>:</code>) has been adopted as delimiter between keys and values (a typical example under GNU/Linux is <code>/etc/nsswitch.conf</code>), in other implementations the space (<code>/[ \t\v\f]+/</code> or <code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code>) has been used instead (see for example <code>/etc/host.conf</code>), and so on. This library has been born as a general INI parser for GNU, so the support of most of the main INI dialects has been implemented within it.</p>
 
-<p>Especially in Microsoft Windows, a more radical syntax variation has been implemented: the use of the semicolon, instead of new lines, as delimiter between nodes, as in the following example:</p>
+<p>Especially in Microsoft Windows a more radical syntax variation has been implemented: the use of the semicolon, instead of new lines, as delimiter between nodes, as in the following example:</p>
 
 <pre><code class="{.ini}">
 # delivery.conf
@@ -156,7 +156,7 @@ foo = "bar
 foo = "bar"
 </code></pre>
 
-<p>The <strong>key part</strong> can contain any character, except the delimiter (which may be enclosed within quotes for not beeing considered as such). Internal new line sequences must be escaped (<code>/\\(?:\n\r?|\r\n?)/</code>).</p>
+<p>The <strong>key part</strong> can contain any character, except the delimiter (which may be enclosed within quotes for not beeing considered as such). In multiline formats internal new line sequences must be escaped (<code>/\\(?:\n\r?|\r\n?)/</code>).</p>
 
 <p>If the <strong>key part</strong> part is missing the element is considered of unknown type, i.e., <code>INI_UNKNOWN</code> &ndash; see enum <code>IniNodeType</code> &ndash; (example: <code>= foo</code>). If the <strong>value part</strong> is missing the key element is considered empty (example: <code>foo =</code>). If the delimiter is missing, according to some formats the key element is considered to be an <em>implicit key</em> &ndash; typically representing the boolean <code>TRUE</code> (example: <code>foo</code>). For instance, in the following example from <code>/etc/pacman.conf</code>, <code>IgnorePkg</code> is an empty key, while <code>Color</code> is an implicit key (representing a <code>TRUE</code> boolean &ndash; i.e., <code>Color = YES</code>):</p>
 
@@ -169,7 +169,7 @@ SigLevel = Required DatabaseOptional
 LocalFileSigLevel = Optional
 </code></pre>
 
-<p>The <strong>value</strong> part can contain typed data, usually: a boolean (booleans supported by <strong>libconfini</strong> are: <code>NO</code>/<code>YES</code>, <code>FALSE</code>/<code>TRUE</code>, <code>0</code>/<code>1</code>), a string, a number, or an array (typically with commas as delimiters between members &ndash; example: <code>paths = /etc, /usr, "/home/john/Personal Data"</code>). Internal new line sequences must be escaped (<code>/\\(?:\n\r?|\r\n?)/</code>).</p>
+<p>The <strong>value</strong> part can contain typed data, usually: a boolean (booleans supported by <strong>libconfini</strong> are: <code>NO</code>/<code>YES</code>, <code>FALSE</code>/<code>TRUE</code>, <code>0</code>/<code>1</code>), a string, a number, or an array (typically with commas as delimiters between members &ndash; example: <code>paths = /etc, /usr, "/home/john/Personal Data"</code>). In multiline formats internal new line sequences must be escaped (<code>/\\(?:\n\r?|\r\n?)/</code>).</p>
 
 <pre><code class="{.ini}">
 [my_section]
@@ -263,6 +263,18 @@ comedy2 = Twelfth Night  # If music be the food of love, play on;      \
 comedy3 = The Merchant of Venice
 </code></pre>
 
+<h3 id="DISABLED-ENTRIES">DISABLED ENTRIES</h3>
+
+<p>A disabled entry is either a section or a key that has been nested inside a comment as its only child. Inline comments cannot represent disabled entries. Disabled entries can be multiline, using <code>/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]+/</code> as multiline escaping sequence. For example:</p>
+
+<pre><code class="{.ini}">
+#this = is\
+ #a\
+    #multiline\
+#disabled\
+  #entry
+</code></pre>
+
 <h3 id="ESCAPING-SEQUENCES">ESCAPING SEQUENCES</h3>
 
 <p>In order to maximize the flexibility of the data, only four escaping sequences are supported by <strong>libconfini</strong>: <code>\'</code>, <code>\"</code>, <code>\\</code> and the multiline escaping sequence (<code>/\\(?:\n\r?|\r\n?)/</code>).</p>
@@ -283,18 +295,6 @@ is\
 a\
 multiline\
 value
-</code></pre>
-
-<h3 id="DISABLED-ENTRIES">DISABLED ENTRIES</h3>
-
-<p>A disabled entry is either a section or a key that has been nested inside a non-inline comment as its only child. Disabled entries can be multiline, using <code>/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]+/</code> as multiline escaping sequence. For example:</p>
-
-<pre><code class="{.ini}">
-#this = is\
- #a\
-    #multiline\
-#disabled\
-  #entry
 </code></pre>
 
 <h2 id="READ-AN-INI-FILE">READ AN INI FILE</h2>
@@ -374,7 +374,10 @@ value
 
 int ini_listener (IniDispatch *dispatch, void *user_data) {
 
-  printf("DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n", dispatch-&gt;data, dispatch-&gt;value, dispatch-&gt;type);
+  printf(
+    "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
+    dispatch-&gt;data, dispatch-&gt;value, dispatch-&gt;type
+  );
 
   return 0;
 
@@ -402,7 +405,10 @@ int main () {
 
 int ini_listener (IniDispatch *dispatch, void *user_data) {
 
-  printf("DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n", dispatch-&gt;data, dispatch-&gt;value, dispatch-&gt;type);
+  printf(
+    "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
+    dispatch-&gt;data, dispatch-&gt;value, dispatch-&gt;type
+  );
 
   return 0;
 
@@ -411,6 +417,13 @@ int ini_listener (IniDispatch *dispatch, void *user_data) {
 int main () {
 
   FILE * const ini_file = fopen("my_file.conf", "r");
+
+  if (ini_file == NULL) {
+
+    fprintf(stderr, "File doesn't exist :-(\n");
+    return 1;
+
+  }
 
   if (load_ini_file(ini_file, INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
 
@@ -625,7 +638,7 @@ int main () {
 
 <h2 id="THE-IniFormat-BITFIELD">THE <code>IniFormat</code> BITFIELD</h2>
 
-<p>For a correct use of this library it is fundamental to understand the <code>IniFormat</code> bitfield. <strong>libconfini</strong> has been born as a general INI parser, with the main purpose of <em>being able to understand INI files written by other programs</em> (see README). Therefore some flexibility was required.</p>
+<p>For a correct use of this library it is fundamental to understand the <code>IniFormat</code> bitfield. <strong>libconfini</strong> has been born as a general INI parser, with the main purpose of <em>being able to understand INI files written by other programs</em> (see README), therefore some flexibility was required.</p>
 
 <p>When an INI file is parsed it is parsed according to a format. The <code>IniFormat</code> bitfield is a description of such format.</p>
 
@@ -730,7 +743,7 @@ my_format.disabled_can_be_implicit = NO;
 
 <p>In order to perform comparisons between string the function <code>ini_string_match_ss()</code>, <code>ini_string_match_si()</code> and <code>ini_string_match_ii()</code> are available. The function <code>ini_string_match_ss()</code> compares two simple strings, the function <code>ini_string_match_si()</code> compares a simple string with an unparsed INI string, and the function <code>ini_string_match_ii()</code> compares two unparsed INI strings. INI strings are the strings typically dispatched by <code>load_ini_file()</code> and <code>load_ini_path()</code>, which may contain quotes and the three escaping sequences <code>\\</code>, <code>\'</code>, <code>\"</code>. Simple strings are user-given strings or the result of <code>ini_unquote()</code>.</p>
 
-<p>Because of this the functions <code>ini_string_match_si()</code>, <code>ini_string_match_ii()</code> do not perform literal comparisons of equality between strings. For example, in the following (absurd) INI file the two keys <code>foo</code> and <code>hello</code> belong to the same section named <code>this is a double quotation mark: "!</code> (after parsed by <code>ini_unquote()</code>).</p>
+<p>As a consequence, the functions <code>ini_string_match_si()</code>, <code>ini_string_match_ii()</code> do not perform literal comparisons of equality between strings. For example, in the following (absurd) INI file the two keys <code>foo</code> and <code>hello</code> belong to the same section named <code>this is a double quotation mark: "!</code> (after parsed by <code>ini_unquote()</code>).</p>
 
 <pre><code class="{.ini}">
 [this is a double quotation mark: \"!]
@@ -840,7 +853,7 @@ Number of bytes parsed per second: 20315930.139089
 
 
   <ol class='man-decor man-foot man foot'>
-    <li class='tl'>Stefano Gioffré</li>
+    <li class='tl'>Stefano Gioffr&eacute;</li>
     <li class='tc'>September 2017</li>
     <li class='tr'>libconfini</li>
   </ol>

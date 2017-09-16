@@ -10,7 +10,7 @@ dist_doc_DATA = \
 	INSTALL \
 	NEWS \
 	README \
-	MAN.md
+	docs/libconfini.html
 
 man_MANS = docs/man/man3/confini.h.3 \
 	docs/man/man3/libconfini.3 \
