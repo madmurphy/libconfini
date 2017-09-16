@@ -116,7 +116,7 @@ my_array = Asia, Africa, 'North America', South America,\
 
 ### SECTIONS
 
-A **section** may ben imagined like a directory. A **section path** is identified as the string `"$1"` in the regular expression `/(?:^|\n)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\]/` globally applied to an INI file. A section path expresses nesting through the 'dot' character, as in the following example:
+A **section** may be imagined like a directory. A **section path** is identified as the string `"$1"` in the regular expression `/(?:^|\n)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\]/` globally applied to an INI file. A section path expresses nesting through the 'dot' character, as in the following example:
 
 ~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -211,7 +211,7 @@ comedy3 = The Merchant of Venice
 
 In order to maximize the flexibility of the data, only four escaping sequences are supported by **libconfini**: `\'`, `\"`, `\\` and the multiline escaping sequence (`/\\(?:\n\r?|\r\n?)/`).
 
-The first three escaping sequences are left untouched by all functions except `ini_unquote()`. Nevertheless, the characters `'`, `"` and `\` can determine different behaviors during the parsing depending on whether they are escaped or unescaped. For instance, the string `johnsmith !&quot;` in the following example will not be parsed as a comment:
+The first three escaping sequences are left untouched by all functions except `ini_unquote()`. Nevertheless, the characters `'`, `"` and `\` can determine different behaviors during the parsing depending on whether they are escaped or unescaped. For instance, the string `johnsmith !"` in the following example will not be parsed as a comment:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -676,7 +676,7 @@ The behavior of these functions depends on the format given. In particular, usin
 
 In order to perform comparisons between string the function `ini_string_match_ss()`, `ini_string_match_si()` and `ini_string_match_ii()` are available. The function `ini_string_match_ss()` compares two simple strings, the function `ini_string_match_si()` compares a simple string with an unparsed INI string, and the function `ini_string_match_ii()` compares two unparsed INI strings. INI strings are the strings typically dispatched by `load_ini_file()` and `load_ini_path()`, which may contain quotes and the three escaping sequences `\\`, `\'`, `\"`. Simple strings are user-given strings or the result of `ini_unquote()`.
 
-Because of this, the functions `ini_string_match_si()`, `ini_string_match_ii()` do not perform literal comparisons of equality between strings. For example, in the following (absurd) INI file the two keys `foo` and `hello` belong to the same section named `this is a double quotation mark: "!` (after parsed by `ini_unquote()`).
+Because of this the functions `ini_string_match_si()`, `ini_string_match_ii()` do not perform literal comparisons of equality between strings. For example, in the following (absurd) INI file the two keys `foo` and `hello` belong to the same section named `this is a double quotation mark: "!` (after parsed by `ini_unquote()`).
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 

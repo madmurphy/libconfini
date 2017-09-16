@@ -161,7 +161,7 @@ my_array = Asia, Africa, \'North America\', South America,\e
 .IP "" 0
 .
 .SS "SECTIONS"
-A \fBsection\fR may ben imagined like a directory\. A \fBsection path\fR is identified as the string \fB"$1"\fR in the regular expression \fB/(?:^|\en)[ \et\ev\ef]*\e[[ \et\ev\ef]*([^\e]]*)[ \et\ev\ef]*\e]/\fR globally applied to an INI file\. A section path expresses nesting through the \'dot\' character, as in the following example:
+A \fBsection\fR may be imagined like a directory\. A \fBsection path\fR is identified as the string \fB"$1"\fR in the regular expression \fB/(?:^|\en)[ \et\ev\ef]*\e[[ \et\ev\ef]*([^\e]]*)[ \et\ev\ef]*\e]/\fR globally applied to an INI file\. A section path expresses nesting through the \'dot\' character, as in the following example:
 .
 .IP "" 4
 .
@@ -927,7 +927,7 @@ The behavior of these functions depends on the format given\. In particular, usi
 In order to perform comparisons between string the function \fBini_string_match_ss()\fR, \fBini_string_match_si()\fR and \fBini_string_match_ii()\fR are available\. The function \fBini_string_match_ss()\fR compares two simple strings, the function \fBini_string_match_si()\fR compares a simple string with an unparsed INI string, and the function \fBini_string_match_ii()\fR compares two unparsed INI strings\. INI strings are the strings typically dispatched by \fBload_ini_file()\fR and \fBload_ini_path()\fR, which may contain quotes and the three escaping sequences \fB\e\e\fR, \fB\e\'\fR, \fB\e"\fR\. Simple strings are user\-given strings or the result of \fBini_unquote()\fR\.
 .
 .P
-Because of this, the functions \fBini_string_match_si()\fR, \fBini_string_match_ii()\fR do not perform literal comparisons of equality between strings\. For example, in the following (absurd) INI file the two keys \fBfoo\fR and \fBhello\fR belong to the same section named \fBthis is a double quotation mark: "!\fR (after parsed by \fBini_unquote()\fR)\.
+Because of this the functions \fBini_string_match_si()\fR, \fBini_string_match_ii()\fR do not perform literal comparisons of equality between strings\. For example, in the following (absurd) INI file the two keys \fBfoo\fR and \fBhello\fR belong to the same section named \fBthis is a double quotation mark: "!\fR (after parsed by \fBini_unquote()\fR)\.
 .
 .IP "" 4
 .

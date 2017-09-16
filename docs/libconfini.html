@@ -184,7 +184,7 @@ my_array = Asia, Africa, 'North America', South America,\
 
 <h3 id="SECTIONS">SECTIONS</h3>
 
-<p>A <strong>section</strong> may ben imagined like a directory. A <strong>section path</strong> is identified as the string <code>"$1"</code> in the regular expression <code>/(?:^|\n)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\]/</code> globally applied to an INI file. A section path expresses nesting through the 'dot' character, as in the following example:</p>
+<p>A <strong>section</strong> may be imagined like a directory. A <strong>section path</strong> is identified as the string <code>"$1"</code> in the regular expression <code>/(?:^|\n)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\]/</code> globally applied to an INI file. A section path expresses nesting through the 'dot' character, as in the following example:</p>
 
 <pre><code class="{.ini}">
 [section]
@@ -730,7 +730,7 @@ my_format.disabled_can_be_implicit = NO;
 
 <p>In order to perform comparisons between string the function <code>ini_string_match_ss()</code>, <code>ini_string_match_si()</code> and <code>ini_string_match_ii()</code> are available. The function <code>ini_string_match_ss()</code> compares two simple strings, the function <code>ini_string_match_si()</code> compares a simple string with an unparsed INI string, and the function <code>ini_string_match_ii()</code> compares two unparsed INI strings. INI strings are the strings typically dispatched by <code>load_ini_file()</code> and <code>load_ini_path()</code>, which may contain quotes and the three escaping sequences <code>\\</code>, <code>\'</code>, <code>\"</code>. Simple strings are user-given strings or the result of <code>ini_unquote()</code>.</p>
 
-<p>Because of this, the functions <code>ini_string_match_si()</code>, <code>ini_string_match_ii()</code> do not perform literal comparisons of equality between strings. For example, in the following (absurd) INI file the two keys <code>foo</code> and <code>hello</code> belong to the same section named <code>this is a double quotation mark: "!</code> (after parsed by <code>ini_unquote()</code>).</p>
+<p>Because of this the functions <code>ini_string_match_si()</code>, <code>ini_string_match_ii()</code> do not perform literal comparisons of equality between strings. For example, in the following (absurd) INI file the two keys <code>foo</code> and <code>hello</code> belong to the same section named <code>this is a double quotation mark: "!</code> (after parsed by <code>ini_unquote()</code>).</p>
 
 <pre><code class="{.ini}">
 [this is a double quotation mark: \"!]
