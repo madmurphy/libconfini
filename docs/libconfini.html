@@ -63,7 +63,6 @@
     <a href="#RENDERING">RENDERING</a>
     <a href="#SIZE-OF-THE-DISPATCHED-DATA">SIZE OF THE DISPATCHED DATA</a>
     <a href="#THE-IniFormat-BITFIELD">THE IniFormat BITFIELD</a>
-    <a href="#THE-MODEL-FORMAT">THE MODEL FORMAT</a>
     <a href="#THE-IniStatistics-AND-IniDispatch-STRUCTURES">THE IniStatistics AND IniDispatch STRUCTURES</a>
     <a href="#FORMATTING-THE-VALUES">FORMATTING THE VALUES</a>
     <a href="#FORMATTING-THE-KEY-NAMES">FORMATTING THE KEY NAMES</a>
@@ -144,21 +143,9 @@ foo = 'bar'
 "artist" = "Pablo Picasso"
 </code></pre>
 
-<p>In order to avoid error exceptions, strings containing an unterminated quote will always be treated as if they had a virtual quote as their last + 1 character.</p>
-
-<pre><code class="{.ini}">
-foo = "bar
-</code></pre>
-
-<p>will always determine the same behavior as if it were</p>
-
-<pre><code class="{.ini}">
-foo = "bar"
-</code></pre>
-
 <p>The <strong>key part</strong> can contain any character, except the delimiter (which may be enclosed within quotes for not beeing considered as such). In multiline formats internal new line sequences must be escaped (<code>/\\(?:\n\r?|\r\n?)/</code>).</p>
 
-<p>If the <strong>key part</strong> part is missing the element is considered of unknown type, i.e., <code>INI_UNKNOWN</code> &ndash; see enum <code>IniNodeType</code> &ndash; (example: <code>= foo</code>). If the <strong>value part</strong> is missing the key element is considered empty (example: <code>foo =</code>). If the delimiter is missing, according to some formats the key element is considered to be an <em>implicit key</em> &ndash; typically representing the boolean <code>TRUE</code> (example: <code>foo</code>). For instance, in the following example from <code>/etc/pacman.conf</code>, <code>IgnorePkg</code> is an empty key, while <code>Color</code> is an implicit key (representing a <code>TRUE</code> boolean &ndash; i.e., <code>Color = YES</code>):</p>
+<p>If the <strong>key part</strong> part is missing the element is considered of unknown type, i.e., <code>INI_UNKNOWN</code> &ndash; see <code>enum</code> <code>IniNodeType</code> &ndash; (example: <code>= foo</code>). If the <strong>value part</strong> is missing the key element is considered empty (example: <code>foo =</code>). If the delimiter is missing, according to some formats the key element is considered to be an <em>implicit key</em> &ndash; typically representing the boolean <code>TRUE</code> (example: <code>foo</code>). For instance, in the following example from <code>/etc/pacman.conf</code>, <code>IgnorePkg</code> is an empty key, while <code>Color</code> is an implicit key (representing a <code>TRUE</code> boolean &ndash; i.e., <code>Color = YES</code>):</p>
 
 <pre><code class="{.ini}">
 HoldPkg = pacman glibc
@@ -363,6 +350,8 @@ value
 <li><code>user_data</code> &ndash; a pointer to the custom argument previously passed to the <code>load_ini_file()</code> / <code>load_ini_path()</code> functions</li>
 </ul>
 
+
+<p>Both functions <code>load_ini_file()</code> and <code>load_ini_path()</code> return zero if the INI file has been completely parsed, non-zero otherwise.</p>
 
 <h2 id="BASIC-EXAMPLES">BASIC EXAMPLES</h2>
 
@@ -644,7 +633,7 @@ int main () {
 
 <p>Each format can be represented also as a univocal 24-bit unsigned integer. In order to convert an <code>IniFormat</code> to an unsigned integer and vice versa please see <code>ini_format_get_id()</code>, <code>ini_format_set_to_id()</code> and <code>IniFormatId</code>.</p>
 
-<h2 id="THE-MODEL-FORMAT">THE MODEL FORMAT</h2>
+<h3 id="THE-MODEL-FORMAT">THE MODEL FORMAT</h3>
 
 <p>A model format named <code>INI_DEFAULT_FORMAT</code> is available.</p>
 
@@ -771,9 +760,64 @@ printf("%s\n", ini_string_match_ii(string1, string2, my_format) ? "They match" :
 
 <h2 id="CODE-CONSIDERATIONS">CODE CONSIDERATIONS</h2>
 
-<h3 id="THE-LISTENERS">THE LISTENERS</h3>
+<h3 id="RETURN-VALUES">RETURN VALUES</h3>
 
-<p>The functions <code>load_ini_file()</code>, <code>load_ini_path()</code>, <code>ini_array_foreach()</code> and <code>ini_split_array()</code> require some listeners defined by the user. Such listeners must return an <code>int</code> value. When this is non-zero the caller function is interrupted and its loop stopped.</p>
+<p>The functions <code>load_ini_file()</code>, <code>load_ini_path()</code>, <code>ini_array_foreach()</code> and <code>ini_split_array()</code> require some listeners defined by the user. Such listeners must return an <code>int</code> value. When this is non-zero the caller function is interrupted, its loop stopped, and a non-zero value is returned by the caller as well.</p>
+
+<p>The functions <code>load_ini_file()</code> and <code>load_ini_path()</code> return a non-zero value also if the INI file, for any reason, has not been completely parsed (see <code>enum</code> <code>ConfiniErrorNo</code>). Therefore, in order to be able to distinguish between internal errors and user-generated interruptions the flag <code>CONFINI_ERROR</code> can be used.</p>
+
+<p>For instance, in the following example the <code>f_foreach()</code> listener returns a non-zero value if a key named <code>password</code> with a value that equals <code>Hello world</code> is found. Hence, using the flag <code>CONFINI_ERROR</code>, the code below distinguishes a non-zero value generated by the listener from a non-zero value generated by a parsing error in <code>load_ini_path()</code>'s return value.</p>
+
+<pre><code class="{.c}">
+#include &lt;stdio.h&gt;
+#include &lt;confini.h&gt;
+
+static int passfinder (IniDispatch *disp, void *v_membid) {
+
+  /* Search for `password = "Hello world"` in the INI file */
+  if (
+    ini_string_match_si("password", disp-&gt;data, disp-&gt;format)
+    &amp;&amp; ini_string_match_si("Hello world", disp-&gt;value, disp-&gt;format)
+  ) {
+
+    *((signed int *) v_membid) = disp-&gt;dispatch_id;
+    return 1;
+
+  }
+
+  return 0;
+
+}
+
+int main () {
+
+  /* Load INI file */
+  int membid, retval = load_ini_path(
+    "my_file.conf",
+    INI_DEFAULT_FORMAT,
+    NULL,
+    passfinder,
+    &amp;membid
+  );
+
+  /* Check for errors */
+  if (retval &amp; CONFINI_ERROR) {
+
+    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    return 1;
+
+  }
+
+  /* Check if `load_ini_path()` has been interrupted by `passfinder()` */
+  retval  ==  CONFINI_EFEINTR ?
+                printf("We found it! It's the INI element number #%d!\n", membid)
+              :
+                printf("We didn't find it :-(\n");
+
+  return 0;
+
+}
+</code></pre>
 
 <h3 id="OTHER-GLOBAL-SETTINGS">OTHER GLOBAL SETTINGS</h3>
 
@@ -799,6 +843,24 @@ int INI_INSENSITIVE_LOWERCASE = FALSE;
 <p>Depending on the format of the INI file, <strong>libconfini</strong> may use up to three global variables (<code>INI_IMPLICIT_VALUE</code>, <code>INI_IMPLICIT_V_LEN</code> and <code>INI_INSENSITIVE_LOWERCASE</code>). In order to be thread-safe these three variables (if needed) should be defined only once (either directly, or through their modifier functions <code>ini_set_implicit_value()</code> and <code>ini_dispatch_case_insensitive_lowercase()</code>), or otherwise a mutex logic must be introduced.</p>
 
 <p>Apart from the three variables above, each parsing allocates and frees its own memory, therefore the library must be considered thread-safe.</p>
+
+<h3 id="ERROR-EXCEPTIONS">ERROR EXCEPTIONS</h3>
+
+<p>The philosophy of <strong>libconfini</strong> is to parse as much as possible without generating error exceptions. No parsing errors are returned once an INI file has been correctly allocated into the stack, with the exception of the <em>out-of-range</em> error <code>CONFINI_EFEOOR</code> (see <code>enum</code> <code>ConfiniErrorNo</code>), whose meaning is that the loop is for unknown reasons longer than expected &ndash; this error is possibly generated by the presence of bugs in the library's code and should never be returned (please <a href="https://github.com/madmurphy/libconfini/issues">contact me</a> if this happens).</p>
+
+<p>When an INI node is wrongly written in respect to the format given, it is dispatched verbatim as an <code>INI_UNKNOWN</code> node &ndash; see <code>enum</code> <code>IniNodeType</code>.</p>
+
+<p>In order to avoid error exceptions, strings containing an unterminated quote will always be treated as if they had a virtual quote as their last + 1 character. For example,</p>
+
+<pre><code class="{.ini}">
+foo = "bar
+</code></pre>
+
+<p>will always determine the same behavior as if it were</p>
+
+<pre><code class="{.ini}">
+foo = "bar"
+</code></pre>
 
 <h3 id="PERFORMANCE">PERFORMANCE</h3>
 

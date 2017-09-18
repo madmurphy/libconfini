@@ -64,6 +64,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a> &#124;
@@ -91,6 +92,12 @@ Data Structures</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch of a single INI member.  <a href="structIniDispatch.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a0b9dcb5c0711475ea78b065b0322bde1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a0b9dcb5c0711475ea78b065b0322bde1">CONFINI_ERROR</a>&#160;&#160;&#160;4</td></tr>
+<tr class="memdesc:a0b9dcb5c0711475ea78b065b0322bde1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error flag (not present in user-generated interruptions) &ndash; its value should be considered opaque.  <a href="#a0b9dcb5c0711475ea78b065b0322bde1">More...</a><br /></td></tr>
+<tr class="separator:a0b9dcb5c0711475ea78b065b0322bde1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:accd16964233945de96b91facd9e20545"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#accd16964233945de96b91facd9e20545">IniFormat</a></td></tr>
@@ -109,15 +116,15 @@ Typedefs</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:ae6a17d09c16887dfd373eb0c05e4d325"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325">ConfiniErrorNo</a> { <br />
-&#160;&#160;<a class="el" href="confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325ac1b16fd34464a73e424e31212d7ae8ab">CONFINI_EFEINTR</a> = 1, 
-<a class="el" href="confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325a9042e91c1f7518307bc83b60c76406be">CONFINI_EFEOOR</a> = 2, 
-<a class="el" href="confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325a0ad49c407d00e5efd5e638f1b236c155">CONFINI_EIINTR</a> = 3, 
-<a class="el" href="confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325a0e8e1cee80bc4b7839838764f5d661f5">CONFINI_ENOMEM</a> = 4, 
+&#160;&#160;<a class="el" href="confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325a0ad49c407d00e5efd5e638f1b236c155">CONFINI_EIINTR</a> = 1, 
+<a class="el" href="confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325ac1b16fd34464a73e424e31212d7ae8ab">CONFINI_EFEINTR</a> = 2, 
+<a class="el" href="confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325aca147c275760856386fdb9e778525676">CONFINI_ENOENT</a> = 4, 
+<a class="el" href="confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325a0e8e1cee80bc4b7839838764f5d661f5">CONFINI_ENOMEM</a> = 5, 
 <br />
-&#160;&#160;<a class="el" href="confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325a8b9b6ea5c455bfad3976fd394c36a91d">CONFINI_EIO</a> = 5, 
-<a class="el" href="confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325aca147c275760856386fdb9e778525676">CONFINI_ENOENT</a> = 6
+&#160;&#160;<a class="el" href="confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325a8b9b6ea5c455bfad3976fd394c36a91d">CONFINI_EIO</a> = 6, 
+<a class="el" href="confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325a9042e91c1f7518307bc83b60c76406be">CONFINI_EFEOOR</a> = 7
 <br />
- }<tr class="memdesc:ae6a17d09c16887dfd373eb0c05e4d325"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error codes.  <a href="confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325">More...</a><br /></td></tr>
+ }<tr class="memdesc:ae6a17d09c16887dfd373eb0c05e4d325"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error codes &ndash; the actual values of each constant should be considered opaque.  <a href="confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325">More...</a><br /></td></tr>
 </td></tr>
 <tr class="separator:ae6a17d09c16887dfd373eb0c05e4d325"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad342637c37d95454c9392a8cc73bced8"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8">IniDelimiters</a> { <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd">INI_ANY_SPACE</a> = 0, 
@@ -230,8 +237,25 @@ Variables</h2></td></tr>
 <div class="textblock"><p>libconfini header </p>
 <dl class="section author"><dt>Author</dt><dd>Stefano Gioffr&eacute; </dd></dl>
 <dl class="section copyright"><dt>Copyright</dt><dd>GNU Public License v3 </dd></dl>
-<dl class="section date"><dt>Date</dt><dd>2016 </dd></dl>
-</div><h2 class="groupheader">Typedef Documentation</h2>
+<dl class="section date"><dt>Date</dt><dd>2016-2017 </dd></dl>
+</div><h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="a0b9dcb5c0711475ea78b065b0322bde1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b9dcb5c0711475ea78b065b0322bde1">&#9670;&nbsp;</a></span>CONFINI_ERROR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CONFINI_ERROR&#160;&#160;&#160;4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Error flag (not present in user-generated interruptions) &ndash; its value should be considered opaque. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Typedef Documentation</h2>
 <a id="a48a2d1eb3a8f1cfd41efb34c615d496d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a48a2d1eb3a8f1cfd41efb34c615d496d">&#9670;&nbsp;</a></span>IniDispatch</h2>
 
@@ -309,19 +333,19 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Error codes. </p>
+<p>Error codes &ndash; the actual values of each constant should be considered opaque. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ae6a17d09c16887dfd373eb0c05e4d325ac1b16fd34464a73e424e31212d7ae8ab"></a>CONFINI_EFEINTR&#160;</td><td class="fielddoc"><p>Interrupted by the user during <code>f_foreach()</code> </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ae6a17d09c16887dfd373eb0c05e4d325a0ad49c407d00e5efd5e638f1b236c155"></a>CONFINI_EIINTR&#160;</td><td class="fielddoc"><p>Interrupted by the user during <code>f_init()</code> </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ae6a17d09c16887dfd373eb0c05e4d325a9042e91c1f7518307bc83b60c76406be"></a>CONFINI_EFEOOR&#160;</td><td class="fielddoc"><p>The loop is longer than expected (out of range) </p>
+<tr><td class="fieldname"><a id="ae6a17d09c16887dfd373eb0c05e4d325ac1b16fd34464a73e424e31212d7ae8ab"></a>CONFINI_EFEINTR&#160;</td><td class="fielddoc"><p>Interrupted by the user during <code>f_foreach()</code> </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ae6a17d09c16887dfd373eb0c05e4d325a0ad49c407d00e5efd5e638f1b236c155"></a>CONFINI_EIINTR&#160;</td><td class="fielddoc"><p>Interrupted by the user during <code>f_init()</code> </p>
+<tr><td class="fieldname"><a id="ae6a17d09c16887dfd373eb0c05e4d325aca147c275760856386fdb9e778525676"></a>CONFINI_ENOENT&#160;</td><td class="fielddoc"><p>File inaccessible </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ae6a17d09c16887dfd373eb0c05e4d325a0e8e1cee80bc4b7839838764f5d661f5"></a>CONFINI_ENOMEM&#160;</td><td class="fielddoc"><p>Error allocating memory </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ae6a17d09c16887dfd373eb0c05e4d325a8b9b6ea5c455bfad3976fd394c36a91d"></a>CONFINI_EIO&#160;</td><td class="fielddoc"><p>Error reading the file </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ae6a17d09c16887dfd373eb0c05e4d325aca147c275760856386fdb9e778525676"></a>CONFINI_ENOENT&#160;</td><td class="fielddoc"><p>File inaccessible </p>
+<tr><td class="fieldname"><a id="ae6a17d09c16887dfd373eb0c05e4d325a9042e91c1f7518307bc83b60c76406be"></a>CONFINI_EFEOOR&#160;</td><td class="fielddoc"><p>The loop is longer than expected (out of range) </p>
 </td></tr>
 </table>
 

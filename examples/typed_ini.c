@@ -57,7 +57,7 @@ static int my_ini_listener (IniDispatch *this, void *other) {
 
 		case INI_SECTION:
 
-			store->_read_status_ = !strcmp(this->data, "my_section") ? 1 : store->_read_status_ | 2;
+			store->_read_status_ = ini_string_match_si("my_section", this->data, this->format) ? 1 : store->_read_status_ | 2;
 			break;
 
 		case INI_KEY:
@@ -66,25 +66,25 @@ static int my_ini_listener (IniDispatch *this, void *other) {
 
 				this->d_len = ini_unquote(this->data, this->format);
 
-				if (!strcmp(this->data, "my_string")) {
+				if (ini_string_match_ss("my_string", this->data, this->format)) {
 
 					this->v_len = ini_unquote(this->value, this->format);
 					store->my_section_my_string = (char *) malloc((this->v_len + 1) * sizeof(char));
 					memcpy(store->my_section_my_string, this->value, this->v_len + 1);
 
-				} else if (!strcmp(this->data, "my_number")) {
+				} else if (ini_string_match_ss("my_number", this->data, this->format)) {
 
 					store->my_section_my_number = ini_get_int(this->value);
 
-				} else if (!strcmp(this->data, "my_boolean")) {
+				} else if (ini_string_match_ss("my_boolean", this->data, this->format)) {
 
 					store->my_section_my_boolean = ini_get_bool(this->value, 1);
 
-				} else if (!strcmp(this->data, "my_implicit_boolean")) {
+				} else if (ini_string_match_ss("my_implicit_boolean", this->data, this->format)) {
 
 					store->my_section_my_implicit_boolean = ini_get_bool(this->value, 1);
 
-				} else if (!strcmp(this->data, "my_array")) {
+				} else if (ini_string_match_ss("my_array", this->data, this->format)) {
 
 					/* Save memory (not strictly needed) */
 					this->v_len = ini_collapse_array(this->value, MY_ARRAY_DELIMITER, this->format);

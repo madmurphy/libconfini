@@ -4,7 +4,7 @@
 	@brief		libconfini header
 	@author		Stefano Gioffr&eacute;
 	@copyright 	GNU Public License v3
-	@date		2016
+	@date		2016-2017
 
 **/
 
@@ -183,14 +183,17 @@ extern double (* const ini_get_float) (const char *ini_string);
 /* PUBLIC CONSTANTS AND VARIABLES */
 
 
-/** @brief	Error codes **/
+/** @brief	Error flag (not present in user-generated interruptions) -- its value should be considered opaque **/
+#define CONFINI_ERROR 4
+
+/** @brief	Error codes -- the actual values of each constant should be considered opaque **/
 enum ConfiniErrorNo {
-	CONFINI_EFEINTR = 1,		/**< Interrupted by the user during `f_foreach()` **/
-	CONFINI_EFEOOR = 2,		/**< The loop is longer than expected (out of range) **/
-	CONFINI_EIINTR = 3,		/**< Interrupted by the user during `f_init()` **/
-	CONFINI_ENOMEM = 4,		/**< Error allocating memory **/
-	CONFINI_EIO = 5,		/**< Error reading the file **/
-	CONFINI_ENOENT = 6		/**< File inaccessible **/
+	CONFINI_EIINTR = 1,		/**< Interrupted by the user during `f_init()` **/
+	CONFINI_EFEINTR = 2,		/**< Interrupted by the user during `f_foreach()` **/
+	CONFINI_ENOENT = 4,		/**< File inaccessible **/
+	CONFINI_ENOMEM = 5,		/**< Error allocating memory **/
+	CONFINI_EIO = 6,		/**< Error reading the file **/
+	CONFINI_EFEOOR = 7		/**< The loop is longer than expected (out of range) **/
 };
 
 /** @brief	Most used delimiters (but a delimiter can also be any other ASCII character) **/

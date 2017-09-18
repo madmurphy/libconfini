@@ -1,13 +1,15 @@
 # Change Log
 
-## [1.4.1] - 2017-09-17
+## [1.4.1] - 2017-09-18
 
 Changes:
 
+* Created global preprocessor constant `CONFINI_ERROR`
 * Created global variable `INI_NAMES_LOWERCASE`
 * Created functions `ini_dispatch_names_lowercase()`, `ini_string_match_ss()`, `ini_string_match_is()` and `ini_string_match_ii()`
-* Code review (`ini_unquote()`)
+* Code review (`ConfiniErrorNo`, `ini_unquote()`)
 * Documentation
+* Examples
 
 ## [1.4.0] - 2017-09-07
 

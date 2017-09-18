@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Sun Sep 17 2017" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Mon Sep 18 2017" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -26,6 +26,14 @@ src/confini.h \- libconfini header
 .br
 .RI "Dispatch of a single INI member\&. "
 .in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBCONFINI_ERROR\fP   4"
+.br
+.RI "Error flag (not present in user-generated interruptions) -- its value should be considered opaque\&. "
+.in -1c
 .SS "Typedefs"
 
 .in +1c
@@ -50,8 +58,8 @@ src/confini.h \- libconfini header
 
 .in +1c
 .ti -1c
-.RI "enum \fBConfiniErrorNo\fP { \fBCONFINI_EFEINTR\fP = 1, \fBCONFINI_EFEOOR\fP = 2, \fBCONFINI_EIINTR\fP = 3, \fBCONFINI_ENOMEM\fP = 4, \fBCONFINI_EIO\fP = 5, \fBCONFINI_ENOENT\fP = 6 }
-.RI "Error codes\&. ""
+.RI "enum \fBConfiniErrorNo\fP { \fBCONFINI_EIINTR\fP = 1, \fBCONFINI_EFEINTR\fP = 2, \fBCONFINI_ENOENT\fP = 4, \fBCONFINI_ENOMEM\fP = 5, \fBCONFINI_EIO\fP = 6, \fBCONFINI_EFEOOR\fP = 7 }
+.RI "Error codes -- the actual values of each constant should be considered opaque\&. ""
 .br
 .ti -1c
 .RI "enum \fBIniDelimiters\fP { \fBINI_ANY_SPACE\fP = 0, \fBINI_EQUALS\fP = '=', \fBINI_COLON\fP = ':' }
@@ -184,10 +192,16 @@ GNU Public License v3
 .PP
 \fBDate:\fP
 .RS 4
-2016 
+2016-2017 
 .RE
 .PP
 
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define CONFINI_ERROR   4"
+
+.PP
+Error flag (not present in user-generated interruptions) -- its value should be considered opaque\&. 
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBIniDispatch\fP  \fBIniDispatch\fP"
@@ -211,19 +225,19 @@ Global statistics about an INI file\&.
 .SS "enum \fBConfiniErrorNo\fP"
 
 .PP
-Error codes\&. 
+Error codes -- the actual values of each constant should be considered opaque\&. 
 .PP
 \fBEnumerator\fP
 .in +1c
 .TP
+\fB\fICONFINI_EIINTR \fP\fP
+Interrupted by the user during \fCf_init()\fP 
+.TP
 \fB\fICONFINI_EFEINTR \fP\fP
 Interrupted by the user during \fCf_foreach()\fP 
 .TP
-\fB\fICONFINI_EFEOOR \fP\fP
-The loop is longer than expected (out of range) 
-.TP
-\fB\fICONFINI_EIINTR \fP\fP
-Interrupted by the user during \fCf_init()\fP 
+\fB\fICONFINI_ENOENT \fP\fP
+File inaccessible 
 .TP
 \fB\fICONFINI_ENOMEM \fP\fP
 Error allocating memory 
@@ -231,8 +245,8 @@ Error allocating memory
 \fB\fICONFINI_EIO \fP\fP
 Error reading the file 
 .TP
-\fB\fICONFINI_ENOENT \fP\fP
-File inaccessible 
+\fB\fICONFINI_EFEOOR \fP\fP
+The loop is longer than expected (out of range) 
 .SS "enum \fBIniComments\fP"
 
 .PP

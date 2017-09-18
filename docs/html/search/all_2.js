@@ -9,5 +9,6 @@ var searchData=
   ['confini_5feio',['CONFINI_EIO',['../confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325a8b9b6ea5c455bfad3976fd394c36a91d',1,'confini.h']]],
   ['confini_5fenoent',['CONFINI_ENOENT',['../confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325aca147c275760856386fdb9e778525676',1,'confini.h']]],
   ['confini_5fenomem',['CONFINI_ENOMEM',['../confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325a0e8e1cee80bc4b7839838764f5d661f5',1,'confini.h']]],
+  ['confini_5ferror',['CONFINI_ERROR',['../confini_8h.html#a0b9dcb5c0711475ea78b065b0322bde1',1,'confini.h']]],
   ['confinierrorno',['ConfiniErrorNo',['../confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325',1,'confini.h']]]
 ];

@@ -68,25 +68,9 @@ foo = 'bar'
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In order to avoid error exceptions, strings containing an unterminated quote will always be treated as if they had a virtual quote as their last + 1 character.
-
-~~~~~~~~~~{.ini}
-
-foo = "bar
-
-~~~~~~~~~~
-
-will always determine the same behavior as if it were
-
-~~~~~~~~~~~{.ini}
-
-foo = "bar"
-
-~~~~~~~~~~~
-
 The **key part** can contain any character, except the delimiter (which may be enclosed within quotes for not beeing considered as such). In multiline formats internal new line sequences must be escaped (`/\\(?:\n\r?|\r\n?)/`).
 
-If the **key part** part is missing the element is considered of unknown type, i.e., `INI_UNKNOWN` -- see enum `#IniNodeType` -- (example: `= foo`). If the **value part** is missing the key element is considered empty (example: `foo =`). If the delimiter is missing, according to some formats the key element is considered to be an _implicit key_ -- typically representing the boolean `TRUE` (example: `foo`). For instance, in the following example from `/etc/pacman.conf`, `IgnorePkg` is an empty key, while `Color` is an implicit key (representing a `TRUE` boolean -- i.e., `Color = YES`):
+If the **key part** part is missing the element is considered of unknown type, i.e., `INI_UNKNOWN` -- see `enum` `#IniNodeType` -- (example: `= foo`). If the **value part** is missing the key element is considered empty (example: `foo =`). If the delimiter is missing, according to some formats the key element is considered to be an _implicit key_ -- typically representing the boolean `TRUE` (example: `foo`). For instance, in the following example from `/etc/pacman.conf`, `IgnorePkg` is an empty key, while `Color` is an implicit key (representing a `TRUE` boolean -- i.e., `Color = YES`):
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -225,7 +209,7 @@ A disabled entry is either a section or a key that has been nested inside a comm
 
 In order to maximize the flexibility of the data, only four escaping sequences are supported by **libconfini**: `\'`, `\"`, `\\` and the multiline escaping sequence (`/\\(?:\n\r?|\r\n?)/`).
 
-The first three escaping sequences are left untouched by all functions except `ini_unquote()`. Nevertheless, the characters `'`, `"` and `\` can determine different behaviors during the parsing depending on whether they are escaped or unescaped. For instance, the string `johnsmith !&quot;` in the following example will not be parsed as a comment:
+The first three escaping sequences are left untouched by all functions except `ini_unquote()`. Nevertheless, the characters `'`, `"` and `\` can determine different behaviors during the parsing depending on whether they are escaped or unescaped. For instance, the string `johnsmith !"` in the following example will not be parsed as a comment:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -306,6 +290,8 @@ The function `f_foreach()` is invoked with two arguments:
 
 * `dispatch` -- a pointer to an `IniDispatch` object containing the parsed member of the INI file
 * `user_data` -- a pointer to the custom argument previously passed to the `load_ini_file()` / `load_ini_path()` functions
+
+Both functions `load_ini_file()` and `load_ini_path()` return zero if the INI file has been completely parsed, non-zero otherwise.
 
 ## BASIC EXAMPLES
 
@@ -595,7 +581,7 @@ When an INI file is parsed it is parsed according to a format. The `IniFormat` b
 
 Each format can be represented also as a univocal 24-bit unsigned integer. In order to convert an `IniFormat` to an unsigned integer and vice versa please see `ini_format_get_id()`, `ini_format_set_to_id()` and `#IniFormatId`.
 
-## THE MODEL FORMAT
+### THE MODEL FORMAT
 
 A model format named `INI_DEFAULT_FORMAT` is available.
 
@@ -721,9 +707,66 @@ Remember that the multiline escaping sequence (`/\\(?:\n\r?|\r\n?)/`) is **not**
 
 ## CODE CONSIDERATIONS
 
-### THE LISTENERS
+### RETURN VALUES
 
-The functions `load_ini_file()`, `load_ini_path()`, `ini_array_foreach()` and `ini_split_array()` require some listeners defined by the user. Such listeners must return an `int` value. When this is non-zero the caller function is interrupted and its loop stopped.
+The functions `load_ini_file()`, `load_ini_path()`, `ini_array_foreach()` and `ini_split_array()` require some listeners defined by the user. Such listeners must return an `int` value. When this is non-zero the caller function is interrupted, its loop stopped, and a non-zero value is returned by the caller as well.
+
+The functions `load_ini_file()` and `load_ini_path()` return a non-zero value also if the INI file, for any reason, has not been completely parsed (see `enum` `#ConfiniErrorNo`). Therefore, in order to be able to distinguish between internal errors and user-generated interruptions the flag `CONFINI_ERROR` can be used.
+
+For instance, in the following example the `f_foreach()` listener returns a non-zero value if a key named `password` with a value that equals `Hello world` is found. Hence, using the flag `CONFINI_ERROR`, the code below distinguishes a non-zero value generated by the listener from a non-zero value generated by a parsing error in `load_ini_path()`'s return value.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+
+#include <stdio.h>
+#include <confini.h>
+
+static int passfinder (IniDispatch *disp, void *v_membid) {
+
+  /* Search for `password = "Hello world"` in the INI file */
+  if (
+    ini_string_match_si("password", disp->data, disp->format)
+    && ini_string_match_si("Hello world", disp->value, disp->format)
+  ) {
+
+    *((signed int *) v_membid) = disp->dispatch_id;
+    return 1;
+
+  }
+
+  return 0;
+
+}
+
+int main () {
+
+  /* Load INI file */
+  int membid, retval = load_ini_path(
+    "my_file.conf",
+    INI_DEFAULT_FORMAT,
+    NULL,
+    passfinder,
+    &membid
+  );
+
+  /* Check for errors */
+  if (retval & CONFINI_ERROR) {
+
+    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    return 1;
+
+  }
+
+  /* Check if `load_ini_path()` has been interrupted by `passfinder()` */
+  retval  ==  CONFINI_EFEINTR ?
+                printf("We found it! It's the INI element number #%d!\n", membid)
+              :
+                printf("We didn't find it :-(\n");
+
+  return 0;
+
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ### OTHER GLOBAL SETTINGS
 
@@ -751,6 +794,28 @@ When the variable `#INI_INSENSITIVE_LOWERCASE` is set to any non-zero value, **l
 Depending on the format of the INI file, **libconfini** may use up to three global variables (`#INI_IMPLICIT_VALUE`, `#INI_IMPLICIT_V_LEN` and `#INI_INSENSITIVE_LOWERCASE`). In order to be thread-safe these three variables (if needed) should be defined only once (either directly, or through their modifier functions `ini_set_implicit_value()` and `ini_dispatch_case_insensitive_lowercase()`), or otherwise a mutex logic must be introduced.
 
 Apart from the three variables above, each parsing allocates and frees its own memory, therefore the library must be considered thread-safe.
+
+### ERROR EXCEPTIONS
+
+The philosophy of **libconfini** is to parse as much as possible without generating error exceptions. No parsing errors are returned once an INI file has been correctly allocated into the stack, with the exception of the _out-of-range_ error `CONFINI_EFEOOR` (see `enum` `#ConfiniErrorNo`), whose meaning is that the loop is for unknown reasons longer than expected -- this error is possibly generated by the presence of bugs in the library's code and should never be returned (please [contact me](https://github.com/madmurphy/libconfini/issues) if this happens).
+
+When an INI node is wrongly written in respect to the format given, it is dispatched verbatim as an `INI_UNKNOWN` node -- see `enum` `#IniNodeType`.
+
+In order to avoid error exceptions, strings containing an unterminated quote will always be treated as if they had a virtual quote as their last + 1 character. For example,
+
+~~~~~~~~~~{.ini}
+
+foo = "bar
+
+~~~~~~~~~~
+
+will always determine the same behavior as if it were
+
+~~~~~~~~~~~{.ini}
+
+foo = "bar"
+
+~~~~~~~~~~~
 
 ### PERFORMANCE
 

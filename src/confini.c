@@ -6,7 +6,7 @@
 	@brief		libconfini functions
 	@author		Stefano Gioffr&eacute;
 	@copyright 	GNU Public License v3
-	@date		2016
+	@date		2016-2017
 
 **/
 
@@ -66,7 +66,7 @@
 	@property	IniStatistics::bytes
 					The size of the parsed file in bytes
 	@property	IniStatistics::members
-					The size of the parsed file in members (nodes)
+					The size of the parsed file in members (nodes) -- this number equals the number of dispatches
 
 
 	@struct		IniDispatch
@@ -1270,7 +1270,7 @@ int load_ini_file (
 
 	_LIBCONFINI_BOOL_ tmp_bool;
 	uint16_t abacus;
-	size_t tmp_size_2, tmp_size_3, idx, node_at;
+	size_t idx, node_at, tmp_size_2, tmp_size_3;
 
 	/* PART ONE: Examine and isolate each segment */
 
@@ -1355,11 +1355,11 @@ int load_ini_file (
 		.members = __N_MEMBERS__
 	};
 
-	#undef __N_BYTES__
 	#undef __SHIFT_LEN__
 	#undef __N_MEMBERS__
 	#undef __EOL_ID__
 	#undef __IS_ESCAPED__
+	#undef __N_BYTES__
 
 	/* Debug */
 
@@ -1388,8 +1388,9 @@ int load_ini_file (
 	/* PART TWO: Dispatch the parsed input */
 
 	#define __PARENT_IS_DISABLED__ tmp_bool
-	#define __REAL_PARENT_LEN__ tmp_size_2
-	#define __CURR_PARENT_LEN__ tmp_size_3
+	#define __REAL_PARENT_LEN__ tmp_size_1
+	#define __CURR_PARENT_LEN__ tmp_size_2
+	#define __ITER__ tmp_size_3
 
 	__REAL_PARENT_LEN__ = 0, __CURR_PARENT_LEN__ = 0;
 
@@ -1464,13 +1465,13 @@ int load_ini_file (
 						(format.no_double_quotes << 1) |
 						format.no_single_quotes;
 
-			for (tmp_size_1 = 1; (abacus & 512) && tmp_size_1 < this_d.d_len; tmp_size_1++) {
+			for (__ITER__ = 1; (abacus & 512) && __ITER__ < this_d.d_len; __ITER__++) {
 
-				abacus	=	this_d.data[tmp_size_1] == _LIBCONFINI_LF_ || this_d.data[tmp_size_1] == _LIBCONFINI_CR_ ?
+				abacus	=	this_d.data[__ITER__] == _LIBCONFINI_LF_ || this_d.data[__ITER__] == _LIBCONFINI_CR_ ?
 								abacus | 448
-							: is_comment_char(this_d.data[tmp_size_1], format) ?
+							: is_comment_char(this_d.data[__ITER__], format) ?
 								(
-									(abacus & 64) && !is_parsable_char(this_d.data[tmp_size_1], format) ?
+									(abacus & 64) && !is_parsable_char(this_d.data[__ITER__], format) ?
 										abacus & 31
 									: abacus & 128 ?
 										abacus & 543
@@ -1479,7 +1480,7 @@ int load_ini_file (
 									:
 										abacus & 287
 								)
-							: is_some_space(this_d.data[tmp_size_1], _LIBCONFINI_NO_EOL_) ?
+							: is_some_space(this_d.data[__ITER__], _LIBCONFINI_NO_EOL_) ?
 								(
 									abacus & 64 ?
 										(abacus & 991) | 448
@@ -1488,18 +1489,18 @@ int load_ini_file (
 									:
 										abacus & 31
 								)
-							: this_d.data[tmp_size_1] == _LIBCONFINI_BACKSLASH_ ?
+							: this_d.data[__ITER__] == _LIBCONFINI_BACKSLASH_ ?
 								((abacus & 831) | 256) ^ 32
-							: !(abacus & 42) && this_d.data[tmp_size_1] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+							: !(abacus & 42) && this_d.data[__ITER__] == _LIBCONFINI_DOUBLE_QUOTES_ ?
 								((abacus & 799) | 256) ^ 16
-							: !(abacus & 49) && this_d.data[tmp_size_1] == _LIBCONFINI_SINGLE_QUOTES_ ?
+							: !(abacus & 49) && this_d.data[__ITER__] == _LIBCONFINI_SINGLE_QUOTES_ ?
 								((abacus & 799) | 256) ^ 8
 							:
 								(abacus & 799) | 256;
 
 			}
 
-			this_d.type		=	tmp_size_1 == this_d.d_len ?
+			this_d.type		=	__ITER__ == this_d.d_len ?
 									get_type_as_active(cache + parse_at, idx - parse_at, format.disabled_can_be_implicit, format)
 								:
 									0;
@@ -1529,15 +1530,15 @@ int load_ini_file (
 
 		if (__CURR_PARENT_LEN__ && *subparent_str) {
 
-			tmp_size_1 = 0;
+			__ITER__ = 0;
 
 			do {
 
-				curr_parent_str[tmp_size_1 + __CURR_PARENT_LEN__] = subparent_str[tmp_size_1];
+				curr_parent_str[__ITER__ + __CURR_PARENT_LEN__] = subparent_str[__ITER__];
 
-			} while (subparent_str[tmp_size_1++]);
+			} while (subparent_str[__ITER__++]);
 
-			__CURR_PARENT_LEN__ += tmp_size_1 - 1;
+			__CURR_PARENT_LEN__ += __ITER__ - 1;
 			subparent_str = curr_parent_str + __CURR_PARENT_LEN__;
 
 		}
@@ -1600,24 +1601,24 @@ int load_ini_file (
 
 				for (
 
-					abacus = (format.no_double_quotes << 1) | format.no_single_quotes, tmp_size_1 = 0;
+					abacus = (format.no_double_quotes << 1) | format.no_single_quotes, __ITER__ = 0;
 
-						this_d.data[tmp_size_1] && (
-							(abacus & 12) || this_d.data[tmp_size_1] != _LIBCONFINI_CLOSE_SECTION_
+						this_d.data[__ITER__] && (
+							(abacus & 12) || this_d.data[__ITER__] != _LIBCONFINI_CLOSE_SECTION_
 						);
 
-					abacus	=	this_d.data[tmp_size_1] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 16
-								: !(abacus & 22) && this_d.data[tmp_size_1] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 8
-								: !(abacus & 25) && this_d.data[tmp_size_1] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 4
+					abacus	=	this_d.data[__ITER__] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 16
+								: !(abacus & 22) && this_d.data[__ITER__] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 8
+								: !(abacus & 25) && this_d.data[__ITER__] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 4
 								: abacus & 15,
 
-					tmp_size_1++
+					__ITER__++
 
 				);
 
-				while (this_d.data[tmp_size_1]) {
+				while (this_d.data[__ITER__]) {
 
-					this_d.data[tmp_size_1++] = '\0';
+					this_d.data[__ITER__++] = '\0';
 
 				}
 
@@ -1658,20 +1659,20 @@ int load_ini_file (
 			case INI_KEY:
 			case INI_DISABLED_KEY:
 
-				tmp_size_1 = get_delimiter_pos(this_d.data, this_d.d_len, format);
+				__ITER__ = get_delimiter_pos(this_d.data, this_d.d_len, format);
 
-				if (this_d.d_len && tmp_size_1 && tmp_size_1 < this_d.d_len) {
+				if (this_d.d_len && __ITER__ && __ITER__ < this_d.d_len) {
 
-					this_d.data[tmp_size_1] = '\0';
+					this_d.data[__ITER__] = '\0';
 
 					if (format.do_not_collapse_values) {
 
-						this_d.value = this_d.data + ltrim_h(this_d.data, tmp_size_1 + 1, _LIBCONFINI_WITH_EOL_);
+						this_d.value = this_d.data + ltrim_h(this_d.data, __ITER__ + 1, _LIBCONFINI_WITH_EOL_);
 						this_d.v_len = rtrim_h(this_d.value, this_d.d_len + this_d.data - this_d.value, _LIBCONFINI_WITH_EOL_);
 
 					} else {
 
-						this_d.value = this_d.data + tmp_size_1 + 1;
+						this_d.value = this_d.data + __ITER__ + 1;
 						this_d.v_len = collapse_spaces(this_d.value, format);
 
 					}
@@ -1714,9 +1715,10 @@ int load_ini_file (
 
 	free_and_exit:
 
-	#undef __PARENT_IS_DISABLED__
-	#undef __REAL_PARENT_LEN__
+	#undef __ITER__
 	#undef __CURR_PARENT_LEN__
+	#undef __REAL_PARENT_LEN__
+	#undef __PARENT_IS_DISABLED__
 
 	free(cache);
 	return return_value;
