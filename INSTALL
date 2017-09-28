@@ -1,12 +1,12 @@
-On most Unix-like systems, you should be able to install libconfini
-using the following common steps:
+On most Unix-like systems, you should be able to install libconfini using
+the following common steps:
 
     ./configure
     make
     make install
 
-If you need to customize the target directories, or otherwise adjust
-the build setting, use
+If you need to customize the target directories, or otherwise adjust the
+build setting, use
 
     ./configure --help
 

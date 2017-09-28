@@ -10,6 +10,7 @@
 
 #ifndef _LIBCONFINI_HEADER_
 #define _LIBCONFINI_HEADER_
+
 #include <stdio.h>
 
 
@@ -198,7 +199,7 @@ enum ConfiniErrorNo {
 
 /** @brief	Most used delimiters (but a delimiter can also be any other ASCII character) **/
 enum IniDelimiters {
-	INI_ANY_SPACE = 0,		/**< In multiline INIs: `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`; in non-multiline INIs: `/[\t \v\f])+/` **/
+	INI_ANY_SPACE = 0,		/**< In multiline INIs: `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`, in non-multiline INIs: `/[\t \v\f])+/` **/
 	INI_EQUALS = '=',		/**< `=` **/
 	INI_COLON = ':'			/**< `:` **/
 };
@@ -215,7 +216,7 @@ enum IniNodeType {
 	INI_DISABLED_KEY = 7
 };
 
-/** @brief	Behaviors of '#' and ';' **/
+/** @brief	Possible values for IniFormat::semicolon and IniFormat::hash (i.e., meaning of `/\s+[#;]/` in respect to a format) **/
 enum IniComments {
 	INI_PARSE_COMMENT = 0,		/**< This character opens a comment or a disabled entry **/
 	INI_SHOW_COMMENT = 1,		/**< This character opens a comment **/
@@ -223,7 +224,7 @@ enum IniComments {
 	INI_NORMAL_CHARACTER = 3	/**< This is a normal character **/
 };
 
-/** @brief	Multiline entries **/
+/** @brief	Possible values of IniFormat::multiline_entries **/
 enum IniMultiline {
 	INI_EVERYTHING_MULTILINE = 0,
 	INI_ACTIVE_AND_DISABLED_MULTILINE = 1,
@@ -235,7 +236,7 @@ enum IniMultiline {
 static const IniFormat INI_DEFAULT_FORMAT = _LIBCONFINI_DEFAULT_FORMAT_;
 
 /** @brief	If set to any non-zero value key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: non-zero) **/
-extern int INI_INSENSITIVE_LOWERCASE;
+extern short int INI_INSENSITIVE_LOWERCASE;
 
 /** @brief	Value to be dispatched in case of implicit keys (default value: `NULL`) **/
 extern char *INI_IMPLICIT_VALUE;

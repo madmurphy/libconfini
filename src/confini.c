@@ -17,6 +17,7 @@
 
 /**
 
+
 	@struct		IniFormat
 
 	Structure of the bitfield:
@@ -24,71 +25,103 @@
 	- Bits 1-18: INI syntax
 	- Bits 19-20: INI semantics
 	- Bits 21-22: user's syntax (disabled entries)
-	- Bits 23-24: unused
+	- Bits 23-24: not used
 
 	@property	IniFormat::delimiter_symbol
-					The symbol to be used as delimiter; if set to `0`, any space is delimiter
-					(`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
+					The symbol to be used as delimiter; if set to `0`, any
+					space is delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
 	@property	IniFormat::semicolon
-					The rule of the semicolon character (use enum `#IniComments` for this)
+					The rule of the semicolon character (use enum
+					`#IniComments` for this)
 	@property	IniFormat::hash
-					The rule of the hash character (use enum `#IniComments` for this)
+					The rule of the hash character (use enum `#IniComments`
+					for this)
 	@property	IniFormat::multiline_entries
-					Defines which class of entries are allowed to be multiline (use enum `#IniMultiline` for this)
+					Defines which class of entries are allowed to be multiline
+					(use enum `#IniMultiline` for this)
 	@property	IniFormat::case_sensitive
-					If set to `1`, key and section names will not be rendered in lower case
+					If set to `1`, key and section names will not be rendered
+					in lower case
 	@property	IniFormat::no_spaces_in_names
-					If set to `1`, key and section names containing spaces will be rendered as `#INI_UNKNOWN`.
-					Note that setting `IniFormat::delimiter_symbol` to `INI_ANY_SPACE` will not automatically set
-					this option to `1` (spaces will be still allowed in section names).					
+					If set to `1`, key and section names containing spaces
+					will be rendered as `#INI_UNKNOWN`.  Note that setting
+					`IniFormat::delimiter_symbol` to `INI_ANY_SPACE` will
+					not automatically set this option to `1` (spaces will
+					be still allowed in section names).
 	@property	IniFormat::no_single_quotes
-					If set to `1`, the single-quote character (`'`) will be considered as a normal character
+					If set to `1`, the single-quote character (`'`) will be
+					considered as a normal character
 	@property	IniFormat::no_double_quotes
-					If set to `1`, the double-quote character (`"`) will be considered as a normal character
+					If set to `1`, the double-quote character (`"`) will be
+					considered as a normal character
 	@property	IniFormat::implicit_is_not_empty
-					If set to `1`, the dispatch of implicit keys (see @ref libconfini) will always
-					assign to `IniDispatch::value` and to `IniDispatch::v_len` the global variables
-					`#INI_IMPLICIT_VALUE` and `#INI_IMPLICIT_V_LEN` respectively; if set to `0`,
-					implicit keys will be considered to be empty keys
+					If set to `1`, the dispatch of implicit keys (see @ref
+					libconfini) will always assign to `IniDispatch::value`
+					and to `IniDispatch::v_len` the global variables
+					`#INI_IMPLICIT_VALUE` and `#INI_IMPLICIT_V_LEN`
+					respectively; if set to `0`, implicit keys will be
+					considered to be empty keys
 	@property	IniFormat::do_not_collapse_values
-					If set to `1`, sequences of more than one space in values (`/\s{2,}/`) will not be collapsed
+					If set to `1`, sequences of more than one space in values
+					(`/\s{2,}/`) will not be collapsed
 	@property	IniFormat::no_disabled_after_space
-					If set to `1`, prevents that what follows `/(?:^|\s+)[#;]\s/` be parsed as a disabled entry
+					If set to `1`, prevents that what follows
+					`/(?:^|\s+)[#;]\s/` be parsed as a disabled entry
 	@property	IniFormat::disabled_can_be_implicit
-					If set to `1`, comments non containing a delimiter symbol will not be parsed as
-					disabled implicit keys, but as simple comments
+					If set to `1`, comments non containing a delimiter
+					symbol will not be parsed as disabled implicit keys,
+					but as simple comments
 
 
 	@struct		IniStatistics
 
 	@property	IniStatistics::format
-					The format of the INI file (see struct `IniFormat`)
+			The format of the INI file (see struct `IniFormat`)
 	@property	IniStatistics::bytes
-					The size of the parsed file in bytes
+			The size of the parsed file in bytes
 	@property	IniStatistics::members
-					The size of the parsed file in members (nodes) -- this number equals the number of dispatches
+			The size of the parsed file in members (nodes) -- this
+			number equals the number of dispatches
 
 
 	@struct		IniDispatch
 
 	@property	IniDispatch::format
-					The format of the INI file (see struct `IniFormat`)
+			The format of the INI file (see struct `IniFormat`)
 	@property	IniDispatch::type
-					The dispatch type (see enum `#IniNodeType`)
+			The dispatch type (see enum `#IniNodeType`)
 	@property	IniDispatch::data
-					It can be a comment, a section path or a key name
+			It can be a comment, a section path or a key name
 	@property	IniDispatch::value
-					It can be the value of a key element or an empty string
+			It can be the value of a key element or an empty string
 	@property	IniDispatch::append_to
-					The current section path
+			The current section path
 	@property	IniDispatch::d_len
-					The length of the string `IniDispatch::data`
+			The length of the string `IniDispatch::data`
 	@property	IniDispatch::v_len
-					The length of the string `IniDispatch::value`
+			The length of the string `IniDispatch::value`
 	@property	IniDispatch::at_len
-					The length of the string `IniDispatch::append_to`
+			The length of the string `IniDispatch::append_to`
 	@property	IniDispatch::dispatch_id
-					The dispatch id
+			The dispatch id
+
+
+	@fn		ini_get_int
+	@brief		Link to [`atoi()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoi)
+
+
+	@fn		ini_get_lint
+	@brief		Link to [`atol()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atol)
+
+
+	@fn		ini_get_llint
+	@brief		Link to [`atoll()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoll)
+
+
+	@fn		ini_get_float
+	@brief		Link to [`atof()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atof)
+
+
 
 **/
 
@@ -118,7 +151,10 @@
 #define _LIBCONFINI_HASH_ '#'
 #define _LIBCONFINI_LF_ '\n'
 #define _LIBCONFINI_CR_ '\r'
-/* In the future there will maybe be support for UTF-8 casefold, but for now only ASCII... */
+/*
+	In the future there will maybe be support for UTF-8 casefold, but for now
+	only ASCII...
+*/
 #define _LIBCONFINI_CHR_CASEFOLD_(CHR) (CHR > 0x40 && CHR < 0x5b ? CHR | 0x60 : CHR)
 
 
@@ -128,8 +164,8 @@
 
 	@brief	 A list of possible string representations of boolean pairs
 
-	There may be infinite pairs here, but be aware of the lazy behavior of ini_get_lazy_bool().
-	Everything lowercase in this list!
+	There may be infinite pairs here, but be aware of the lazy behavior	of
+	`ini_get_lazy_bool()`. Everything lowercase in this list!
 
 **/
 static const char * const _LIBCONFINI_BOOLEANS_[][2] = {
@@ -142,8 +178,8 @@ static const char * const _LIBCONFINI_BOOLEANS_[][2] = {
 static const char _LIBCONFINI_UTF8_BOM_[] = { 0xEF, 0xBB, 0xBF };
 
 /*
-	This may be any character, in theory... But after the left-trim of each line a leading
-	space works pretty well as metacharacter.
+	This may be any character, in theory... But after the left-trim of each line
+	a leading space works pretty well as metacharacter.
 */
 #define _LIBCONFINI_INLINE_MARKER_ '\t'
 
@@ -171,7 +207,8 @@ static inline _LIBCONFINI_BOOL_ is_some_space (const char chr, const uint8_t dep
 	@brief			Soft left trim -- does not change the buffer
 	@param			lt_s			The target string
 	@param			start_from		The offset where to start the left trim
-	@param			depth			What is actually considered a space -- a number ranging from 1 to 6
+	@param			depth			What is actually considered a space -- a
+									number ranging from 1 to 6
 	@return			The offset of the first non-space character
 
 **/
@@ -187,7 +224,8 @@ static inline size_t ltrim_s (const char * const lt_s, const size_t start_from, 
 	@brief			Hard left trim -- **does** change the buffer
 	@param			lt_s			The target string
 	@param			start_from		The offset where to start the left trim
-	@param			depth			What is actually considered a space -- a number ranging from 1 to 6
+	@param			depth			What is actually considered a space -- a
+									number ranging from 1 to 6
 	@return			The offset of the first non-space character
 
 **/
@@ -200,7 +238,8 @@ static inline size_t ltrim_h (char * const lt_s, const size_t start_from, const 
 
 /**
 
-	@brief			Unescaped hard left trim (left trim of `/^(\s+|\\[\n\r])+/`) -- **does** change the buffer
+	@brief			Unescaped hard left trim (left trim of `/^(\s+|\\[\n\r])+/`)
+					-- **does** change the buffer
 	@param			ult_s			The target string
 	@param			start_from		The offset where to start the left trim
 	@return			The offset of the first non-space character
@@ -216,8 +255,11 @@ static inline size_t ultrim_h (char * const ult_s, const size_t start_from) {
 	Mask `abacus` (5 bits used):
 
 		FLAG_1		This is any space (`/[\t \v\f\n\r]/`)
-		FLAG_2		This is not a backslash OR this is neither a backslash nor `/[\t \v\f]/` and previous was not a backslash
-		FLAG_4		This is a backslash OR this is a new line and previous was a backslash
+		FLAG_2		This is not a backslash OR this is neither a backslash nor
+					`/[\t \v\f]/`,
+					and previous was not a backslash
+		FLAG_4		This is a backslash OR this is a new line and previous was a
+					backslash
 		FLAG_8		Continue the loop
 
 	*/
@@ -254,7 +296,9 @@ static inline size_t ultrim_h (char * const ult_s, const size_t start_from) {
 	@brief			Soft right trim -- does not change the buffer
 	@param			rt_s			The target string
 	@param			length			The length of the string
-	@param			depth			What is actually considered a space -- a subset of `_LIBCONFINI_SPACES_` ranging from 1 to 6
+	@param			depth			What is actually considered a space -- a
+									subset of `_LIBCONFINI_SPACES_` ranging from
+									1 to 6
 	@return			The length of the string until the last non-space character
 
 **/
@@ -270,7 +314,8 @@ static inline size_t rtrim_s (const char * const rt_s, const size_t length, cons
 	@brief			Hard right trim -- **does** change the buffer
 	@param			rt_s			The target string
 	@param			length			The length of the string
-	@param			depth			What is actually considered a space -- a number ranging from 1 to 6
+	@param			depth			What is actually considered a space -- a
+									number ranging from 1 to 6
 	@return			The length of the string until the last non-space character
 
 **/
@@ -283,7 +328,8 @@ static inline size_t rtrim_h (char * const rt_s, const size_t length, const uint
 
 /**
 
-	@brief			Unescaped soft right trim (right trim of `/(\s+|\\[\n\r])+$/`) -- does not change the buffer
+	@brief			Unescaped soft right trim (right trim of
+					`/(\s+|\\[\n\r])+$/`) -- does not change the buffer
 	@param			urt_s			The target string
 	@param			length			The length of the string
 	@return			The length of the string until the last non-space character
@@ -343,8 +389,8 @@ static inline void string_tolower (char * const str) {
 
 /**
 
-	@brief			Checks whether a character can represent the beginning of a disabled entry
-					within a given format
+	@brief			Checks whether a character can represent the beginning of a
+					disabled entry within a given format
 	@param			chr			The character to check
 	@param			format		The format of the INI file
 	@return			1 if @p chr matches, 0 otherwise
@@ -361,7 +407,8 @@ static inline _LIBCONFINI_BOOL_ is_parsable_char (const char chr, const IniForma
 
 /**
 
-	@brief			Checks whether a character represents the opening of a comment within a given format
+	@brief			Checks whether a character represents the opening of a
+					comment within a given format
 	@param			chr			The character to check
 	@param			format		The format of the INI file
 	@return			1 if @p chr matches, 0 otherwise
@@ -378,8 +425,8 @@ static inline _LIBCONFINI_BOOL_ is_comment_char (const char chr, const IniFormat
 
 /**
 
-	@brief			Checks whether a character represents the beginning of a comment that must be ignored
-					within a given format
+	@brief			Checks whether a character represents the beginning of a
+					comment that must be ignored within a given format
 	@param			chr			The character to check
 	@param			format		The format of the INI file
 	@return			1 if @p chr matches, 0 otherwise
@@ -396,8 +443,8 @@ static inline _LIBCONFINI_BOOL_ is_forget_char (const char chr, const IniFormat 
 	@param			string		The string to analyse
 	@param			length		The length of the string
 	@param			format		The format of the INI file
-	@return			The offset of the delimiter or @p length if the delimiter has not
-					been not found
+	@return			The offset of the delimiter or @p length if the delimiter
+					has not been not found
 
 **/
 static inline size_t get_delimiter_pos (const char * const str, const size_t len, const IniFormat format) {
@@ -443,7 +490,8 @@ static inline size_t get_delimiter_pos (const char * const str, const size_t len
 
 /**
 
-	@brief			Replaces `/\\(\n\r?|\r\n?)s*[#;]/` or `/\\(\n\r?|\r\n?)/` with `"$1"`.
+	@brief			Replaces `/\\(\n\r?|\r\n?)s*[#;]/` or `/\\(\n\r?|\r\n?)/`
+					with `"$1"`.
 	@param			str				Target string
 	@param			len				Length of the string
 	@param			is_disabled		The string represents a disabled entry
@@ -513,7 +561,8 @@ static size_t unescape_cr_lf (char * const str, const size_t len, const _LIBCONF
 
 /**
 
-	@brief			Out of quotes similar to ECMAScript `string.replace(/^[\n\r]\s*|(\s)+/g, " ")`
+	@brief			Out of quotes similar to ECMAScript
+					`string.replace(/^[\n\r]\s*|(\s)+/g, " ")`
 	@param			str			The string to collapse
 	@param			format		The format of the INI file
 	@return			The new length of the string
@@ -590,10 +639,12 @@ static size_t collapse_spaces (char * const str, const IniFormat format) {
 	@param			format		The format of the INI file
 	@return			The new length of the string
 
-	Out of quotes, similar to ECMAScript `section_name.replace(/\.*\s*$|(?:\s*(\.))+\s*|^\s+/g, "$1").replace(/\s+/g, " ")`
+	Out of quotes, similar to ECMAScript
+	`section_name.replace(/\.*\s*$|(?:\s*(\.))+\s*|^\s+/g, "$1").replace(/\s+/g, " ")`
 
-	A section name can start with a dot (append), but cannot end with a dot. Spaces sorrounding dots
-	will be removed. Single quotes or double quotes (if active and present) prevent changes.
+	A section name can start with a dot (append), but cannot end with a dot.
+	Spaces sorrounding dots will be removed. Single quotes or double quotes (if
+	active and present) prevent changes.
 
 **/
 static size_t sanitize_section_name (char * const str, const IniFormat format) {
@@ -684,7 +735,8 @@ static size_t sanitize_section_name (char * const str, const IniFormat format) {
 
 /**
 
-	@brief			Removes all comment initializers (`#` or `;`) from the beginning of each line of a comment
+	@brief			Removes all comment initializers (`#` or `;`) from the
+					beginning of each line of a comment
 	@param			commstr		The comment to sanitize
 	@param			len			The length of commstr
 	@param			format		The format of the INI file
@@ -726,7 +778,8 @@ static size_t uncomment (char * const commstr, size_t len, const IniFormat forma
 			FLAG_2		We are in an odd sequence of backslashes
 			FLAG_4		This character is a backslash
 			FLAG_8		This character is a comment character and follows `/(\n\s*|\r\s*)/`
-			FLAG_16		This character is a part of a group of spaces following a new line (`/(\n|\r)[\t \v\f]+/`)
+			FLAG_16		This character is a part of a group of spaces following
+						a new line (`/(\n|\r)[\t \v\f]+/`)
 			FLAG_32		This character is not a new line character (`/[^\r\n]/`)
 
 		*/
@@ -772,7 +825,8 @@ static size_t uncomment (char * const commstr, size_t len, const IniFormat forma
 	@brief			Tries to determine the type of a member "as if it was active"
 	@param			nodestr				String containing an individual node
 	@param			len					Length of the node
-	@param			allow_implicit		A boolean: `TRUE` if keys without a delimiter are allowed, `FALSE` otherwise
+	@param			allow_implicit		A boolean: `TRUE` if keys without a
+										delimiter are allowed, `FALSE` otherwise
 	@param			format				The format of the INI file
 	@return			The node type (see header)
 
@@ -941,7 +995,8 @@ static uint8_t get_type_as_active (
 
 /**
 
-	@brief			Examines a (single-/multi- line) segment and checks whether it contains sub-segments.
+	@brief			Examines a (single-/multi- line) segment and checks whether
+					it contains sub-segments.
 	@param			segment		Segment to examine
 	@param			format		The format of the INI file
 	@return			Number of segments found
@@ -1211,20 +1266,26 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 /**
 
 	@brief			Parses an INI file and dispatches its content
-	@param			ini_file		The `FILE` structure pointing to the INI file to parse
+	@param			ini_file		The `FILE` structure pointing to the INI
+									file to parse
 	@param			format			The format of the INI file
-	@param			f_init			The function that will be invoked before the dispatch, or NULL
-	@param			f_foreach		The function that will be invoked for each dispatch, or NULL
+	@param			f_init			The function that will be invoked before the
+									dispatch, or NULL
+	@param			f_foreach		The function that will be invoked for each
+									dispatch, or NULL
 	@param			user_data		A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
 
-	The function @p f_init will be invoked with two arguments: `statistics` (a pointer to an `IniStatistics`
-	object containing some properties about the file read) and `init_other` (the custom argument @p user_data
-	previously passed). If @p f_init returns a non-zero value the caller function will be interrupted.
+	The function @p f_init will be invoked with two arguments: `statistics` (a
+	pointer to an `IniStatistics` object containing some properties about the
+	file read) and `init_other` (the custom argument @p user_data previously
+	passed). If @p f_init returns a non-zero value the caller function will be interrupted.
 
-	The function @p f_foreach will be invoked with two arguments: `dispatch` (a pointer to an `IniDispatch`
-	object containing the parsed member of the INI file) and `foreach_other` (the custom argument @p user_data
-	previously passed). If @p f_foreach returns a non-zero value the caller function will be interrupted.
+	The function @p f_foreach will be invoked with two arguments: `dispatch` (a
+	pointer to an `IniDispatch` object containing the parsed member of the INI
+	file) and `foreach_other` (the custom argument @p user_data previously
+	passed). If @p f_foreach returns a non-zero value the caller function will
+	be interrupted.
 
 **/
 int load_ini_file (
@@ -1397,7 +1458,7 @@ int load_ini_file (
 	size_t parse_at;
 	char *curr_parent_str = cache + len, *subparent_str = curr_parent_str, *real_parent_str = curr_parent_str;
 
-	IniDispatch this_d = {
+	IniDispatch this_disp = {
 		.format = format,
 		.dispatch_id = 0
 	};
@@ -1419,20 +1480,20 @@ int load_ini_file (
 
 		}
 
-		if (this_d.dispatch_id >= this_doc.members) {
+		if (this_disp.dispatch_id >= this_doc.members) {
 
 			return_value = CONFINI_EFEOOR;
 			goto free_and_exit;
 
 		}
 
-		this_d.data = cache + node_at;
-		this_d.value = cache + idx;
-		this_d.type = 0;
-		this_d.d_len = idx - node_at;
-		this_d.v_len = 0;
+		this_disp.data = cache + node_at;
+		this_disp.value = cache + idx;
+		this_disp.type = 0;
+		this_disp.d_len = idx - node_at;
+		this_disp.v_len = 0;
 
-		if (is_parsable_char(*this_d.data, format)) {
+		if (is_parsable_char(*this_disp.data, format)) {
 
 			parse_at = ltrim_s(cache, node_at + 1, _LIBCONFINI_NO_EOL_);
 
@@ -1455,7 +1516,8 @@ int load_ini_file (
 				FLAG_32		We are in an odd sequence of backslashes
 				FLAG_64		We are in `\n[\t \v\f]*`
 				FLAG_128	Last was not `[\t \v\f]` OR `FLAG_64 == FALSE`
-				FLAG_256	Last was not `\s[;#]`, or was it but was semantic rather than syntactic
+				FLAG_256	Last was not `\s[;#]`, or was it but was semantic
+							rather than syntactic
 				FLAG_512	Continue the loop
 
 			*/
@@ -1465,13 +1527,13 @@ int load_ini_file (
 						(format.no_double_quotes << 1) |
 						format.no_single_quotes;
 
-			for (__ITER__ = 1; (abacus & 512) && __ITER__ < this_d.d_len; __ITER__++) {
+			for (__ITER__ = 1; (abacus & 512) && __ITER__ < this_disp.d_len; __ITER__++) {
 
-				abacus	=	this_d.data[__ITER__] == _LIBCONFINI_LF_ || this_d.data[__ITER__] == _LIBCONFINI_CR_ ?
+				abacus	=	this_disp.data[__ITER__] == _LIBCONFINI_LF_ || this_disp.data[__ITER__] == _LIBCONFINI_CR_ ?
 								abacus | 448
-							: is_comment_char(this_d.data[__ITER__], format) ?
+							: is_comment_char(this_disp.data[__ITER__], format) ?
 								(
-									(abacus & 64) && !is_parsable_char(this_d.data[__ITER__], format) ?
+									(abacus & 64) && !is_parsable_char(this_disp.data[__ITER__], format) ?
 										abacus & 31
 									: abacus & 128 ?
 										abacus & 543
@@ -1480,7 +1542,7 @@ int load_ini_file (
 									:
 										abacus & 287
 								)
-							: is_some_space(this_d.data[__ITER__], _LIBCONFINI_NO_EOL_) ?
+							: is_some_space(this_disp.data[__ITER__], _LIBCONFINI_NO_EOL_) ?
 								(
 									abacus & 64 ?
 										(abacus & 991) | 448
@@ -1489,42 +1551,42 @@ int load_ini_file (
 									:
 										abacus & 31
 								)
-							: this_d.data[__ITER__] == _LIBCONFINI_BACKSLASH_ ?
+							: this_disp.data[__ITER__] == _LIBCONFINI_BACKSLASH_ ?
 								((abacus & 831) | 256) ^ 32
-							: !(abacus & 42) && this_d.data[__ITER__] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+							: !(abacus & 42) && this_disp.data[__ITER__] == _LIBCONFINI_DOUBLE_QUOTES_ ?
 								((abacus & 799) | 256) ^ 16
-							: !(abacus & 49) && this_d.data[__ITER__] == _LIBCONFINI_SINGLE_QUOTES_ ?
+							: !(abacus & 49) && this_disp.data[__ITER__] == _LIBCONFINI_SINGLE_QUOTES_ ?
 								((abacus & 799) | 256) ^ 8
 							:
 								(abacus & 799) | 256;
 
 			}
 
-			this_d.type		=	__ITER__ == this_d.d_len ?
+			this_disp.type		=	__ITER__ == this_disp.d_len ?
 									get_type_as_active(cache + parse_at, idx - parse_at, format.disabled_can_be_implicit, format)
 								:
 									0;
 
-			if (this_d.type) {
+			if (this_disp.type) {
 
-				this_d.data = cache + parse_at;
-				this_d.d_len = idx - parse_at;
+				this_disp.data = cache + parse_at;
+				this_disp.d_len = idx - parse_at;
 
 			}
 
-			this_d.type |= 4;
+			this_disp.type |= 4;
 
-		} else if (is_comment_char(*this_d.data, format)) {
+		} else if (is_comment_char(*this_disp.data, format)) {
 
-			this_d.type = INI_COMMENT;
+			this_disp.type = INI_COMMENT;
 
-		} else if (*this_d.data == _LIBCONFINI_INLINE_MARKER_) {
+		} else if (*this_disp.data == _LIBCONFINI_INLINE_MARKER_) {
 
-			this_d.type = INI_INLINE_COMMENT;
+			this_disp.type = INI_INLINE_COMMENT;
 
 		} else {
 
-			this_d.type = get_type_as_active(this_d.data, this_d.d_len, _LIBCONFINI_TRUE_, format);
+			this_disp.type = get_type_as_active(this_disp.data, this_disp.d_len, _LIBCONFINI_TRUE_, format);
 
 		}
 
@@ -1543,14 +1605,14 @@ int load_ini_file (
 
 		}
 
-		if (__PARENT_IS_DISABLED__ && !(this_d.type & 4)) {
+		if (__PARENT_IS_DISABLED__ && !(this_disp.type & 4)) {
 
 			real_parent_str[__REAL_PARENT_LEN__] = '\0';
 			__CURR_PARENT_LEN__ = __REAL_PARENT_LEN__;
 			curr_parent_str = real_parent_str;
 			__PARENT_IS_DISABLED__ = _LIBCONFINI_FALSE_;
 
-		} else if (!__PARENT_IS_DISABLED__ && this_d.type == INI_DISABLED_SECTION) {
+		} else if (!__PARENT_IS_DISABLED__ && this_disp.type == INI_DISABLED_SECTION) {
 
 			__REAL_PARENT_LEN__ = __CURR_PARENT_LEN__;
 			real_parent_str = curr_parent_str;
@@ -1558,19 +1620,19 @@ int load_ini_file (
 
 		}
 
-		this_d.append_to = curr_parent_str;
-		this_d.at_len = __CURR_PARENT_LEN__;
+		this_disp.append_to = curr_parent_str;
+		this_disp.at_len = __CURR_PARENT_LEN__;
 
-		this_d.d_len		=	this_d.type == INI_COMMENT ? 
-									uncomment(this_d.data, idx - node_at, format)
-								: this_d.type == INI_INLINE_COMMENT ? 
-									uncomment(++this_d.data, idx - node_at - 1, format)
+		this_disp.d_len		=	this_disp.type == INI_COMMENT ? 
+									uncomment(this_disp.data, idx - node_at, format)
+								: this_disp.type == INI_INLINE_COMMENT ? 
+									uncomment(++this_disp.data, idx - node_at - 1, format)
 								: format.multiline_entries < 3 ?
-									unescape_cr_lf(this_d.data, idx - node_at, this_d.type & 4, format)
+									unescape_cr_lf(this_disp.data, idx - node_at, this_disp.type & 4, format)
 								:
 									idx - node_at;
 
-		switch (this_d.type) {
+		switch (this_disp.type) {
 
 			/*
 
@@ -1585,7 +1647,7 @@ int load_ini_file (
 			case INI_SECTION:
 			case INI_DISABLED_SECTION:
 
-				*this_d.data++ = '\0';
+				*this_disp.data++ = '\0';
 
 				/*
 
@@ -1603,54 +1665,54 @@ int load_ini_file (
 
 					abacus = (format.no_double_quotes << 1) | format.no_single_quotes, __ITER__ = 0;
 
-						this_d.data[__ITER__] && (
-							(abacus & 12) || this_d.data[__ITER__] != _LIBCONFINI_CLOSE_SECTION_
+						this_disp.data[__ITER__] && (
+							(abacus & 12) || this_disp.data[__ITER__] != _LIBCONFINI_CLOSE_SECTION_
 						);
 
-					abacus	=	this_d.data[__ITER__] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 16
-								: !(abacus & 22) && this_d.data[__ITER__] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 8
-								: !(abacus & 25) && this_d.data[__ITER__] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 4
+					abacus	=	this_disp.data[__ITER__] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 16
+								: !(abacus & 22) && this_disp.data[__ITER__] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 8
+								: !(abacus & 25) && this_disp.data[__ITER__] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 4
 								: abacus & 15,
 
 					__ITER__++
 
 				);
 
-				while (this_d.data[__ITER__]) {
+				while (this_disp.data[__ITER__]) {
 
-					this_d.data[__ITER__++] = '\0';
+					this_disp.data[__ITER__++] = '\0';
 
 				}
 
-				this_d.d_len = sanitize_section_name(this_d.data, format);
+				this_disp.d_len = sanitize_section_name(this_disp.data, format);
 
-				if (__CURR_PARENT_LEN__ && *this_d.data == _LIBCONFINI_SUBSECTION_) {
+				if (__CURR_PARENT_LEN__ && *this_disp.data == _LIBCONFINI_SUBSECTION_) {
 
-					subparent_str = this_d.data;
+					subparent_str = this_disp.data;
 
 				} else {
 
-					if (!__CURR_PARENT_LEN__ && *this_d.data == _LIBCONFINI_SUBSECTION_) {
+					if (!__CURR_PARENT_LEN__ && *this_disp.data == _LIBCONFINI_SUBSECTION_) {
 
-						curr_parent_str = this_d.data + 1;
-						__CURR_PARENT_LEN__ = this_d.d_len - 1;
+						curr_parent_str = this_disp.data + 1;
+						__CURR_PARENT_LEN__ = this_disp.d_len - 1;
 
 					} else {
 
-						curr_parent_str = this_d.data;
-						__CURR_PARENT_LEN__ = this_d.d_len;
+						curr_parent_str = this_disp.data;
+						__CURR_PARENT_LEN__ = this_disp.d_len;
 
 					}
 
 					subparent_str = cache + idx;
-					this_d.append_to = subparent_str;
-					this_d.at_len = 0;
+					this_disp.append_to = subparent_str;
+					this_disp.at_len = 0;
 
 				}
 
 				if (INI_INSENSITIVE_LOWERCASE && !format.case_sensitive) {
 
-					string_tolower(this_d.data);
+					string_tolower(this_disp.data);
 
 				}
 
@@ -1659,35 +1721,35 @@ int load_ini_file (
 			case INI_KEY:
 			case INI_DISABLED_KEY:
 
-				__ITER__ = get_delimiter_pos(this_d.data, this_d.d_len, format);
+				__ITER__ = get_delimiter_pos(this_disp.data, this_disp.d_len, format);
 
-				if (this_d.d_len && __ITER__ && __ITER__ < this_d.d_len) {
+				if (this_disp.d_len && __ITER__ && __ITER__ < this_disp.d_len) {
 
-					this_d.data[__ITER__] = '\0';
+					this_disp.data[__ITER__] = '\0';
 
 					if (format.do_not_collapse_values) {
 
-						this_d.value = this_d.data + ltrim_h(this_d.data, __ITER__ + 1, _LIBCONFINI_WITH_EOL_);
-						this_d.v_len = rtrim_h(this_d.value, this_d.d_len + this_d.data - this_d.value, _LIBCONFINI_WITH_EOL_);
+						this_disp.value = this_disp.data + ltrim_h(this_disp.data, __ITER__ + 1, _LIBCONFINI_WITH_EOL_);
+						this_disp.v_len = rtrim_h(this_disp.value, this_disp.d_len + this_disp.data - this_disp.value, _LIBCONFINI_WITH_EOL_);
 
 					} else {
 
-						this_d.value = this_d.data + __ITER__ + 1;
-						this_d.v_len = collapse_spaces(this_d.value, format);
+						this_disp.value = this_disp.data + __ITER__ + 1;
+						this_disp.v_len = collapse_spaces(this_disp.value, format);
 
 					}
 
 				} else if (format.implicit_is_not_empty) {
 
-					this_d.value = INI_IMPLICIT_VALUE;
-					this_d.v_len = INI_IMPLICIT_V_LEN;
+					this_disp.value = INI_IMPLICIT_VALUE;
+					this_disp.v_len = INI_IMPLICIT_V_LEN;
 				}
 
-				this_d.d_len = collapse_spaces(this_d.data, format);
+				this_disp.d_len = collapse_spaces(this_disp.data, format);
 
 				if (INI_INSENSITIVE_LOWERCASE && !format.case_sensitive) {
 
-					string_tolower(this_d.data);
+					string_tolower(this_disp.data);
 
 				}
 
@@ -1696,19 +1758,19 @@ int load_ini_file (
 			case INI_COMMENT:
 			case INI_INLINE_COMMENT:
 
-				this_d.append_to = cache + idx;
-				this_d.at_len = 0;
+				this_disp.append_to = cache + idx;
+				this_disp.at_len = 0;
 
 		}
 
-		if (f_foreach(&this_d, user_data)) {
+		if (f_foreach(&this_disp, user_data)) {
 
 			return_value = CONFINI_EFEINTR;
 			goto free_and_exit;
 
 		}
 
-		this_d.dispatch_id++;
+		this_disp.dispatch_id++;
 		node_at = idx + 1;
 
 	}
@@ -1732,12 +1794,15 @@ int load_ini_file (
 	@brief			Parses an INI file and dispatches its content
 	@param			path			The path of the INI file
 	@param			format			The format of the INI file
-	@param			f_init			The function that will be invoked before the dispatch, or NULL
-	@param			f_foreach		The function that will be invoked for each dispatch, or NULL
-	@param			user_data		A custom argument, or NULL
+	@param			f_init			The function that will be invoked before the
+									dispatch, or `NULL`
+	@param			f_foreach		The function that will be invoked for each
+									dispatch, or `NULL`
+	@param			user_data		A custom argument, or `NULL`
 	@return			Zero for success, otherwise an error code
 
-	For the two parameters @p f_init and @p f_foreach see function `load_ini_file()`.
+	For the two parameters @p f_init and @p f_foreach see function
+	`load_ini_file()`.
 
 **/
 int load_ini_path (
@@ -1777,11 +1842,14 @@ int load_ini_path (
 
 /**
 
-	@brief			Sets the value of the global variable `#INI_INSENSITIVE_LOWERCASE`
+	@brief			Sets the value of the global variable
+					`#INI_INSENSITIVE_LOWERCASE`
 	@param			b_lowercase			The new value 
 	@return			Nothing
 
-	If @p b_lowercase is any non-zero value key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: non-zero).
+	If @p b_lowercase is any non-zero value key and section names in case-
+	insensitive INI formats will be dispatched lowercase, verbatim otherwise
+	(default value: non-zero).
 
 **/
 void ini_dispatch_case_insensitive_lowercase (int b_lowercase) {
@@ -1794,9 +1862,16 @@ void ini_dispatch_case_insensitive_lowercase (int b_lowercase) {
 /**
 
 	@brief			Sets the valued used for implicit keys
-	@param			implicit_value		The string to be used as implicit value (usually `"YES"`, or `"TRUE"`)
-	@param			implicit_v_len		The length of @p implicit_value (usually `0`, independently of its real length)
+	@param			implicit_value		The string to be used as implicit value
+										(usually `"YES"`, or `"TRUE"`)
+	@param			implicit_v_len		The length of @p implicit_value (usually
+										`0`, independently of its real length)
 	@return			Nothing
+
+	In order to be thread-safe this function should be used only once, or
+	otherwise a mutex must be introduced.
+
+	@include topics/ini_set_implicit_value.c
 
 **/
 void ini_set_implicit_value (char * const implicit_value, const size_t implicit_v_len) {
@@ -1834,7 +1909,8 @@ IniFormatId ini_format_get_id (const IniFormat source) {
 
 /**
 
-	@brief			Sets all the values of an IniFormat by reading them from an ::IniFormatId
+	@brief			Sets all the values of an IniFormat by reading them from an
+					::IniFormatId
 	@param			dest_format		The IniFormat to be set
 	@param			mask			The `#IniFormatId` to be read
 	@return			Nothing
@@ -1876,8 +1952,8 @@ void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id) {
 	@param			simple_string_b		The second simple string
 	@return			A boolean: `TRUE` if the two strings match, `FALSE` otherwise
 
-	Simple strings are user-given strings or the result of `ini_unquote()`. The following properties are read
-	from argument @p format:
+	Simple strings are user-given strings or the result of `ini_unquote()`. The
+	following properties are read from argument @p format:
 
 	- `format.case_sensitive`
 
@@ -1905,21 +1981,26 @@ short int ini_string_match_ss (const char * const simple_string_a, const char * 
 
 	}
 
-
 	return are_equal;
+
 }
 
 
 /**
 
-	@brief			Compares an INI string with a simple string and checks if they match according to a format
-	@param			ini_string			The INI string escaped according to @p format
+	@brief			Compares an INI string with a simple string and checks if
+					they match according to a format
+	@param			ini_string			The INI string escaped according to
+					@p format
 	@param			simple_string		The simple string
-	@param			format			The format of the INI file
-	@return			A boolean: `TRUE` if the two strings match, `FALSE` otherwise
+	@param			format				The format of the INI file
+	@return			A boolean: `TRUE` if the two strings match, `FALSE`
+					otherwise
 
-	INI strings are the strings typically dispatched by `load_ini_file()` and `load_ini_path()`, which may contain quotes and
-	the three escaping sequences `\\`, `\'` and `\"`. Simple strings are user-given strings or the result of `ini_unquote()`.
+	INI strings are the strings typically dispatched by `load_ini_file()` and
+	`load_ini_path()`, which may contain quotes and the three escaping sequences
+	`\\`, `\'` and `\"`. Simple strings are user-given strings or the result of
+	`ini_unquote()`.
 
 	The following properties are read from argument @p format:
 
@@ -1953,8 +2034,10 @@ short int ini_string_match_si (const char * const simple_string, const char * co
 		FLAG_2		Double quotes are not metacharacters (const)
 		FLAG_4		Unescaped single quotes are odd until now
 		FLAG_8		Unescaped double quotes are odd until now
-		FLAG_16		This is an unescaped single quote and format supports single quotes
-		FLAG_32		This is an unescaped double quote and format supports double quotes
+		FLAG_16		This is an unescaped single quote and format supports single
+					quotes
+		FLAG_32		This is an unescaped double quote and format supports double
+					quotes
 
 	*/
 
@@ -2025,14 +2108,20 @@ short int ini_string_match_si (const char * const simple_string, const char * co
 
 /**
 
-	@brief			Compares two INI strings and checks if they match according to a format
-	@param			ini_string_a			The first INI string unescaped according to @p format
-	@param			ini_string_b			The second INI string unescaped according to @p format
-	@param			format			The format of the INI file
-	@return			A boolean: `TRUE` if the two strings match, `FALSE` otherwise
+	@brief			Compares two INI strings and checks if they match according
+					to a format
+	@param			ini_string_a		The first INI string unescaped according
+										to @p format
 
-	INI strings are the strings typically dispatched by `load_ini_file()` and `load_ini_path()`, which may contain quotes and
-	the three escaping sequences `\\`, `\'` and `\"`.
+	@param			ini_string_b		The second INI string unescaped
+										according to @p format
+	@param			format				The format of the INI file
+	@return			A boolean: `TRUE` if the two strings match, `FALSE`
+					otherwise
+
+	INI strings are the strings typically dispatched by `load_ini_file()` and
+	`load_ini_path()`, which may contain quotes and the three escaping sequences
+	`\\`, `\'` and `\"`.
 
 	The following properties are read from argument @p format:
 
@@ -2067,8 +2156,10 @@ short int ini_string_match_ii (const char * const ini_string_a, const char * con
 		FLAG_2		Double quotes are not metacharacters (const)
 		FLAG_4		Unescaped single quotes are odd until now
 		FLAG_8		Unescaped double quotes are odd until now
-		FLAG_16		This is an unescaped single quote and format supports single quotes
-		FLAG_32		This is an unescaped double quote and format supports double quotes
+		FLAG_16		This is an unescaped single quote and format supports single
+					quotes
+		FLAG_32		This is an unescaped double quote and format supports double
+					quotes
 
 	*/
 
@@ -2136,13 +2227,16 @@ short int ini_string_match_ii (const char * const ini_string_a, const char * con
 
 /**
 
-	@brief			Unescapes `\\`, `\'` and `\"` and removes all unescaped quotes (if single/double quotes are active)
+	@brief			Unescapes `\\`, `\'` and `\"` and removes all unescaped
+					quotes (if single/double quotes are considered
+					metacharacters in respect to the format given)
 	@param			ini_string		The string to be unescaped
 	@param			format			The format of the INI file
 	@return			The new length of the string
 
-	Usually @p ini_string comes from an `IniDispatch` (but any other string may be used as well). If the string does
-	not contain quotes, or if quotes are considered to be normal characters, no changes will be made.
+	Usually @p ini_string comes from an `IniDispatch` (but any other string may
+	be used as well). If the string does not contain quotes, or if quotes are
+	considered to be normal characters, no changes will be made.
 
 **/
 size_t ini_unquote (char * const ini_string, const IniFormat format) {
@@ -2170,8 +2264,10 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 		FLAG_2		Double quotes are not metacharacters (const)
 		FLAG_4		Unescaped single quotes are odd until now
 		FLAG_8		Unescaped double quotes are odd until now
-		FLAG_16		This is an unescaped single quote and format supports single quotes
-		FLAG_32		This is an unescaped double quote and format supports double quotes
+		FLAG_16		This is an unescaped single quote and format supports single
+					quotes
+		FLAG_32		This is an unescaped double quote and format supports double
+					quotes
 
 	*/
 
@@ -2228,12 +2324,14 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 
 	@brief			Gets the length of an INI array
 	@param			ini_string		The stringified array
-	@param			delimiter		The delimiter between the array members -- if zero (`INI_ANY_SPACE`)
-									any space is delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
+	@param			delimiter		The delimiter between the array members --
+									if zero (`INI_ANY_SPACE`) any space is
+									delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
 	@param			format			The format of the INI file
 	@return			The length of the INI array
 
-	Usually @p ini_string comes from an `IniDispatch` (but any other string may be used as well).
+	Usually @p ini_string comes from an `IniDispatch` (but any other string may
+	be used as well).
 
 **/
 size_t ini_array_get_length (const char * const ini_string, const char delimiter, const IniFormat format) {
@@ -2296,23 +2394,28 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 
 /**
 
-	@brief			Calls a custom function for each member of an INI array -- useful for read-only (const)
-					stringified arrays
+	@brief			Calls a custom function for each member of an INI array --
+					useful for read-only (const) stringified arrays
 	@param			ini_string		The stringified array
-	@param			delimiter		The delimiter between the array members -- if zero (`INI_ANY_SPACE`) any
-									space is delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
+	@param			delimiter		The delimiter between the array members --
+									if zero (`INI_ANY_SPACE`) any space is
+									delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
 	@param			format			The format of the INI file
-	@param			f_foreach		The function that will be invoked for each array member
+	@param			f_foreach		The function that will be invoked for each
+									array member
 	@param			user_data		A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
 
-	Usually @p ini_string comes from an `IniDispatch` (but any other string may be used as well).
+	Usually @p ini_string comes from an `IniDispatch` (but any other string may
+	be used as well).
 
-	The function @p f_foreach will be invoked with six arguments: `fullstring` (a pointer to @p ini_string),
-	`memb_offset` (the offset of the member in bytes), `memb_length` (the length of the member in bytes),
-	`index` (the index of the member in number of members), `format` (the format of the INI file),
-	`foreach_other` (the custom argument @p user_data previously passed). If @p f_foreach returns a non-zero
-	value the function `ini_array_foreach()` will be interrupted.
+	The function @p f_foreach will be invoked with six arguments: `fullstring`
+	(a pointer to @p ini_string), `memb_offset` (the offset of the member in
+	bytes), `memb_length` (the length of the member in bytes), `index` (the
+	index of the member in number of members), `format` (the format of the INI
+	file), `foreach_other` (the custom argument @p user_data previously passed).
+	If @p f_foreach returns a non-zero value the function `ini_array_foreach()`
+	will be interrupted.
 
 **/
 int ini_array_foreach (
@@ -2382,18 +2485,28 @@ int ini_array_foreach (
 
 /**
 
-	@brief			Removes spaces around all the delimiters of a stringified array
+	@brief			Compresses the distribution of the data of an INI array by
+					removing all the white spaces that sorround its delimiters.
 	@param			ini_string		The stringified array
-	@param			delimiter		The delimiter between the array members -- if zero (`INI_ANY_SPACE`) any
-									space is delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
+	@param			delimiter		The delimiter between the array members --
+									if zero (`INI_ANY_SPACE`) any space is
+									delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
 	@param			format			The format of the INI file
 	@return			The new length of the string containing the array
 
-	Out of quotes similar to ECMAScript `ini_string.replace(new RegExp("^\\s+|\\s*(?:(" + delimiter + ")\\s*|($))", "g"), "$1$2")`.
-	If `INI_ANY_SPACE` (`0`) is used as delimiter, one or more different spaces (`/[\t \v\f\n\r]+/`) will
-	always be collapsed to one space (' '), independently of their position.
+	Out of quotes similar to ECMAScript
+	`ini_string.replace(new RegExp("^\\s+|\\s*(?:(" + delimiter + ")\\s*|($))", "g"), "$1$2")`.
+	If `INI_ANY_SPACE` (`0`) is used as delimiter, one or more different spaces
+	(`/[\t \v\f\n\r]+/`) will always be collapsed to one space (' '),
+	independently of their position.
 
-	Usually @p ini_string comes from an `IniDispatch` (but any other string may be used as well).
+	Usually @p ini_string comes from an `IniDispatch` (but any other string may
+	be used as well).
+
+	This function can be useful before invoking `memcpy()` using @p ini_string
+	as source.
+
+	@include topics/ini_collapse_array.c
 
 **/
 size_t ini_collapse_array (char * const ini_string, const char delimiter, const IniFormat format) {
@@ -2413,7 +2526,8 @@ size_t ini_collapse_array (char * const ini_string, const char delimiter, const 
 		FLAG_16		Unescaped double quotes are odd until now
 		FLAG_32		We are in an odd sequence of backslashes
 		FLAG_64		We met a delimiter
-		FLAG_128	This shift shall be without delimiter (possible just at the beginning or at the end of the buffer)
+		FLAG_128	This shift shall be without delimiter (possible just at the
+					beginning or at the end of the buffer)
 		FLAG_256	Remember this position
 		FLAG_512	In this area a shift has to be done
 		FLAG_1024	Account the shift now
@@ -2503,22 +2617,29 @@ size_t ini_collapse_array (char * const ini_string, const char delimiter, const 
 
 /**
 
-	@brief			Splits an INI array and calls a custom function for each member
+	@brief			Splits an INI array and calls a custom function for each
+					member
 	@param			ini_string		The stringified array
-	@param			delimiter		The delimiter between the array members -- if zero (`INI_ANY_SPACE`)
-									any space is delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
+	@param			delimiter		The delimiter between the array members --
+									if zero (`INI_ANY_SPACE`) any space is
+									delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
 	@param			format			The format of the INI file
-	@param			f_foreach		The function that will be invoked for each array member
+	@param			f_foreach		The function that will be invoked for each
+									array member
 	@param			user_data		A custom argument, or NULL
 	@return			Zero for success, otherwise an error code
 
-	Usually @p ini_string comes from an `IniDispatch` (but any other string may be used as well).
+	Usually @p ini_string comes from an `IniDispatch` (but any other string may
+	be used as well).
 
-	The function @p f_foreach will be invoked with five arguments: `member` (a pointer to @p ini_string),
-	`memb_length` (the length of the member in bytes), `index` (the index of the member in number of
-	members), `format` (the format of the INI file), `foreach_other` (the custom argument @p user_data
-	previously passed). If @p f_foreach returns a non-zero value the function `ini_split_array()` will be
-	interrupted.
+	The function @p f_foreach will be invoked with five arguments: `member` (a
+	pointer to @p ini_string), `memb_length` (the length of the member in bytes),
+	`index` (the index of the member in number of members), `format` (the format
+	of the INI file), `foreach_other` (the custom argument @p user_data
+	previously passed). If @p f_foreach returns a non-zero value the function
+	`ini_split_array()` will be interrupted.
+
+	See example under `ini_collapse_array()`.
 
 **/
 int ini_split_array (
@@ -2588,13 +2709,19 @@ int ini_split_array (
 
 /**
 
-	@brief			Checks whether a string matches *exactly* one of the booleans listed in
-					the private constant `_LIBCONFINI_BOOLEANS_` (case insensitive)
+	@brief			Checks whether a string matches *exactly* one of the
+					booleans listed in the private constant
+					`_LIBCONFINI_BOOLEANS_` (case insensitive)
 	@param			ini_string			A string to be checked
-	@param			return_value		A value that is returned if no matching boolean has been found
-	@return			The matching boolean value (0 or 1) or @p return_value if no boolean has been found
+	@param			return_value		A value that is returned if no matching
+										boolean has been found
+	@return			The matching boolean value (0 or 1) or @p return_value if
+					no boolean has been found
 
-	Usually @p ini_string comes from an `IniDispatch` (but any other string may be used as well).
+	Usually @p ini_string comes from an `IniDispatch` (but any other string may
+	be used as well).
+
+	@include typed_ini.c
 
 **/
 signed int ini_get_bool (const char * const ini_string, const signed int return_value) {
@@ -2626,13 +2753,17 @@ signed int ini_get_bool (const char * const ini_string, const signed int return_
 
 /**
 
-	@brief			Checks whether the first letter of a string matches the first letter of one of the
-					booleans listed in the private constant `_LIBCONFINI_BOOLEANS_` (case insensitive)
+	@brief			Checks whether the first letter of a string matches the
+					first letter of one of the booleans listed in the private
+					constant `_LIBCONFINI_BOOLEANS_` (case insensitive)
 	@param			ini_string			A string to be checked
-	@param			return_value		A value that is returned if no matching boolean has been found
-	@return			The matching boolean value (0 or 1) or @p return_value if no boolean has been found
+	@param			return_value		A value that is returned if no matching
+										boolean has been found
+	@return			The matching boolean value (0 or 1) or @p return_value if no
+					boolean has been found
 
-	Usually @p ini_string comes from an `IniDispatch` (but any other string may be used as well).
+	Usually @p ini_string comes from an `IniDispatch` (but any other string may
+	be used as well).
 
 **/
 signed int ini_get_lazy_bool (const char * const ini_string, const signed int return_value) {
@@ -2673,7 +2804,7 @@ double (* const ini_get_float) (const char *ini_string) = &atof;
 
 /* VARIABLES */
 
-int INI_INSENSITIVE_LOWERCASE = _LIBCONFINI_TRUE_;
+short int INI_INSENSITIVE_LOWERCASE = _LIBCONFINI_TRUE_;
 char *INI_IMPLICIT_VALUE = (char *) 0;
 size_t INI_IMPLICIT_V_LEN = 0;
 

@@ -2,7 +2,7 @@
 
 ## [1.4.1] - 2017-09-18
 
-* Created string comparison functions `ini_string_match_ss()`, `ini_string_match_is()`, `ini_string_match_ii()`
+* Created string comparison functions `ini_string_match_ss()`, `ini_string_match_si()` and `ini_string_match_ii()`
 
 ## [1.4.0] - 2017-09-07
 

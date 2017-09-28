@@ -1,6 +1,6 @@
-/**
+/*
 
-The following code will try to store an INI section called `my_section`, expected to
+The following code will try to read an INI section called `my_section`, expected to
 contain the following typed data:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
@@ -17,7 +17,7 @@ my_array = [comma-delimited array]
 
 No errors will be generated if any of the data above are absent.
 
-**/
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,17 +41,17 @@ struct ini_store {
 	int _read_status_;
 };
 
-static int populate_array (char *part, size_t part_len, size_t idx, IniFormat format, void *other) {
+static int populate_array (char *part, size_t part_len, size_t idx, IniFormat format, void *v_array) {
 
 	ini_unquote(part, format);
-	((char **) other)[idx] = part;
+	((char **) v_array)[idx] = part;
 	return 0;
 
 }
 
-static int my_ini_listener (IniDispatch *this, void *other) {
+static int my_ini_listener (IniDispatch *this, void *v_store) {
 
-	struct ini_store *store = (struct ini_store *) other;
+	struct ini_store *store = (struct ini_store *) v_store;
 
 	switch (this->type) {
 
@@ -92,7 +92,7 @@ static int my_ini_listener (IniDispatch *this, void *other) {
 					/* Allocate a new array of strings */
 					store->my_section_my_arr_len = ini_array_get_length(this->value, MY_ARRAY_DELIMITER, this->format);
 					store->my_section_my_array = (char **) malloc(store->my_section_my_arr_len * sizeof(char *) + (this->v_len + 1) * sizeof(char));
-					char * const str_ptr = (char *) store->my_section_my_array + store->my_section_my_arr_len * sizeof(char *);
+					char * const str_ptr = (char *) ((void *) store->my_section_my_array + store->my_section_my_arr_len * sizeof(char *));
 					memcpy(str_ptr, this->value, this->v_len + 1);
 
 					/* Populate the array */

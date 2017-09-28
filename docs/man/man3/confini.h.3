@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Mon Sep 18 2017" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Thu Sep 28 2017" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -16,7 +16,7 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "struct \fBIniFormat\fP"
 .br
-.RI "24-bit bitfield representing a unique format of an INI file (INI dialect) -- \fCsizeof(IniFormat)\fP should be \fC3\fP "
+.RI "24-bit bitfield representing a unique format of an INI file (INI dialect) – \fCsizeof(IniFormat)\fP should be \fC3\fP "
 .ti -1c
 .RI "struct \fBIniStatistics\fP"
 .br
@@ -32,7 +32,7 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "#define \fBCONFINI_ERROR\fP   4"
 .br
-.RI "Error flag (not present in user-generated interruptions) -- its value should be considered opaque\&. "
+.RI "Error flag (not present in user-generated interruptions) – its value should be considered opaque\&. "
 .in -1c
 .SS "Typedefs"
 
@@ -40,7 +40,7 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "typedef struct \fBIniFormat\fP \fBIniFormat\fP"
 .br
-.RI "24-bit bitfield representing a unique format of an INI file (INI dialect) -- \fCsizeof(IniFormat)\fP should be \fC3\fP "
+.RI "24-bit bitfield representing a unique format of an INI file (INI dialect) – \fCsizeof(IniFormat)\fP should be \fC3\fP "
 .ti -1c
 .RI "typedef struct \fBIniStatistics\fP \fBIniStatistics\fP"
 .br
@@ -59,7 +59,7 @@ src/confini.h \- libconfini header
 .in +1c
 .ti -1c
 .RI "enum \fBConfiniErrorNo\fP { \fBCONFINI_EIINTR\fP = 1, \fBCONFINI_EFEINTR\fP = 2, \fBCONFINI_ENOENT\fP = 4, \fBCONFINI_ENOMEM\fP = 5, \fBCONFINI_EIO\fP = 6, \fBCONFINI_EFEOOR\fP = 7 }
-.RI "Error codes -- the actual values of each constant should be considered opaque\&. ""
+.RI "Error codes – the actual values of each constant should be considered opaque\&. ""
 .br
 .ti -1c
 .RI "enum \fBIniDelimiters\fP { \fBINI_ANY_SPACE\fP = 0, \fBINI_EQUALS\fP = '=', \fBINI_COLON\fP = ':' }
@@ -71,11 +71,11 @@ src/confini.h \- libconfini header
 .br
 .ti -1c
 .RI "enum \fBIniComments\fP { \fBINI_PARSE_COMMENT\fP = 0, \fBINI_SHOW_COMMENT\fP = 1, \fBINI_FORGET_COMMENT\fP = 2, \fBINI_NORMAL_CHARACTER\fP = 3 }
-.RI "Behaviors of '#' and ';'\&. ""
+.RI "Possible values for \fBIniFormat::semicolon\fP and \fBIniFormat::hash\fP (i\&.e\&., meaning of \fC/\\s+[#;]/\fP in respect to a format) ""
 .br
 .ti -1c
 .RI "enum \fBIniMultiline\fP { \fBINI_EVERYTHING_MULTILINE\fP = 0, \fBINI_ACTIVE_AND_DISABLED_MULTILINE\fP = 1, \fBINI_ACTIVE_MULTILINE\fP = 2, \fBINI_NO_MULTILINE\fP = 3 }
-.RI "Multiline entries\&. ""
+.RI "Possible values of \fBIniFormat::multiline_entries\fP\&. ""
 .br
 .in -1c
 .SS "Functions"
@@ -120,7 +120,7 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "size_t \fBini_unquote\fP (char *const ini_string, const \fBIniFormat\fP format)"
 .br
-.RI "Unescapes \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP and removes all unescaped quotes (if single/double quotes are active) "
+.RI "Unescapes \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP and removes all unescaped quotes (if single/double quotes are considered metacharacters in respect to the format given) "
 .ti -1c
 .RI "size_t \fBini_array_get_length\fP (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 .br
@@ -128,11 +128,11 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "int \fBini_array_foreach\fP (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(const char *fullstring, size_t memb_offset, size_t memb_length, size_t index, \fBIniFormat\fP format, void *foreach_other), void *user_data)"
 .br
-.RI "Calls a custom function for each member of an INI array -- useful for read-only (const) stringified arrays\&. "
+.RI "Calls a custom function for each member of an INI array – useful for read-only (const) stringified arrays\&. "
 .ti -1c
 .RI "size_t \fBini_collapse_array\fP (char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 .br
-.RI "Removes spaces around all the delimiters of a stringified array\&. "
+.RI "Compresses the distribution of the data of an INI array by removing all the white spaces that sorround its delimiters\&. "
 .ti -1c
 .RI "int \fBini_split_array\fP (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(char *member, size_t memb_length, size_t index, \fBIniFormat\fP format, void *foreach_other), void *user_data)"
 .br
@@ -152,17 +152,21 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "int(*const \fBini_get_int\fP )(const char *ini_string)"
 .br
+.RI "Link to \fC\fCatoi()\fP\fP "
 .ti -1c
 .RI "long int(*const \fBini_get_lint\fP )(const char *ini_string)"
 .br
+.RI "Link to \fC\fCatol()\fP\fP "
 .ti -1c
 .RI "long long int(*const \fBini_get_llint\fP )(const char *ini_string)"
 .br
+.RI "Link to \fC\fCatoll()\fP\fP "
 .ti -1c
 .RI "double(*const \fBini_get_float\fP )(const char *ini_string)"
 .br
+.RI "Link to \fC\fCatof()\fP\fP "
 .ti -1c
-.RI "int \fBINI_INSENSITIVE_LOWERCASE\fP"
+.RI "short int \fBINI_INSENSITIVE_LOWERCASE\fP"
 .br
 .RI "If set to any non-zero value key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: non-zero) "
 .ti -1c
@@ -172,7 +176,7 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "size_t \fBINI_IMPLICIT_V_LEN\fP"
 .br
-.RI "Length of the value dispatched in case of implicit keys -- it can be set to any unsigned number, independently of \fBINI_IMPLICIT_VALUE\fP (default value: \fC0\fP) "
+.RI "Length of the value dispatched in case of implicit keys – it can be set to any unsigned number, independently of \fBINI_IMPLICIT_VALUE\fP (default value: \fC0\fP) "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -201,7 +205,7 @@ GNU Public License v3
 .SS "#define CONFINI_ERROR   4"
 
 .PP
-Error flag (not present in user-generated interruptions) -- its value should be considered opaque\&. 
+Error flag (not present in user-generated interruptions) – its value should be considered opaque\&. 
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBIniDispatch\fP  \fBIniDispatch\fP"
@@ -211,7 +215,7 @@ Dispatch of a single INI member\&.
 .SS "typedef struct \fBIniFormat\fP   \fBIniFormat\fP"
 
 .PP
-24-bit bitfield representing a unique format of an INI file (INI dialect) -- \fCsizeof(IniFormat)\fP should be \fC3\fP 
+24-bit bitfield representing a unique format of an INI file (INI dialect) – \fCsizeof(IniFormat)\fP should be \fC3\fP 
 .SS "typedef size_t \fBIniFormatId\fP"
 
 .PP
@@ -225,7 +229,7 @@ Global statistics about an INI file\&.
 .SS "enum \fBConfiniErrorNo\fP"
 
 .PP
-Error codes -- the actual values of each constant should be considered opaque\&. 
+Error codes – the actual values of each constant should be considered opaque\&. 
 .PP
 \fBEnumerator\fP
 .in +1c
@@ -250,7 +254,7 @@ The loop is longer than expected (out of range)
 .SS "enum \fBIniComments\fP"
 
 .PP
-Behaviors of '#' and ';'\&. 
+Possible values for \fBIniFormat::semicolon\fP and \fBIniFormat::hash\fP (i\&.e\&., meaning of \fC/\\s+[#;]/\fP in respect to a format) 
 .PP
 \fBEnumerator\fP
 .in +1c
@@ -275,7 +279,7 @@ Most used delimiters (but a delimiter can also be any other ASCII character)
 .in +1c
 .TP
 \fB\fIINI_ANY_SPACE \fP\fP
-In multiline INIs: \fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP; in non-multiline INIs: \fC/[\\t \\v\\f])+/\fP 
+In multiline INIs: \fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP, in non-multiline INIs: \fC/[\\t \\v\\f])+/\fP 
 .TP
 \fB\fIINI_EQUALS \fP\fP
 \fC=\fP 
@@ -285,7 +289,7 @@ In multiline INIs: \fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP; in non-mul
 .SS "enum \fBIniMultiline\fP"
 
 .PP
-Multiline entries\&. 
+Possible values of \fBIniFormat::multiline_entries\fP\&. 
 .PP
 \fBEnumerator\fP
 .in +1c
@@ -326,13 +330,13 @@ Not used here, but available for user's implementations
 .SS "int ini_array_foreach (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(const char *fullstring, size_t memb_offset, size_t memb_length, size_t index, \fBIniFormat\fP format, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
-Calls a custom function for each member of an INI array -- useful for read-only (const) stringified arrays\&. 
+Calls a custom function for each member of an INI array – useful for read-only (const) stringified arrays\&. 
 .PP
 \fBParameters:\fP
 .RS 4
 \fIini_string\fP The stringified array 
 .br
-\fIdelimiter\fP The delimiter between the array members -- if zero (\fCINI_ANY_SPACE\fP) any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
+\fIdelimiter\fP The delimiter between the array members – if zero (\fCINI_ANY_SPACE\fP) any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
 .br
 \fIformat\fP The format of the INI file 
 .br
@@ -358,7 +362,7 @@ Gets the length of an INI array\&.
 .RS 4
 \fIini_string\fP The stringified array 
 .br
-\fIdelimiter\fP The delimiter between the array members -- if zero (\fCINI_ANY_SPACE\fP) any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
+\fIdelimiter\fP The delimiter between the array members – if zero (\fCINI_ANY_SPACE\fP) any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
 .br
 \fIformat\fP The format of the INI file 
 .RE
@@ -372,13 +376,13 @@ Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other st
 .SS "size_t ini_collapse_array (char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 
 .PP
-Removes spaces around all the delimiters of a stringified array\&. 
+Compresses the distribution of the data of an INI array by removing all the white spaces that sorround its delimiters\&. 
 .PP
 \fBParameters:\fP
 .RS 4
 \fIini_string\fP The stringified array 
 .br
-\fIdelimiter\fP The delimiter between the array members -- if zero (\fCINI_ANY_SPACE\fP) any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
+\fIdelimiter\fP The delimiter between the array members – if zero (\fCINI_ANY_SPACE\fP) any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
 .br
 \fIformat\fP The format of the INI file 
 .RE
@@ -390,7 +394,82 @@ The new length of the string containing the array
 .PP
 Out of quotes similar to ECMAScript \fCini_string\&.replace(new RegExp('^\\\\s+|\\\\s*(?:(' + delimiter + ')\\\\s*|($))', 'g'), '$1$2')\fP\&. If \fCINI_ANY_SPACE\fP (\fC0\fP) is used as delimiter, one or more different spaces (\fC/[\\t \\v\\f\\n\\r]+/\fP) will always be collapsed to one space (' '), independently of their position\&.
 .PP
-Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other string may be used as well)\&. 
+Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other string may be used as well)\&.
+.PP
+This function can be useful before invoking \fCmemcpy()\fP using \fCini_string\fP as source\&.
+.PP
+.PP
+.nf
+#include <stdio\&.h>
+#include <stdlib\&.h>
+#include <string\&.h>
+#include <confini\&.h>
+
+static int populate_array (char *part, size_t part_len, size_t idx, IniFormat format, void *v_array) {
+
+    ini_unquote(part, format);
+    ((char **) v_array)[idx] = part;
+
+    return 0;
+
+}
+
+static int my_ini_listener (IniDispatch *dispatch, void *v_null) {
+
+    if (ini_string_match_si("my_array", dispatch->data, dispatch->format)) {
+
+        #define DELIMITER ','
+
+        char **my_array;
+        size_t my_array_length;
+
+        /* Save memory with `ini_collapse_array()` */
+        dispatch->v_len = ini_collapse_array(dispatch->value, DELIMITER, dispatch->format);
+
+        /* Allocate a new array of strings with `malloc()` */
+        my_array_length = ini_array_get_length(dispatch->value, DELIMITER, dispatch->format);
+        my_array = (char **) malloc(my_array_length * sizeof(char *) + (dispatch->v_len + 1) * sizeof(char));
+
+        /* Copy the strings with `memcpy()` */
+        memcpy(
+            (char *) ((void *) my_array + my_array_length * sizeof(char *)),
+            dispatch->value,
+            dispatch->v_len + 1
+        );
+
+        /* Populate the array */
+        ini_split_array(
+            (char *) ((void *) my_array + my_array_length * sizeof(char *)),
+            DELIMITER,
+            dispatch->format,
+            populate_array,
+            my_array
+        );
+
+        /* Do something with `my_array` */
+        printf("Array `my_array` has been created\&.\n");
+
+    }
+
+    return 0;
+
+}
+
+int main () {
+
+    if (load_ini_path("typed_ini\&.conf", INI_DEFAULT_FORMAT, NULL, my_ini_listener, NULL)) {
+
+        fprintf(stderr, "Sorry, something went wrong :-(\n");
+        return 1;
+
+    }
+
+    return 0;
+
+}
+.fi
+.PP
+ 
 .SS "void ini_dispatch_case_insensitive_lowercase (int b_lowercase)"
 
 .PP
@@ -406,7 +485,7 @@ Sets the value of the global variable \fC\fBINI_INSENSITIVE_LOWERCASE\fP\fP
 Nothing
 .RE
 .PP
-If \fCb_lowercase\fP is any non-zero value key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: non-zero)\&. 
+If \fCb_lowercase\fP is any non-zero value key and section names in case- insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: non-zero)\&. 
 .SS "\fBIniFormatId\fP ini_format_get_id (const \fBIniFormat\fP source)"
 
 .PP
@@ -458,7 +537,13 @@ Checks whether a string matches \fIexactly\fP one of the booleans listed in the 
 The matching boolean value (0 or 1) or \fCreturn_value\fP if no boolean has been found
 .RE
 .PP
-Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other string may be used as well)\&. 
+Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other string may be used as well)\&.
+.PP
+.PP
+.nf
+.fi
+.PP
+ 
 .SS "signed int ini_get_lazy_bool (const char *const ini_string, const signed int return_value)"
 
 .PP
@@ -491,10 +576,62 @@ Sets the valued used for implicit keys\&.
 .PP
 \fBReturns:\fP
 .RS 4
-Nothing 
+Nothing
 .RE
 .PP
+In order to be thread-safe this function should be used only once, or otherwise a mutex must be introduced\&.
+.PP
+.PP
+.nf
+/* examples/topics/ini_set_implicit_value\&.c */
 
+#include <stdio\&.h>
+#include <confini\&.h>
+
+#define NO 0
+#define YES 1
+
+int ini_listener (IniDispatch *dispatch, void *v_null) {
+
+    if (dispatch->value == INI_IMPLICIT_VALUE) {
+
+        printf(
+            "\nDATA: %s\nVALUE: %s\n(This is an implicit key element)\n",
+            dispatch->data, dispatch->value
+        );
+
+    } else {
+
+        printf("\nDATA: %s\nVALUE: %s\n", dispatch->data, dispatch->value);
+
+    }
+
+    return 0;
+
+}
+
+int main () {
+
+    IniFormat my_format;
+
+    ini_set_implicit_value("[implicit default value]", 0);
+
+    /* Without setting this, implicit keys will be anyway considered empty: */
+    my_format\&.implicit_is_not_empty = YES;
+
+    if (load_ini_path("example\&.conf", my_format, NULL, ini_listener, NULL)) {
+
+        fprintf(stderr, "Sorry, something went wrong :-(\n");
+        return 1;
+
+    }
+
+    return 0;
+
+}
+.fi
+.PP
+ 
 .SS "int ini_split_array (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(char *member, size_t memb_length, size_t index, \fBIniFormat\fP format, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
@@ -504,7 +641,7 @@ Splits an INI array and calls a custom function for each member\&.
 .RS 4
 \fIini_string\fP The stringified array 
 .br
-\fIdelimiter\fP The delimiter between the array members -- if zero (\fCINI_ANY_SPACE\fP) any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
+\fIdelimiter\fP The delimiter between the array members – if zero (\fCINI_ANY_SPACE\fP) any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
 .br
 \fIformat\fP The format of the INI file 
 .br
@@ -520,7 +657,9 @@ Zero for success, otherwise an error code
 .PP
 Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other string may be used as well)\&.
 .PP
-The function \fCf_foreach\fP will be invoked with five arguments: \fCmember\fP (a pointer to \fCini_string\fP), \fCmemb_length\fP (the length of the member in bytes), \fCindex\fP (the index of the member in number of members), \fCformat\fP (the format of the INI file), \fCforeach_other\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the function \fC\fBini_split_array()\fP\fP will be interrupted\&. 
+The function \fCf_foreach\fP will be invoked with five arguments: \fCmember\fP (a pointer to \fCini_string\fP), \fCmemb_length\fP (the length of the member in bytes), \fCindex\fP (the index of the member in number of members), \fCformat\fP (the format of the INI file), \fCforeach_other\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the function \fC\fBini_split_array()\fP\fP will be interrupted\&.
+.PP
+See example under \fC\fBini_collapse_array()\fP\fP\&. 
 .SS "short int ini_string_match_ii (const char *const ini_string_a, const char *const ini_string_b, const \fBIniFormat\fP format)"
 
 .PP
@@ -613,7 +752,7 @@ Simple strings are user-given strings or the result of \fC\fBini_unquote()\fP\fP
 .SS "size_t ini_unquote (char *const ini_string, const \fBIniFormat\fP format)"
 
 .PP
-Unescapes \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP and removes all unescaped quotes (if single/double quotes are active) 
+Unescapes \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP and removes all unescaped quotes (if single/double quotes are considered metacharacters in respect to the format given) 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -665,11 +804,11 @@ Parses an INI file and dispatches its content\&.
 .br
 \fIformat\fP The format of the INI file 
 .br
-\fIf_init\fP The function that will be invoked before the dispatch, or NULL 
+\fIf_init\fP The function that will be invoked before the dispatch, or \fCNULL\fP 
 .br
-\fIf_foreach\fP The function that will be invoked for each dispatch, or NULL 
+\fIf_foreach\fP The function that will be invoked for each dispatch, or \fCNULL\fP 
 .br
-\fIuser_data\fP A custom argument, or NULL 
+\fIuser_data\fP A custom argument, or \fCNULL\fP 
 .RE
 .PP
 \fBReturns:\fP
@@ -682,21 +821,29 @@ For the two parameters \fCf_init\fP and \fCf_foreach\fP see function \fC\fBload_
 .PP 
 .SS "double(* const ini_get_float) (const char *ini_string)"
 
+.PP
+Link to \fC\fCatof()\fP\fP 
 .SS "int(* const ini_get_int) (const char *ini_string)"
 
+.PP
+Link to \fC\fCatoi()\fP\fP 
 .SS "long int(* const ini_get_lint) (const char *ini_string)"
 
+.PP
+Link to \fC\fCatol()\fP\fP 
 .SS "long long int(* const ini_get_llint) (const char *ini_string)"
 
+.PP
+Link to \fC\fCatoll()\fP\fP 
 .SS "size_t INI_IMPLICIT_V_LEN"
 
 .PP
-Length of the value dispatched in case of implicit keys -- it can be set to any unsigned number, independently of \fBINI_IMPLICIT_VALUE\fP (default value: \fC0\fP) 
+Length of the value dispatched in case of implicit keys – it can be set to any unsigned number, independently of \fBINI_IMPLICIT_VALUE\fP (default value: \fC0\fP) 
 .SS "char* INI_IMPLICIT_VALUE"
 
 .PP
 Value to be dispatched in case of implicit keys (default value: \fCNULL\fP) 
-.SS "int INI_INSENSITIVE_LOWERCASE"
+.SS "short int INI_INSENSITIVE_LOWERCASE"
 
 .PP
 If set to any non-zero value key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: non-zero) 

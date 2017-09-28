@@ -1,0 +1,64 @@
+/**
+
+
+
+\page		libconfini	Library Functions Manual
+
+\brief		Yet another INI parser
+
+\copyright	GNU Public License v3
+
+
+
+\page		readme		README
+
+\brief		Why **libconfini**?
+
+
+
+\mainpage	libconfini
+
+Welcome to the documentation of **libconfini**!
+
+You can getting started by reading the [motivations behind this library](@ref readme) and [the manual](@ref libconfini). Further useful resources include:
+
+- [confini.h File Reference](@ref confini.h)
+- `IniFormat`
+- `IniStatistics`
+- `IniDispatch`
+
+
+
+\page		changelog	ChangeLog
+
+\brief		Record of notable changes
+
+
+
+\file		docs.dox
+
+This file is used by Doxygen to indicize the pages and provide further
+documentation not available in the code.
+
+
+
+\file		README.md
+
+This file provides the markdown source code for the @ref readme.
+
+
+
+\file		MAN.md
+
+This file provides the markdown source code for the @ref libconfini.
+
+
+
+\file		ChangeLog.md
+
+This file provides the markdown source code for the @ref md_ChangeLog.
+
+
+
+**/
+
