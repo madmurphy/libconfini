@@ -20,7 +20,7 @@
 
 Welcome to the documentation of **libconfini**!
 
-You can getting started by reading the [motivations behind this library](@ref readme) and [the manual](@ref libconfini). Further useful resources include:
+You can get started by reading the [motivations behind this library](@ref readme) and [the manual](@ref libconfini). Further useful resources include:
 
 - [confini.h File Reference](@ref confini.h)
 - `IniFormat`
