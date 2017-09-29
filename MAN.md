@@ -178,7 +178,7 @@ comedy3 = The Merchant of Venice
 
 ### DISABLED ENTRIES
 
-A disabled entry is either a section or a key that has been nested inside a comment as its only child. Inline comments cannot represent disabled entries. Disabled entries can be multiline, using `/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]+/` as multiline escaping sequence. For example:
+A disabled entry is either a section or a key that has been nested inside a comment as its only child. Inline comments cannot represent disabled entries. According to some formats disabled entries can be multiline, using `/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]+/` as multiline escaping sequence. For example:
 
 ~~~~~~~~~~~~~~~{.ini}
 #this = is\
@@ -187,6 +187,8 @@ A disabled entry is either a section or a key that has been nested inside a comm
 #disabled\
   #entry
 ~~~~~~~~~~~~~~~
+
+In order for disabled multiline entries to be considered as such, the value to be assigned to `IniFormat::multiline_entries` must be either `#INI_ACTIVE_AND_DISABLED_MULTILINE` or `#INI_EVERYTHING_MULTILINE`.
 
 
 ### ESCAPING SEQUENCES

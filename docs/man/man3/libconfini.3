@@ -247,7 +247,7 @@ comedy3 = The Merchant of Venice
 .IP "" 0
 .
 .SS "DISABLED ENTRIES"
-A disabled entry is either a section or a key that has been nested inside a comment as its only child\. Inline comments cannot represent disabled entries\. Disabled entries can be multiline, using \fB/\e\e(?:\en\er?|\er\en?)[\et \ev\ef]*[;#]+/\fR as multiline escaping sequence\. For example:
+A disabled entry is either a section or a key that has been nested inside a comment as its only child\. Inline comments cannot represent disabled entries\. According to some formats disabled entries can be multiline, using \fB/\e\e(?:\en\er?|\er\en?)[\et \ev\ef]*[;#]+/\fR as multiline escaping sequence\. For example:
 .
 .IP "" 4
 .
@@ -262,6 +262,9 @@ A disabled entry is either a section or a key that has been nested inside a comm
 .fi
 .
 .IP "" 0
+.
+.P
+In order for disabled multiline entries to be considered as such, the value to be assigned to \fBIniFormat::multiline_entries\fR must be either \fBINI_ACTIVE_AND_DISABLED_MULTILINE\fR or \fBINI_EVERYTHING_MULTILINE\fR\.
 .
 .SS "ESCAPING SEQUENCES"
 In order to maximize the flexibility of the data, only four escaping sequences are supported by \fBlibconfini\fR: \fB\e\'\fR, \fB\e"\fR, \fB\e\e\fR and the multiline escaping sequence (\fB/\e\e(?:\en\er?|\er\en?)/\fR)\.

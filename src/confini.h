@@ -226,10 +226,10 @@ enum IniComments {
 
 /** @brief	Possible values of IniFormat::multiline_entries **/
 enum IniMultiline {
-	INI_EVERYTHING_MULTILINE = 0,
-	INI_ACTIVE_AND_DISABLED_MULTILINE = 1,
-	INI_ACTIVE_MULTILINE = 2,
-	INI_NO_MULTILINE = 3
+	INI_EVERYTHING_MULTILINE = 0,		/**< Comments, section paths and keys -- disabled or not -- are allowed to be multiline. **/
+	INI_ACTIVE_AND_DISABLED_MULTILINE = 1,	/**< Only section paths and keys -- disabled or not -- are allowed to be multiline. **/
+	INI_ACTIVE_MULTILINE = 2,		/**< Only *active* section paths and *active* keys are allowed to be multiline. **/
+	INI_NO_MULTILINE = 3			/**< The multiline escaping sequence is disabled. **/
 };
 
 /** @brief	A model format **/

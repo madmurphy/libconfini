@@ -295,12 +295,16 @@ Possible values of \fBIniFormat::multiline_entries\fP\&.
 .in +1c
 .TP
 \fB\fIINI_EVERYTHING_MULTILINE \fP\fP
+Comments, section paths and keys – disabled or not – are allowed to be multiline\&. 
 .TP
 \fB\fIINI_ACTIVE_AND_DISABLED_MULTILINE \fP\fP
+Only section paths and keys – disabled or not – are allowed to be multiline\&. 
 .TP
 \fB\fIINI_ACTIVE_MULTILINE \fP\fP
+Only \fIactive\fP section paths and \fIactive\fP keys are allowed to be multiline\&. 
 .TP
 \fB\fIINI_NO_MULTILINE \fP\fP
+The multiline escaping sequence is disabled\&. 
 .SS "enum \fBIniNodeType\fP"
 
 .PP

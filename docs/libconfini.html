@@ -241,7 +241,7 @@ comedy3 = The Merchant of Venice
 
 <h3 id="DISABLED-ENTRIES">DISABLED ENTRIES</h3>
 
-<p>A disabled entry is either a section or a key that has been nested inside a comment as its only child. Inline comments cannot represent disabled entries. Disabled entries can be multiline, using <code>/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]+/</code> as multiline escaping sequence. For example:</p>
+<p>A disabled entry is either a section or a key that has been nested inside a comment as its only child. Inline comments cannot represent disabled entries. According to some formats disabled entries can be multiline, using <code>/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]+/</code> as multiline escaping sequence. For example:</p>
 
 <pre><code class="{.ini}">#this = is\
  #a\
@@ -249,6 +249,8 @@ comedy3 = The Merchant of Venice
 #disabled\
   #entry
 </code></pre>
+
+<p>In order for disabled multiline entries to be considered as such, the value to be assigned to <code>IniFormat::multiline_entries</code> must be either <code>INI_ACTIVE_AND_DISABLED_MULTILINE</code> or <code>INI_EVERYTHING_MULTILINE</code>.</p>
 
 <h3 id="ESCAPING-SEQUENCES">ESCAPING SEQUENCES</h3>
 
