@@ -8,5 +8,5 @@ var searchData=
   ['ini_5fget_5fllint',['ini_get_llint',['../confini_8c.html#a9562da3c55b51795bbcbb2b19d608907',1,'ini_get_llint():&#160;confini.c'],['../confini_8h.html#aaf3640e3632b10bf8dd2e852a7d82630',1,'ini_get_llint():&#160;confini.c']]],
   ['ini_5fimplicit_5fv_5flen',['INI_IMPLICIT_V_LEN',['../confini_8c.html#aa961b2edbb807839bbae5016301daf94',1,'INI_IMPLICIT_V_LEN():&#160;confini.c'],['../confini_8h.html#aa961b2edbb807839bbae5016301daf94',1,'INI_IMPLICIT_V_LEN():&#160;confini.c']]],
   ['ini_5fimplicit_5fvalue',['INI_IMPLICIT_VALUE',['../confini_8c.html#af8b0049b3a18c7704ad503ed6ad21927',1,'INI_IMPLICIT_VALUE():&#160;confini.c'],['../confini_8h.html#af8b0049b3a18c7704ad503ed6ad21927',1,'INI_IMPLICIT_VALUE():&#160;confini.c']]],
-  ['ini_5finsensitive_5flowercase',['INI_INSENSITIVE_LOWERCASE',['../confini_8c.html#a881b84c6c3d2c1e65978ae4ae79ae798',1,'INI_INSENSITIVE_LOWERCASE():&#160;confini.c'],['../confini_8h.html#a881b84c6c3d2c1e65978ae4ae79ae798',1,'INI_INSENSITIVE_LOWERCASE():&#160;confini.c']]]
+  ['ini_5finsensitive_5flowercase',['INI_INSENSITIVE_LOWERCASE',['../confini_8c.html#a49a43cc4e9e7b7a1fefee014d6155c81',1,'INI_INSENSITIVE_LOWERCASE():&#160;confini.c'],['../confini_8h.html#a49a43cc4e9e7b7a1fefee014d6155c81',1,'INI_INSENSITIVE_LOWERCASE():&#160;confini.c']]]
 ];

@@ -60,7 +60,7 @@ static int my_ini_listener (IniDispatch *dispatch, void *user_data) {
 
 	if (dispatch->value == INI_IMPLICIT_VALUE) {
 
-		printf("\n\tHey! This is an implicit value!\n");
+		printf("\n\tHey! This was an implicit value!\n");
 
 	}
 

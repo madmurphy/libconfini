@@ -30,14 +30,14 @@ static int my_ini_listener (IniDispatch *dispatch, void *v_null) {
 
 		/* Copy the strings with `memcpy()` */
 		memcpy(
-			(char *) ((void *) my_array + my_array_length * sizeof(char *)),
+			(char *) my_array + my_array_length * sizeof(char *),
 			dispatch->value,
 			dispatch->v_len + 1
 		);
 
 		/* Populate the array */
 		ini_split_array(
-			(char *) ((void *) my_array + my_array_length * sizeof(char *)),
+			(char *) my_array + my_array_length * sizeof(char *),
 			DELIMITER,
 			dispatch->format,
 			populate_array,

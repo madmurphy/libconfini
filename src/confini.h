@@ -25,7 +25,7 @@
 
 
 
-/* PUBLIC MACROS */
+/* GLOBAL MACROS */
 
 
 #define _LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(______)                            /*-*\
@@ -88,11 +88,11 @@ typedef size_t IniFormatId;
 extern int load_ini_file (
 	FILE * const ini_file,
 	const IniFormat format,
-	const int (* const f_init) (
+	int (* const f_init) (
 		IniStatistics *statistics,
 		void *init_other
 	),
-	const int (* const f_foreach) (
+	int (* const f_foreach) (
 		IniDispatch *dispatch,
 		void *foreach_other
 	),
@@ -102,34 +102,63 @@ extern int load_ini_file (
 extern int load_ini_path (
 	const char * const path,
 	const IniFormat format,
-	const int (* const f_init) (
+	int (* const f_init) (
 		IniStatistics *statistics,
 		void *init_other
 	),
-	const int (* const f_foreach) (
+	int (* const f_foreach) (
 		IniDispatch *dispatch,
 		void *foreach_other
 	),
 	void *user_data
 );
 
-extern void ini_dispatch_case_insensitive_lowercase (int b_lowercase);
+extern void ini_dispatch_case_insensitive_lowercase (
+	_Bool b_lowercase
+);
 
-extern void ini_set_implicit_value (char * const implicit_value, const size_t implicit_v_len);
+extern void ini_set_implicit_value (
+	char * const implicit_value,
+	const size_t implicit_v_len
+);
 
-extern IniFormatId ini_format_get_id (const IniFormat format);
+extern IniFormatId ini_format_get_id (
+	const IniFormat format
+);
 
-extern void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id);
+extern void ini_format_set_to_id (
+	IniFormat *dest_format,
+	IniFormatId format_id
+);
 
-extern short int ini_string_match_ss (const char * const simple_string_a, const char * const simple_string_b, const IniFormat format);
+extern _Bool ini_string_match_ss (
+	const char * const simple_string_a,
+	const char * const simple_string_b,
+	const IniFormat format
+);
 
-extern short int ini_string_match_si (const char * const simple_string, const char * const ini_string, const IniFormat format);
+extern _Bool ini_string_match_si (
+	const char * const simple_string,
+	const char * const ini_string,
+	const IniFormat format
+);
 
-extern short int ini_string_match_ii (const char * const ini_string_a, const char * const ini_string_b, const IniFormat format);
+extern _Bool ini_string_match_ii (
+	const char * const ini_string_a,
+	const char * const ini_string_b,
+	const IniFormat format
+);
 
-extern size_t ini_unquote (char * const ini_string, const IniFormat format);
+extern size_t ini_unquote (
+	char * const ini_string,
+	const IniFormat format
+);
 
-extern size_t ini_array_get_length (const char * const ini_string, const char delimiter, const IniFormat format);
+extern size_t ini_array_get_length (
+	const char * const ini_string,
+	const char delimiter,
+	const IniFormat format
+);
 
 extern int ini_array_foreach (
 	const char * const ini_string,
@@ -146,7 +175,11 @@ extern int ini_array_foreach (
 	void *user_data
 );
 
-extern size_t ini_collapse_array (char * const ini_string, const char delimiter, const IniFormat format);
+extern size_t ini_collapse_array (
+	char * const ini_string,
+	const char delimiter,
+	const IniFormat format
+);
 
 extern int ini_split_array (
 	char * const ini_string,
@@ -162,22 +195,36 @@ extern int ini_split_array (
 	void *user_data
 );
 
-extern signed int ini_get_bool (const char * const ini_string, const signed int return_value);
+extern signed int ini_get_bool (
+	const char * const ini_string,
+	const signed int return_value
+);
 
-extern signed int ini_get_lazy_bool (const char * const ini_string, const signed int return_value);
+extern signed int ini_get_lazy_bool (
+	const char * const ini_string,
+	const signed int return_value
+);
 
 
 
 /* PUBLIC LINKS */
 
 
-extern int (* const ini_get_int) (const char *ini_string);
+extern int (* const ini_get_int) (
+	const char *ini_string
+);
 
-extern long int (* const ini_get_lint) (const char *ini_string);
+extern long int (* const ini_get_lint) (
+	const char *ini_string
+);
 
-extern long long int (* const ini_get_llint) (const char *ini_string);
+extern long long int (* const ini_get_llint) (
+	const char *ini_string
+);
 
-extern double (* const ini_get_float) (const char *ini_string);
+extern double (* const ini_get_float) (
+	const char *ini_string
+);
 
 
 
@@ -236,7 +283,7 @@ enum IniMultiline {
 static const IniFormat INI_DEFAULT_FORMAT = _LIBCONFINI_DEFAULT_FORMAT_;
 
 /** @brief	If set to any non-zero value key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: non-zero) **/
-extern short int INI_INSENSITIVE_LOWERCASE;
+extern _Bool INI_INSENSITIVE_LOWERCASE;
 
 /** @brief	Value to be dispatched in case of implicit keys (default value: `NULL`) **/
 extern char *INI_IMPLICIT_VALUE;

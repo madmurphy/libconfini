@@ -6,7 +6,7 @@ Library Functions Manual {#libconfini}
 
 **libconfini** is a simple INI parsing library with the ability to read disabled entries (i.e., valid entries nested in comments). **libconfini** does not store the data read from an INI file, but rather dispatches it, formatted, to a custom listener.
 
-The code is written in C and does not depend on any particular library, except for the C standard libraries **stdio.h**, **stdlib.h** and **stdint.h**.
+The code is written in C (C99) and does not depend on any particular library, except for the C standard libraries **stdio.h**, **stdlib.h** and **stdint.h**.
 
 If you want to start to learn directly from the code, you can find partially self-documented sample usages of **libconfini** under `/usr/share/doc/libconfini/examples/`.
 

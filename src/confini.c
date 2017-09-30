@@ -137,7 +137,6 @@
 
 /* ALIASES */
 
-#define _LIBCONFINI_BOOL_ unsigned char
 #define _LIBCONFINI_FALSE_ 0
 #define _LIBCONFINI_TRUE_ 1
 #define _LIBCONFINI_BACKSLASH_ '\\'
@@ -156,6 +155,15 @@
 	only ASCII...
 */
 #define _LIBCONFINI_CHR_CASEFOLD_(CHR) (CHR > 0x40 && CHR < 0x5b ? CHR | 0x60 : CHR)
+/*
+	This may be any character, in theory... But after the left-trim of each line
+	a leading space works pretty well as metacharacter...
+*/
+#define _LIBCONFINI_INLINE_MARKER_ 32
+/*
+	`_LIBCONFINI_BOOL_` is for internal usage only...
+*/
+#define _LIBCONFINI_BOOL_ unsigned char
 
 
 /* FUNCTIONAL CONSTANTS */
@@ -174,24 +182,26 @@ static const char * const _LIBCONFINI_BOOLEANS_[][2] = {
 	{ "0", "1" }
 };
 
-/*
-	This may be any character, in theory... But after the left-trim of each line
-	a leading space works pretty well as metacharacter.
-*/
-#define _LIBCONFINI_INLINE_MARKER_ '\t'
-
 
 
 /* ABSTRACT UTILITIES */
-
-/* The list of space characters -- do not change its order! */
-static const char _LIBCONFINI_SPACES_[] = { _LIBCONFINI_SIMPLE_SPACE_, '\t', '\f', '\v', _LIBCONFINI_LF_, _LIBCONFINI_CR_ };
 
 /* Possible lengths of array `_LIBCONFINI_SPACES_` */
 #define _LIBCONFINI_JUST_S_T_ 2
 #define _LIBCONFINI_NO_EOL_ 4
 #define _LIBCONFINI_WITH_EOL_ 6
 
+/* The list of space characters -- do not change its order! */
+static const char _LIBCONFINI_SPACES_[] = { _LIBCONFINI_SIMPLE_SPACE_, '\t', '\f', '\v', _LIBCONFINI_LF_, _LIBCONFINI_CR_ };
+
+/**
+
+	@brief			Checks whether a characters matches with one of the first n elements of `_LIBCONFINI_SPACES_`
+	@param			chr				The target character
+	@param			depth			The number of elements to check (maximum allowed: `6`)
+	@return			A boolean: `TRUE` if the character matches, `FALSE` otherwise
+
+**/
 static inline _LIBCONFINI_BOOL_ is_some_space (const char chr, const uint8_t depth) {
 	uint8_t idx;
 	for (idx = 0; idx < depth && chr != _LIBCONFINI_SPACES_[idx]; idx++);
@@ -853,7 +863,8 @@ static uint8_t get_type_as_active (
 				Search of the CLOSE_SECTION character and possible spaces in
 				names -- i.e., ECMAScript `/[^\.\s]\s+[^\.\s]/g.test(nodestr)`.
 				The algorithm is made more complex by the fact that LF and CR
-				characters can still be escaped at this stage ("\\\n", "\\\r").
+				characters can still be escaped at this stage (C-string
+				fragments `"\\\n"`, `"\\\r"`).
 
 			*/
 
@@ -969,17 +980,17 @@ static uint8_t get_type_as_active (
 
 		if (abacus & 2) {
 
-			idx = urtrim_s(nodestr, idx) - 1;
+			idx = urtrim_s(nodestr, idx);
 
 			do {
 
-				if (is_some_space(nodestr[idx], _LIBCONFINI_WITH_EOL_)) {
+				if (is_some_space(nodestr[--idx], _LIBCONFINI_WITH_EOL_)) {
 
 					return INI_UNKNOWN;
 
 				}
 
-			} while (idx-- > 0);
+			} while (idx);
 
 		}
 
@@ -1087,8 +1098,7 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 
 				}
 
-				abacus &= 239;
-				abacus |= 32;
+				abacus = (abacus & 239) | 32;
 
 			} else if (segment[idx] == _LIBCONFINI_LF_ || segment[idx] == _LIBCONFINI_CR_) {
 
@@ -1246,7 +1256,7 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 }
 
 
-/*----------------------------------------------------*/
+/******************************************************************************/
 
 
 
@@ -1290,11 +1300,11 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 int load_ini_file (
 	FILE * const ini_file,
 	const IniFormat format,
-	const int (* const f_init) (
+	int (* const f_init) (
 		IniStatistics *statistics,
 		void *init_other
 	),
-	const int (* const f_foreach) (
+	int (* const f_foreach) (
 		IniDispatch *dispatch,
 		void *foreach_other
 	),
@@ -1355,9 +1365,8 @@ int load_ini_file (
 
 		__N_MEMBERS__ = 0,
 		__EOL_ID__ = 5,
-		__IS_ESCAPED__ = _LIBCONFINI_FALSE_,
-		node_at = 0,
-		idx = __SHIFT_LEN__;
+		__IS_ESCAPED__ = _LIBCONFINI_TRUE_,
+		node_at = idx = __SHIFT_LEN__;
 
 			idx < __N_BYTES__;
 
@@ -1369,19 +1378,19 @@ int load_ini_file (
 
 		if (cache[idx] == _LIBCONFINI_SPACES_[__EOL_ID__] || cache[idx] == _LIBCONFINI_SPACES_[__EOL_ID__ ^= 1]) {
 
-			if (format.multiline_entries < 3 && __IS_ESCAPED__) {
-
-				idx += cache[idx + 1] == _LIBCONFINI_SPACES_[__EOL_ID__ ^ 1];
-
-			} else {
+			if (format.multiline_entries == INI_NO_MULTILINE || __IS_ESCAPED__) {
 
 				cache[idx] = '\0';
 				__N_MEMBERS__ += further_cuts(cache + ultrim_h(cache, node_at), format);
 				node_at = idx + 1;
 
+			} else if (cache[idx + 1] == _LIBCONFINI_SPACES_[__EOL_ID__ ^ 1]) {
+
+				idx++;
+
 			}
 
-			__IS_ESCAPED__ = _LIBCONFINI_FALSE_;
+			__IS_ESCAPED__ = _LIBCONFINI_TRUE_;
 
 		} else if (cache[idx] == _LIBCONFINI_BACKSLASH_) {
 
@@ -1389,7 +1398,7 @@ int load_ini_file (
 
 		} else if (cache[idx]) {
 
-			__IS_ESCAPED__ = _LIBCONFINI_FALSE_;
+			__IS_ESCAPED__ = _LIBCONFINI_TRUE_;
 
 		} else {
 
@@ -1811,11 +1820,11 @@ int load_ini_file (
 int load_ini_path (
 	const char * const path,
 	const IniFormat format,
-	const int (* const f_init) (
+	int (* const f_init) (
 		IniStatistics *statistics,
 		void *init_other
 	),
-	const int (* const f_foreach) (
+	int (* const f_foreach) (
 		IniDispatch *dispatch,
 		void *foreach_other
 	),
@@ -1840,7 +1849,7 @@ int load_ini_path (
 
 
 
-/* FUNCTIONS FOR THE USER (NOT USED BY LIBCONFINI) */
+/* UTILITIES FOR THE USER (NOT USED BY LIBCONFINI) */
 
 
 /**
@@ -1850,12 +1859,12 @@ int load_ini_path (
 	@param			b_lowercase			The new value 
 	@return			Nothing
 
-	If @p b_lowercase is any non-zero value key and section names in case-
-	insensitive INI formats will be dispatched lowercase, verbatim otherwise
-	(default value: non-zero).
+	If @p b_lowercase is `TRUE` key and section names in case-insensitive INI
+	formats will be dispatched lowercase, verbatim otherwise (default value:
+	`TRUE`).
 
 **/
-void ini_dispatch_case_insensitive_lowercase (int b_lowercase) {
+void ini_dispatch_case_insensitive_lowercase (_Bool b_lowercase) {
 
 	INI_INSENSITIVE_LOWERCASE = b_lowercase;
 
@@ -1894,7 +1903,7 @@ void ini_set_implicit_value (char * const implicit_value, const size_t implicit_
 **/
 IniFormatId ini_format_get_id (const IniFormat source) {
 
-	unsigned short int bitpos = 0;
+	uint8_t bitpos = 0;
 	IniFormatId mask = 0;
 
 	#define __CALC_FORMAT_ID__(SIZE, PROPERTY, IGNORE_ME) \
@@ -1953,17 +1962,18 @@ void ini_format_set_to_id (IniFormat *dest_format, IniFormatId format_id) {
 	@brief			Compares two simple strings and checks if they match
 	@param			simple_string_a		The first simple string
 	@param			simple_string_b		The second simple string
-	@return			A boolean: `TRUE` if the two strings match, `FALSE` otherwise
+	@return			A boolean: `TRUE` if the two strings match, `FALSE`
+					otherwise
 
 	Simple strings are user-given strings or the result of `ini_unquote()`. The
-	following properties are read from argument @p format:
+	argument @p format is used for the following properties:
 
 	- `format.case_sensitive`
 
 **/
-short int ini_string_match_ss (const char * const simple_string_a, const char * const simple_string_b, const IniFormat format) {
+_Bool ini_string_match_ss (const char * const simple_string_a, const char * const simple_string_b, const IniFormat format) {
 
-	short int are_equal = _LIBCONFINI_TRUE_;
+	_Bool are_equal = _LIBCONFINI_TRUE_;
 	size_t idx = 0;
 
 	if (format.case_sensitive) {
@@ -1994,7 +2004,7 @@ short int ini_string_match_ss (const char * const simple_string_a, const char * 
 	@brief			Compares an INI string with a simple string and checks if
 					they match according to a format
 	@param			ini_string			The INI string escaped according to
-					@p format
+										@p format
 	@param			simple_string		The simple string
 	@param			format				The format of the INI file
 	@return			A boolean: `TRUE` if the two strings match, `FALSE`
@@ -2005,7 +2015,7 @@ short int ini_string_match_ss (const char * const simple_string_a, const char * 
 	`\\`, `\'` and `\"`. Simple strings are user-given strings or the result of
 	`ini_unquote()`.
 
-	The following properties are read from argument @p format:
+	The argument @p format is used for the following properties:
 
 	- `format.no_double_quotes`
 	- `format.no_single_quotes`
@@ -2015,7 +2025,7 @@ short int ini_string_match_ss (const char * const simple_string_a, const char * 
 	@include topics/ini_string_match_si.c
 
 **/
-short int ini_string_match_si (const char * const simple_string, const char * const ini_string, const IniFormat format) {
+_Bool ini_string_match_si (const char * const simple_string, const char * const ini_string, const IniFormat format) {
 
 	if (format.no_double_quotes && format.no_single_quotes && format.multiline_entries == INI_NO_MULTILINE) {
 
@@ -2026,7 +2036,7 @@ short int ini_string_match_si (const char * const simple_string, const char * co
 	}
 
 	uint8_t abacus;
-	short int are_equal = _LIBCONFINI_TRUE_;
+	_Bool are_equal = _LIBCONFINI_TRUE_;
 	size_t idx_i = 0, idx_s = 0, nbacksl = 0;
 
 	abacus = (format.no_double_quotes << 1) | format.no_single_quotes;
@@ -2117,7 +2127,6 @@ short int ini_string_match_si (const char * const simple_string, const char * co
 					to a format
 	@param			ini_string_a		The first INI string unescaped according
 										to @p format
-
 	@param			ini_string_b		The second INI string unescaped
 										according to @p format
 	@param			format				The format of the INI file
@@ -2128,7 +2137,7 @@ short int ini_string_match_si (const char * const simple_string, const char * co
 	`load_ini_path()`, which may contain quotes and the three escaping sequences
 	`\\`, `\'` and `\"`.
 
-	The following properties are read from argument @p format:
+	The argument @p format is used for the following properties:
 
 	- `format.no_double_quotes`
 	- `format.no_single_quotes`
@@ -2136,7 +2145,7 @@ short int ini_string_match_si (const char * const simple_string, const char * co
 	- `format.case_sensitive`
 
 **/
-short int ini_string_match_ii (const char * const ini_string_a, const char * const ini_string_b, const IniFormat format) {
+_Bool ini_string_match_ii (const char * const ini_string_a, const char * const ini_string_b, const IniFormat format) {
 
 	if (format.no_double_quotes && format.no_single_quotes && format.multiline_entries == INI_NO_MULTILINE) {
 
@@ -2148,7 +2157,7 @@ short int ini_string_match_ii (const char * const ini_string_a, const char * con
 
 	uint8_t side = 0, a_abacus[2];
 	const char * const a_str[2] = { ini_string_a, ini_string_b };
-	short int are_equal = _LIBCONFINI_TRUE_;
+	_Bool are_equal = _LIBCONFINI_TRUE_;
 	size_t a_idx[2] = { 0, 0 }, a_nbacksl[2] = { 0, 0 };
 
 	a_abacus[1] = *a_abacus = (format.no_double_quotes << 1) | format.no_single_quotes;
@@ -2242,6 +2251,12 @@ short int ini_string_match_ii (const char * const ini_string_a, const char * con
 	Usually @p ini_string comes from an `IniDispatch` (but any other string may
 	be used as well). If the string does not contain quotes, or if quotes are
 	considered to be normal characters, no changes will be made.
+
+	The argument @p format is used for the following properties:
+
+	- `format.no_double_quotes`
+	- `format.no_single_quotes`
+	- `format.multiline_entries`
 
 	@include topics/ini_unquote.c
 
@@ -2513,6 +2528,11 @@ int ini_array_foreach (
 	This function can be useful before invoking `memcpy()` using @p ini_string
 	as source.
 
+	The argument @p format is used for the following properties:
+
+	- `format.no_double_quotes`
+	- `format.no_single_quotes`
+
 	@include topics/ini_collapse_array.c
 
 **/
@@ -2733,7 +2753,8 @@ int ini_split_array (
 **/
 signed int ini_get_bool (const char * const ini_string, const signed int return_value) {
 
-	unsigned short int pair_idx, bool_idx, chr_idx;
+	uint8_t bool_idx;
+	size_t pair_idx, chr_idx;
 
 	for (pair_idx = 0; pair_idx < sizeof(_LIBCONFINI_BOOLEANS_) / 2 / sizeof(char *); pair_idx++) {
 
@@ -2775,7 +2796,8 @@ signed int ini_get_bool (const char * const ini_string, const signed int return_
 **/
 signed int ini_get_lazy_bool (const char * const ini_string, const signed int return_value) {
 
-	unsigned short int pair_idx, bool_idx;
+	uint8_t bool_idx;
+	size_t pair_idx;
 
 	for (pair_idx = 0; pair_idx < sizeof(_LIBCONFINI_BOOLEANS_) / 2 / sizeof(char *); pair_idx++) {
 
@@ -2811,7 +2833,7 @@ double (* const ini_get_float) (const char *ini_string) = &atof;
 
 /* VARIABLES */
 
-short int INI_INSENSITIVE_LOWERCASE = _LIBCONFINI_TRUE_;
+_Bool INI_INSENSITIVE_LOWERCASE = _LIBCONFINI_TRUE_;
 char *INI_IMPLICIT_VALUE = (char *) 0;
 size_t INI_IMPLICIT_V_LEN = 0;
 

@@ -92,7 +92,7 @@ static int my_ini_listener (IniDispatch *this, void *v_store) {
 					/* Allocate a new array of strings */
 					store->my_section_my_arr_len = ini_array_get_length(this->value, MY_ARRAY_DELIMITER, this->format);
 					store->my_section_my_array = (char **) malloc(store->my_section_my_arr_len * sizeof(char *) + (this->v_len + 1) * sizeof(char));
-					char * const str_ptr = (char *) ((void *) store->my_section_my_array + store->my_section_my_arr_len * sizeof(char *));
+					char * const str_ptr = (char *) store->my_section_my_array + store->my_section_my_arr_len * sizeof(char *);
 					memcpy(str_ptr, this->value, this->v_len + 1);
 
 					/* Populate the array */
