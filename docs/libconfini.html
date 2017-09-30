@@ -823,12 +823,12 @@ int main () {
 
 #include &lt;confini.h&gt;
 
-short int INI_INSENSITIVE_LOWERCASE = FALSE;
+_Bool INI_INSENSITIVE_LOWERCASE = FALSE;
 </code></pre>
 
 <p>Alternatively, it can be set through the function <code>ini_dispatch_case_insensitive_lowercase()</code> without being explicitly declared.</p>
 
-<p>When the variable <code>INI_INSENSITIVE_LOWERCASE</code> is set to any non-zero value, <strong>libconfini</strong> will always convert all ASCII letters to lowercase (except within values) &ndash; <em>even when these are enclosed within quotes</em> &ndash; but will <strong>not</strong> convert UTF-8 code points to lowercase (for instance, <code>&Amacr;</code> will not be rendered as <code>&amacr;</code>, but will be rather rendered verbatim). <em>In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names.</em></p>
+<p>When the variable <code>INI_INSENSITIVE_LOWERCASE</code> is set to <code>TRUE</code>, <strong>libconfini</strong> will always convert all ASCII letters to lowercase (except within values) &ndash; <em>even when these are enclosed within quotes</em> &ndash; but will <strong>not</strong> convert UTF-8 code points to lowercase (for instance, <code>&Amacr;</code> will not be rendered as <code>&amacr;</code>, but will be rather rendered verbatim). <em>In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names.</em></p>
 
 <h3 id="THREAD-SAFETY">THREAD SAFETY</h3>
 

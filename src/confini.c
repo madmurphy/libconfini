@@ -1344,7 +1344,7 @@ int load_ini_file (
 
 	/* PART ONE: Examine and isolate each segment */
 
-	#define __IS_ESCAPED__ tmp_bool
+	#define __ISNT_ESCAPED__ tmp_bool
 	#define __EOL_ID__ abacus
 	#define __N_MEMBERS__ tmp_size_2
 	#define __SHIFT_LEN__ tmp_size_3
@@ -1365,7 +1365,7 @@ int load_ini_file (
 
 		__N_MEMBERS__ = 0,
 		__EOL_ID__ = 5,
-		__IS_ESCAPED__ = _LIBCONFINI_TRUE_,
+		__ISNT_ESCAPED__ = _LIBCONFINI_TRUE_,
 		node_at = idx = __SHIFT_LEN__;
 
 			idx < __N_BYTES__;
@@ -1378,7 +1378,7 @@ int load_ini_file (
 
 		if (cache[idx] == _LIBCONFINI_SPACES_[__EOL_ID__] || cache[idx] == _LIBCONFINI_SPACES_[__EOL_ID__ ^= 1]) {
 
-			if (format.multiline_entries == INI_NO_MULTILINE || __IS_ESCAPED__) {
+			if (format.multiline_entries == INI_NO_MULTILINE || __ISNT_ESCAPED__) {
 
 				cache[idx] = '\0';
 				__N_MEMBERS__ += further_cuts(cache + ultrim_h(cache, node_at), format);
@@ -1390,15 +1390,15 @@ int load_ini_file (
 
 			}
 
-			__IS_ESCAPED__ = _LIBCONFINI_TRUE_;
+			__ISNT_ESCAPED__ = _LIBCONFINI_TRUE_;
 
 		} else if (cache[idx] == _LIBCONFINI_BACKSLASH_) {
 
-			__IS_ESCAPED__ = !__IS_ESCAPED__;
+			__ISNT_ESCAPED__ = !__ISNT_ESCAPED__;
 
 		} else if (cache[idx]) {
 
-			__IS_ESCAPED__ = _LIBCONFINI_TRUE_;
+			__ISNT_ESCAPED__ = _LIBCONFINI_TRUE_;
 
 		} else {
 
@@ -1429,7 +1429,7 @@ int load_ini_file (
 	#undef __SHIFT_LEN__
 	#undef __N_MEMBERS__
 	#undef __EOL_ID__
-	#undef __IS_ESCAPED__
+	#undef __ISNT_ESCAPED__
 	#undef __N_BYTES__
 
 	/* Debug */

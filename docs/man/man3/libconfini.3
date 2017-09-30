@@ -1035,7 +1035,7 @@ As with the other global variables, the variable \fBINI_INSENSITIVE_LOWERCASE\fR
 
 #include <confini\.h>
 
-short int INI_INSENSITIVE_LOWERCASE = FALSE;
+_Bool INI_INSENSITIVE_LOWERCASE = FALSE;
 .
 .fi
 .
@@ -1045,7 +1045,7 @@ short int INI_INSENSITIVE_LOWERCASE = FALSE;
 Alternatively, it can be set through the function \fBini_dispatch_case_insensitive_lowercase()\fR without being explicitly declared\.
 .
 .P
-When the variable \fBINI_INSENSITIVE_LOWERCASE\fR is set to any non\-zero value, \fBlibconfini\fR will always convert all ASCII letters to lowercase (except within values) – \fIeven when these are enclosed within quotes\fR – but will \fBnot\fR convert UTF\-8 code points to lowercase (for instance, \fBĀ\fR will not be rendered as \fBā\fR, but will be rather rendered verbatim)\. \fIIn general it is a good practice to use UTF\-8 within values, but to use ASCII only within keys names and sections names\.\fR
+When the variable \fBINI_INSENSITIVE_LOWERCASE\fR is set to \fBTRUE\fR, \fBlibconfini\fR will always convert all ASCII letters to lowercase (except within values) – \fIeven when these are enclosed within quotes\fR – but will \fBnot\fR convert UTF\-8 code points to lowercase (for instance, \fBĀ\fR will not be rendered as \fBā\fR, but will be rather rendered verbatim)\. \fIIn general it is a good practice to use UTF\-8 within values, but to use ASCII only within keys names and sections names\.\fR
 .
 .SS "THREAD SAFETY"
 Depending on the format of the INI file, \fBlibconfini\fR may use up to three global variables (\fBINI_IMPLICIT_VALUE\fR, \fBINI_IMPLICIT_V_LEN\fR and \fBINI_INSENSITIVE_LOWERCASE\fR)\. In order to be thread\-safe these three variables (if needed) must be defined only once (either directly, or through their modifier functions \fBini_set_implicit_value()\fR and \fBini_dispatch_case_insensitive_lowercase()\fR), or otherwise a mutex logic must be introduced\. It is indeed very important that these variables are not changed during a parsing process\.

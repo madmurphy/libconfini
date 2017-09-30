@@ -771,12 +771,12 @@ As with the other global variables, the variable `#INI_INSENSITIVE_LOWERCASE` ca
 
 #include <confini.h>
 
-short int INI_INSENSITIVE_LOWERCASE = FALSE;
+_Bool INI_INSENSITIVE_LOWERCASE = FALSE;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Alternatively, it can be set through the function `ini_dispatch_case_insensitive_lowercase()` without being explicitly declared.
 
-When the variable `#INI_INSENSITIVE_LOWERCASE` is set to any non-zero value, **libconfini** will always convert all ASCII letters to lowercase (except within values) -- _even when these are enclosed within quotes_ -- but will **not** convert UTF-8 code points to lowercase (for instance, `Ā` will not be rendered as `ā`, but will be rather rendered verbatim). _In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names._
+When the variable `#INI_INSENSITIVE_LOWERCASE` is set to `TRUE`, **libconfini** will always convert all ASCII letters to lowercase (except within values) -- _even when these are enclosed within quotes_ -- but will **not** convert UTF-8 code points to lowercase (for instance, `Ā` will not be rendered as `ā`, but will be rather rendered verbatim). _In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names._
 
 
 ### THREAD SAFETY
