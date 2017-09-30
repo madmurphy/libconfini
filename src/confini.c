@@ -1862,7 +1862,7 @@ void ini_dispatch_case_insensitive_lowercase (_Bool b_lowercase) {
 
 /**
 
-	@brief			Sets the valued used for implicit keys
+	@brief			Sets the value used for implicit keys
 	@param			implicit_value		The string to be used as implicit value
 										(usually `"YES"`, or `"TRUE"`)
 	@param			implicit_v_len		The length of @p implicit_value (usually
