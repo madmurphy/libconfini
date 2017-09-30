@@ -95,7 +95,7 @@ my_array = Asia, Africa, 'North America', South America,\
 
 ### SECTIONS
 
-A **section** may be imagined like a directory. A **section path** is identified as the string `"$1"` in the regular expression `/(?:^|\n)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\]/` globally applied to an INI file. A section path expresses nesting through the 'dot' character, as in the following example:
+A **section** may be imagined like a directory. A **section path** is identified as the string `"$1"` in the regular expression `/(?:^|\n)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\]/` globally applied to an INI file. A section path expresses nesting through the “dot” character, as in the following example:
 
 ~~~~~~~~~~~~~~~~~~~~{.ini}
 [section]
@@ -176,21 +176,6 @@ comedy3 = The Merchant of Venice
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-### DISABLED ENTRIES
-
-A disabled entry is either a section or a key that has been nested inside a comment as its only child. Inline comments cannot represent disabled entries. According to some formats disabled entries can be multiline, using `/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]+/` as multiline escaping sequence. For example:
-
-~~~~~~~~~~~~~~~{.ini}
-#this = is\
- #a\
-    #multiline\
-#disabled\
-  #entry
-~~~~~~~~~~~~~~~
-
-In order for disabled multiline entries to be considered as such, the value to be assigned to `IniFormat::multiline_entries` must be either `#INI_ACTIVE_AND_DISABLED_MULTILINE` or `#INI_EVERYTHING_MULTILINE`.
-
-
 ### ESCAPING SEQUENCES
 
 In order to maximize the flexibility of the data, only four escaping sequences are supported by **libconfini**: `\'`, `\"`, `\\` and the multiline escaping sequence (`/\\(?:\n\r?|\r\n?)/`).
@@ -212,6 +197,19 @@ a\
 multiline\
 value
 ~~~~~~~~~~~
+
+
+### DISABLED ENTRIES
+
+A disabled entry is either a section or a key that has been nested inside a comment as its only child. Inline comments cannot represent disabled entries. According to some formats disabled entries can be multiline, using `/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]+/` as multiline escaping sequence. For example:
+
+~~~~~~~~~~~~~~~{.ini}
+#this = is\
+ #a\
+    #multiline\
+#disabled\
+  #entry
+~~~~~~~~~~~~~~~
 
 
 ## READ AN INI FILE
@@ -260,7 +258,7 @@ where
 * `path` in `load_ini_path()` is the path where the INI file is located (pointer to a char array, a.k.a. a "C string")
 * `format` is a bitfield structure defining the syntax of the INI file (see the `IniFormat` struct)
 * `f_init` is the function that will be invoked _before_ any dispatching begins -- it can be `NULL`
-* `f_foreach` is the callback function that will be invoked for each member of the INI file - it can be `NULL`
+* `f_foreach` is the callback function that will be repeatedly invoked for each member of the INI file - it can be `NULL`
 * `user_data` is a pointer to a custom argument -- it can be `NULL`
 
 The function `f_init()` is invoked with two arguments:
@@ -361,7 +359,7 @@ int main () {
 
 The function `load_ini_path()` is a shortcut to the function `load_ini_file()` using a path instead of a `FILE` struct.
 
-The function `load_ini_file()` dynamically allocates at once the whole INI file into the heap, and the two structures `IniStatistics` and `IniDispatch` into the stack. All the members of the INI file are then dispatched to the listener `f_foreach()`. Finally the allocated memory gets automatically freed.
+The function `load_ini_file()` dynamically allocates at once the whole INI file into the heap, and the two structures `IniStatistics` and `IniDispatch` into the stack. All the members of the INI file are then dispatched to the custom listener `f_foreach()`. Finally the allocated memory gets automatically freed.
 
 Because of this mechanism _it is very important that all the dispatched data be **immediately** copied by the user (when needed), and no pointers to the passed data be saved_: after the end of the functions `load_ini_file()` / `load_ini_path()` all the allocated data will be destroyed indeed.
 
@@ -374,7 +372,7 @@ The output strings dispatched by **libconfini** will follow some formatting rule
 
 * **Section paths** will be rendered according to ECMAScript `section_name.replace(/\.*\s*$|(?:\s*(\.))+\s*|^\s+/g, "$1").replace(/\s+/g, " ")` -- within single or double quotes, if active, the text will be rendered verbatim
 * **Key names** will be rendered according to ECMAScript `key_name.replace(/^[\n\r]\s*|\s+/g, " ")` -- within single or double quotes, if active, the text will be rendered verbatim
-* **Values**, if `format.do_not_collapse_values` is active, will be cleaned of spaces at the beginning and at the end, otherwise will be rendered though the same algorithm used for key names.
+* **Values**, if `format.do_not_collapse_values` is active, will only be cleaned of spaces at the beginning and at the end, otherwise will be rendered though the same algorithm used for key names.
 * **Comments**: if multiline, ECMAScript `comment_string.replace(/(^|\n\r?|\r\n?)[ \t\v\f]*[#;]+/g, "$1")`; otherwise, ECMAScript `comment_string.replace(/^[ \t\v\f]*[#;]+/, "")`.
 * **Unknown nodes** will be rendered verbatim.
 
@@ -573,7 +571,7 @@ Each format can be represented also as a univocal 24-bit unsigned integer. In or
 
 ### THE MODEL FORMAT
 
-A model format named `INI_DEFAULT_FORMAT` is available.
+A model format named `#INI_DEFAULT_FORMAT` is available.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 IniFormat my_format;
@@ -623,7 +621,7 @@ Once your listener starts to receive the parsed data you may want to parse and b
 * `ini_get_bool()`
 * `ini_get_lazy_bool()`
 
-Together with the functions listed above the following links are available, in case you don't want to `#include <stdlib.h>` in your source:
+Together with the functions listed above the following links are available, in case you don't want to include `<stdlib.h>` in your source:
 
 * `ini_get_int()` = [`atoi()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoi)
 * `ini_get_lint()` = [`atol()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atol)
@@ -783,7 +781,7 @@ When the variable `#INI_INSENSITIVE_LOWERCASE` is set to any non-zero value, **l
 
 ### THREAD SAFETY
 
-Depending on the format of the INI file, **libconfini** may use up to three global variables (`#INI_IMPLICIT_VALUE`, `#INI_IMPLICIT_V_LEN` and `#INI_INSENSITIVE_LOWERCASE`). In order to be thread-safe these three variables (if needed) should be defined only once (either directly, or through their modifier functions `ini_set_implicit_value()` and `ini_dispatch_case_insensitive_lowercase()`), or otherwise a mutex logic must be introduced. It is indeed very important that these variables are not changed during a parsing process.
+Depending on the format of the INI file, **libconfini** may use up to three global variables (`#INI_IMPLICIT_VALUE`, `#INI_IMPLICIT_V_LEN` and `#INI_INSENSITIVE_LOWERCASE`). In order to be thread-safe these three variables (if needed) must be defined only once (either directly, or through their modifier functions `ini_set_implicit_value()` and `ini_dispatch_case_insensitive_lowercase()`), or otherwise a mutex logic must be introduced. It is indeed very important that these variables are not changed during a parsing process.
 
 Apart from the three variables above, each parsing allocates and frees its own memory, therefore the library must be considered thread-safe.
 

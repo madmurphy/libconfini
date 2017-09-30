@@ -73,9 +73,9 @@
   </div>
 
   <ol class='man-decor man-head man head'>
-    <li class='tl'>libconfini</li>
+    <li class='tl'>libconfini(3)</li>
     <li class='tc'>Library Functions Manual</li>
-    <li class='tr'>libconfini</li>
+    <li class='tr'>libconfini(3)</li>
   </ol>
 
   <h2 id="NAME">NAME</h2>
@@ -166,7 +166,7 @@ my_array = Asia, Africa, 'North America', South America,\
 
 <h3 id="SECTIONS">SECTIONS</h3>
 
-<p>A <strong>section</strong> may be imagined like a directory. A <strong>section path</strong> is identified as the string <code>"$1"</code> in the regular expression <code>/(?:^|\n)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\]/</code> globally applied to an INI file. A section path expresses nesting through the 'dot' character, as in the following example:</p>
+<p>A <strong>section</strong> may be imagined like a directory. A <strong>section path</strong> is identified as the string <code>"$1"</code> in the regular expression <code>/(?:^|\n)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\]/</code> globally applied to an INI file. A section path expresses nesting through the &ldquo;dot&rdquo; character, as in the following example:</p>
 
 <pre><code class="{.ini}">[section]
 
@@ -239,19 +239,6 @@ comedy2 = Twelfth Night  # If music be the food of love, play on;      \
 comedy3 = The Merchant of Venice
 </code></pre>
 
-<h3 id="DISABLED-ENTRIES">DISABLED ENTRIES</h3>
-
-<p>A disabled entry is either a section or a key that has been nested inside a comment as its only child. Inline comments cannot represent disabled entries. According to some formats disabled entries can be multiline, using <code>/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]+/</code> as multiline escaping sequence. For example:</p>
-
-<pre><code class="{.ini}">#this = is\
- #a\
-    #multiline\
-#disabled\
-  #entry
-</code></pre>
-
-<p>In order for disabled multiline entries to be considered as such, the value to be assigned to <code>IniFormat::multiline_entries</code> must be either <code>INI_ACTIVE_AND_DISABLED_MULTILINE</code> or <code>INI_EVERYTHING_MULTILINE</code>.</p>
-
 <h3 id="ESCAPING-SEQUENCES">ESCAPING SEQUENCES</h3>
 
 <p>In order to maximize the flexibility of the data, only four escaping sequences are supported by <strong>libconfini</strong>: <code>\'</code>, <code>\"</code>, <code>\\</code> and the multiline escaping sequence (<code>/\\(?:\n\r?|\r\n?)/</code>).</p>
@@ -270,6 +257,17 @@ is\
 a\
 multiline\
 value
+</code></pre>
+
+<h3 id="DISABLED-ENTRIES">DISABLED ENTRIES</h3>
+
+<p>A disabled entry is either a section or a key that has been nested inside a comment as its only child. Inline comments cannot represent disabled entries. According to some formats disabled entries can be multiline, using <code>/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]+/</code> as multiline escaping sequence. For example:</p>
+
+<pre><code class="{.ini}">#this = is\
+ #a\
+    #multiline\
+#disabled\
+  #entry
 </code></pre>
 
 <h2 id="READ-AN-INI-FILE">READ AN INI FILE</h2>
@@ -317,7 +315,7 @@ value
 <li><code>path</code> in <code>load_ini_path()</code> is the path where the INI file is located (pointer to a char array, a.k.a. a "C string")</li>
 <li><code>format</code> is a bitfield structure defining the syntax of the INI file (see the <code>IniFormat</code> struct)</li>
 <li><code>f_init</code> is the function that will be invoked <em>before</em> any dispatching begins &ndash; it can be <code>NULL</code></li>
-<li><code>f_foreach</code> is the callback function that will be invoked for each member of the INI file - it can be <code>NULL</code></li>
+<li><code>f_foreach</code> is the callback function that will be repeatedly invoked for each member of the INI file - it can be <code>NULL</code></li>
 <li><code>user_data</code> is a pointer to a custom argument &ndash; it can be <code>NULL</code></li>
 </ul>
 
@@ -422,7 +420,7 @@ int main () {
 
 <p>The function <code>load_ini_path()</code> is a shortcut to the function <code>load_ini_file()</code> using a path instead of a <code>FILE</code> struct.</p>
 
-<p>The function <code>load_ini_file()</code> dynamically allocates at once the whole INI file into the heap, and the two structures <code>IniStatistics</code> and <code>IniDispatch</code> into the stack. All the members of the INI file are then dispatched to the listener <code>f_foreach()</code>. Finally the allocated memory gets automatically freed.</p>
+<p>The function <code>load_ini_file()</code> dynamically allocates at once the whole INI file into the heap, and the two structures <code>IniStatistics</code> and <code>IniDispatch</code> into the stack. All the members of the INI file are then dispatched to the custom listener <code>f_foreach()</code>. Finally the allocated memory gets automatically freed.</p>
 
 <p>Because of this mechanism <em>it is very important that all the dispatched data be <strong>immediately</strong> copied by the user (when needed), and no pointers to the passed data be saved</em>: after the end of the functions <code>load_ini_file()</code> / <code>load_ini_path()</code> all the allocated data will be destroyed indeed.</p>
 
@@ -435,7 +433,7 @@ int main () {
 <ul>
 <li><strong>Section paths</strong> will be rendered according to ECMAScript <code>section_name.replace(/\.*\s*$|(?:\s*(\.))+\s*|^\s+/g, "$1").replace(/\s+/g, " ")</code> &ndash; within single or double quotes, if active, the text will be rendered verbatim</li>
 <li><strong>Key names</strong> will be rendered according to ECMAScript <code>key_name.replace(/^[\n\r]\s*|\s+/g, " ")</code> &ndash; within single or double quotes, if active, the text will be rendered verbatim</li>
-<li><strong>Values</strong>, if <code>format.do_not_collapse_values</code> is active, will be cleaned of spaces at the beginning and at the end, otherwise will be rendered though the same algorithm used for key names.</li>
+<li><strong>Values</strong>, if <code>format.do_not_collapse_values</code> is active, will only be cleaned of spaces at the beginning and at the end, otherwise will be rendered though the same algorithm used for key names.</li>
 <li><strong>Comments</strong>: if multiline, ECMAScript <code>comment_string.replace(/(^|\n\r?|\r\n?)[ \t\v\f]*[#;]+/g, "$1")</code>; otherwise, ECMAScript <code>comment_string.replace(/^[ \t\v\f]*[#;]+/, "")</code>.</li>
 <li><strong>Unknown nodes</strong> will be rendered verbatim.</li>
 </ul>
@@ -680,7 +678,7 @@ my_format.disabled_can_be_implicit = NO;
 </ul>
 
 
-<p>Together with the functions listed above the following links are available, in case you don't want to <code>include &lt;stdlib.h&gt;</code> in your source:</p>
+<p>Together with the functions listed above the following links are available, in case you don't want to include <code>&lt;stdlib.h&gt;</code> in your source:</p>
 
 <ul>
 <li><code>ini_get_int()</code> = <a href="http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoi"><code>atoi()</code></a></li>
@@ -834,7 +832,7 @@ short int INI_INSENSITIVE_LOWERCASE = FALSE;
 
 <h3 id="THREAD-SAFETY">THREAD SAFETY</h3>
 
-<p>Depending on the format of the INI file, <strong>libconfini</strong> may use up to three global variables (<code>INI_IMPLICIT_VALUE</code>, <code>INI_IMPLICIT_V_LEN</code> and <code>INI_INSENSITIVE_LOWERCASE</code>). In order to be thread-safe these three variables (if needed) should be defined only once (either directly, or through their modifier functions <code>ini_set_implicit_value()</code> and <code>ini_dispatch_case_insensitive_lowercase()</code>), or otherwise a mutex logic must be introduced. It is indeed very important that these variables are not changed during a parsing process.</p>
+<p>Depending on the format of the INI file, <strong>libconfini</strong> may use up to three global variables (<code>INI_IMPLICIT_VALUE</code>, <code>INI_IMPLICIT_V_LEN</code> and <code>INI_INSENSITIVE_LOWERCASE</code>). In order to be thread-safe these three variables (if needed) must be defined only once (either directly, or through their modifier functions <code>ini_set_implicit_value()</code> and <code>ini_dispatch_case_insensitive_lowercase()</code>), or otherwise a mutex logic must be introduced. It is indeed very important that these variables are not changed during a parsing process.</p>
 
 <p>Apart from the three variables above, each parsing allocates and frees its own memory, therefore the library must be considered thread-safe.</p>
 
@@ -907,7 +905,7 @@ Number of bytes parsed per second: 20315930.139089
   <ol class='man-decor man-foot man foot'>
     <li class='tl'>Stefano Gioffr&eacute;</li>
     <li class='tc'>September 2017</li>
-    <li class='tr'>libconfini</li>
+    <li class='tr'>libconfini(3)</li>
   </ol>
 
   </div>

@@ -3,6 +3,7 @@ var searchData=
   ['case_5fsensitive',['case_sensitive',['../structIniFormat.html#a50f562eda0d26ed7e0d3c57afeb46d2d',1,'IniFormat']]],
   ['changelog',['ChangeLog',['../changelog.html',1,'']]],
   ['changelog_2emd',['ChangeLog.md',['../ChangeLog_8md.html',1,'']]],
+  ['collapse_5fspaces',['collapse_spaces',['../confini_8c.html#ab63671eba263728ddc8ad7dda7568172',1,'confini.c']]],
   ['confini_2ec',['confini.c',['../confini_8c.html',1,'']]],
   ['confini_2eh',['confini.h',['../confini_8h.html',1,'']]],
   ['confini_5fefeintr',['CONFINI_EFEINTR',['../confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325ac1b16fd34464a73e424e31212d7ae8ab',1,'confini.h']]],

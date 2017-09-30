@@ -174,9 +174,6 @@ static const char * const _LIBCONFINI_BOOLEANS_[][2] = {
 	{ "0", "1" }
 };
 
-/** @brief	 UTF-8 BOM **/
-static const char _LIBCONFINI_UTF8_BOM_[] = { 0xEF, 0xBB, 0xBF };
-
 /*
 	This may be any character, in theory... But after the left-trim of each line
 	a leading space works pretty well as metacharacter.
@@ -1287,6 +1284,8 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 	passed). If @p f_foreach returns a non-zero value the caller function will
 	be interrupted.
 
+	@include topics/load_ini_file.c
+
 **/
 int load_ini_file (
 	FILE * const ini_file,
@@ -1340,13 +1339,15 @@ int load_ini_file (
 	#define __N_MEMBERS__ tmp_size_2
 	#define __SHIFT_LEN__ tmp_size_3
 
-	__SHIFT_LEN__ = /* UTF-8 BOM */ *cache == *_LIBCONFINI_UTF8_BOM_ && cache[1] == _LIBCONFINI_UTF8_BOM_[1] && cache[2] == _LIBCONFINI_UTF8_BOM_[2] ? 3 : 0;
+	/* UTF-8 BOM */
+
+	__SHIFT_LEN__ = (unsigned char) *cache == 0xEF && (unsigned char) *(cache + 1) == 0xBB && (unsigned char) *(cache + 2) == 0xBF ? 3 : 0;
 
 	/* Alternatively... */
 
 	/*
 
-	__SHIFT_LEN__ = (uint32_t) (((unsigned char) *cache) << 16 | ((unsigned char) cache[1]) << 8 | ((unsigned char) cache[2])) == 0xEFBBBF ? 3 : 0;
+	__SHIFT_LEN__ = (uint32_t) (((unsigned char) *cache) << 16 | ((unsigned char) *(cache + 1)) << 8 | ((unsigned char) *(cache + 2))) == 0xEFBBBF ? 3 : 0;
 
 	*/
 
@@ -1563,9 +1564,9 @@ int load_ini_file (
 			}
 
 			this_disp.type		=	__ITER__ == this_disp.d_len ?
-									get_type_as_active(cache + parse_at, idx - parse_at, format.disabled_can_be_implicit, format)
-								:
-									0;
+										get_type_as_active(cache + parse_at, idx - parse_at, format.disabled_can_be_implicit, format)
+									:
+										0;
 
 			if (this_disp.type) {
 
@@ -1804,6 +1805,8 @@ int load_ini_file (
 	For the two parameters @p f_init and @p f_foreach see function
 	`load_ini_file()`.
 
+	@include topics/load_ini_path.c
+
 **/
 int load_ini_path (
 	const char * const path,
@@ -2008,6 +2011,8 @@ short int ini_string_match_ss (const char * const simple_string_a, const char * 
 	- `format.no_single_quotes`
 	- `format.multiline_entries`
 	- `format.case_sensitive`
+
+	@include topics/ini_string_match_si.c
 
 **/
 short int ini_string_match_si (const char * const simple_string, const char * const ini_string, const IniFormat format) {
@@ -2237,6 +2242,8 @@ short int ini_string_match_ii (const char * const ini_string_a, const char * con
 	Usually @p ini_string comes from an `IniDispatch` (but any other string may
 	be used as well). If the string does not contain quotes, or if quotes are
 	considered to be normal characters, no changes will be made.
+
+	@include topics/ini_unquote.c
 
 **/
 size_t ini_unquote (char * const ini_string, const IniFormat format) {
@@ -2721,7 +2728,7 @@ int ini_split_array (
 	Usually @p ini_string comes from an `IniDispatch` (but any other string may
 	be used as well).
 
-	@include typed_ini.c
+	@include other/typed_ini.c
 
 **/
 signed int ini_get_bool (const char * const ini_string, const signed int return_value) {

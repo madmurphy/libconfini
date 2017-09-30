@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Fri Sep 29 2017" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Sat Sep 30 2017" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -165,6 +165,10 @@ src/confini.h \- libconfini header
 .RI "double(*const \fBini_get_float\fP )(const char *ini_string)"
 .br
 .RI "Link to \fC\fCatof()\fP\fP "
+.ti -1c
+.RI "static const \fBIniFormat\fP \fBINI_DEFAULT_FORMAT\fP = { \fBINI_EQUALS\fP , \fBINI_PARSE_COMMENT\fP , \fBINI_PARSE_COMMENT\fP , \fBINI_EVERYTHING_MULTILINE\fP , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }"
+.br
+.RI "A model format\&. "
 .ti -1c
 .RI "short int \fBINI_INSENSITIVE_LOWERCASE\fP"
 .br
@@ -545,6 +549,190 @@ Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other st
 .PP
 .PP
 .nf
+/*
+
+The following code will try to read an INI section called `my_section`, expected to
+contain the following typed data:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{\&.ini}
+
+[my_section]
+
+my_string = [string]
+my_number = [number]
+my_boolean = [boolean]
+my_implicit_boolean
+my_array = [comma-delimited array]
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+No errors will be generated if any of the data above are absent\&.
+
+*/
+
+#include <stdio\&.h>
+#include <stdlib\&.h>
+#include <string\&.h>
+#include <confini\&.h>
+
+#define FALSE 0
+#define TRUE 1
+#define bool unsigned char
+
+#define MY_ARRAY_DELIMITER ','
+
+/* My stored data */
+struct ini_store {
+    char *my_section_my_string;
+    signed int my_section_my_number;
+    bool my_section_my_boolean;
+    bool my_section_my_implicit_boolean;
+    char **my_section_my_array;
+    unsigned int my_section_my_arr_len;
+    int _read_status_;
+};
+
+static int populate_array (char *part, size_t part_len, size_t idx, IniFormat format, void *v_array) {
+
+    ini_unquote(part, format);
+    ((char **) v_array)[idx] = part;
+    return 0;
+
+}
+
+static int my_ini_listener (IniDispatch *this, void *v_store) {
+
+    struct ini_store *store = (struct ini_store *) v_store;
+
+    switch (this->type) {
+
+        case INI_SECTION:
+
+            store->_read_status_ = ini_string_match_si("my_section", this->data, this->format) ? 1 : store->_read_status_ | 2;
+            break;
+
+        case INI_KEY:
+
+            if (store->_read_status_ == 1) {
+
+                this->d_len = ini_unquote(this->data, this->format);
+
+                if (ini_string_match_ss("my_string", this->data, this->format)) {
+
+                    this->v_len = ini_unquote(this->value, this->format);
+                    store->my_section_my_string = (char *) malloc((this->v_len + 1) * sizeof(char));
+                    memcpy(store->my_section_my_string, this->value, this->v_len + 1);
+
+                } else if (ini_string_match_ss("my_number", this->data, this->format)) {
+
+                    store->my_section_my_number = ini_get_int(this->value);
+
+                } else if (ini_string_match_ss("my_boolean", this->data, this->format)) {
+
+                    store->my_section_my_boolean = ini_get_bool(this->value, 1);
+
+                } else if (ini_string_match_ss("my_implicit_boolean", this->data, this->format)) {
+
+                    store->my_section_my_implicit_boolean = ini_get_bool(this->value, 1);
+
+                } else if (ini_string_match_ss("my_array", this->data, this->format)) {
+
+                    /* Save memory (not strictly needed) */
+                    this->v_len = ini_collapse_array(this->value, MY_ARRAY_DELIMITER, this->format);
+
+                    /* Allocate a new array of strings */
+                    store->my_section_my_arr_len = ini_array_get_length(this->value, MY_ARRAY_DELIMITER, this->format);
+                    store->my_section_my_array = (char **) malloc(store->my_section_my_arr_len * sizeof(char *) + (this->v_len + 1) * sizeof(char));
+                    char * const str_ptr = (char *) ((void *) store->my_section_my_array + store->my_section_my_arr_len * sizeof(char *));
+                    memcpy(str_ptr, this->value, this->v_len + 1);
+
+                    /* Populate the array */
+                    ini_split_array(str_ptr, MY_ARRAY_DELIMITER, this->format, populate_array, store->my_section_my_array);
+
+                }
+
+            }
+
+            break;
+
+    }
+
+    return 0;
+
+}
+
+static void print_stored_data (const struct ini_store * const store) {
+
+    printf(
+
+        "my_string -> %s\n"
+        "my_number -> %d\n"
+        "my_boolean -> %s\n"
+        "my_implicit_boolean -> %s\n"
+        "my_array[%d] -> [%s",
+
+        store->my_section_my_string,
+        store->my_section_my_number,
+        store->my_section_my_boolean ? "true (`1`)" : "false (`0`)",
+        store->my_section_my_implicit_boolean ? "true (`1`)" : "false (`0`)",
+        store->my_section_my_arr_len,
+        store->my_section_my_arr_len ? store->my_section_my_array[0] : ""
+
+    );
+
+    for (unsigned int idx = 1; idx < store->my_section_my_arr_len; idx++) {
+
+        printf("|%s", store->my_section_my_array[idx]);
+
+    }
+
+    printf("]\n");
+
+}
+
+int main () {
+
+    IniFormat my_format;
+
+    struct ini_store my_store = { NULL, -1, FALSE, FALSE, NULL, 0, 0 };
+
+    ini_set_implicit_value("YES", 0);
+    my_format = INI_DEFAULT_FORMAT;
+    my_format\&.semicolon = my_format\&.hash = INI_FORGET_COMMENT;
+    my_format\&.implicit_is_not_empty = TRUE;
+
+    if (load_ini_path("typed_ini\&.conf", my_format, NULL, my_ini_listener, &my_store)) {
+
+        fprintf(stderr, "Sorry, something went wrong :-(\n");
+        return 1;
+
+    }
+
+    my_store\&._read_status_ &= 1;
+    print_stored_data(&my_store);
+
+    if (!my_store\&._read_status_) {
+
+        printf("\nSection `[my_section]` has not been found\&.\n");
+
+    }
+
+    if (my_store\&.my_section_my_string) {
+
+        free(my_store\&.my_section_my_string);
+
+    }
+
+    if (my_store\&.my_section_my_arr_len) {
+
+        free(my_store\&.my_section_my_array);
+
+    }
+
+    return 0;
+
+}
+
 .fi
 .PP
  
@@ -727,9 +915,66 @@ The following properties are read from argument \fCformat:\fP
 .IP "\(bu" 2
 \fCformat\&.multiline_entries\fP
 .IP "\(bu" 2
-\fCformat\&.case_sensitive\fP 
+\fCformat\&.case_sensitive\fP
 .PP
+.PP
+.PP
+.nf
+/* examples/topics/ini_string_match_si\&.c */
 
+#include <stdio\&.h>
+#include <confini\&.h>
+
+static int passfinder (IniDispatch *disp, void *v_membid) {
+
+    /* Search for `password = "Hello world"` in the INI file */
+    if (
+        ini_string_match_si("password", disp->data, disp->format)
+        && ini_string_match_si("Hello world", disp->value, disp->format)
+    ) {
+
+        *((size_t *) v_membid) = disp->dispatch_id;
+        return 1;
+
+    }
+
+    return 0;
+
+}
+
+int main () {
+
+    size_t membid;
+
+    /* Load INI file */
+    int retval = load_ini_path(
+        "example\&.conf",
+        INI_DEFAULT_FORMAT,
+        NULL,
+        passfinder,
+        &membid
+    );
+
+    /* Check for errors */
+    if (retval & CONFINI_ERROR) {
+
+        fprintf(stderr, "Sorry, something went wrong :-(\n");
+        return 1;
+
+    }
+
+    /* Check if `load_ini_path()` has been interrupted by `passfinder()` */
+    retval  ==  CONFINI_EFEINTR ?
+                printf("We found it! It's the INI element number #%d!\n", membid)
+            :
+                printf("We didn't find it :-(\n");
+
+    return 0;
+
+}
+.fi
+.PP
+ 
 .SS "short int ini_string_match_ss (const char *const simple_string_a, const char *const simple_string_b, const \fBIniFormat\fP format)"
 
 .PP
@@ -770,7 +1015,44 @@ Unescapes \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP and removes all unescaped quotes (
 The new length of the string
 .RE
 .PP
-Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other string may be used as well)\&. If the string does not contain quotes, or if quotes are considered to be normal characters, no changes will be made\&. 
+Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other string may be used as well)\&. If the string does not contain quotes, or if quotes are considered to be normal characters, no changes will be made\&.
+.PP
+.PP
+.nf
+/* examples/topics/ini_unquote\&.c */
+
+#include <stdio\&.h>
+#include <confini\&.h>
+
+int ini_listener (IniDispatch *dispatch, void *v_null) {
+
+    if (dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY) {
+
+        ini_unquote(dispatch->value, dispatch->format);
+
+    }
+
+    printf("DATA: %s\nVALUE: %s\n", dispatch->data, dispatch->value);
+
+    return 0;
+
+}
+
+int main () {
+
+    if (load_ini_path("example\&.conf", INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
+
+        fprintf(stderr, "Sorry, something went wrong :-(\n");
+        return 1;
+
+    }
+
+    return 0;
+
+}
+.fi
+.PP
+ 
 .SS "int load_ini_file (FILE *const ini_file, const \fBIniFormat\fP format, const int(*)(\fBIniStatistics\fP *statistics, void *init_other) f_init, const int(*)(\fBIniDispatch\fP *dispatch, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
@@ -796,7 +1078,52 @@ Zero for success, otherwise an error code
 .PP
 The function \fCf_init\fP will be invoked with two arguments: \fCstatistics\fP (a pointer to an \fC\fBIniStatistics\fP\fP object containing some properties about the file read) and \fCinit_other\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_init\fP returns a non-zero value the caller function will be interrupted\&.
 .PP
-The function \fCf_foreach\fP will be invoked with two arguments: \fCdispatch\fP (a pointer to an \fC\fBIniDispatch\fP\fP object containing the parsed member of the INI file) and \fCforeach_other\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the caller function will be interrupted\&. 
+The function \fCf_foreach\fP will be invoked with two arguments: \fCdispatch\fP (a pointer to an \fC\fBIniDispatch\fP\fP object containing the parsed member of the INI file) and \fCforeach_other\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the caller function will be interrupted\&.
+.PP
+.PP
+.nf
+/* examples/topics/load_ini_file\&.c */
+
+#include <stdio\&.h>
+#include <confini\&.h>
+
+int ini_listener (IniDispatch *dispatch, void *v_null) {
+
+    printf(
+        "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
+        dispatch->data, dispatch->value, dispatch->type
+    );
+
+    return 0;
+
+}
+
+int main () {
+
+    FILE * const ini_file = fopen("example\&.conf", "r");
+
+    if (ini_file == NULL) {
+
+        fprintf(stderr, "File doesn't exist :-(\n");
+        return 1;
+
+    }
+
+    if (load_ini_file(ini_file, INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
+
+        fprintf(stderr, "Sorry, something went wrong :-(\n");
+        return 1;
+
+    }
+
+    fclose(ini_file);
+
+    return 0;
+
+}
+.fi
+.PP
+ 
 .SS "int load_ini_path (const char *const path, const \fBIniFormat\fP format, const int(*)(\fBIniStatistics\fP *statistics, void *init_other) f_init, const int(*)(\fBIniDispatch\fP *dispatch, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
@@ -820,9 +1147,47 @@ Parses an INI file and dispatches its content\&.
 Zero for success, otherwise an error code
 .RE
 .PP
-For the two parameters \fCf_init\fP and \fCf_foreach\fP see function \fC\fBload_ini_file()\fP\fP\&. 
+For the two parameters \fCf_init\fP and \fCf_foreach\fP see function \fC\fBload_ini_file()\fP\fP\&.
+.PP
+.PP
+.nf
+/* examples/topics/load_ini_path\&.c */
+
+#include <stdio\&.h>
+#include <confini\&.h>
+
+int ini_listener (IniDispatch *dispatch, void *v_null) {
+
+    printf(
+        "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
+        dispatch->data, dispatch->value, dispatch->type
+    );
+
+    return 0;
+
+}
+
+int main () {
+
+    if (load_ini_path("example\&.conf", INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
+
+        fprintf(stderr, "Sorry, something went wrong :-(\n");
+        return 1;
+
+    }
+
+    return 0;
+
+}
+.fi
+.PP
+ 
 .SH "Variable Documentation"
 .PP 
+.SS "const \fBIniFormat\fP INI_DEFAULT_FORMAT = { \fBINI_EQUALS\fP , \fBINI_PARSE_COMMENT\fP , \fBINI_PARSE_COMMENT\fP , \fBINI_EVERYTHING_MULTILINE\fP , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }\fC [static]\fP"
+
+.PP
+A model format\&. 
 .SS "double(* const ini_get_float) (const char *ini_string)"
 
 .PP

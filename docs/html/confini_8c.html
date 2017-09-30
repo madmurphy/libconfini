@@ -79,6 +79,59 @@ $(function() {
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a9ddb62401d28f769968bbbc07481bba7"><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a9ddb62401d28f769968bbbc07481bba7">is_some_space</a> (const char chr, const uint8_t depth)</td></tr>
+<tr class="separator:a9ddb62401d28f769968bbbc07481bba7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3ee4d5d2fe6bfc8196c6cd9e5d37f37"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ac3ee4d5d2fe6bfc8196c6cd9e5d37f37">ltrim_s</a> (const char *const lt_s, const size_t start_from, const uint8_t depth)</td></tr>
+<tr class="memdesc:ac3ee4d5d2fe6bfc8196c6cd9e5d37f37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Soft left trim &ndash; does not change the buffer.  <a href="#ac3ee4d5d2fe6bfc8196c6cd9e5d37f37">More...</a><br /></td></tr>
+<tr class="separator:ac3ee4d5d2fe6bfc8196c6cd9e5d37f37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2c15586840bec19629c510017210a24"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#af2c15586840bec19629c510017210a24">ltrim_h</a> (char *const lt_s, const size_t start_from, const uint8_t depth)</td></tr>
+<tr class="memdesc:af2c15586840bec19629c510017210a24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hard left trim &ndash; <b>does</b> change the buffer.  <a href="#af2c15586840bec19629c510017210a24">More...</a><br /></td></tr>
+<tr class="separator:af2c15586840bec19629c510017210a24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1ce04bace4e334495fbca85d3e60839"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ac1ce04bace4e334495fbca85d3e60839">ultrim_h</a> (char *const ult_s, const size_t start_from)</td></tr>
+<tr class="memdesc:ac1ce04bace4e334495fbca85d3e60839"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescaped hard left trim (left trim of <code>/^(\s+|\\[\n\r])+/</code>) &ndash; <b>does</b> change the buffer.  <a href="#ac1ce04bace4e334495fbca85d3e60839">More...</a><br /></td></tr>
+<tr class="separator:ac1ce04bace4e334495fbca85d3e60839"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec164c03cb3655b94347a3a1678de0a9"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#aec164c03cb3655b94347a3a1678de0a9">rtrim_s</a> (const char *const rt_s, const size_t length, const uint8_t depth)</td></tr>
+<tr class="memdesc:aec164c03cb3655b94347a3a1678de0a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Soft right trim &ndash; does not change the buffer.  <a href="#aec164c03cb3655b94347a3a1678de0a9">More...</a><br /></td></tr>
+<tr class="separator:aec164c03cb3655b94347a3a1678de0a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83f9285ee4a8cde02d9caf06703d9ccd"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a83f9285ee4a8cde02d9caf06703d9ccd">rtrim_h</a> (char *const rt_s, const size_t length, const uint8_t depth)</td></tr>
+<tr class="memdesc:a83f9285ee4a8cde02d9caf06703d9ccd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hard right trim &ndash; <b>does</b> change the buffer.  <a href="#a83f9285ee4a8cde02d9caf06703d9ccd">More...</a><br /></td></tr>
+<tr class="separator:a83f9285ee4a8cde02d9caf06703d9ccd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad86a82dfd90c62b81348c4af4f9cca51"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ad86a82dfd90c62b81348c4af4f9cca51">urtrim_s</a> (const char *const urt_s, const size_t length)</td></tr>
+<tr class="memdesc:ad86a82dfd90c62b81348c4af4f9cca51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescaped soft right trim (right trim of <code>/(\s+|\\[\n\r])+$/</code>) &ndash; does not change the buffer.  <a href="#ad86a82dfd90c62b81348c4af4f9cca51">More...</a><br /></td></tr>
+<tr class="separator:ad86a82dfd90c62b81348c4af4f9cca51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6e6972b13052e995b3ceb2fb4996ede"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ad6e6972b13052e995b3ceb2fb4996ede">string_tolower</a> (char *const str)</td></tr>
+<tr class="memdesc:ad6e6972b13052e995b3ceb2fb4996ede"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an ASCII string to lower case.  <a href="#ad6e6972b13052e995b3ceb2fb4996ede">More...</a><br /></td></tr>
+<tr class="separator:ad6e6972b13052e995b3ceb2fb4996ede"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dc35acd5c3fc09baeb13cafd5188a4f"><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a9dc35acd5c3fc09baeb13cafd5188a4f">is_parsable_char</a> (const char chr, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
+<tr class="memdesc:a9dc35acd5c3fc09baeb13cafd5188a4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a character can represent the beginning of a disabled entry within a given format.  <a href="#a9dc35acd5c3fc09baeb13cafd5188a4f">More...</a><br /></td></tr>
+<tr class="separator:a9dc35acd5c3fc09baeb13cafd5188a4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a269b22d9dd6e6fe9d604f87e443604"><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a8a269b22d9dd6e6fe9d604f87e443604">is_comment_char</a> (const char chr, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
+<tr class="memdesc:a8a269b22d9dd6e6fe9d604f87e443604"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a character represents the opening of a comment within a given format.  <a href="#a8a269b22d9dd6e6fe9d604f87e443604">More...</a><br /></td></tr>
+<tr class="separator:a8a269b22d9dd6e6fe9d604f87e443604"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0dd382a417b6c868b92bce236a065051"><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a0dd382a417b6c868b92bce236a065051">is_forget_char</a> (const char chr, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
+<tr class="memdesc:a0dd382a417b6c868b92bce236a065051"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a character represents the beginning of a comment that must be ignored within a given format.  <a href="#a0dd382a417b6c868b92bce236a065051">More...</a><br /></td></tr>
+<tr class="separator:a0dd382a417b6c868b92bce236a065051"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b2a090d7d75c7ee9b4353984a3e898e"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a2b2a090d7d75c7ee9b4353984a3e898e">get_delimiter_pos</a> (const char *const str, const size_t len, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
+<tr class="memdesc:a2b2a090d7d75c7ee9b4353984a3e898e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the position of the first delimiter out of quotes.  <a href="#a2b2a090d7d75c7ee9b4353984a3e898e">More...</a><br /></td></tr>
+<tr class="separator:a2b2a090d7d75c7ee9b4353984a3e898e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a305519f4ff7a81558868de3315707d7a"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a305519f4ff7a81558868de3315707d7a">unescape_cr_lf</a> (char *const str, const size_t len, const unsigned char is_disabled, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
+<tr class="memdesc:a305519f4ff7a81558868de3315707d7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces <code>/\\(\n\r?|\r\n?)s*[#;]/</code> or <code>/\\(\n\r?|\r\n?)/</code> with <code>"$1"</code>.  <a href="#a305519f4ff7a81558868de3315707d7a">More...</a><br /></td></tr>
+<tr class="separator:a305519f4ff7a81558868de3315707d7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab63671eba263728ddc8ad7dda7568172"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ab63671eba263728ddc8ad7dda7568172">collapse_spaces</a> (char *const str, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
+<tr class="memdesc:ab63671eba263728ddc8ad7dda7568172"><td class="mdescLeft">&#160;</td><td class="mdescRight">Out of quotes similar to ECMAScript <code>string.replace(/^[\n\r]\s*|(\s)+/g, " ")</code>  <a href="#ab63671eba263728ddc8ad7dda7568172">More...</a><br /></td></tr>
+<tr class="separator:ab63671eba263728ddc8ad7dda7568172"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaea3c257c404d241a51c3bb8d54096bb"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#aaea3c257c404d241a51c3bb8d54096bb">sanitize_section_name</a> (char *const str, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
+<tr class="memdesc:aaea3c257c404d241a51c3bb8d54096bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sanitizes the name of a section.  <a href="#aaea3c257c404d241a51c3bb8d54096bb">More...</a><br /></td></tr>
+<tr class="separator:aaea3c257c404d241a51c3bb8d54096bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb60f6ecb39dbd9a25d878283c5d37f0"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#abb60f6ecb39dbd9a25d878283c5d37f0">uncomment</a> (char *const commstr, size_t len, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
+<tr class="memdesc:abb60f6ecb39dbd9a25d878283c5d37f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all comment initializers (<code>#</code> or <code>;</code>) from the beginning of each line of a comment.  <a href="#abb60f6ecb39dbd9a25d878283c5d37f0">More...</a><br /></td></tr>
+<tr class="separator:abb60f6ecb39dbd9a25d878283c5d37f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed03fec7ca2061877cd335451177b4fc"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#aed03fec7ca2061877cd335451177b4fc">get_type_as_active</a> (const char *const nodestr, const size_t len, const unsigned char allow_implicit, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
+<tr class="memdesc:aed03fec7ca2061877cd335451177b4fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tries to determine the type of a member "as if it was active".  <a href="#aed03fec7ca2061877cd335451177b4fc">More...</a><br /></td></tr>
+<tr class="separator:aed03fec7ca2061877cd335451177b4fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c28b5a6ee6e3632bd48823f82aa6949"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a8c28b5a6ee6e3632bd48823f82aa6949">further_cuts</a> (char *const segment, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
+<tr class="memdesc:a8c28b5a6ee6e3632bd48823f82aa6949"><td class="mdescLeft">&#160;</td><td class="mdescRight">Examines a (single-/multi- line) segment and checks whether it contains sub-segments.  <a href="#a8c28b5a6ee6e3632bd48823f82aa6949">More...</a><br /></td></tr>
+<tr class="separator:a8c28b5a6ee6e3632bd48823f82aa6949"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90987f4565566e21693b90239663618d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a90987f4565566e21693b90239663618d">load_ini_file</a> (FILE *const ini_file, const <a class="el" href="structIniFormat.html">IniFormat</a> format, const int(*const f_init)(<a class="el" href="structIniStatistics.html">IniStatistics</a> *statistics, void *init_other), const int(*const f_foreach)(<a class="el" href="structIniDispatch.html">IniDispatch</a> *dispatch, void *foreach_other), void *user_data)</td></tr>
 <tr class="memdesc:a90987f4565566e21693b90239663618d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses an INI file and dispatches its content.  <a href="#a90987f4565566e21693b90239663618d">More...</a><br /></td></tr>
 <tr class="separator:a90987f4565566e21693b90239663618d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -158,6 +211,211 @@ Variables</h2></td></tr>
 <dl class="section copyright"><dt>Copyright</dt><dd>GNU Public License v3 </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>2016-2017 </dd></dl>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="ab63671eba263728ddc8ad7dda7568172"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab63671eba263728ddc8ad7dda7568172">&#9670;&nbsp;</a></span>collapse_spaces()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static size_t collapse_spaces </td>
+          <td>(</td>
+          <td class="paramtype">char *const&#160;</td>
+          <td class="paramname"><em>str</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td>
+          <td class="paramname"><em>format</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Out of quotes similar to ECMAScript <code>string.replace(/^[\n\r]\s*|(\s)+/g, " ")</code> </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>The string to collapse </td></tr>
+    <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The new length of the string </dd></dl>
+
+</div>
+</div>
+<a id="a8c28b5a6ee6e3632bd48823f82aa6949"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c28b5a6ee6e3632bd48823f82aa6949">&#9670;&nbsp;</a></span>further_cuts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static size_t further_cuts </td>
+          <td>(</td>
+          <td class="paramtype">char *const&#160;</td>
+          <td class="paramname"><em>segment</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td>
+          <td class="paramname"><em>format</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Examines a (single-/multi- line) segment and checks whether it contains sub-segments. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">segment</td><td>Segment to examine </td></tr>
+    <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Number of segments found </dd></dl>
+
+</div>
+</div>
+<a id="a2b2a090d7d75c7ee9b4353984a3e898e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b2a090d7d75c7ee9b4353984a3e898e">&#9670;&nbsp;</a></span>get_delimiter_pos()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static size_t get_delimiter_pos </td>
+          <td>(</td>
+          <td class="paramtype">const char *const&#160;</td>
+          <td class="paramname"><em>str</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>len</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td>
+          <td class="paramname"><em>format</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the position of the first delimiter out of quotes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">string</td><td>The string to analyse </td></tr>
+    <tr><td class="paramname">length</td><td>The length of the string </td></tr>
+    <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The offset of the delimiter or <code>length</code> if the delimiter has not been not found </dd></dl>
+
+</div>
+</div>
+<a id="aed03fec7ca2061877cd335451177b4fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed03fec7ca2061877cd335451177b4fc">&#9670;&nbsp;</a></span>get_type_as_active()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static uint8_t get_type_as_active </td>
+          <td>(</td>
+          <td class="paramtype">const char *const&#160;</td>
+          <td class="paramname"><em>nodestr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>len</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const unsigned char&#160;</td>
+          <td class="paramname"><em>allow_implicit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td>
+          <td class="paramname"><em>format</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Tries to determine the type of a member "as if it was active". </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nodestr</td><td>String containing an individual node </td></tr>
+    <tr><td class="paramname">len</td><td>Length of the node </td></tr>
+    <tr><td class="paramname">allow_implicit</td><td>A boolean: <code>TRUE</code> if keys without a delimiter are allowed, <code>FALSE</code> otherwise </td></tr>
+    <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The node type (see header) </dd></dl>
+
+</div>
+</div>
 <a id="a4d0619b3d26be629b76b9403cc5ff00e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4d0619b3d26be629b76b9403cc5ff00e">&#9670;&nbsp;</a></span>ini_array_foreach()</h2>
 
@@ -442,7 +700,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The matching boolean value (0 or 1) or <code>return_value</code> if no boolean has been found</dd></dl>
 <p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI member. ">IniDispatch</a></code> (but any other string may be used as well).</p>
-<div class="fragment"></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="comment">/*</span></div><div class="line"><span class="comment"></span></div><div class="line"><span class="comment">The following code will try to read an INI section called `my_section`, expected to</span></div><div class="line"><span class="comment">contain the following typed data:</span></div><div class="line"><span class="comment"></span></div><div class="line"><span class="comment">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}</span></div><div class="line"><span class="comment"></span></div><div class="line"><span class="comment">[my_section]</span></div><div class="line"><span class="comment"></span></div><div class="line"><span class="comment">my_string = [string]</span></div><div class="line"><span class="comment">my_number = [number]</span></div><div class="line"><span class="comment">my_boolean = [boolean]</span></div><div class="line"><span class="comment">my_implicit_boolean</span></div><div class="line"><span class="comment">my_array = [comma-delimited array]</span></div><div class="line"><span class="comment"></span></div><div class="line"><span class="comment">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span></div><div class="line"><span class="comment"></span></div><div class="line"><span class="comment">No errors will be generated if any of the data above are absent.</span></div><div class="line"><span class="comment"></span></div><div class="line"><span class="comment">*/</span></div><div class="line"></div><div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;stdlib.h&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;string.h&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div><div class="line"></div><div class="line"><span class="preprocessor">#define FALSE 0</span></div><div class="line"><span class="preprocessor">#define TRUE 1</span></div><div class="line"><span class="preprocessor">#define bool unsigned char</span></div><div class="line"></div><div class="line"><span class="preprocessor">#define MY_ARRAY_DELIMITER &#39;,&#39;</span></div><div class="line"></div><div class="line"><span class="comment">/* My stored data */</span></div><div class="line"><span class="keyword">struct </span>ini_store {</div><div class="line">    <span class="keywordtype">char</span> *my_section_my_string;</div><div class="line">    <span class="keywordtype">signed</span> <span class="keywordtype">int</span> my_section_my_number;</div><div class="line">    <span class="keywordtype">bool</span> my_section_my_boolean;</div><div class="line">    <span class="keywordtype">bool</span> my_section_my_implicit_boolean;</div><div class="line">    <span class="keywordtype">char</span> **my_section_my_array;</div><div class="line">    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> my_section_my_arr_len;</div><div class="line">    <span class="keywordtype">int</span> _read_status_;</div><div class="line">};</div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> populate_array (<span class="keywordtype">char</span> *part, <span class="keywordtype">size_t</span> part_len, <span class="keywordtype">size_t</span> idx, <a class="code" href="structIniFormat.html">IniFormat</a> format, <span class="keywordtype">void</span> *v_array) {</div><div class="line"></div><div class="line">    <a class="code" href="confini_8c.html#ac55f3fab95f697ac5058533df100fc11">ini_unquote</a>(part, format);</div><div class="line">    ((<span class="keywordtype">char</span> **) v_array)[idx] = part;</div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> my_ini_listener (<a class="code" href="structIniDispatch.html">IniDispatch</a> *<span class="keyword">this</span>, <span class="keywordtype">void</span> *v_store) {</div><div class="line"></div><div class="line">    <span class="keyword">struct </span>ini_store *store = (<span class="keyword">struct </span>ini_store *) v_store;</div><div class="line"></div><div class="line">    <span class="keywordflow">switch</span> (this-&gt;type) {</div><div class="line"></div><div class="line">        <span class="keywordflow">case</span> <a class="code" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba596f391d896636da6f004a7d010edb50">INI_SECTION</a>:</div><div class="line"></div><div class="line">            store-&gt;_read_status_ = <a class="code" href="confini_8c.html#a5b11229fa691bdb7ab3ce94425ef3d28">ini_string_match_si</a>(<span class="stringliteral">&quot;my_section&quot;</span>, this-&gt;data, this-&gt;format) ? 1 : store-&gt;_read_status_ | 2;</div><div class="line">            <span class="keywordflow">break</span>;</div><div class="line"></div><div class="line">        <span class="keywordflow">case</span> <a class="code" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba97333d01dfff8f9a9c690fc559751b45">INI_KEY</a>:</div><div class="line"></div><div class="line">            <span class="keywordflow">if</span> (store-&gt;_read_status_ == 1) {</div><div class="line"></div><div class="line">                this-&gt;d_len = <a class="code" href="confini_8c.html#ac55f3fab95f697ac5058533df100fc11">ini_unquote</a>(this-&gt;data, this-&gt;format);</div><div class="line"></div><div class="line">                <span class="keywordflow">if</span> (<a class="code" href="confini_8c.html#afc434b767b4ccd1d21366f8c45c022fa">ini_string_match_ss</a>(<span class="stringliteral">&quot;my_string&quot;</span>, this-&gt;data, this-&gt;format)) {</div><div class="line"></div><div class="line">                    this-&gt;v_len = <a class="code" href="confini_8c.html#ac55f3fab95f697ac5058533df100fc11">ini_unquote</a>(this-&gt;value, this-&gt;format);</div><div class="line">                    store-&gt;my_section_my_string = (<span class="keywordtype">char</span> *) malloc((this-&gt;v_len + 1) * <span class="keyword">sizeof</span>(char));</div><div class="line">                    memcpy(store-&gt;my_section_my_string, this-&gt;value, this-&gt;v_len + 1);</div><div class="line"></div><div class="line">                } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code" href="confini_8c.html#afc434b767b4ccd1d21366f8c45c022fa">ini_string_match_ss</a>(<span class="stringliteral">&quot;my_number&quot;</span>, this-&gt;data, this-&gt;format)) {</div><div class="line"></div><div class="line">                    store-&gt;my_section_my_number = <a class="code" href="confini_8c.html#adba0d5ee273d05ed845c66f01a621119">ini_get_int</a>(this-&gt;value);</div><div class="line"></div><div class="line">                } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code" href="confini_8c.html#afc434b767b4ccd1d21366f8c45c022fa">ini_string_match_ss</a>(<span class="stringliteral">&quot;my_boolean&quot;</span>, this-&gt;data, this-&gt;format)) {</div><div class="line"></div><div class="line">                    store-&gt;my_section_my_boolean = <a class="code" href="confini_8c.html#a2a8dcc3d8ff26554486691423cce4ea0">ini_get_bool</a>(this-&gt;value, 1);</div><div class="line"></div><div class="line">                } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code" href="confini_8c.html#afc434b767b4ccd1d21366f8c45c022fa">ini_string_match_ss</a>(<span class="stringliteral">&quot;my_implicit_boolean&quot;</span>, this-&gt;data, this-&gt;format)) {</div><div class="line"></div><div class="line">                    store-&gt;my_section_my_implicit_boolean = <a class="code" href="confini_8c.html#a2a8dcc3d8ff26554486691423cce4ea0">ini_get_bool</a>(this-&gt;value, 1);</div><div class="line"></div><div class="line">                } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code" href="confini_8c.html#afc434b767b4ccd1d21366f8c45c022fa">ini_string_match_ss</a>(<span class="stringliteral">&quot;my_array&quot;</span>, this-&gt;data, this-&gt;format)) {</div><div class="line"></div><div class="line">                    <span class="comment">/* Save memory (not strictly needed) */</span></div><div class="line">                    this-&gt;v_len = <a class="code" href="confini_8c.html#a74789309b1a9c5b8886484c2b4d3a381">ini_collapse_array</a>(this-&gt;value, MY_ARRAY_DELIMITER, this-&gt;format);</div><div class="line"></div><div class="line">                    <span class="comment">/* Allocate a new array of strings */</span></div><div class="line">                    store-&gt;my_section_my_arr_len = <a class="code" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865">ini_array_get_length</a>(this-&gt;value, MY_ARRAY_DELIMITER, this-&gt;format);</div><div class="line">                    store-&gt;my_section_my_array = (<span class="keywordtype">char</span> **) malloc(store-&gt;my_section_my_arr_len * <span class="keyword">sizeof</span>(<span class="keywordtype">char</span> *) + (this-&gt;v_len + 1) * <span class="keyword">sizeof</span>(<span class="keywordtype">char</span>));</div><div class="line">                    <span class="keywordtype">char</span> * <span class="keyword">const</span> str_ptr = (<span class="keywordtype">char</span> *) ((<span class="keywordtype">void</span> *) store-&gt;my_section_my_array + store-&gt;my_section_my_arr_len * <span class="keyword">sizeof</span>(<span class="keywordtype">char</span> *));</div><div class="line">                    memcpy(str_ptr, this-&gt;value, this-&gt;v_len + 1);</div><div class="line"></div><div class="line">                    <span class="comment">/* Populate the array */</span></div><div class="line">                    <a class="code" href="confini_8c.html#acee3223f103e6264fd5e1a8bd4a7f7d7">ini_split_array</a>(str_ptr, MY_ARRAY_DELIMITER, this-&gt;format, populate_array, store-&gt;my_section_my_array);</div><div class="line"></div><div class="line">                }</div><div class="line"></div><div class="line">            }</div><div class="line"></div><div class="line">            <span class="keywordflow">break</span>;</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> print_stored_data (<span class="keyword">const</span> <span class="keyword">struct</span> ini_store * <span class="keyword">const</span> store) {</div><div class="line"></div><div class="line">    printf(</div><div class="line"></div><div class="line">        <span class="stringliteral">&quot;my_string -&gt; %s\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;my_number -&gt; %d\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;my_boolean -&gt; %s\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;my_implicit_boolean -&gt; %s\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;my_array[%d] -&gt; [%s&quot;</span>,</div><div class="line"></div><div class="line">        store-&gt;my_section_my_string,</div><div class="line">        store-&gt;my_section_my_number,</div><div class="line">        store-&gt;my_section_my_boolean ? <span class="stringliteral">&quot;true (`1`)&quot;</span> : <span class="stringliteral">&quot;false (`0`)&quot;</span>,</div><div class="line">        store-&gt;my_section_my_implicit_boolean ? <span class="stringliteral">&quot;true (`1`)&quot;</span> : <span class="stringliteral">&quot;false (`0`)&quot;</span>,</div><div class="line">        store-&gt;my_section_my_arr_len,</div><div class="line">        store-&gt;my_section_my_arr_len ? store-&gt;my_section_my_array[0] : <span class="stringliteral">&quot;&quot;</span></div><div class="line"></div><div class="line">    );</div><div class="line"></div><div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> idx = 1; idx &lt; store-&gt;my_section_my_arr_len; idx++) {</div><div class="line"></div><div class="line">        printf(<span class="stringliteral">&quot;|%s&quot;</span>, store-&gt;my_section_my_array[idx]);</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    printf(<span class="stringliteral">&quot;]\n&quot;</span>);</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">int</span> main () {</div><div class="line"></div><div class="line">    <a class="code" href="structIniFormat.html">IniFormat</a> my_format;</div><div class="line"></div><div class="line">    <span class="keyword">struct </span>ini_store my_store = { NULL, -1, FALSE, FALSE, NULL, 0, 0 };</div><div class="line"></div><div class="line">    <a class="code" href="confini_8c.html#a23c849084899c22818465bc624a42a90">ini_set_implicit_value</a>(<span class="stringliteral">&quot;YES&quot;</span>, 0);</div><div class="line">    my_format = <a class="code" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a>;</div><div class="line">    my_format.<a class="code" href="structIniFormat.html#a90f42c0052d9a45ad137f2f5517fbb3c">semicolon</a> = my_format.<a class="code" href="structIniFormat.html#a8bcb597ed6feba60112a8467bdb4bfd7">hash</a> = <a class="code" href="confini_8h.html#a397bfc55d3cf3e2ecd6b044e4d168796a1896355b58ef9507121d73b55d13da19">INI_FORGET_COMMENT</a>;</div><div class="line">    my_format.<a class="code" href="structIniFormat.html#ae5722efd535f1d27c624a927eea622c3">implicit_is_not_empty</a> = TRUE;</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="confini_8c.html#ac7b1bb4df0f7297f659135f0f4b39946">load_ini_path</a>(<span class="stringliteral">&quot;typed_ini.conf&quot;</span>, my_format, NULL, my_ini_listener, &amp;my_store)) {</div><div class="line"></div><div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Sorry, something went wrong :-(\n&quot;</span>);</div><div class="line">        <span class="keywordflow">return</span> 1;</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    my_store._read_status_ &amp;= 1;</div><div class="line">    print_stored_data(&amp;my_store);</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (!my_store._read_status_) {</div><div class="line"></div><div class="line">        printf(<span class="stringliteral">&quot;\nSection `[my_section]` has not been found.\n&quot;</span>);</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (my_store.my_section_my_string) {</div><div class="line"></div><div class="line">        free(my_store.my_section_my_string);</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (my_store.my_section_my_arr_len) {</div><div class="line"></div><div class="line">        free(my_store.my_section_my_array);</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --> 
 </div>
 </div>
 <a id="ad95262d09842c25e8bb610bf95c42cd3"></a>
@@ -686,9 +944,9 @@ Variables</h2></td></tr>
 <li><code>format.no_double_quotes</code></li>
 <li><code>format.no_single_quotes</code></li>
 <li><code>format.multiline_entries</code></li>
-<li><code>format.case_sensitive</code> </li>
+<li><code>format.case_sensitive</code></li>
 </ul>
-
+<div class="fragment"><div class="line"><span class="comment">/* examples/topics/ini_string_match_si.c */</span></div><div class="line"></div><div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> passfinder (<a class="code" href="structIniDispatch.html">IniDispatch</a> *disp, <span class="keywordtype">void</span> *v_membid) {</div><div class="line"></div><div class="line">    <span class="comment">/* Search for `password = &quot;Hello world&quot;` in the INI file */</span></div><div class="line">    <span class="keywordflow">if</span> (</div><div class="line">        <a class="code" href="confini_8c.html#a5b11229fa691bdb7ab3ce94425ef3d28">ini_string_match_si</a>(<span class="stringliteral">&quot;password&quot;</span>, disp-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>, disp-&gt;<a class="code" href="structIniDispatch.html#adfda221d4a9effcb4f3ee6a99c5f2de2">format</a>)</div><div class="line">        &amp;&amp; <a class="code" href="confini_8c.html#a5b11229fa691bdb7ab3ce94425ef3d28">ini_string_match_si</a>(<span class="stringliteral">&quot;Hello world&quot;</span>, disp-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a>, disp-&gt;<a class="code" href="structIniDispatch.html#adfda221d4a9effcb4f3ee6a99c5f2de2">format</a>)</div><div class="line">    ) {</div><div class="line"></div><div class="line">        *((<span class="keywordtype">size_t</span> *) v_membid) = disp-&gt;<a class="code" href="structIniDispatch.html#a795864cff55f67498aa22722c17fc6d2">dispatch_id</a>;</div><div class="line">        <span class="keywordflow">return</span> 1;</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">int</span> main () {</div><div class="line"></div><div class="line">    <span class="keywordtype">size_t</span> membid;</div><div class="line"></div><div class="line">    <span class="comment">/* Load INI file */</span></div><div class="line">    <span class="keywordtype">int</span> retval = <a class="code" href="confini_8c.html#ac7b1bb4df0f7297f659135f0f4b39946">load_ini_path</a>(</div><div class="line">        <span class="stringliteral">&quot;example.conf&quot;</span>,</div><div class="line">        INI_DEFAULT_FORMAT,</div><div class="line">        NULL,</div><div class="line">        passfinder,</div><div class="line">        &amp;membid</div><div class="line">    );</div><div class="line"></div><div class="line">    <span class="comment">/* Check for errors */</span></div><div class="line">    <span class="keywordflow">if</span> (retval &amp; <a class="code" href="confini_8h.html#a0b9dcb5c0711475ea78b065b0322bde1">CONFINI_ERROR</a>) {</div><div class="line"></div><div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Sorry, something went wrong :-(\n&quot;</span>);</div><div class="line">        <span class="keywordflow">return</span> 1;</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* Check if `load_ini_path()` has been interrupted by `passfinder()` */</span></div><div class="line">    retval  ==  <a class="code" href="confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325ac1b16fd34464a73e424e31212d7ae8ab">CONFINI_EFEINTR</a> ?</div><div class="line">                printf(<span class="stringliteral">&quot;We found it! It&#39;s the INI element number #%d!\n&quot;</span>, membid)</div><div class="line">            :</div><div class="line">                printf(<span class="stringliteral">&quot;We didn&#39;t find it :-(\n&quot;</span>);</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div></div><!-- fragment --> 
 </div>
 </div>
 <a id="afc434b767b4ccd1d21366f8c45c022fa"></a>
@@ -774,7 +1032,181 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The new length of the string</dd></dl>
-<p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI member. ">IniDispatch</a></code> (but any other string may be used as well). If the string does not contain quotes, or if quotes are considered to be normal characters, no changes will be made. </p>
+<p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI member. ">IniDispatch</a></code> (but any other string may be used as well). If the string does not contain quotes, or if quotes are considered to be normal characters, no changes will be made.</p>
+<div class="fragment"><div class="line"><span class="comment">/* examples/topics/ini_unquote.c */</span></div><div class="line"></div><div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div><div class="line"></div><div class="line"><span class="keywordtype">int</span> ini_listener (<a class="code" href="structIniDispatch.html">IniDispatch</a> *dispatch, <span class="keywordtype">void</span> *v_null) {</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (dispatch-&gt;<a class="code" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a> == <a class="code" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba97333d01dfff8f9a9c690fc559751b45">INI_KEY</a> || dispatch-&gt;<a class="code" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a> == <a class="code" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba9b68a1fa247c1b1ae3fc2ce615359c7b">INI_DISABLED_KEY</a>) {</div><div class="line"></div><div class="line">        <a class="code" href="confini_8c.html#ac55f3fab95f697ac5058533df100fc11">ini_unquote</a>(dispatch-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#adfda221d4a9effcb4f3ee6a99c5f2de2">format</a>);</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    printf(<span class="stringliteral">&quot;DATA: %s\nVALUE: %s\n&quot;</span>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a>);</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">int</span> main () {</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="confini_8c.html#ac7b1bb4df0f7297f659135f0f4b39946">load_ini_path</a>(<span class="stringliteral">&quot;example.conf&quot;</span>, INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {</div><div class="line"></div><div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Sorry, something went wrong :-(\n&quot;</span>);</div><div class="line">        <span class="keywordflow">return</span> 1;</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div></div><!-- fragment --> 
+</div>
+</div>
+<a id="a8a269b22d9dd6e6fe9d604f87e443604"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a269b22d9dd6e6fe9d604f87e443604">&#9670;&nbsp;</a></span>is_comment_char()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static unsigned char is_comment_char </td>
+          <td>(</td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>chr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td>
+          <td class="paramname"><em>format</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks whether a character represents the opening of a comment within a given format. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chr</td><td>The character to check </td></tr>
+    <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>1 if <code>chr</code> matches, 0 otherwise </dd></dl>
+
+</div>
+</div>
+<a id="a0dd382a417b6c868b92bce236a065051"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0dd382a417b6c868b92bce236a065051">&#9670;&nbsp;</a></span>is_forget_char()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static unsigned char is_forget_char </td>
+          <td>(</td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>chr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td>
+          <td class="paramname"><em>format</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks whether a character represents the beginning of a comment that must be ignored within a given format. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chr</td><td>The character to check </td></tr>
+    <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>1 if <code>chr</code> matches, 0 otherwise </dd></dl>
+
+</div>
+</div>
+<a id="a9dc35acd5c3fc09baeb13cafd5188a4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dc35acd5c3fc09baeb13cafd5188a4f">&#9670;&nbsp;</a></span>is_parsable_char()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static unsigned char is_parsable_char </td>
+          <td>(</td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>chr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td>
+          <td class="paramname"><em>format</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks whether a character can represent the beginning of a disabled entry within a given format. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chr</td><td>The character to check </td></tr>
+    <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>1 if <code>chr</code> matches, 0 otherwise </dd></dl>
+
+</div>
+</div>
+<a id="a9ddb62401d28f769968bbbc07481bba7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ddb62401d28f769968bbbc07481bba7">&#9670;&nbsp;</a></span>is_some_space()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static unsigned char is_some_space </td>
+          <td>(</td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>chr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>depth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -835,8 +1267,8 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Zero for success, otherwise an error code</dd></dl>
 <p>The function <code>f_init</code> will be invoked with two arguments: <code>statistics</code> (a pointer to an <code><a class="el" href="structIniStatistics.html" title="Global statistics about an INI file. ">IniStatistics</a></code> object containing some properties about the file read) and <code>init_other</code> (the custom argument <code>user_data</code> previously passed). If <code>f_init</code> returns a non-zero value the caller function will be interrupted.</p>
-<p>The function <code>f_foreach</code> will be invoked with two arguments: <code>dispatch</code> (a pointer to an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI member. ">IniDispatch</a></code> object containing the parsed member of the INI file) and <code>foreach_other</code> (the custom argument <code>user_data</code> previously passed). If <code>f_foreach</code> returns a non-zero value the caller function will be interrupted. </p>
-
+<p>The function <code>f_foreach</code> will be invoked with two arguments: <code>dispatch</code> (a pointer to an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI member. ">IniDispatch</a></code> object containing the parsed member of the INI file) and <code>foreach_other</code> (the custom argument <code>user_data</code> previously passed). If <code>f_foreach</code> returns a non-zero value the caller function will be interrupted.</p>
+<div class="fragment"><div class="line"><span class="comment">/* examples/topics/load_ini_file.c */</span></div><div class="line"></div><div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div><div class="line"></div><div class="line"><span class="keywordtype">int</span> ini_listener (<a class="code" href="structIniDispatch.html">IniDispatch</a> *dispatch, <span class="keywordtype">void</span> *v_null) {</div><div class="line"></div><div class="line">    printf(</div><div class="line">        <span class="stringliteral">&quot;DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n&quot;</span>,</div><div class="line">        dispatch-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a></div><div class="line">    );</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">int</span> main () {</div><div class="line"></div><div class="line">    FILE * <span class="keyword">const</span> ini_file = fopen(<span class="stringliteral">&quot;example.conf&quot;</span>, <span class="stringliteral">&quot;r&quot;</span>);</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (ini_file == NULL) {</div><div class="line"></div><div class="line">        fprintf(stderr, <span class="stringliteral">&quot;File doesn&#39;t exist :-(\n&quot;</span>);</div><div class="line">        <span class="keywordflow">return</span> 1;</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="confini_8c.html#a90987f4565566e21693b90239663618d">load_ini_file</a>(ini_file, INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {</div><div class="line"></div><div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Sorry, something went wrong :-(\n&quot;</span>);</div><div class="line">        <span class="keywordflow">return</span> 1;</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    fclose(ini_file);</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div></div><!-- fragment --> 
 </div>
 </div>
 <a id="ac7b1bb4df0f7297f659135f0f4b39946"></a>
@@ -895,7 +1327,511 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Zero for success, otherwise an error code</dd></dl>
-<p>For the two parameters <code>f_init</code> and <code>f_foreach</code> see function <code><a class="el" href="confini_8c.html#a90987f4565566e21693b90239663618d" title="Parses an INI file and dispatches its content. ">load_ini_file()</a></code>. </p>
+<p>For the two parameters <code>f_init</code> and <code>f_foreach</code> see function <code><a class="el" href="confini_8c.html#a90987f4565566e21693b90239663618d" title="Parses an INI file and dispatches its content. ">load_ini_file()</a></code>.</p>
+<div class="fragment"><div class="line"><span class="comment">/* examples/topics/load_ini_path.c */</span></div><div class="line"></div><div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div><div class="line"></div><div class="line"><span class="keywordtype">int</span> ini_listener (<a class="code" href="structIniDispatch.html">IniDispatch</a> *dispatch, <span class="keywordtype">void</span> *v_null) {</div><div class="line"></div><div class="line">    printf(</div><div class="line">        <span class="stringliteral">&quot;DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n&quot;</span>,</div><div class="line">        dispatch-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a></div><div class="line">    );</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">int</span> main () {</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="confini_8c.html#ac7b1bb4df0f7297f659135f0f4b39946">load_ini_path</a>(<span class="stringliteral">&quot;example.conf&quot;</span>, INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {</div><div class="line"></div><div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Sorry, something went wrong :-(\n&quot;</span>);</div><div class="line">        <span class="keywordflow">return</span> 1;</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div></div><!-- fragment --> 
+</div>
+</div>
+<a id="af2c15586840bec19629c510017210a24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2c15586840bec19629c510017210a24">&#9670;&nbsp;</a></span>ltrim_h()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static size_t ltrim_h </td>
+          <td>(</td>
+          <td class="paramtype">char *const&#160;</td>
+          <td class="paramname"><em>lt_s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>start_from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>depth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Hard left trim &ndash; <b>does</b> change the buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lt_s</td><td>The target string </td></tr>
+    <tr><td class="paramname">start_from</td><td>The offset where to start the left trim </td></tr>
+    <tr><td class="paramname">depth</td><td>What is actually considered a space &ndash; a number ranging from 1 to 6 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The offset of the first non-space character </dd></dl>
+
+</div>
+</div>
+<a id="ac3ee4d5d2fe6bfc8196c6cd9e5d37f37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3ee4d5d2fe6bfc8196c6cd9e5d37f37">&#9670;&nbsp;</a></span>ltrim_s()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static size_t ltrim_s </td>
+          <td>(</td>
+          <td class="paramtype">const char *const&#160;</td>
+          <td class="paramname"><em>lt_s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>start_from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>depth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Soft left trim &ndash; does not change the buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lt_s</td><td>The target string </td></tr>
+    <tr><td class="paramname">start_from</td><td>The offset where to start the left trim </td></tr>
+    <tr><td class="paramname">depth</td><td>What is actually considered a space &ndash; a number ranging from 1 to 6 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The offset of the first non-space character </dd></dl>
+
+</div>
+</div>
+<a id="a83f9285ee4a8cde02d9caf06703d9ccd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83f9285ee4a8cde02d9caf06703d9ccd">&#9670;&nbsp;</a></span>rtrim_h()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static size_t rtrim_h </td>
+          <td>(</td>
+          <td class="paramtype">char *const&#160;</td>
+          <td class="paramname"><em>rt_s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>depth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Hard right trim &ndash; <b>does</b> change the buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rt_s</td><td>The target string </td></tr>
+    <tr><td class="paramname">length</td><td>The length of the string </td></tr>
+    <tr><td class="paramname">depth</td><td>What is actually considered a space &ndash; a number ranging from 1 to 6 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The length of the string until the last non-space character </dd></dl>
+
+</div>
+</div>
+<a id="aec164c03cb3655b94347a3a1678de0a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec164c03cb3655b94347a3a1678de0a9">&#9670;&nbsp;</a></span>rtrim_s()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static size_t rtrim_s </td>
+          <td>(</td>
+          <td class="paramtype">const char *const&#160;</td>
+          <td class="paramname"><em>rt_s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>depth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Soft right trim &ndash; does not change the buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rt_s</td><td>The target string </td></tr>
+    <tr><td class="paramname">length</td><td>The length of the string </td></tr>
+    <tr><td class="paramname">depth</td><td>What is actually considered a space &ndash; a subset of <code>_LIBCONFINI_SPACES_</code> ranging from 1 to 6 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The length of the string until the last non-space character </dd></dl>
+
+</div>
+</div>
+<a id="aaea3c257c404d241a51c3bb8d54096bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaea3c257c404d241a51c3bb8d54096bb">&#9670;&nbsp;</a></span>sanitize_section_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static size_t sanitize_section_name </td>
+          <td>(</td>
+          <td class="paramtype">char *const&#160;</td>
+          <td class="paramname"><em>str</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td>
+          <td class="paramname"><em>format</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sanitizes the name of a section. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>The target string </td></tr>
+    <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The new length of the string</dd></dl>
+<p>Out of quotes, similar to ECMAScript <code>section_name.replace(/\.*\s*$|(?:\s*(\.))+\s*|^\s+/g, "$1").replace(/\s+/g, " ")</code></p>
+<p>A section name can start with a dot (append), but cannot end with a dot. Spaces sorrounding dots will be removed. Single quotes or double quotes (if active and present) prevent changes. </p>
+
+</div>
+</div>
+<a id="ad6e6972b13052e995b3ceb2fb4996ede"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6e6972b13052e995b3ceb2fb4996ede">&#9670;&nbsp;</a></span>string_tolower()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void string_tolower </td>
+          <td>(</td>
+          <td class="paramtype">char *const&#160;</td>
+          <td class="paramname"><em>str</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts an ASCII string to lower case. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">string</td><td>The target string </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Nothing </dd></dl>
+
+</div>
+</div>
+<a id="ac1ce04bace4e334495fbca85d3e60839"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1ce04bace4e334495fbca85d3e60839">&#9670;&nbsp;</a></span>ultrim_h()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static size_t ultrim_h </td>
+          <td>(</td>
+          <td class="paramtype">char *const&#160;</td>
+          <td class="paramname"><em>ult_s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>start_from</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unescaped hard left trim (left trim of <code>/^(\s+|\\[\n\r])+/</code>) &ndash; <b>does</b> change the buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ult_s</td><td>The target string </td></tr>
+    <tr><td class="paramname">start_from</td><td>The offset where to start the left trim </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The offset of the first non-space character </dd></dl>
+
+</div>
+</div>
+<a id="abb60f6ecb39dbd9a25d878283c5d37f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb60f6ecb39dbd9a25d878283c5d37f0">&#9670;&nbsp;</a></span>uncomment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static size_t uncomment </td>
+          <td>(</td>
+          <td class="paramtype">char *const&#160;</td>
+          <td class="paramname"><em>commstr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>len</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td>
+          <td class="paramname"><em>format</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Removes all comment initializers (<code>#</code> or <code>;</code>) from the beginning of each line of a comment. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">commstr</td><td>The comment to sanitize </td></tr>
+    <tr><td class="paramname">len</td><td>The length of commstr </td></tr>
+    <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The new length of the string</dd></dl>
+<ul>
+<li>In multiline comments: <code>commstr.replace(/(^|\n\r?|\r\n?)[\t \v\f]*[#;]+/g, "$1")</code></li>
+<li>In single-line comments: <code>commstr.replace(/^[\t \v\f]*[#;]+/, "")</code> </li>
+</ul>
+
+</div>
+</div>
+<a id="a305519f4ff7a81558868de3315707d7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a305519f4ff7a81558868de3315707d7a">&#9670;&nbsp;</a></span>unescape_cr_lf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static size_t unescape_cr_lf </td>
+          <td>(</td>
+          <td class="paramtype">char *const&#160;</td>
+          <td class="paramname"><em>str</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>len</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const unsigned char&#160;</td>
+          <td class="paramname"><em>is_disabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td>
+          <td class="paramname"><em>format</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replaces <code>/\\(\n\r?|\r\n?)s*[#;]/</code> or <code>/\\(\n\r?|\r\n?)/</code> with <code>"$1"</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>Target string </td></tr>
+    <tr><td class="paramname">len</td><td>Length of the string </td></tr>
+    <tr><td class="paramname">is_disabled</td><td>The string represents a disabled entry </td></tr>
+    <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The new length of the string </dd></dl>
+
+</div>
+</div>
+<a id="ad86a82dfd90c62b81348c4af4f9cca51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad86a82dfd90c62b81348c4af4f9cca51">&#9670;&nbsp;</a></span>urtrim_s()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static size_t urtrim_s </td>
+          <td>(</td>
+          <td class="paramtype">const char *const&#160;</td>
+          <td class="paramname"><em>urt_s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unescaped soft right trim (right trim of <code>/(\s+|\\[\n\r])+$/</code>) &ndash; does not change the buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">urt_s</td><td>The target string </td></tr>
+    <tr><td class="paramname">length</td><td>The length of the string </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The length of the string until the last non-space character </dd></dl>
 
 </div>
 </div>
