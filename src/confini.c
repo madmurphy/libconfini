@@ -591,8 +591,8 @@ static size_t collapse_spaces (char * const str, const IniFormat format) {
 	*/
 
 	uint8_t	abacus	=	(is_some_space(*str, _LIBCONFINI_WITH_EOL_) ? 32 : 0) |
-									(format.no_double_quotes << 1) |
-									format.no_single_quotes;
+						(format.no_double_quotes << 1) |
+						format.no_single_quotes;
 
 	size_t idx, lshift;
 
@@ -615,12 +615,10 @@ static size_t collapse_spaces (char * const str, const IniFormat format) {
 
 		} else {
 
-			abacus	=	str[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 16
-						: !(abacus & 22) && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 8
-						: !(abacus & 25) && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 4
-						: abacus & 47;
-
-			abacus &= 31;
+			abacus	=	str[idx] == _LIBCONFINI_BACKSLASH_ ? (abacus & 31) ^ 16
+						: !(abacus & 22) && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? (abacus & 31) ^ 8
+						: !(abacus & 25) && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? (abacus & 31) ^ 4
+						: abacus & 15;
 
 			if (lshift) {
 
@@ -677,8 +675,8 @@ static size_t sanitize_section_name (char * const str, const IniFormat format) {
 	*/
 
 	uint16_t abacus	=	(is_some_space(*str, _LIBCONFINI_WITH_EOL_) ? 256 : 32) |
-				(format.no_double_quotes << 1) |
-				format.no_single_quotes;
+						(format.no_double_quotes << 1) |
+						format.no_single_quotes;
 
 	for (lshift = 0, idx = 0; str[idx]; idx++) {
 
@@ -1313,10 +1311,9 @@ int load_ini_file (
 
 	fseek(ini_file, 0, SEEK_END);
 
-	size_t tmp_size_1 = ftell(ini_file);
-
 	#define __N_BYTES__ tmp_size_1
 
+	size_t tmp_size_1 = ftell(ini_file);
 	char * const cache = (char *) malloc((__N_BYTES__ + 1) * sizeof(char));
 
 	if (cache == NULL) {
@@ -1352,14 +1349,6 @@ int load_ini_file (
 	/* UTF-8 BOM */
 
 	__SHIFT_LEN__ = (unsigned char) *cache == 0xEF && (unsigned char) *(cache + 1) == 0xBB && (unsigned char) *(cache + 2) == 0xBF ? 3 : 0;
-
-	/* Alternatively... */
-
-	/*
-
-	__SHIFT_LEN__ = (uint32_t) (((unsigned char) *cache) << 16 | ((unsigned char) *(cache + 1)) << 8 | ((unsigned char) *(cache + 2))) == 0xEFBBBF ? 3 : 0;
-
-	*/
 
 	for (
 
@@ -1439,7 +1428,7 @@ int load_ini_file (
 	for (size_t tmp = 0; tmp < len + 1; tmp++) {
 		putchar(cache[tmp] == 0 ? '$' : cache[tmp]);
 	}
-	putchar(_LIBCONFINI_LF_);
+	putchar('\n');
 
 	*/
 
