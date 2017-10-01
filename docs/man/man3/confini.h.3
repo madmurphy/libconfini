@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Sat Sep 30 2017" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Sun Oct 1 2017" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -124,19 +124,19 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "size_t \fBini_array_get_length\fP (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 .br
-.RI "Gets the length of an INI array\&. "
+.RI "Gets the length of a stringified INI array\&. "
 .ti -1c
 .RI "int \fBini_array_foreach\fP (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(const char *fullstring, size_t memb_offset, size_t memb_length, size_t index, \fBIniFormat\fP format, void *foreach_other), void *user_data)"
 .br
-.RI "Calls a custom function for each member of an INI array – useful for read-only (const) stringified arrays\&. "
+.RI "Calls a custom function for each member of a stringified INI array without modifying the content of the buffer – useful for read-only (const) stringified arrays\&. "
 .ti -1c
 .RI "size_t \fBini_collapse_array\fP (char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 .br
-.RI "Compresses the distribution of the data of an INI array by removing all the white spaces that sorround its delimiters\&. "
+.RI "Compresses the distribution of the data of a stringified INI array by removing all the white spaces that sorround its delimiters\&. "
 .ti -1c
 .RI "int \fBini_split_array\fP (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(char *member, size_t memb_length, size_t index, \fBIniFormat\fP format, void *foreach_other), void *user_data)"
 .br
-.RI "Splits an INI array and calls a custom function for each member\&. "
+.RI "Splits a stringified INI array into NUL-separated members and calls a custom function for each member\&. "
 .ti -1c
 .RI "signed int \fBini_get_bool\fP (const char *const ini_string, const signed int return_value)"
 .br
@@ -338,7 +338,7 @@ Not used here, but available for user's implementations
 .SS "int ini_array_foreach (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(const char *fullstring, size_t memb_offset, size_t memb_length, size_t index, \fBIniFormat\fP format, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
-Calls a custom function for each member of an INI array – useful for read-only (const) stringified arrays\&. 
+Calls a custom function for each member of a stringified INI array without modifying the content of the buffer – useful for read-only (const) stringified arrays\&. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -364,7 +364,7 @@ The function \fCf_foreach\fP will be invoked with six arguments: \fCfullstring\f
 .SS "size_t ini_array_get_length (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 
 .PP
-Gets the length of an INI array\&. 
+Gets the length of a stringified INI array\&. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -384,7 +384,7 @@ Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other st
 .SS "size_t ini_collapse_array (char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 
 .PP
-Compresses the distribution of the data of an INI array by removing all the white spaces that sorround its delimiters\&. 
+Compresses the distribution of the data of a stringified INI array by removing all the white spaces that sorround its delimiters\&. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -835,7 +835,7 @@ int main () {
 .SS "int ini_split_array (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(char *member, size_t memb_length, size_t index, \fBIniFormat\fP format, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
-Splits an INI array and calls a custom function for each member\&. 
+Splits a stringified INI array into NUL-separated members and calls a custom function for each member\&. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -858,6 +858,8 @@ Zero for success, otherwise an error code
 Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other string may be used as well)\&.
 .PP
 The function \fCf_foreach\fP will be invoked with five arguments: \fCmember\fP (a pointer to \fCini_string\fP), \fCmemb_length\fP (the length of the member in bytes), \fCindex\fP (the index of the member in number of members), \fCformat\fP (the format of the INI file), \fCforeach_other\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the function \fC\fBini_split_array()\fP\fP will be interrupted\&.
+.PP
+Similarly to \fCstrtok()\fP this function can be used only once for a given string\&.
 .PP
 See example under \fC\fBini_collapse_array()\fP\fP\&. 
 .SS "_Bool ini_string_match_ii (const char *const ini_string_a, const char *const ini_string_b, const \fBIniFormat\fP format)"

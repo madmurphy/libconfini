@@ -9,20 +9,24 @@ if [[ ! -t 0 ]] ; then
 fi
 
 if [[ ! $(which gcc 2>/dev/null) ]] ; then
-	echo 'You need to have gcc installed in your machine.' 1>&2
+	echo 'You need to have gcc installed on your machine.' 1>&2
 	exit 1
 fi
 
 # constants
 _TMP_FOLDER_="$(mktemp -d)"
-_THIS_FOLDER_="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+_THIS_PATH_=$(cd $(dirname "${BASH_SOURCE[0]}") ; pwd)
+_THIS_PATH_LENGTH_=$(expr "${#_THIS_PATH_}" + 1)
 _COMPILE_TO_="${_TMP_FOLDER_}/libconfini_example"
-_EXAMPLES_=("${_THIS_FOLDER_}/other"/*.c "${_THIS_FOLDER_}/topics"/*.c)
-_THIS_PATH_LENGTH_=$(expr ${#_THIS_FOLDER_} + 1)
+_SRCS_=("${_THIS_PATH_}/other"/*.c
+	"${_THIS_PATH_}/topics"/*.c)
 _COLORS_=0
+_HIGHLIGHT_=0
+
 if which tput > /dev/null 2>&1 ; then 
-	_COLORS_="$(tput -T ${TERM} colors)"
+	_COLORS_=$(tput -T "${TERM}" colors)
 fi
+
 if [[ "${_COLORS_}" -ge 8 ]] ; then
 	_COL_YELLOW_='\e[0;33m'
 	_COL_BRED_='\e[1;31m'
@@ -34,8 +38,8 @@ if [[ "${_COLORS_}" -ge 8 ]] ; then
 	_COL_BWHITE_='\e[1;37m'
 	_COL_DEFAULT_='\e[0m'
 fi
-_HIGHLIGHT_=0
-if [[ $(which highlight 2>/dev/null) ]] ; then
+
+if which highlight > /dev/null 2>&1 ; then
 	_HIGHLIGHT_=1
 fi
 
@@ -46,23 +50,17 @@ _DONE_=0
 # _GOOD_ANSWER_, _DONT_RUN_, _ITER_, _FILENAME_, _CHOICE_, _CHOSEN_LONG_, _CHOSEN_SHORT_, _EXIT_CODE_
 
 while [[ "${_DONE_}" -eq 0 ]] ; do
-
 	_GOOD_ANSWER_=0
 	_DONT_RUN_=0
 	_ITER_=0
-
 	echo
 	echo -e "${_COL_BBLUE_}::${_COL_BWHITE_} Available examples ${_COL_BBLUE_}::${_COL_DEFAULT_}"
 	echo
-
-	for _FILENAME_ in "${_EXAMPLES_[@]}"
-	do
-		_ITER_=$(expr ${_ITER_} + 1)
+	for _FILENAME_ in "${_SRCS_[@]}" ; do
+		_ITER_=$(expr "${_ITER_}" + 1)
 		echo -e "  [${_COL_BCYAN_}${_ITER_}${_COL_DEFAULT_}] ${_FILENAME_:${_THIS_PATH_LENGTH_}}"
 	done
-
 	echo
-
 	while [[ "${_GOOD_ANSWER_}" -eq 0 ]] ; do
 		echo -ne "${_COL_BGREEN_}==>${_COL_BWHITE_} Please choose an example to compile and run (leave empty to exit):${_COL_DEFAULT_} "
 		read _CHOICE_
@@ -78,9 +76,8 @@ while [[ "${_DONE_}" -eq 0 ]] ; do
 			_DONT_RUN_=0
 		fi
 	done
-
 	if [[ "${_DONT_RUN_}" -eq 0 ]] ; then
-		_CHOSEN_LONG_="${_EXAMPLES_[$(expr ${_CHOICE_} - 1)]}"
+		_CHOSEN_LONG_="${_SRCS_[$(expr ${_CHOICE_} - 1)]}"
 		_CHOSEN_SHORT_=${_CHOSEN_LONG_:_THIS_PATH_LENGTH_}
 		echo -e "  ${_COL_BBLUE_}->${_COL_DEFAULT_} Compiling \"${_CHOSEN_SHORT_}\" with gcc"
 		echo -e "     (\x60${_COL_YELLOW_}gcc -lconfini -pedantic -std=c99 \"${_CHOSEN_SHORT_}\"${_COL_DEFAULT_}\x60)..."
@@ -89,7 +86,7 @@ while [[ "${_DONE_}" -eq 0 ]] ; do
 			echo
 			echo -e "${_COL_BYELLOW_}-----------------[${_COL_BCYAN_}${_CHOSEN_SHORT_}${_COL_BYELLOW_}]-----------------${_COL_DEFAULT_}"
 			echo
-			( cd "${_THIS_FOLDER_}" ; "${_COMPILE_TO_}" )
+			( cd "${_THIS_PATH_}" ; "${_COMPILE_TO_}" )
 			_EXIT_CODE_="$?"
 			echo
 			echo -ne "${_COL_BYELLOW_}------------------"
@@ -102,13 +99,12 @@ while [[ "${_DONE_}" -eq 0 ]] ; do
 			echo
 			echo -ne "${_COL_BGREEN_}==>${_COL_BWHITE_} Do you want to have a look at the source code? (Y/n)${_COL_DEFAULT_} "
 			read -n1 _CHOICE_
-			[[ "${_CHOICE_}" == ${EOF} ]] || echo
-			if [[ "${_CHOICE_}" == ${EOF} ]] || [[ "${_CHOICE_,,}" == "y" ]] ; then
+			[[ "${_CHOICE_}" == "${EOF}" ]] || echo
+			if [[ "${_CHOICE_}" == "${EOF}" ]] || [[ "${_CHOICE_,,}" == 'y' ]] ; then
 				if [[ "${_HIGHLIGHT_}" -eq 0 ]] || [[ ! "${_COLORS_}" -ge 8 ]] ; then
 					cat "${_CHOSEN_LONG_}" | less
-					[[ _HIGHLIGHT_ -eq 0 ]] &&\
-					echo -e "  ${_COL_BBLUE_}->${_COL_DEFAULT_} ${_COL_BRED_}NOTE:${_COL_DEFAULT_} For a better output of the C source code consider to install\n"\
-"     ${_COL_BPURPLE_}highlight${_COL_DEFAULT_} on your system."
+					[[ "${_HIGHLIGHT_}" -eq 0 ]] &&\
+					echo -e "  ${_COL_BBLUE_}->${_COL_DEFAULT_} ${_COL_BRED_}NOTE:${_COL_DEFAULT_} For a better output of the C source code consider to install\n     ${_COL_BPURPLE_}highlight${_COL_DEFAULT_} on your system."
 				else
 					highlight -O $([[ "${_COLORS_}" -ge 256 ]] && echo 'xterm256' || echo 'ansi') "${_CHOSEN_LONG_}" | less -r
 				fi
@@ -118,7 +114,6 @@ while [[ "${_DONE_}" -eq 0 ]] ; do
 			echo -e "  ${_COL_BBLUE_}->${_COL_DEFAULT_} ${_COL_BRED_}Couldn't compile file \"${_CHOSEN_SHORT_}\".${_COL_DEFAULT_}"
 		fi
 	fi
-
 done
 
 rm -rf "${_TMP_FOLDER_}"

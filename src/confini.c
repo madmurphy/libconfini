@@ -3,7 +3,7 @@
 /**
 
 	@file		confini.c
-	@brief		libconfini functions
+	@brief		libconfini private environment
 	@author		Stefano Gioffr&eacute;
 	@copyright 	GNU Public License v3
 	@date		2016-2017
@@ -440,21 +440,25 @@ static inline _LIBCONFINI_BOOL_ is_comment_char (const char chr, const IniFormat
 
 **/
 static inline _LIBCONFINI_BOOL_ is_forget_char (const char chr, const IniFormat format) {
-	return (format.semicolon == INI_FORGET_COMMENT && chr == _LIBCONFINI_SEMICOLON_) || (format.hash == INI_FORGET_COMMENT && chr == _LIBCONFINI_HASH_);
+	return	(
+				format.semicolon == INI_FORGET_COMMENT && chr == _LIBCONFINI_SEMICOLON_
+			) || (
+				format.hash == INI_FORGET_COMMENT && chr == _LIBCONFINI_HASH_
+			);
 }
 
 
 /**
 
 	@brief			Gets the position of the first delimiter out of quotes
-	@param			string		The string to analyse
+	@param			pairstr		The string to where to search for the delimiter
 	@param			length		The length of the string
 	@param			format		The format of the INI file
 	@return			The offset of the delimiter or @p length if the delimiter
 					has not been not found
 
 **/
-static inline size_t get_delimiter_pos (const char * const str, const size_t len, const IniFormat format) {
+static inline size_t get_delimiter_pos (const char * const pairstr, const size_t len, const IniFormat format) {
 
 	size_t idx = 0;
 
@@ -477,14 +481,14 @@ static inline size_t get_delimiter_pos (const char * const str, const size_t len
 			idx < len && (
 				(abacus & 12) || !(
 					format.delimiter_symbol ?
-						str[idx] == (char /* Neutralize the `unsigned` keyword used in the bitfield */) format.delimiter_symbol
-						: is_some_space(str[idx], _LIBCONFINI_NO_EOL_)
+						pairstr[idx] == (char /* Neutralize the `unsigned` keyword used in the bitfield */) format.delimiter_symbol
+						: is_some_space(pairstr[idx], _LIBCONFINI_NO_EOL_)
 				)
 			);
 
-		abacus	=	str[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 16
-					: !(abacus & 22) && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 8
-					: !(abacus & 25) && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 4
+		abacus	=	pairstr[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 16
+					: !(abacus & 22) && pairstr[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 8
+					: !(abacus & 25) && pairstr[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 4
 					: abacus & 15,
 		idx++
 
@@ -640,7 +644,7 @@ static size_t collapse_spaces (char * const str, const IniFormat format) {
 /**
 
 	@brief			Sanitizes the name of a section
-	@param			str			The target string
+	@param			secstr		The target string
 	@param			format		The format of the INI file
 	@return			The new length of the string
 
@@ -652,7 +656,7 @@ static size_t collapse_spaces (char * const str, const IniFormat format) {
 	active and present) prevent changes.
 
 **/
-static size_t sanitize_section_name (char * const str, const IniFormat format) {
+static size_t sanitize_section_name (char * const secstr, const IniFormat format) {
 
 	size_t idx, lshift;
 
@@ -674,13 +678,13 @@ static size_t sanitize_section_name (char * const str, const IniFormat format) {
 
 	*/
 
-	uint16_t abacus	=	(is_some_space(*str, _LIBCONFINI_WITH_EOL_) ? 256 : 32) |
+	uint16_t abacus	=	(is_some_space(*secstr, _LIBCONFINI_WITH_EOL_) ? 256 : 32) |
 						(format.no_double_quotes << 1) |
 						format.no_single_quotes;
 
-	for (lshift = 0, idx = 0; str[idx]; idx++) {
+	for (lshift = 0, idx = 0; secstr[idx]; idx++) {
 
-		if (!(abacus & 12) && is_some_space(str[idx], _LIBCONFINI_WITH_EOL_)) {
+		if (!(abacus & 12) && is_some_space(secstr[idx], _LIBCONFINI_WITH_EOL_)) {
 
 			if (abacus & 320) {
 
@@ -690,7 +694,7 @@ static size_t sanitize_section_name (char * const str, const IniFormat format) {
 
 			if (!(abacus & 64)) {
 
-				str[idx - lshift] = abacus & 128 ? _LIBCONFINI_SUBSECTION_ : _LIBCONFINI_SIMPLE_SPACE_;
+				secstr[idx - lshift] = abacus & 128 ? _LIBCONFINI_SUBSECTION_ : _LIBCONFINI_SIMPLE_SPACE_;
 				abacus &= 51;
 				abacus |= 64;
 
@@ -698,7 +702,7 @@ static size_t sanitize_section_name (char * const str, const IniFormat format) {
 
 			abacus &= 2031;
 
-		} else if (!(abacus & 12) && str[idx] == _LIBCONFINI_SUBSECTION_) {
+		} else if (!(abacus & 12) && secstr[idx] == _LIBCONFINI_SUBSECTION_) {
 
 			if ((abacus & 576) && (abacus & 32)) {
 
@@ -713,9 +717,9 @@ static size_t sanitize_section_name (char * const str, const IniFormat format) {
 
 				abacus	=	(
 								(
-									str[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 16
-									: !(abacus & 22) && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 8
-									: !(abacus & 25) && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 4
+									secstr[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 16
+									: !(abacus & 22) && secstr[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 8
+									: !(abacus & 25) && secstr[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 4
 									: abacus & 2031
 								) & 1087
 							) | 1056;
@@ -724,14 +728,14 @@ static size_t sanitize_section_name (char * const str, const IniFormat format) {
 
 		if (abacus & 1024) {
 
-			str[idx - lshift] = str[idx];
+			secstr[idx - lshift] = secstr[idx];
 			abacus &= 1023;
 
 		}
 
 	}
 
-	for (idx -= abacus & 960 ? ++lshift : lshift; str[idx]; str[idx++] = '\0');
+	for (idx -= abacus & 960 ? ++lshift : lshift; secstr[idx]; secstr[idx++] = '\0');
 
 	return idx - lshift;
 
@@ -2333,7 +2337,7 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 
 /**
 
-	@brief			Gets the length of an INI array
+	@brief			Gets the length of a stringified INI array
 	@param			ini_string		The stringified array
 	@param			delimiter		The delimiter between the array members --
 									if zero (`INI_ANY_SPACE`) any space is
@@ -2405,8 +2409,9 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 
 /**
 
-	@brief			Calls a custom function for each member of an INI array --
-					useful for read-only (const) stringified arrays
+	@brief			Calls a custom function for each member of a stringified INI
+					array without modifying the content of the buffer -- useful
+					for read-only (const) stringified arrays
 	@param			ini_string		The stringified array
 	@param			delimiter		The delimiter between the array members --
 									if zero (`INI_ANY_SPACE`) any space is
@@ -2496,8 +2501,9 @@ int ini_array_foreach (
 
 /**
 
-	@brief			Compresses the distribution of the data of an INI array by
-					removing all the white spaces that sorround its delimiters.
+	@brief			Compresses the distribution of the data of a stringified INI
+					array by removing all the white spaces that sorround its
+					delimiters.
 	@param			ini_string		The stringified array
 	@param			delimiter		The delimiter between the array members --
 									if zero (`INI_ANY_SPACE`) any space is
@@ -2633,8 +2639,8 @@ size_t ini_collapse_array (char * const ini_string, const char delimiter, const 
 
 /**
 
-	@brief			Splits an INI array and calls a custom function for each
-					member
+	@brief			Splits a stringified INI array into NUL-separated members
+					and calls a custom function for each member
 	@param			ini_string		The stringified array
 	@param			delimiter		The delimiter between the array members --
 									if zero (`INI_ANY_SPACE`) any space is
@@ -2654,6 +2660,9 @@ size_t ini_collapse_array (char * const ini_string, const char delimiter, const 
 	of the INI file), `foreach_other` (the custom argument @p user_data
 	previously passed). If @p f_foreach returns a non-zero value the function
 	`ini_split_array()` will be interrupted.
+
+	Similarly to `strtok()` this function can be used only once for a given
+	string.
 
 	See example under `ini_collapse_array()`.
 

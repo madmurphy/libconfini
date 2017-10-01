@@ -71,7 +71,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>libconfini functions  
+<p>libconfini private environment  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
@@ -112,18 +112,18 @@ Functions</h2></td></tr>
 <tr class="memitem:a0dd382a417b6c868b92bce236a065051"><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a0dd382a417b6c868b92bce236a065051">is_forget_char</a> (const char chr, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
 <tr class="memdesc:a0dd382a417b6c868b92bce236a065051"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a character represents the beginning of a comment that must be ignored within a given format.  <a href="#a0dd382a417b6c868b92bce236a065051">More...</a><br /></td></tr>
 <tr class="separator:a0dd382a417b6c868b92bce236a065051"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b2a090d7d75c7ee9b4353984a3e898e"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a2b2a090d7d75c7ee9b4353984a3e898e">get_delimiter_pos</a> (const char *const str, const size_t len, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
-<tr class="memdesc:a2b2a090d7d75c7ee9b4353984a3e898e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the position of the first delimiter out of quotes.  <a href="#a2b2a090d7d75c7ee9b4353984a3e898e">More...</a><br /></td></tr>
-<tr class="separator:a2b2a090d7d75c7ee9b4353984a3e898e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9217de2d9be4b2d6dcd75725a8d96478"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a9217de2d9be4b2d6dcd75725a8d96478">get_delimiter_pos</a> (const char *const pairstr, const size_t len, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
+<tr class="memdesc:a9217de2d9be4b2d6dcd75725a8d96478"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the position of the first delimiter out of quotes.  <a href="#a9217de2d9be4b2d6dcd75725a8d96478">More...</a><br /></td></tr>
+<tr class="separator:a9217de2d9be4b2d6dcd75725a8d96478"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a305519f4ff7a81558868de3315707d7a"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a305519f4ff7a81558868de3315707d7a">unescape_cr_lf</a> (char *const str, const size_t len, const unsigned char is_disabled, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
 <tr class="memdesc:a305519f4ff7a81558868de3315707d7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces <code>/\\(\n\r?|\r\n?)s*[#;]/</code> or <code>/\\(\n\r?|\r\n?)/</code> with <code>"$1"</code>.  <a href="#a305519f4ff7a81558868de3315707d7a">More...</a><br /></td></tr>
 <tr class="separator:a305519f4ff7a81558868de3315707d7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab63671eba263728ddc8ad7dda7568172"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ab63671eba263728ddc8ad7dda7568172">collapse_spaces</a> (char *const str, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
 <tr class="memdesc:ab63671eba263728ddc8ad7dda7568172"><td class="mdescLeft">&#160;</td><td class="mdescRight">Out of quotes similar to ECMAScript <code>string.replace(/^[\n\r]\s*|(\s)+/g, " ")</code>  <a href="#ab63671eba263728ddc8ad7dda7568172">More...</a><br /></td></tr>
 <tr class="separator:ab63671eba263728ddc8ad7dda7568172"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaea3c257c404d241a51c3bb8d54096bb"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#aaea3c257c404d241a51c3bb8d54096bb">sanitize_section_name</a> (char *const str, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
-<tr class="memdesc:aaea3c257c404d241a51c3bb8d54096bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sanitizes the name of a section.  <a href="#aaea3c257c404d241a51c3bb8d54096bb">More...</a><br /></td></tr>
-<tr class="separator:aaea3c257c404d241a51c3bb8d54096bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad48d665646931a16bcd5a0e8b04a579c"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ad48d665646931a16bcd5a0e8b04a579c">sanitize_section_name</a> (char *const secstr, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
+<tr class="memdesc:ad48d665646931a16bcd5a0e8b04a579c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sanitizes the name of a section.  <a href="#ad48d665646931a16bcd5a0e8b04a579c">More...</a><br /></td></tr>
+<tr class="separator:ad48d665646931a16bcd5a0e8b04a579c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb60f6ecb39dbd9a25d878283c5d37f0"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#abb60f6ecb39dbd9a25d878283c5d37f0">uncomment</a> (char *const commstr, size_t len, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
 <tr class="memdesc:abb60f6ecb39dbd9a25d878283c5d37f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all comment initializers (<code>#</code> or <code>;</code>) from the beginning of each line of a comment.  <a href="#abb60f6ecb39dbd9a25d878283c5d37f0">More...</a><br /></td></tr>
 <tr class="separator:abb60f6ecb39dbd9a25d878283c5d37f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -164,16 +164,16 @@ Functions</h2></td></tr>
 <tr class="memdesc:ac55f3fab95f697ac5058533df100fc11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescapes <code>\\</code>, <code>\'</code> and <code>\"</code> and removes all unescaped quotes (if single/double quotes are considered metacharacters in respect to the format given)  <a href="#ac55f3fab95f697ac5058533df100fc11">More...</a><br /></td></tr>
 <tr class="separator:ac55f3fab95f697ac5058533df100fc11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a312803fa24be2d7f164f3041fbfa6865"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865">ini_array_get_length</a> (const char *const ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
-<tr class="memdesc:a312803fa24be2d7f164f3041fbfa6865"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the length of an INI array.  <a href="#a312803fa24be2d7f164f3041fbfa6865">More...</a><br /></td></tr>
+<tr class="memdesc:a312803fa24be2d7f164f3041fbfa6865"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the length of a stringified INI array.  <a href="#a312803fa24be2d7f164f3041fbfa6865">More...</a><br /></td></tr>
 <tr class="separator:a312803fa24be2d7f164f3041fbfa6865"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d0619b3d26be629b76b9403cc5ff00e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a4d0619b3d26be629b76b9403cc5ff00e">ini_array_foreach</a> (const char *const ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format, int(*const f_foreach)(const char *fullstring, size_t memb_offset, size_t memb_length, size_t index, <a class="el" href="structIniFormat.html">IniFormat</a> format, void *foreach_other), void *user_data)</td></tr>
-<tr class="memdesc:a4d0619b3d26be629b76b9403cc5ff00e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls a custom function for each member of an INI array &ndash; useful for read-only (const) stringified arrays.  <a href="#a4d0619b3d26be629b76b9403cc5ff00e">More...</a><br /></td></tr>
+<tr class="memdesc:a4d0619b3d26be629b76b9403cc5ff00e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls a custom function for each member of a stringified INI array without modifying the content of the buffer &ndash; useful for read-only (const) stringified arrays.  <a href="#a4d0619b3d26be629b76b9403cc5ff00e">More...</a><br /></td></tr>
 <tr class="separator:a4d0619b3d26be629b76b9403cc5ff00e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74789309b1a9c5b8886484c2b4d3a381"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a74789309b1a9c5b8886484c2b4d3a381">ini_collapse_array</a> (char *const ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
-<tr class="memdesc:a74789309b1a9c5b8886484c2b4d3a381"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compresses the distribution of the data of an INI array by removing all the white spaces that sorround its delimiters.  <a href="#a74789309b1a9c5b8886484c2b4d3a381">More...</a><br /></td></tr>
+<tr class="memdesc:a74789309b1a9c5b8886484c2b4d3a381"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compresses the distribution of the data of a stringified INI array by removing all the white spaces that sorround its delimiters.  <a href="#a74789309b1a9c5b8886484c2b4d3a381">More...</a><br /></td></tr>
 <tr class="separator:a74789309b1a9c5b8886484c2b4d3a381"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acee3223f103e6264fd5e1a8bd4a7f7d7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#acee3223f103e6264fd5e1a8bd4a7f7d7">ini_split_array</a> (char *const ini_string, const char delimiter, const <a class="el" href="structIniFormat.html">IniFormat</a> format, int(*const f_foreach)(char *member, size_t memb_length, size_t index, <a class="el" href="structIniFormat.html">IniFormat</a> format, void *foreach_other), void *user_data)</td></tr>
-<tr class="memdesc:acee3223f103e6264fd5e1a8bd4a7f7d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Splits an INI array and calls a custom function for each member.  <a href="#acee3223f103e6264fd5e1a8bd4a7f7d7">More...</a><br /></td></tr>
+<tr class="memdesc:acee3223f103e6264fd5e1a8bd4a7f7d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Splits a stringified INI array into NUL-separated members and calls a custom function for each member.  <a href="#acee3223f103e6264fd5e1a8bd4a7f7d7">More...</a><br /></td></tr>
 <tr class="separator:acee3223f103e6264fd5e1a8bd4a7f7d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a8dcc3d8ff26554486691423cce4ea0"><td class="memItemLeft" align="right" valign="top">signed int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a2a8dcc3d8ff26554486691423cce4ea0">ini_get_bool</a> (const char *const ini_string, const signed int return_value)</td></tr>
 <tr class="memdesc:a2a8dcc3d8ff26554486691423cce4ea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <code>_LIBCONFINI_BOOLEANS_</code> (case insensitive)  <a href="#a2a8dcc3d8ff26554486691423cce4ea0">More...</a><br /></td></tr>
@@ -207,7 +207,7 @@ Variables</h2></td></tr>
 <tr class="separator:aa961b2edbb807839bbae5016301daf94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>libconfini functions </p>
+<div class="textblock"><p>libconfini private environment </p>
 <dl class="section author"><dt>Author</dt><dd>Stefano Gioffr&eacute; </dd></dl>
 <dl class="section copyright"><dt>Copyright</dt><dd>GNU Public License v3 </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>2016-2017 </dd></dl>
@@ -304,8 +304,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a2b2a090d7d75c7ee9b4353984a3e898e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2b2a090d7d75c7ee9b4353984a3e898e">&#9670;&nbsp;</a></span>get_delimiter_pos()</h2>
+<a id="a9217de2d9be4b2d6dcd75725a8d96478"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9217de2d9be4b2d6dcd75725a8d96478">&#9670;&nbsp;</a></span>get_delimiter_pos()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -317,7 +317,7 @@ Variables</h2></td></tr>
           <td class="memname">static size_t get_delimiter_pos </td>
           <td>(</td>
           <td class="paramtype">const char *const&#160;</td>
-          <td class="paramname"><em>str</em>, </td>
+          <td class="paramname"><em>pairstr</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -347,7 +347,7 @@ Variables</h2></td></tr>
 <p>Gets the position of the first delimiter out of quotes. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">string</td><td>The string to analyse </td></tr>
+    <tr><td class="paramname">pairstr</td><td>The string to where to search for the delimiter </td></tr>
     <tr><td class="paramname">length</td><td>The length of the string </td></tr>
     <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
   </table>
@@ -461,7 +461,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Calls a custom function for each member of an INI array &ndash; useful for read-only (const) stringified arrays. </p>
+<p>Calls a custom function for each member of a stringified INI array without modifying the content of the buffer &ndash; useful for read-only (const) stringified arrays. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ini_string</td><td>The stringified array </td></tr>
@@ -474,7 +474,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Zero for success, otherwise an error code</dd></dl>
 <p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI member. ">IniDispatch</a></code> (but any other string may be used as well).</p>
-<p>The function <code>f_foreach</code> will be invoked with six arguments: <code>fullstring</code> (a pointer to <code>ini_string</code>), <code>memb_offset</code> (the offset of the member in bytes), <code>memb_length</code> (the length of the member in bytes), <code>index</code> (the index of the member in number of members), <code>format</code> (the format of the INI file), <code>foreach_other</code> (the custom argument <code>user_data</code> previously passed). If <code>f_foreach</code> returns a non-zero value the function <code><a class="el" href="confini_8c.html#a4d0619b3d26be629b76b9403cc5ff00e" title="Calls a custom function for each member of an INI array – useful for read-only (const) stringified a...">ini_array_foreach()</a></code> will be interrupted. </p>
+<p>The function <code>f_foreach</code> will be invoked with six arguments: <code>fullstring</code> (a pointer to <code>ini_string</code>), <code>memb_offset</code> (the offset of the member in bytes), <code>memb_length</code> (the length of the member in bytes), <code>index</code> (the index of the member in number of members), <code>format</code> (the format of the INI file), <code>foreach_other</code> (the custom argument <code>user_data</code> previously passed). If <code>f_foreach</code> returns a non-zero value the function <code><a class="el" href="confini_8c.html#a4d0619b3d26be629b76b9403cc5ff00e" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> will be interrupted. </p>
 
 </div>
 </div>
@@ -510,7 +510,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Gets the length of an INI array. </p>
+<p>Gets the length of a stringified INI array. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ini_string</td><td>The stringified array </td></tr>
@@ -556,7 +556,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Compresses the distribution of the data of an INI array by removing all the white spaces that sorround its delimiters. </p>
+<p>Compresses the distribution of the data of a stringified INI array by removing all the white spaces that sorround its delimiters. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ini_string</td><td>The stringified array </td></tr>
@@ -831,7 +831,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Splits an INI array and calls a custom function for each member. </p>
+<p>Splits a stringified INI array into NUL-separated members and calls a custom function for each member. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ini_string</td><td>The stringified array </td></tr>
@@ -844,8 +844,9 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Zero for success, otherwise an error code</dd></dl>
 <p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI member. ">IniDispatch</a></code> (but any other string may be used as well).</p>
-<p>The function <code>f_foreach</code> will be invoked with five arguments: <code>member</code> (a pointer to <code>ini_string</code>), <code>memb_length</code> (the length of the member in bytes), <code>index</code> (the index of the member in number of members), <code>format</code> (the format of the INI file), <code>foreach_other</code> (the custom argument <code>user_data</code> previously passed). If <code>f_foreach</code> returns a non-zero value the function <code><a class="el" href="confini_8c.html#acee3223f103e6264fd5e1a8bd4a7f7d7" title="Splits an INI array and calls a custom function for each member. ">ini_split_array()</a></code> will be interrupted.</p>
-<p>See example under <code><a class="el" href="confini_8c.html#a74789309b1a9c5b8886484c2b4d3a381" title="Compresses the distribution of the data of an INI array by removing all the white spaces that sorroun...">ini_collapse_array()</a></code>. </p>
+<p>The function <code>f_foreach</code> will be invoked with five arguments: <code>member</code> (a pointer to <code>ini_string</code>), <code>memb_length</code> (the length of the member in bytes), <code>index</code> (the index of the member in number of members), <code>format</code> (the format of the INI file), <code>foreach_other</code> (the custom argument <code>user_data</code> previously passed). If <code>f_foreach</code> returns a non-zero value the function <code><a class="el" href="confini_8c.html#acee3223f103e6264fd5e1a8bd4a7f7d7" title="Splits a stringified INI array into NUL-separated members and calls a custom function for each member...">ini_split_array()</a></code> will be interrupted.</p>
+<p>Similarly to <code>strtok()</code> this function can be used only once for a given string.</p>
+<p>See example under <code><a class="el" href="confini_8c.html#a74789309b1a9c5b8886484c2b4d3a381" title="Compresses the distribution of the data of a stringified INI array by removing all the white spaces t...">ini_collapse_array()</a></code>. </p>
 
 </div>
 </div>
@@ -1565,8 +1566,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="aaea3c257c404d241a51c3bb8d54096bb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaea3c257c404d241a51c3bb8d54096bb">&#9670;&nbsp;</a></span>sanitize_section_name()</h2>
+<a id="ad48d665646931a16bcd5a0e8b04a579c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad48d665646931a16bcd5a0e8b04a579c">&#9670;&nbsp;</a></span>sanitize_section_name()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1578,7 +1579,7 @@ Variables</h2></td></tr>
           <td class="memname">static size_t sanitize_section_name </td>
           <td>(</td>
           <td class="paramtype">char *const&#160;</td>
-          <td class="paramname"><em>str</em>, </td>
+          <td class="paramname"><em>secstr</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1602,7 +1603,7 @@ Variables</h2></td></tr>
 <p>Sanitizes the name of a section. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">str</td><td>The target string </td></tr>
+    <tr><td class="paramname">secstr</td><td>The target string </td></tr>
     <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
   </table>
   </dd>
