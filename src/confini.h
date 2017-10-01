@@ -78,7 +78,7 @@ typedef struct IniDispatch {
 } IniDispatch;
 
 /** @brief	24-bit bitmask representing the format of an INI file **/
-typedef size_t IniFormatId;
+typedef unsigned long int IniFormatId;
 
 
 

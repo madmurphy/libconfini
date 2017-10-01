@@ -50,7 +50,7 @@ src/confini.h \- libconfini header
 .br
 .RI "Dispatch of a single INI member\&. "
 .ti -1c
-.RI "typedef size_t \fBIniFormatId\fP"
+.RI "typedef unsigned long int \fBIniFormatId\fP"
 .br
 .RI "24-bit bitmask representing the format of an INI file "
 .in -1c
@@ -220,7 +220,7 @@ Dispatch of a single INI member\&.
 
 .PP
 24-bit bitfield representing a unique format of an INI file (INI dialect) – \fCsizeof(IniFormat)\fP should be \fC3\fP 
-.SS "typedef size_t \fBIniFormatId\fP"
+.SS "typedef unsigned long int \fBIniFormatId\fP"
 
 .PP
 24-bit bitmask representing the format of an INI file 

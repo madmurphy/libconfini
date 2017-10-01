@@ -46,7 +46,7 @@ var searchData=
   ['inidelimiters',['IniDelimiters',['../confini_8h.html#ad342637c37d95454c9392a8cc73bced8',1,'confini.h']]],
   ['inidispatch',['IniDispatch',['../structIniDispatch.html',1,'IniDispatch'],['../confini_8h.html#a48a2d1eb3a8f1cfd41efb34c615d496d',1,'IniDispatch():&#160;confini.h']]],
   ['iniformat',['IniFormat',['../structIniFormat.html',1,'IniFormat'],['../confini_8h.html#accd16964233945de96b91facd9e20545',1,'IniFormat():&#160;confini.h']]],
-  ['iniformatid',['IniFormatId',['../confini_8h.html#aa9513767c9138bc9067a182f6ef3e965',1,'confini.h']]],
+  ['iniformatid',['IniFormatId',['../confini_8h.html#ad88dd5ea6ac66d7b1c31c5e26fca8e88',1,'confini.h']]],
   ['inimultiline',['IniMultiline',['../confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55f',1,'confini.h']]],
   ['ininodetype',['IniNodeType',['../confini_8h.html#a4e394db479f56eaa830ade09c907461b',1,'confini.h']]],
   ['inistatistics',['IniStatistics',['../structIniStatistics.html',1,'IniStatistics'],['../confini_8h.html#af59b765f17d37553506a0ff5c8c41aa6',1,'IniStatistics():&#160;confini.h']]],
