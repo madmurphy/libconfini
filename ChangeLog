@@ -10,6 +10,8 @@ Changes:
 * Created global variable `INI_INSENSITIVE_LOWERCASE`
 * Created functions `ini_dispatch_case_insensitive_lowercase()`, `ini_string_match_ss()`, `ini_string_match_si()` and `ini_string_match_ii()`
 * Code review (data types, `enum` `ConfiniErrorNo`, `load_ini_file()`, `ini_unquote()`)
+* Moved `#include <stdint.h>` from `confini.c` to `confini.h`
+* Moved back `#include <stdio.h>` from `confini.h` to `confini.c`
 * Documentation
 * Examples
 

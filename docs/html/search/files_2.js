@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['man_2emd',['MAN.md',['../MAN_8md.html',1,'']]]
+  ['manual_2emd',['MANUAL.md',['../MANUAL_8md.html',1,'']]]
 ];

@@ -1,20 +1,32 @@
-# News
+NEWS
+====
+
 
 ## [1.4.1] -- 2017-10-01
 
-* Created string comparison functions `ini_string_match_ss()`, `ini_string_match_si()` and `ini_string_match_ii()`
+* Created string comparison functions `ini_string_match_ss()`,
+  `ini_string_match_si()` and `ini_string_match_ii()`
+* `stdint.h` header has been included in `confini.h`
+* `stdio.h` header has been removed from `confini.h`
+
 
 ## [1.4.0] -- 2017-09-07
 
-* `stdio.h` header included in `confini.h`
-* Function `load_ini_file()` now uses a `FILE` structure instead of a path -- in order to use a path (a string), the shortcut `load_ini_path()` has been created
+* `stdio.h` header has been included in `confini.h`
+* Function `load_ini_file()` now uses a `FILE` structure instead of a path -- in
+  order to use a path (a string), the shortcut `load_ini_path()` has been
+  created
+
 
 ## [1.3-1] -- 2016-10-24
 
 * `ini_collapse_array()` has been created
-* `index` and `format` parameters have been added to callback function in `ini_array_foreach()` and `ini_split_array()`
+* `index` and `format` parameters have been added to callback function in
+  `ini_array_foreach()` and `ini_split_array()`
+
 
 ## [1.1-1] -- 2016-10-14
 
-* Added support for `INI_ANY_SPACE` (`0`) as delimiter in `ini_array_get_length()`, `ini_array_foreach()` and `ini_split_array()`
+* Added support for `INI_ANY_SPACE` (`0`) as delimiter in
+  `ini_array_get_length()`, `ini_array_foreach()` and `ini_split_array()`
 * `IniFormat::no_spaces_in_names` has been created

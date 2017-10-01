@@ -11,7 +11,7 @@
 #ifndef _LIBCONFINI_HEADER_
 #define _LIBCONFINI_HEADER_
 
-#include <stdio.h>
+#include <stdint.h>
 
 
 
@@ -78,7 +78,7 @@ typedef struct IniDispatch {
 } IniDispatch;
 
 /** @brief	24-bit bitmask representing the format of an INI file **/
-typedef unsigned long int IniFormatId;
+typedef uint32_t IniFormatId;
 
 
 

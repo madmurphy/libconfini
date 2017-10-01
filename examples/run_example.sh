@@ -18,7 +18,7 @@ _TMP_FOLDER_="$(mktemp -d)"
 _THIS_PATH_=$(cd $(dirname "${BASH_SOURCE[0]}") ; pwd)
 _THIS_PATH_LENGTH_=$(expr "${#_THIS_PATH_}" + 1)
 _COMPILE_TO_="${_TMP_FOLDER_}/libconfini_example"
-_SRCS_=("${_THIS_PATH_}/other"/*.c
+_SRCS_=("${_THIS_PATH_}/miscellanea"/*.c
 	"${_THIS_PATH_}/topics"/*.c)
 _COLORS_=0
 _HIGHLIGHT_=0
@@ -64,7 +64,7 @@ while [[ "${_DONE_}" -eq 0 ]] ; do
 	while [[ "${_GOOD_ANSWER_}" -eq 0 ]] ; do
 		echo -ne "${_COL_BGREEN_}==>${_COL_BWHITE_} Please choose an example to compile and run (leave empty to exit):${_COL_DEFAULT_} "
 		read _CHOICE_
-		if [[ -z "${_CHOICE_}" ]] || [[ "${_CHOICE_}" == '0' ]] ; then
+		if [[ -z "${_CHOICE_}" ]] || [[ "${_CHOICE_}" =~ ^0+$ ]] || [[ "${_CHOICE_,,}" == 'q' ]] ; then
 			_GOOD_ANSWER_=1
 			_DONT_RUN_=1
 			_DONE_=1

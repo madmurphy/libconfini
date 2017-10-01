@@ -10,8 +10,8 @@
 
 **/
 
+#include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include "confini.h"
 
 
@@ -55,10 +55,10 @@
 					If set to `1`, the double-quote character (`"`) will be
 					considered as a normal character
 	@property	IniFormat::implicit_is_not_empty
-					If set to `1`, the dispatch of implicit keys (see @ref
-					libconfini) will always assign to `IniDispatch::value`
-					and to `IniDispatch::v_len` the global variables
-					`#INI_IMPLICIT_VALUE` and `#INI_IMPLICIT_V_LEN`
+					If set to `1`, the dispatch of implicit keys (see
+					[the manual](@ref libconfini)) will always assign to
+					`IniDispatch::value` and to `IniDispatch::v_len` the global
+					variables `#INI_IMPLICIT_VALUE` and `#INI_IMPLICIT_V_LEN`
 					respectively; if set to `0`, implicit keys will be
 					considered to be empty keys
 	@property	IniFormat::do_not_collapse_values
@@ -2746,7 +2746,7 @@ int ini_split_array (
 	Usually @p ini_string comes from an `IniDispatch` (but any other string may
 	be used as well).
 
-	@include other/typed_ini.c
+	@include miscellanea/typed_ini.c
 
 **/
 signed int ini_get_bool (const char * const ini_string, const signed int return_value) {

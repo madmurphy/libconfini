@@ -24,10 +24,10 @@ examples_DATA = \
 	examples/run_example.sh \
 	examples/typed_ini.conf
 
-examplesotherdir = $(examplesdir)/other
+examplesotherdir = $(examplesdir)/miscellanea
 examplesother_DATA = \
-        examples/other/basic_example.c \
-	examples/other/typed_ini.c
+        examples/miscellanea/basic_example.c \
+	examples/miscellanea/typed_ini.c
 
 examplestopicsdir = $(examplesdir)/topics
 examplestopics_DATA = \
