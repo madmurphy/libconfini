@@ -13,5 +13,6 @@ var searchData=
   ['confini_5fenoent',['CONFINI_ENOENT',['../confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325aca147c275760856386fdb9e778525676',1,'confini.h']]],
   ['confini_5fenomem',['CONFINI_ENOMEM',['../confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325a0e8e1cee80bc4b7839838764f5d661f5',1,'confini.h']]],
   ['confini_5ferror',['CONFINI_ERROR',['../confini_8h.html#a0b9dcb5c0711475ea78b065b0322bde1',1,'confini.h']]],
+  ['confini_5fglobal_5fset_5flowercase_5fmode',['confini_global_set_lowercase_mode',['../confini_8c.html#a7d0ef8a05397a05ca8b2187f9a4330b2',1,'confini_global_set_lowercase_mode(_Bool b_lowercase):&#160;confini.c'],['../confini_8h.html#a7d0ef8a05397a05ca8b2187f9a4330b2',1,'confini_global_set_lowercase_mode(_Bool b_lowercase):&#160;confini.c']]],
   ['confinierrorno',['ConfiniErrorNo',['../confini_8h.html#ae6a17d09c16887dfd373eb0c05e4d325',1,'confini.h']]]
 ];

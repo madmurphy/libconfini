@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Sun Oct 1 2017" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Mon Oct 2 2017" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -90,7 +90,7 @@ src/confini.h \- libconfini header
 .br
 .RI "Parses an INI file and dispatches its content\&. "
 .ti -1c
-.RI "void \fBini_dispatch_case_insensitive_lowercase\fP (_Bool b_lowercase)"
+.RI "void \fBconfini_global_set_lowercase_mode\fP (_Bool b_lowercase)"
 .br
 .RI "Sets the value of the global variable \fC\fBINI_INSENSITIVE_LOWERCASE\fP\fP "
 .ti -1c
@@ -335,6 +335,22 @@ Not used here, but available for user's implementations
 \fB\fIINI_DISABLED_KEY \fP\fP
 .SH "Function Documentation"
 .PP 
+.SS "void confini_global_set_lowercase_mode (_Bool b_lowercase)"
+
+.PP
+Sets the value of the global variable \fC\fBINI_INSENSITIVE_LOWERCASE\fP\fP 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb_lowercase\fP The new value 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Nothing
+.RE
+.PP
+If \fCb_lowercase\fP is \fCTRUE\fP key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: \fCTRUE\fP)\&. 
 .SS "int ini_array_foreach (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(const char *fullstring, size_t memb_offset, size_t memb_length, size_t index, \fBIniFormat\fP format, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
@@ -486,22 +502,6 @@ int main () {
 .fi
 .PP
  
-.SS "void ini_dispatch_case_insensitive_lowercase (_Bool b_lowercase)"
-
-.PP
-Sets the value of the global variable \fC\fBINI_INSENSITIVE_LOWERCASE\fP\fP 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIb_lowercase\fP The new value 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-Nothing
-.RE
-.PP
-If \fCb_lowercase\fP is \fCTRUE\fP key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: \fCTRUE\fP)\&. 
 .SS "\fBIniFormatId\fP ini_format_get_id (const \fBIniFormat\fP source)"
 
 .PP

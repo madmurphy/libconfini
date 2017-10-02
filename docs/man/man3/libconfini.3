@@ -893,13 +893,22 @@ Condition: \fBformat\.no_single_quotes && !format\.no_double_quotes && format\.m
 ⇒ Behavior of \fBini_unquote()\fR: \fB\e\e\fR and \fB\e"\fR will be unescaped, all unescaped double quotes will be removed,\~then the new length of the string will be returned\.
 .
 .IP "4." 4
+Condition: \fBformat\.no_single_quotes && format\.no_double_quotes && format\.multiline_entries != INI_NO_MULTILINE\fR
+.
+.br
+⇒ Escape sequences: \fB\e\e\fR
+.
+.br
+⇒ Behavior of \fBini_unquote()\fR: only \fB\e\e\fR will be unescaped, then the new length of the string will be returned\.
+.
+.IP "5." 4
 Condition: \fBformat\.no_single_quotes && format\.no_double_quotes && format\.multiline_entries == INI_NO_MULTILINE\fR
 .
 .br
 ⇒ Escape sequences: No escape sequences
 .
 .br
-⇒ Behavior of \fBini_unquote()\fR: No changes will be performed, only the length of the string will be counted and returned\.
+⇒ Behavior of \fBini_unquote()\fR: No changes will be made, only the length of the string will be counted and returned\.
 .
 .IP "" 0
 .
@@ -1042,13 +1051,13 @@ _Bool INI_INSENSITIVE_LOWERCASE = FALSE;
 .IP "" 0
 .
 .P
-Alternatively, it can be set through the function \fBini_dispatch_case_insensitive_lowercase()\fR without being explicitly declared\.
+Alternatively, it can be set through the function \fBconfini_global_set_lowercase_mode()\fR without being explicitly declared\.
 .
 .P
 When the variable \fBINI_INSENSITIVE_LOWERCASE\fR is set to \fBTRUE\fR, \fBlibconfini\fR will always convert all ASCII letters to lowercase (except within values) – \fIeven when these are enclosed within quotes\fR – but will \fBnot\fR convert UTF\-8 code points to lowercase (for instance, \fBĀ\fR will not be rendered as \fBā\fR, but will be rather rendered verbatim)\. \fIIn general it is a good practice to use UTF\-8 within values, but to use ASCII only within keys names and sections names\.\fR
 .
 .SS "THREAD SAFETY"
-Depending on the format of the INI file, \fBlibconfini\fR may use up to three global variables (\fBINI_IMPLICIT_VALUE\fR, \fBINI_IMPLICIT_V_LEN\fR and \fBINI_INSENSITIVE_LOWERCASE\fR)\. In order to be thread\-safe these three variables (if needed) must be defined only once (either directly, or through their modifier functions \fBini_set_implicit_value()\fR and \fBini_dispatch_case_insensitive_lowercase()\fR), or otherwise a mutex logic must be introduced\. It is indeed very important that these variables are not changed during a parsing process\.
+Depending on the format of the INI file, \fBlibconfini\fR may use up to three global variables (\fBINI_IMPLICIT_VALUE\fR, \fBINI_IMPLICIT_V_LEN\fR and \fBINI_INSENSITIVE_LOWERCASE\fR)\. In order to be thread\-safe these three variables (if needed) must be defined only once (either directly, or through their modifier functions \fBini_set_implicit_value()\fR and \fBconfini_global_set_lowercase_mode()\fR), or otherwise a mutex logic must be introduced\. It is indeed very important that these variables are not changed during a parsing process\.
 .
 .P
 Apart from the three variables above, each parsing allocates and frees its own memory, therefore the library must be considered thread\-safe\.

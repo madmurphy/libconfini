@@ -12,7 +12,6 @@ var searchData=
   ['ini_5fdefault_5fformat',['INI_DEFAULT_FORMAT',['../confini_8h.html#aafa50d590c715f37b74fa5938a35a56f',1,'confini.h']]],
   ['ini_5fdisabled_5fkey',['INI_DISABLED_KEY',['../confini_8h.html#a4e394db479f56eaa830ade09c907461ba9b68a1fa247c1b1ae3fc2ce615359c7b',1,'confini.h']]],
   ['ini_5fdisabled_5fsection',['INI_DISABLED_SECTION',['../confini_8h.html#a4e394db479f56eaa830ade09c907461ba38e952e2092e426a29e6618698772bff',1,'confini.h']]],
-  ['ini_5fdispatch_5fcase_5finsensitive_5flowercase',['ini_dispatch_case_insensitive_lowercase',['../confini_8c.html#a45de8bd45e6ef62a37091e001130b952',1,'ini_dispatch_case_insensitive_lowercase(_Bool b_lowercase):&#160;confini.c'],['../confini_8h.html#a45de8bd45e6ef62a37091e001130b952',1,'ini_dispatch_case_insensitive_lowercase(_Bool b_lowercase):&#160;confini.c']]],
   ['ini_5fequals',['INI_EQUALS',['../confini_8h.html#ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f',1,'confini.h']]],
   ['ini_5feverything_5fmultiline',['INI_EVERYTHING_MULTILINE',['../confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa17e1a311cef9d9ea4175de00a8e5f5f2',1,'confini.h']]],
   ['ini_5fforget_5fcomment',['INI_FORGET_COMMENT',['../confini_8h.html#a397bfc55d3cf3e2ecd6b044e4d168796a1896355b58ef9507121d73b55d13da19',1,'confini.h']]],

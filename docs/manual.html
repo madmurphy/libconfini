@@ -714,9 +714,12 @@ my_format.disabled_can_be_implicit = NO;
 <li>Condition: <code>format.no_single_quotes &amp;&amp; !format.no_double_quotes &amp;&amp; format.multiline_entries != INI_NO_MULTILINE</code><br />
 &rArr; Escape sequences: <code>\\</code>, <code>\"</code><br />
 &rArr; Behavior of <code>ini_unquote()</code>: <code>\\</code> and <code>\"</code> will be unescaped, all unescaped double quotes will be removed,&nbsp;then the new length of the string will be returned.</li>
+<li>Condition: <code>format.no_single_quotes &amp;&amp; format.no_double_quotes &amp;&amp; format.multiline_entries != INI_NO_MULTILINE</code><br />
+&rArr; Escape sequences: <code>\\</code><br />
+&rArr; Behavior of <code>ini_unquote()</code>: only <code>\\</code> will be unescaped, then the new length of the string will be returned.</li>
 <li>Condition: <code>format.no_single_quotes &amp;&amp; format.no_double_quotes &amp;&amp; format.multiline_entries == INI_NO_MULTILINE</code><br />
 &rArr; Escape sequences: No escape sequences<br />
-&rArr; Behavior of <code>ini_unquote()</code>: No changes will be performed, only the length of the string will be counted and returned.</li>
+&rArr; Behavior of <code>ini_unquote()</code>: No changes will be made, only the length of the string will be counted and returned.</li>
 </ol>
 
 
@@ -826,13 +829,13 @@ int main () {
 _Bool INI_INSENSITIVE_LOWERCASE = FALSE;
 </code></pre>
 
-<p>Alternatively, it can be set through the function <code>ini_dispatch_case_insensitive_lowercase()</code> without being explicitly declared.</p>
+<p>Alternatively, it can be set through the function <code>confini_global_set_lowercase_mode()</code> without being explicitly declared.</p>
 
 <p>When the variable <code>INI_INSENSITIVE_LOWERCASE</code> is set to <code>TRUE</code>, <strong>libconfini</strong> will always convert all ASCII letters to lowercase (except within values) &ndash; <em>even when these are enclosed within quotes</em> &ndash; but will <strong>not</strong> convert UTF-8 code points to lowercase (for instance, <code>&Amacr;</code> will not be rendered as <code>&amacr;</code>, but will be rather rendered verbatim). <em>In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names.</em></p>
 
 <h3 id="THREAD-SAFETY">THREAD SAFETY</h3>
 
-<p>Depending on the format of the INI file, <strong>libconfini</strong> may use up to three global variables (<code>INI_IMPLICIT_VALUE</code>, <code>INI_IMPLICIT_V_LEN</code> and <code>INI_INSENSITIVE_LOWERCASE</code>). In order to be thread-safe these three variables (if needed) must be defined only once (either directly, or through their modifier functions <code>ini_set_implicit_value()</code> and <code>ini_dispatch_case_insensitive_lowercase()</code>), or otherwise a mutex logic must be introduced. It is indeed very important that these variables are not changed during a parsing process.</p>
+<p>Depending on the format of the INI file, <strong>libconfini</strong> may use up to three global variables (<code>INI_IMPLICIT_VALUE</code>, <code>INI_IMPLICIT_V_LEN</code> and <code>INI_INSENSITIVE_LOWERCASE</code>). In order to be thread-safe these three variables (if needed) must be defined only once (either directly, or through their modifier functions <code>ini_set_implicit_value()</code> and <code>confini_global_set_lowercase_mode()</code>), or otherwise a mutex logic must be introduced. It is indeed very important that these variables are not changed during a parsing process.</p>
 
 <p>Apart from the three variables above, each parsing allocates and frees its own memory, therefore the library must be considered thread-safe.</p>
 

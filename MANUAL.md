@@ -656,9 +656,12 @@ The behavior of these functions depends on the format given. In particular, usin
 3.	Condition: `format.no_single_quotes && !format.no_double_quotes && format.multiline_entries != INI_NO_MULTILINE`<br />
 	⇒ Escape sequences: `\\`, `\"`<br />
 	⇒ Behavior of `ini_unquote()`: `\\` and `\"` will be unescaped, all unescaped double quotes will be removed,&nbsp;then the new length of the string will be returned.
-4.	Condition: `format.no_single_quotes && format.no_double_quotes && format.multiline_entries == INI_NO_MULTILINE`<br />
+4.	Condition: `format.no_single_quotes && format.no_double_quotes && format.multiline_entries != INI_NO_MULTILINE`<br />
+	⇒ Escape sequences: `\\`<br />
+	⇒ Behavior of `ini_unquote()`: only `\\` will be unescaped, then the new length of the string will be returned.
+5.	Condition: `format.no_single_quotes && format.no_double_quotes && format.multiline_entries == INI_NO_MULTILINE`<br />
 	⇒ Escape sequences: No escape sequences<br />
-	⇒ Behavior of `ini_unquote()`: No changes will be performed, only the length of the string will be counted and returned.
+	⇒ Behavior of `ini_unquote()`: No changes will be made, only the length of the string will be counted and returned.
 
 
 ## STRING COMPARISONS
@@ -774,14 +777,14 @@ As with the other global variables, the variable `#INI_INSENSITIVE_LOWERCASE` ca
 _Bool INI_INSENSITIVE_LOWERCASE = FALSE;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Alternatively, it can be set through the function `ini_dispatch_case_insensitive_lowercase()` without being explicitly declared.
+Alternatively, it can be set through the function `confini_global_set_lowercase_mode()` without being explicitly declared.
 
 When the variable `#INI_INSENSITIVE_LOWERCASE` is set to `TRUE`, **libconfini** will always convert all ASCII letters to lowercase (except within values) -- _even when these are enclosed within quotes_ -- but will **not** convert UTF-8 code points to lowercase (for instance, `Ā` will not be rendered as `ā`, but will be rather rendered verbatim). _In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names._
 
 
 ### THREAD SAFETY
 
-Depending on the format of the INI file, **libconfini** may use up to three global variables (`#INI_IMPLICIT_VALUE`, `#INI_IMPLICIT_V_LEN` and `#INI_INSENSITIVE_LOWERCASE`). In order to be thread-safe these three variables (if needed) must be defined only once (either directly, or through their modifier functions `ini_set_implicit_value()` and `ini_dispatch_case_insensitive_lowercase()`), or otherwise a mutex logic must be introduced. It is indeed very important that these variables are not changed during a parsing process.
+Depending on the format of the INI file, **libconfini** may use up to three global variables (`#INI_IMPLICIT_VALUE`, `#INI_IMPLICIT_V_LEN` and `#INI_INSENSITIVE_LOWERCASE`). In order to be thread-safe these three variables (if needed) must be defined only once (either directly, or through their modifier functions `ini_set_implicit_value()` and `confini_global_set_lowercase_mode()`), or otherwise a mutex logic must be introduced. It is indeed very important that these variables are not changed during a parsing process.
 
 Apart from the three variables above, each parsing allocates and frees its own memory, therefore the library must be considered thread-safe.
 

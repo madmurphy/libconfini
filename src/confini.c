@@ -1354,12 +1354,14 @@ int load_ini_file (
 
 	__SHIFT_LEN__ = (unsigned char) *cache == 0xEF && (unsigned char) *(cache + 1) == 0xBB && (unsigned char) *(cache + 2) == 0xBF ? 3 : 0;
 
+	
 	for (
 
 		__N_MEMBERS__ = 0,
 		__EOL_ID__ = 5,
 		__ISNT_ESCAPED__ = _LIBCONFINI_TRUE_,
-		node_at = idx = __SHIFT_LEN__;
+		node_at = 0,
+		idx = __SHIFT_LEN__;
 
 			idx < __N_BYTES__;
 
@@ -1373,9 +1375,9 @@ int load_ini_file (
 
 			if (format.multiline_entries == INI_NO_MULTILINE || __ISNT_ESCAPED__) {
 
-				cache[idx] = '\0';
+				cache[idx - __SHIFT_LEN__] = '\0';
 				__N_MEMBERS__ += further_cuts(cache + ultrim_h(cache, node_at), format);
-				node_at = idx + 1;
+				node_at = idx - __SHIFT_LEN__ + 1;
 
 			} else if (cache[idx + 1] == _LIBCONFINI_SPACES_[__EOL_ID__ ^ 1]) {
 
@@ -1857,7 +1859,7 @@ int load_ini_path (
 	`TRUE`).
 
 **/
-void ini_dispatch_case_insensitive_lowercase (_Bool b_lowercase) {
+void confini_global_set_lowercase_mode (_Bool b_lowercase) {
 
 	INI_INSENSITIVE_LOWERCASE = b_lowercase;
 

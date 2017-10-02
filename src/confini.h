@@ -113,7 +113,7 @@ extern int load_ini_path (
 	void *user_data
 );
 
-extern void ini_dispatch_case_insensitive_lowercase (
+extern void confini_global_set_lowercase_mode (
 	_Bool b_lowercase
 );
 
