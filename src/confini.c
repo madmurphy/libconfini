@@ -512,9 +512,9 @@ static inline size_t get_delimiter_pos (const char * const pairstr, const size_t
 **/
 static size_t unescape_cr_lf (char * const str, const size_t len, const _LIBCONFINI_BOOL_ is_disabled, const IniFormat format) {
 
-	size_t idx, iter, lshift;
-	_LIBCONFINI_BOOL_ is_escaped = _LIBCONFINI_FALSE_;
+	_LIBCONFINI_BOOL_ is_escaped;
 	uint8_t cr_or_lf = 5;
+	size_t idx, iter, lshift;
 
 	for (is_escaped = _LIBCONFINI_FALSE_, idx = 0, lshift = 0; idx < len; idx++) {
 
