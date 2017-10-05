@@ -24,7 +24,7 @@
 
 	- Bits 1-18: INI syntax
 	- Bits 19-20: INI semantics
-	- Bits 21-22: user's syntax (disabled entries)
+	- Bits 21-22: human syntax (disabled entries)
 	- Bits 23-24: not used
 
 	@property	IniFormat::delimiter_symbol
@@ -87,39 +87,43 @@
 	@struct		IniDispatch
 
 	@property	IniDispatch::format
-			The format of the INI file (see struct `IniFormat`)
+					The format of the INI file (see struct `IniFormat`)
 	@property	IniDispatch::type
-			The dispatch type (see enum `#IniNodeType`)
+					The dispatch type (see enum `#IniNodeType`)
 	@property	IniDispatch::data
-			It can be a comment, a section path or a key name
+					It can be a comment, a section path or a key name
 	@property	IniDispatch::value
-			It can be the value of a key element or an empty string
+					It can be the value of a key element or an empty string
 	@property	IniDispatch::append_to
-			The current section path
+					The current section path
 	@property	IniDispatch::d_len
-			The length of the string `IniDispatch::data`
+					The length of the string `IniDispatch::data`
 	@property	IniDispatch::v_len
-			The length of the string `IniDispatch::value`
+					The length of the string `IniDispatch::value`
 	@property	IniDispatch::at_len
-			The length of the string `IniDispatch::append_to`
+					The length of the string `IniDispatch::append_to`
 	@property	IniDispatch::dispatch_id
-			The dispatch id
+					The dispatch id
 
 
-	@fn		ini_get_int
-	@brief		Link to [`atoi()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoi)
+	@fn			ini_get_int
+	@brief			Link to
+					[`atoi()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoi)
 
 
-	@fn		ini_get_lint
-	@brief		Link to [`atol()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atol)
+	@fn			ini_get_lint
+	@brief			Link to
+					[`atol()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atol)
 
 
-	@fn		ini_get_llint
-	@brief		Link to [`atoll()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoll)
+	@fn			ini_get_llint
+	@brief			Link to
+					[`atoll()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoll)
 
 
-	@fn		ini_get_float
-	@brief		Link to [`atof()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atof)
+	@fn			ini_get_float
+	@brief			Link to
+					[`atof()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atof)
 
 
 
@@ -481,7 +485,7 @@ static inline size_t get_delimiter_pos (const char * const pairstr, const size_t
 			idx < len && (
 				(abacus & 12) || !(
 					format.delimiter_symbol ?
-						pairstr[idx] == (char /* Neutralize the `unsigned` keyword used in the bitfield */) format.delimiter_symbol
+						*((unsigned char *) pairstr + idx) == format.delimiter_symbol
 						: is_some_space(pairstr[idx], _LIBCONFINI_NO_EOL_)
 				)
 			);
@@ -844,7 +848,7 @@ static uint8_t get_type_as_active (
 	const IniFormat format
 ) {
 
-	if (!len || *nodestr == (char /* Neutralize the `unsigned` keyword used in the bitfield */) format.delimiter_symbol || is_comment_char(*nodestr, format)) {
+	if (!len || *((unsigned char *) nodestr) == format.delimiter_symbol || is_comment_char(*nodestr, format)) {
 
 		return INI_UNKNOWN;
 
@@ -1126,7 +1130,7 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 								)
 							)
 						)
-					) {
+				) {
 
 					rtrim_h(segment, idx, _LIBCONFINI_WITH_EOL_);
 					search_at = idx;
@@ -1349,7 +1353,7 @@ int load_ini_file (
 
 	/* UTF-8 BOM */
 
-	__SHIFT_LEN__ = (unsigned char) *cache == 0xEF && (unsigned char) *(cache + 1) == 0xBB && (unsigned char) *(cache + 2) == 0xBF ? 3 : 0;
+	__SHIFT_LEN__ = *((unsigned char *) cache) == 0xEF && *((unsigned char *) cache + 1) == 0xBB && *((unsigned char *) cache + 2) == 0xBF ? 3 : 0;
 
 	
 	for (

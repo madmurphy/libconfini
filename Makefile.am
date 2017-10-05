@@ -26,7 +26,7 @@ examples_DATA = \
 
 examplesotherdir = $(examplesdir)/miscellanea
 examplesother_DATA = \
-        examples/miscellanea/basic_example.c \
+        examples/miscellanea/dispatch_everything.c \
 	examples/miscellanea/typed_ini.c
 
 examplestopicsdir = $(examplesdir)/topics

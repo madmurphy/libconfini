@@ -22,12 +22,12 @@ Welcome to the documentation of **libconfini**!
 
 You can get started by reading the [motivations behind this library](@ref readme) and [the manual](@ref libconfini). Further useful resources include:
 
+- [**Source Code**](https://github.com/madmurphy/libconfini)
+- [**Releases**](https://github.com/madmurphy/libconfini/releases)
 - [confini.h File Reference](@ref confini.h)
 - `IniFormat`
 - `IniStatistics`
 - `IniDispatch`
-- [**Source Code**](https://github.com/madmurphy/libconfini)
-- [**Releases**](https://github.com/madmurphy/libconfini/releases)
 
 
 

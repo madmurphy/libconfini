@@ -1,3 +1,4 @@
+/* examples/miscellanea/typed_ini.c */
 /*
 
 The following code will try to read an INI section called `my_section`, expected to

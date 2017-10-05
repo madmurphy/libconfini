@@ -1,3 +1,5 @@
+/* examples/miscellanea/dispatch_everything.c */
+
 #include <stdio.h>
 #include <confini.h>
 

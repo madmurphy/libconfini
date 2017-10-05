@@ -1,3 +1,5 @@
+/* examples/topics/ini_collapse_array.c */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
