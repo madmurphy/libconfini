@@ -37,10 +37,12 @@ Despite highly configurable and flexible, **libconfini** is still a small
 piece of work. I really don't know if it will be useful to the community. For
 sure it does the right job for my editor.
 
-For more details, please read the
-[Library Functions Manual](https://madmurphy.github.io/libconfini/html/libconfini.html)
-(`man libconfini` -- a standalone HTML version is
-available [here](https://madmurphy.github.io/libconfini/manual.html)) and the
+For more details, please read the [Library Functions Manual][1]
+(`man libconfini` -- a standalone HTML version is available [here][2]) and the
 manual of the header file (`man confini.h`). The code is available on
-[GitHub](https://github.com/) under
-[madmurphy/libconfini](https://github.com/madmurphy/libconfini).
+[GitHub][3] under [madmurphy/libconfini][4]).
+
+[1]: https://madmurphy.github.io/libconfini/html/libconfini.html
+[2]: https://madmurphy.github.io/libconfini/manual.html
+[3]: https://github.com/
+[4]: https://github.com/madmurphy/libconfini
