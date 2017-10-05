@@ -2,7 +2,7 @@ NEWS
 ====
 
 
-## [1.4.1] -- 2017-10-02
+## [1.4.1] -- 2017-10-05
 
 * Created string comparison functions `ini_string_match_ss()`,
   `ini_string_match_si()` and `ini_string_match_ii()`

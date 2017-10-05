@@ -735,7 +735,7 @@ static size_t sanitize_section_name (char * const secstr, const IniFormat format
 
 	}
 
-	for (idx -= abacus & 960 ? ++lshift : lshift; secstr[idx]; secstr[idx++] = '\0');
+	for (idx -= (abacus & 960) && lshift < idx ? ++lshift : lshift; secstr[idx]; secstr[idx++] = '\0');
 
 	return idx - lshift;
 
