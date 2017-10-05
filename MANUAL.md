@@ -784,7 +784,7 @@ When the variable `#INI_INSENSITIVE_LOWERCASE` is set to `TRUE`, **libconfini** 
 
 ### THREAD SAFETY
 
-Depending on the format of the INI file, **libconfini** may use up to three global variables (`#INI_IMPLICIT_VALUE`, `#INI_IMPLICIT_V_LEN` and `#INI_INSENSITIVE_LOWERCASE`). In order to be thread-safe these three variables (if needed) must be defined only once (either directly, or through their modifier functions `ini_set_implicit_value()` and `confini_global_set_lowercase_mode()`), or otherwise a mutex logic must be introduced. It is indeed very important that these variables are not changed during a parsing process.
+Depending on the format of the INI file, **libconfini** may use up to three global variables (`#INI_IMPLICIT_VALUE`, `#INI_IMPLICIT_V_LEN` and `#INI_INSENSITIVE_LOWERCASE`). In order to be thread-safe these three variables (if needed) must be defined only once (either directly, or through their modifier functions `ini_set_implicit_value()` and `confini_global_set_lowercase_mode()`), or otherwise a mutex logic must be introduced.
 
 Apart from the three variables above, each parsing allocates and frees its own memory, therefore the library must be considered thread-safe.
 

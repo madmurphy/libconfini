@@ -662,80 +662,77 @@ static size_t sanitize_section_name (char * const secstr, const IniFormat format
 
 	/*
 
-	Mask `abacus` (11 bits used):
+	Mask `abacus` (14 bits used):
 
 		FLAG_1		Single quotes are not metacharacters (const)
 		FLAG_2		Double quotes are not metacharacters (const)
 		FLAG_4		Unescaped single quotes are odd until now
 		FLAG_8		Unescaped double quotes are odd until now
 		FLAG_16		We are in an odd sequence of backslashes
-		FLAG_32		The string does not start with a new line (const)
-		FLAG_64		More than one space is here
-		FLAG_128	At least one dot is here
-		FLAG_256	One or more spaces follow a dot
-		FLAG_512	More than one dot is here
-		FLAG_1024	Continue the shift
+		FLAG_32		This is not the first character OR this is not a dot
+		FLAG_64		This space comes after a dot
+		FLAG_128	More than one space is here
+		FLAG_256	More than one dot is here
+		FLAG_512	At least one dot is here
+		FLAG_1024	If zero, shift is a space, otherwise shift is a dot
+		FLAG_2048	If zero, shift is FLAG_1024, otherwise shift is verbatim
+		FLAG_4096	Increase the shift
+		FLAG_8192	Apply the shift now
 
 	*/
 
-	uint16_t abacus	=	(is_some_space(*secstr, _LIBCONFINI_WITH_EOL_) ? 256 : 32) |
+	uint16_t abacus	=	(is_some_space(*secstr, _LIBCONFINI_WITH_EOL_) ? 64 : 32) |
 						(format.no_double_quotes << 1) |
 						format.no_single_quotes;
 
+
 	for (lshift = 0, idx = 0; secstr[idx]; idx++) {
 
-		if (!(abacus & 12) && is_some_space(secstr[idx], _LIBCONFINI_WITH_EOL_)) {
+		/* Revision #1 */
 
-			if (abacus & 320) {
+		abacus	=	secstr[idx] == _LIBCONFINI_BACKSLASH_ ?
+						((abacus & 10303) | 10272) ^ 16
+					: !(abacus & 12) && secstr[idx] == _LIBCONFINI_SUBSECTION_ ?
+						(
+							!(abacus & 384) ?
+								(abacus & 15343) | 11104
+							: abacus & 32 ?
+								(abacus & 15343) | 14944
+							:
+								(abacus & 11247) | 10848
+						)
+					: !(abacus & 22) && secstr[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+						((abacus & 10303) | 10272) ^ 8
+					: !(abacus & 25) && secstr[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
+						((abacus & 10303) | 10272) ^ 4
+					: !(abacus & 12) && is_some_space(secstr[idx], _LIBCONFINI_WITH_EOL_) ?
+						(
+							abacus & 128 ?
+								(abacus & 5103) | 4096
+							: abacus & 64 ?
+								(abacus & 12451) | ((abacus << 1) & 1024) | 12416
+							:
+								(abacus & 8355) | ((abacus << 1) & 1024) | 8320
+						)
+					:
+						(abacus & 10287) | 10272;
 
-				lshift++;
 
-			}
+		if (abacus & 4096) {
 
-			if (!(abacus & 64)) {
-
-				secstr[idx - lshift] = abacus & 128 ? _LIBCONFINI_SUBSECTION_ : _LIBCONFINI_SIMPLE_SPACE_;
-				abacus &= 51;
-				abacus |= 64;
-
-			}
-
-			abacus &= 2031;
-
-		} else if (!(abacus & 12) && secstr[idx] == _LIBCONFINI_SUBSECTION_) {
-
-			if ((abacus & 576) && (abacus & 32)) {
-
-				lshift++;
-
-			}
-
-			abacus |= abacus & 576 ? 1440 : 1952;
-			abacus &= 2031;
-
-		} else {
-
-				abacus	=	(
-								(
-									secstr[idx] == _LIBCONFINI_BACKSLASH_ ? abacus ^ 16
-									: !(abacus & 22) && secstr[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abacus ^ 8
-									: !(abacus & 25) && secstr[idx] == _LIBCONFINI_SINGLE_QUOTES_ ? abacus ^ 4
-									: abacus & 2031
-								) & 1087
-							) | 1056;
+			lshift++;
 
 		}
 
-		if (abacus & 1024) {
+		if (abacus & 8192) {
 
-			secstr[idx - lshift] = secstr[idx];
-			abacus &= 1023;
+			secstr[idx - lshift] = abacus & 2048 ? secstr[idx] : abacus & 1024 ? _LIBCONFINI_SUBSECTION_ : _LIBCONFINI_SIMPLE_SPACE_;
 
 		}
 
 	}
 
-	for (idx -= (abacus & 960) && lshift < idx ? ++lshift : lshift; secstr[idx]; secstr[idx++] = '\0');
+	for (idx -= lshift < idx && (abacus & 960) ? ++lshift : lshift; secstr[idx]; secstr[idx++] = '\0');
 
 	return idx - lshift;
 
