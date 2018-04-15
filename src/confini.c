@@ -702,9 +702,9 @@ static size_t sanitize_key_name (char * const keystr, const IniFormat format) {
 
 	*/
 
-	uint16_t	abcd	=	(is_some_space(*keystr, _LIBCONFINI_WITH_EOL_) ? 0 : 32) |
-							(format.no_double_quotes << 1) |
-							format.no_single_quotes;
+	register uint16_t abcd	=	(is_some_space(*keystr, _LIBCONFINI_WITH_EOL_) ? 0 : 32) |
+								(format.no_double_quotes << 1) |
+								format.no_single_quotes;
 
 	size_t idx, lshift;
 
@@ -787,7 +787,7 @@ static size_t collapse_spaces (char * const str, const IniFormat format) {
 
 	*/
 
-	uint8_t	abcd = (format.no_double_quotes ? 34 : 32) | format.no_single_quotes;
+	register uint8_t abcd = (format.no_double_quotes ? 34 : 32) | format.no_single_quotes;
 	size_t idx, lshift;
 
 	for (lshift = 0, idx = 0; str[idx]; idx++) {
