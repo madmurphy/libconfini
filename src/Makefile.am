@@ -8,8 +8,10 @@ AM_CPPFLAGS = \
 	-DPACKAGE_DATA_DIR=\""$(pkgdatadir)"\"
 
 AM_CFLAGS =\
-	 -Wall\
-	 -g
+	-Wall\
+	-std=c99\
+	-g\
+	-O3
 
 lib_LTLIBRARIES = libconfini.la
 
@@ -34,7 +36,8 @@ include_HEADERS = \
 	confini.h
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = confini-1.4.pc
+pkgconfig_DATA = confini-1.5.pc
 
 EXTRA_DIST = \
-	confini-1.4.pc.in
+	confini-1.5.pc.in
+

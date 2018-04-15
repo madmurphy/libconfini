@@ -4,7 +4,8 @@
 	@brief		libconfini header
 	@author		Stefano Gioffr&eacute;
 	@copyright 	GNU Public License v3
-	@date		2016-2017
+	@date		2016-2018
+	@see		Source code at https://github.com/madmurphy/libconfini/blob/master/src/confini.h
 
 **/
 
@@ -18,36 +19,37 @@
 /* PRIVATE (HEADER-SCOPED) MACROS */
 
 
-#define _LIBCONFINI_FORMAT_AS_DECLARATION_(SIZE, PROPERTY, VALUE) unsigned char PROPERTY:SIZE;
-#define _LIBCONFINI_FORMAT_AS_ASSIGNEMENT_(SIZE, PROPERTY, VALUE) VALUE,
-#define _LIBCONFINI_FORMAT_STRUCT_ struct IniFormat { _LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(_LIBCONFINI_FORMAT_AS_DECLARATION_) }
-#define _LIBCONFINI_DEFAULT_FORMAT_ { _LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(_LIBCONFINI_FORMAT_AS_ASSIGNEMENT_) }
+#define _LIBCONFINI_INIFORMAT_DECLARATION_(SIZE, PROPERTY, DEFVAL) unsigned char PROPERTY:SIZE;
+#define _LIBCONFINI_INIFORMAT_ASSIGNEMENT_(SIZE, PROPERTY, DEFVAL) DEFVAL,
+#define _LIBCONFINI_INIFORMAT_STRUCT_ struct IniFormat { _LIBCONFINI_INIFORMAT_AS_(_LIBCONFINI_INIFORMAT_DECLARATION_) }
+#define _LIBCONFINI_DEFAULT_FORMAT_ { _LIBCONFINI_INIFORMAT_AS_(_LIBCONFINI_INIFORMAT_ASSIGNEMENT_) }
 
 
 
-/* GLOBAL MACROS */
+/* PUBLIC MACROS */
 
 
-#define _LIBCONFINI_EXPAND_MODEL_FORMAT_AS_(______)                            /*-*\
+#define _LIBCONFINI_INIFORMAT_AS_(______)                                  /*-*\
 
-    ______(     BITS      NAME                        DEFAULT VALUE            )/--/
-                                                                               /-*/\
-    ______(     8,        delimiter_symbol,           INI_EQUALS               )/*-/
-                                                                               /-*/\
-    ______(     2,        semicolon,                  INI_PARSE_COMMENT        )   \
-    ______(     2,        hash,                       INI_PARSE_COMMENT        )   \
-    ______(     2,        multiline_entries,          INI_EVERYTHING_MULTILINE )   \
-    ______(     1,        case_sensitive,             0                        )   \
-    ______(     1,        no_spaces_in_names,         0                        )/*-/
-                                                                               /-*/\
-    ______(     1,        no_single_quotes,           0                        )   \
-    ______(     1,        no_double_quotes,           0                        )   \
-    ______(     1,        implicit_is_not_empty,      0                        )   \
-    ______(     1,        do_not_collapse_values,     0                        )   \
-    ______(     1,        no_disabled_after_space,    0                        )   \
-    ______(     1,        disabled_can_be_implicit,   0                        )   \
-    ______(     2,        _LIBCONFINI_RESERVED_,      0                        )/*-/
-                                                                               /-*/
+    ______(    BITS    NAME                       DEFAULT VALUE            )/--/
+                                                                           /-*/\
+    ______(    8,      delimiter_symbol,          INI_EQUALS               )/*-/
+                                                                           /-*/\
+    ______(    2,      semicolon_marker,          INI_DISABLED_OR_COMMENT  )   \
+    ______(    2,      hash_marker,               INI_DISABLED_OR_COMMENT  )   \
+    ______(    2,      multiline_nodes,           INI_MULTILINE_EVERYWHERE )   \
+    ______(    1,      case_sensitive,            0                        )   \
+    ______(    1,      no_spaces_in_names,        0                        )/*-/
+                                                                           /-*/\
+    ______(    1,      no_single_quotes,          0                        )   \
+    ______(    1,      no_double_quotes,          0                        )   \
+    ______(    1,      implicit_is_not_empty,     0                        )   \
+    ______(    1,      do_not_collapse_values,    0                        )   \
+    ______(    1,      preserve_empty_quotes,     0                        )   \
+    ______(    1,      no_disabled_after_space,   0                        )   \
+    ______(    1,      disabled_can_be_implicit,  0                        )   \
+    ______(    1,      _LIBCONFINI_RESERVED_,     0                        )/*-/
+                                                                           /-*/
 
 
 
@@ -55,7 +57,7 @@
 
 
 /** @brief	24-bit bitfield representing a unique format of an INI file (INI dialect) -- `sizeof(IniFormat)` should be `3` **/
-typedef _LIBCONFINI_FORMAT_STRUCT_ IniFormat;
+typedef _LIBCONFINI_INIFORMAT_STRUCT_ IniFormat;
 
 /** @brief	Global statistics about an INI file **/
 typedef struct IniStatistics {
@@ -64,7 +66,7 @@ typedef struct IniStatistics {
 	const size_t members;
 } IniStatistics;
 
-/** @brief	Dispatch of a single INI member **/
+/** @brief	Dispatch of a single INI node **/
 typedef struct IniDispatch {
 	const IniFormat format;
 	unsigned short int type;
@@ -78,7 +80,7 @@ typedef struct IniDispatch {
 } IniDispatch;
 
 /** @brief	24-bit bitmask representing the format of an INI file **/
-typedef uint32_t IniFormatId;
+typedef uint32_t IniFormatNum;
 
 
 
@@ -113,22 +115,21 @@ extern int load_ini_path (
 	void *user_data
 );
 
-extern void confini_global_set_lowercase_mode (
-	_Bool b_lowercase
+extern void ini_global_set_lowercase_mode (
+	_Bool lowercase
 );
 
-extern void ini_set_implicit_value (
+extern void ini_global_set_implicit_value (
 	char * const implicit_value,
 	const size_t implicit_v_len
 );
 
-extern IniFormatId ini_format_get_id (
+extern IniFormatNum ini_fton (
 	const IniFormat format
 );
 
-extern void ini_format_set_to_id (
-	IniFormat *dest_format,
-	IniFormatId format_id
+extern IniFormat ini_ntof (
+	IniFormatNum format_id
 );
 
 extern _Bool ini_string_match_ss (
@@ -154,6 +155,11 @@ extern size_t ini_unquote (
 	const IniFormat format
 );
 
+extern size_t ini_string_parse (
+	char * const ini_string,
+	const IniFormat format
+);
+
 extern size_t ini_array_get_length (
 	const char * const ini_string,
 	const char delimiter,
@@ -175,13 +181,13 @@ extern int ini_array_foreach (
 	void *user_data
 );
 
-extern size_t ini_collapse_array (
+extern size_t ini_array_collapse (
 	char * const ini_string,
 	const char delimiter,
 	const IniFormat format
 );
 
-extern int ini_split_array (
+extern int ini_array_split (
 	char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
@@ -235,26 +241,26 @@ extern double (* const ini_get_float) (
 #define CONFINI_ERROR 4
 
 /** @brief	Error codes -- the actual values of each constant should be considered opaque **/
-enum ConfiniErrorNo {
-	CONFINI_EIINTR = 1,		/**< Interrupted by the user during `f_init()` **/
-	CONFINI_EFEINTR = 2,		/**< Interrupted by the user during `f_foreach()` **/
-	CONFINI_ENOENT = 4,		/**< File inaccessible **/
-	CONFINI_ENOMEM = 5,		/**< Error allocating memory **/
-	CONFINI_EIO = 6,		/**< Error reading the file **/
-	CONFINI_EFEOOR = 7		/**< The loop is longer than expected (out of range) **/
+enum ConfiniInterruptNo {
+	CONFINI_IINTR = 1,	/**< Interrupted by the user during `f_init()` **/
+	CONFINI_FEINTR = 2,	/**< Interrupted by the user during `f_foreach()` **/
+	CONFINI_ENOENT = 4,	/**< File inaccessible **/
+	CONFINI_ENOMEM = 5,	/**< Error allocating memory **/
+	CONFINI_EIO = 6,	/**< Error reading the file **/
+	CONFINI_EFEOOR = 7	/**< The loop is longer than expected (out of range) **/
 };
 
 /** @brief	Most used delimiters (but a delimiter can also be any other ASCII character) **/
 enum IniDelimiters {
-	INI_ANY_SPACE = 0,		/**< In multiline INIs: `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`, in non-multiline INIs: `/[\t \v\f])+/` **/
-	INI_EQUALS = '=',		/**< `=` **/
-	INI_COLON = ':'			/**< `:` **/
+	INI_ANY_SPACE = 0,	/**< In multi-line INIs: `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`, in non-multi-line INIs: `/[\t \v\f])+/` **/
+	INI_EQUALS = '=',	/**< `=` **/
+	INI_COLON = ':'		/**< `:` **/
 };
 
 /** @brief	INI nodes types **/
 enum IniNodeType {
-	INI_UNKNOWN = 0,
-	INI_VALUE = 1,			/**< Not used here, but available for user's implementations **/
+	INI_UNKNOWN = 0,	/**< Node impossible to parse **/
+	INI_VALUE = 1,		/**< Not used here, but available for user's implementations **/
 	INI_SECTION = 2,
 	INI_KEY = 3,
 	INI_COMMENT = 4,
@@ -263,42 +269,42 @@ enum IniNodeType {
 	INI_DISABLED_KEY = 7
 };
 
-/** @brief	Possible values for IniFormat::semicolon and IniFormat::hash (i.e., meaning of `/\s+[#;]/` in respect to a format) **/
-enum IniComments {
-	INI_PARSE_COMMENT = 0,		/**< This character opens a comment or a disabled entry **/
-	INI_SHOW_COMMENT = 1,		/**< This character opens a comment **/
-	INI_FORGET_COMMENT = 2,		/**< This character opens a comment that must be ignored **/
-	INI_NORMAL_CHARACTER = 3	/**< This is a normal character **/
+/** @brief	Possible values for IniFormat::semicolon_marker and IniFormat::hash_marker (i.e., meaning of `/\s+[#;]/` in respect to a format) **/
+enum IniCommentMarker {
+	INI_DISABLED_OR_COMMENT = 0,	/**< This marker opens a comment or a disabled entry **/
+	INI_ONLY_COMMENT = 1,		/**< This marker opens a comment **/
+	INI_IGNORE = 2,			/**< This marker opens a comment that must be ignored **/
+	INI_IS_NOT_A_MARKER = 3		/**< This is a normal character **/
 };
 
-/** @brief	Possible values of IniFormat::multiline_entries **/
+/** @brief	Possible values of IniFormat::multiline_nodes **/
 enum IniMultiline {
-	INI_EVERYTHING_MULTILINE = 0,		/**< Comments, section paths and keys -- disabled or not -- are allowed to be multiline. **/
-	INI_ACTIVE_AND_DISABLED_MULTILINE = 1,	/**< Only section paths and keys -- disabled or not -- are allowed to be multiline. **/
-	INI_ACTIVE_MULTILINE = 2,		/**< Only *active* section paths and *active* keys are allowed to be multiline. **/
-	INI_NO_MULTILINE = 3			/**< The multiline escaping sequence is disabled. **/
+	INI_MULTILINE_EVERYWHERE = 0,		/**< Comments, section paths and keys -- disabled or not -- are allowed to be multi-line. **/
+	INI_BUT_COMMENTS = 1,			/**< Only section paths and keys -- disabled or not -- are allowed to be multi-line. **/
+	INI_BUT_DISABLED_AND_COMMENTS = 2,	/**< Only *active* section paths and *active* keys are allowed to be multi-line. **/
+	INI_NO_MULTILINE = 3			/**< The multi-line escaping sequence is disabled. **/
 };
 
 /** @brief	A model format **/
 static const IniFormat INI_DEFAULT_FORMAT = _LIBCONFINI_DEFAULT_FORMAT_;
 
-/** @brief	If set to any non-zero value key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: non-zero) **/
-extern _Bool INI_INSENSITIVE_LOWERCASE;
+/** @brief	If set to `TRUE` key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: `FALSE`) **/
+extern _Bool INI_GLOBAL_LOWERCASE_MODE;
 
 /** @brief	Value to be dispatched in case of implicit keys (default value: `NULL`) **/
-extern char *INI_IMPLICIT_VALUE;
+extern char *INI_GLOBAL_IMPLICIT_VALUE;
 
-/** @brief	Length of the value dispatched in case of implicit keys -- it can be set to any unsigned number, independently of #INI_IMPLICIT_VALUE (default value: `0`) **/
-extern size_t INI_IMPLICIT_V_LEN;
+/** @brief	Length of the value dispatched in case of implicit keys -- it can be set to any unsigned number, independently of the real length of #INI_GLOBAL_IMPLICIT_VALUE (default value: `0`) **/
+extern size_t INI_GLOBAL_IMPLICIT_V_LEN;
 
 
 
 /* CLEAN THE PRIVATE ENVIRONMENT */
 
 
-#undef _LIBCONFINI_FORMAT_AS_DECLARATION_
-#undef _LIBCONFINI_FORMAT_AS_ASSIGNEMENT_
-#undef _LIBCONFINI_FORMAT_STRUCT_
+#undef _LIBCONFINI_INIFORMAT_DECLARATION_
+#undef _LIBCONFINI_INIFORMAT_ASSIGNEMENT_
+#undef _LIBCONFINI_INIFORMAT_STRUCT_
 #undef _LIBCONFINI_DEFAULT_FORMAT_
 
 

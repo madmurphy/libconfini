@@ -1,4 +1,4 @@
-/* examples/topics/ini_set_implicit_value.c */
+/* examples/topics/ini_global_set_implicit_value.c */
 
 #include <stdio.h>
 #include <confini.h>
@@ -8,7 +8,7 @@
 
 int ini_listener (IniDispatch *dispatch, void *v_null) {
 
-	if (dispatch->value == INI_IMPLICIT_VALUE) {
+	if (dispatch->value == INI_GLOBAL_IMPLICIT_VALUE) {
 
 		printf(
 			"\nDATA: %s\nVALUE: %s\n(This is an implicit key element)\n",
@@ -29,7 +29,7 @@ int main () {
 
 	IniFormat my_format;
 
-	ini_set_implicit_value("[implicit default value]", 0);
+	ini_global_set_implicit_value("[implicit default value]", 0);
 
 	/* Without setting this, implicit keys will be anyway considered empty: */
 	my_format.implicit_is_not_empty = YES;

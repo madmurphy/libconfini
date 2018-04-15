@@ -95,7 +95,7 @@ while [[ "${_DONE_}" -eq 0 ]] ; do
 			done
 			echo -e "------------------${_COL_DEFAULT_}"
 			echo
-			echo -e "  ${_COL_BBLUE_}->${_COL_DEFAULT_} Program exited with status "$([[ "${_EXIT_CODE_}" -eq 0 ]] && echo "${_COL_BGREEN_}" || echo "${_COL_BRED_}")"${_EXIT_CODE_}${_COL_DEFAULT_}."
+			echo -e "  ${_COL_BBLUE_}->${_COL_DEFAULT_} Program exited with status "$([[ "${_EXIT_CODE_}" -eq 0 ]] && echo -n "${_COL_BGREEN_}" || echo -n "${_COL_BRED_}")"${_EXIT_CODE_}${_COL_DEFAULT_}."
 			echo
 			echo -ne "${_COL_BGREEN_}==>${_COL_BWHITE_} Do you want to have a look at the source code? (Y/n)${_COL_DEFAULT_} "
 			read -n1 _CHOICE_
@@ -103,10 +103,10 @@ while [[ "${_DONE_}" -eq 0 ]] ; do
 			if [[ "${_CHOICE_}" == "${EOF}" ]] || [[ "${_CHOICE_,,}" == 'y' ]] ; then
 				if [[ "${_HIGHLIGHT_}" -eq 0 ]] || [[ ! "${_COLORS_}" -ge 8 ]] ; then
 					cat "${_CHOSEN_LONG_}" | less
-					[[ "${_HIGHLIGHT_}" -eq 0 ]] &&\
+					[[ "${_COLORS_}" -ge 8 ]] &&\
 					echo -e "  ${_COL_BBLUE_}->${_COL_DEFAULT_} ${_COL_BRED_}NOTE:${_COL_DEFAULT_} For a better output of the C source code consider to install\n     ${_COL_BPURPLE_}highlight${_COL_DEFAULT_} on your system."
 				else
-					highlight -O $([[ "${_COLORS_}" -ge 256 ]] && echo 'xterm256' || echo 'ansi') "${_CHOSEN_LONG_}" | less -r
+					highlight -O $([[ "${_COLORS_}" -ge 256 ]] && echo -n 'xterm256' || echo -n 'ansi') "${_CHOSEN_LONG_}" | less -r
 				fi
 
 			fi

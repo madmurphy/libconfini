@@ -1,4 +1,4 @@
-.TH "IniFormat" 3 "Thu Oct 5 2017" "libconfini" \" -*- nroff -*-
+.TH "IniFormat" 3 "Sun Apr 15 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -16,13 +16,13 @@ IniFormat \- 24-bit bitfield representing a unique format of an INI file (INI di
 .RI "unsigned char \fBdelimiter_symbol\fP: 8"
 .br
 .ti -1c
-.RI "unsigned char \fBsemicolon\fP: 2"
+.RI "unsigned char \fBsemicolon_marker\fP: 2"
 .br
 .ti -1c
-.RI "unsigned char \fBhash\fP: 2"
+.RI "unsigned char \fBhash_marker\fP: 2"
 .br
 .ti -1c
-.RI "unsigned char \fBmultiline_entries\fP: 2"
+.RI "unsigned char \fBmultiline_nodes\fP: 2"
 .br
 .ti -1c
 .RI "unsigned char \fBcase_sensitive\fP: 1"
@@ -43,6 +43,9 @@ IniFormat \- 24-bit bitfield representing a unique format of an INI file (INI di
 .RI "unsigned char \fBdo_not_collapse_values\fP: 1"
 .br
 .ti -1c
+.RI "unsigned char \fBpreserve_empty_quotes\fP: 1"
+.br
+.ti -1c
 .RI "unsigned char \fBno_disabled_after_space\fP: 1"
 .br
 .ti -1c
@@ -58,29 +61,29 @@ Structure of the bitfield:
 .IP "\(bu" 2
 Bits 1-18: INI syntax
 .IP "\(bu" 2
-Bits 19-20: INI semantics
+Bits 19-21: INI semantics
 .IP "\(bu" 2
-Bits 21-22: human syntax (disabled entries)
+Bits 22-23: human syntax (disabled entries)
 .IP "\(bu" 2
-Bits 23-24: not used 
+Bit 24: not used 
 .PP
 
 .SH "Field Documentation"
 .PP 
 .SS "IniFormat::case_sensitive"
-If set to \fC1\fP, key and section names will not be rendered in lower case 
+If set to \fC1\fP, string comparisons will always be performed case-sensitive 
 .SS "IniFormat::delimiter_symbol"
 The symbol to be used as delimiter; if set to \fC0\fP, any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
 .SS "IniFormat::disabled_can_be_implicit"
 If set to \fC1\fP, comments non containing a delimiter symbol will not be parsed as disabled implicit keys, but as simple comments 
 .SS "IniFormat::do_not_collapse_values"
 If set to \fC1\fP, sequences of more than one space in values (\fC/\\s{2,}/\fP) will not be collapsed 
-.SS "IniFormat::hash"
-The rule of the hash character (use enum \fC\fBIniComments\fP\fP for this) 
+.SS "IniFormat::hash_marker"
+The rule of the hash character (use enum \fC\fBIniCommentMarker\fP\fP for this) 
 .SS "IniFormat::implicit_is_not_empty"
-If set to \fC1\fP, the dispatch of implicit keys (see \fBthe manual\fP) will always assign to \fC\fBIniDispatch::value\fP\fP and to \fC\fBIniDispatch::v_len\fP\fP the global variables \fC\fBINI_IMPLICIT_VALUE\fP\fP and \fC\fBINI_IMPLICIT_V_LEN\fP\fP respectively; if set to \fC0\fP, implicit keys will be considered to be empty keys 
-.SS "IniFormat::multiline_entries"
-Defines which class of entries are allowed to be multiline (use enum \fC\fBIniMultiline\fP\fP for this) 
+If set to \fC1\fP, implicit keys (see \fBLibrary Functions Manual\fP) will always be dispatched using the values of the global variables \fC\fBINI_GLOBAL_IMPLICIT_VALUE\fP\fP and \fC\fBINI_GLOBAL_IMPLICIT_V_LEN\fP\fP for the fields \fC\fBIniDispatch::value\fP\fP and to \fC\fBIniDispatch::v_len\fP\fP respectively; if set to \fC0\fP, implicit keys will be considered to be empty keys 
+.SS "IniFormat::multiline_nodes"
+Defines which class of entries are allowed to be multi-line (use enum \fC\fBIniMultiline\fP\fP for this) 
 .SS "IniFormat::no_disabled_after_space"
 If set to \fC1\fP, prevents that what follows \fC/(?:^|\\s+)[#;]\\s/\fP be parsed as a disabled entry 
 .SS "IniFormat::no_double_quotes"
@@ -88,9 +91,11 @@ If set to \fC1\fP, the double-quote character (\fC"\fP) will be considered as a 
 .SS "IniFormat::no_single_quotes"
 If set to \fC1\fP, the single-quote character (\fC'\fP) will be considered as a normal character 
 .SS "IniFormat::no_spaces_in_names"
-If set to \fC1\fP, key and section names containing spaces will be rendered as \fC\fBINI_UNKNOWN\fP\fP\&. Note that setting \fC\fBIniFormat::delimiter_symbol\fP\fP to \fCINI_ANY_SPACE\fP will not automatically set this option to \fC1\fP (spaces will be still allowed in section names)\&. 
-.SS "IniFormat::semicolon"
-The rule of the semicolon character (use enum \fC\fBIniComments\fP\fP for this) 
+If set to \fC1\fP, key and section names containing spaces will be rendered as \fC\fBINI_UNKNOWN\fP\fP\&. Note that setting \fC\fBIniFormat::delimiter_symbol\fP\fP to \fCINI_ANY_SPACE\fP will not automatically set this option to \fC1\fP (spaces will still be allowed in section names)\&. 
+.SS "IniFormat::preserve_empty_quotes"
+If set to \fC1\fP and if single/double quotes are metacharacters ensures that empty strings enclosed between quotes (\fC''\fP or \fC''\fP) will not be collapsed together with spaces\&. 
+.SS "IniFormat::semicolon_marker"
+The rule of the semicolon character (use enum \fC\fBIniCommentMarker\fP\fP for this) 
 
 .SH "Author"
 .PP 

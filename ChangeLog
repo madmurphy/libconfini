@@ -2,6 +2,77 @@ Change Log {#changelog}
 =======================
 
 
+## 1.5.0 -- 2018-04-15
+
+Changes:
+
+* Added `IniFormat::preserve_empty_quotes` option to the `IniFormat` bitfield
+* `IniFormat::hash`, `IniFormat::semicolon` and `IniFormat::multiline_entries`
+  have been renamed to `IniFormat::hash_marker`, `IniFormat::semicolon_marker`
+  and `IniFormat::multiline_nodes`
+* Function `ini_string_parse()` has been created
+* Function `ini_collapse_array()` has been renamed to `ini_array_collapse()`
+* Function `ini_split_array()` has been renamed to `ini_array_split()`
+* Function `ini_set_implicit_value()` has been renamed to
+  `ini_global_set_implicit_value()`
+* Function `confini_global_set_lowercase_mode()` has been renamed to
+  `ini_global_set_lowercase_mode()`
+* Global variable `INI_INSENSITIVE_LOWERCASE` has been renamed to
+  `INI_GLOBAL_LOWERCASE_MODE`
+* Default value of `INI_GLOBAL_LOWERCASE_MODE` has been set to `FALSE`
+* Data type `IniFormatId` has been renamed to `IniFormatNum`
+* `ini_format_get_id()` has been renamed to `ini_fton()`
+* `ini_format_set_to_id()` has been renamed to `ini_ntof()` -- now accepts only
+  one argument and has a return value
+* Constants `INI_PARSE_COMMENT`, `INI_SHOW_COMMENT`, `INI_FORGET_COMMENT` and
+  `INI_NORMAL_CHARACTER` have been renamed to `INI_DISABLED_OR_COMMENT`,
+  `INI_ONLY_COMMENT`, `INI_IGNORE` and `INI_IS_NOT_A_MARKER`
+* Constants `INI_EVERYTHING_MULTILINE`, `INI_ACTIVE_AND_DISABLED_MULTILINE` and
+  `INI_ACTIVE_MULTILINE` have been renamed to `INI_MULTILINE_EVERYWHERE`,
+  `INI_BUT_COMMENTS`, and `INI_BUT_DISABLED_AND_COMMENTS`
+* Constants `CONFINI_EIINTR` and `CONFINI_EFEINTR` have been renamed to
+  `CONFINI_IINTR` and `CONFINI_FEINTR`
+* `enum` tags `ConfiniErrorNo` and `IniComments` have been renamed to
+  `ConfiniInterruptNo` and `IniCommentMarker`
+* Private function `sanitize_section_name()` has been renamed to
+  `sanitize_section_path()`
+* Created private function `sanitize_key_name()`
+* Code review (`ini_array_get_length()`, `ini_string_match_si()`,
+  `ini_string_match_ii()`, private functions `sanitize_section_path()` and
+  `collapse_spaces()`)
+* Made sure that sections appended to root as pseudo-subsections will be
+  dispatched always without the leading dot
+* Made sure that key and section names will always be cleaned of empty quotes in
+  formats that support quotes (relevant for space collapsing)
+* Removed unused internationalization support from autotools
+* Documentation
+
+Due to the many renamings this release is largely incompatible with previous
+versions. However it is possible to reach full backward compatibility with
+version 1.4.2 by using the following aliases:
+
+	#define hash hash_marker
+	#define semicolon semicolon_marker
+	#define multiline_entries multiline_nodes
+	#define ini_collapse_array ini_array_collapse
+	#define ini_split_array ini_array_split
+	#define ini_set_implicit_value ini_global_set_implicit_value
+	#define INI_INSENSITIVE_LOWERCASE INI_GLOBAL_LOWERCASE_MODE
+	#define IniFormatId IniFormatNum
+	#define ini_format_get_id ini_fton
+	#define ini_format_set_to_id(DEST, SRC) (*(DEST) = ini_ntof(SRC))
+	#define INI_PARSE_COMMENT INI_DISABLED_OR_COMMENT
+	#define INI_SHOW_COMMENT INI_ONLY_COMMENT
+	#define INI_FORGET_COMMENT INI_IGNORE
+	#define INI_NORMAL_CHARACTER INI_IS_NOT_A_MARKER
+	#define INI_EVERYTHING_MULTILINE INI_MULTILINE_EVERYWHERE
+	#define INI_ACTIVE_AND_DISABLED_MULTILINE INI_BUT_COMMENTS
+	#define INI_ACTIVE_MULTILINE INI_BUT_COMMENTS
+	#define INI_NO_MULTILINE INI_NO_MULTILINE
+	#define CONFINI_EIINTR CONFINI_IINTR
+	#define CONFINI_EFEINTR CONFINI_FEINTR
+
+
 ## 1.4.2 -- 2017-10-05
 
 Changes:

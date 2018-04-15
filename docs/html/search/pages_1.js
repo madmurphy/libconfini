@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['libconfini',['libconfini',['../index.html',1,'']]],
-  ['library_20functions_20manual',['Library Functions Manual',['../libconfini.html',1,'']]]
+  ['functions_20overview',['Functions overview',['../fnoverview.html',1,'']]]
 ];

@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 ## Created by Anjuta
 
-SUBDIRS = src po
+SUBDIRS = src 
 
 dist_doc_DATA = \
 	COPYING \
@@ -20,37 +20,33 @@ man_MANS = docs/man/man3/confini.h.3 \
 
 examplesdir = $(docdir)/examples
 examples_DATA = \
+	examples/ambiguous.conf \
+	examples/bad_ini.conf \
 	examples/example.conf \
 	examples/run_example.sh \
 	examples/typed_ini.conf
 
 examplesotherdir = $(examplesdir)/miscellanea
 examplesother_DATA = \
+	examples/miscellanea/disambiguate.c \
         examples/miscellanea/dispatch_everything.c \
+	examples/miscellanea/print_format.c \
 	examples/miscellanea/typed_ini.c
 
 examplestopicsdir = $(examplesdir)/topics
 examplestopics_DATA = \
-	examples/topics/ini_collapse_array.c \
-	examples/topics/ini_set_implicit_value.c \
+	examples/topics/ini_global_set_implicit_value.c \
+	examples/topics/ini_array_collapse.c \
 	examples/topics/ini_string_match_si.c \
-	examples/topics/ini_unquote.c \
+	examples/topics/ini_string_parse.c \
 	examples/topics/load_ini_file.c \
 	examples/topics/load_ini_path.c
 
-INTLTOOL_FILES = intltool-extract.in \
-	intltool-merge.in \
-	intltool-update.in
-
-EXTRA_DIST = \
-	$(INTLTOOL_FILES)
-
-DISTCLEANFILES = intltool-extract \
-	intltool-merge \
-	intltool-update \
-	po/.intltool-merge-cache
-
+# Make doc scripts executable
+install-data-hook:
+	chmod +x $(DESTDIR)$(examplesdir)/run_example.sh
 
 # Remove doc directory on uninstall
 uninstall-local:
 	-rm -r $(docdir)
+

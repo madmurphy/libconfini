@@ -7,7 +7,7 @@
 
 static int populate_array (char *part, size_t part_len, size_t idx, IniFormat format, void *v_array) {
 
-	ini_unquote(part, format);
+	ini_string_parse(part, format);
 	((char **) v_array)[idx] = part;
 
 	return 0;
@@ -23,8 +23,8 @@ static int my_ini_listener (IniDispatch *dispatch, void *v_null) {
 		char **my_array;
 		size_t my_array_length;
 
-		/* Save memory with `ini_collapse_array()` */
-		dispatch->v_len = ini_collapse_array(dispatch->value, DELIMITER, dispatch->format);
+		/* Save memory with `ini_array_collapse()` */
+		dispatch->v_len = ini_array_collapse(dispatch->value, DELIMITER, dispatch->format);
 
 		/* Allocate a new array of strings with `malloc()` */
 		my_array_length = ini_array_get_length(dispatch->value, DELIMITER, dispatch->format);
@@ -38,7 +38,7 @@ static int my_ini_listener (IniDispatch *dispatch, void *v_null) {
 		);
 
 		/* Populate the array */
-		ini_split_array(
+		ini_array_split(
 			(char *) my_array + my_array_length * sizeof(char *),
 			DELIMITER,
 			dispatch->format,

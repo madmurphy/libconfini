@@ -1,8 +1,8 @@
-.TH "IniDispatch" 3 "Thu Oct 5 2017" "libconfini" \" -*- nroff -*-
+.TH "IniDispatch" 3 "Sun Apr 15 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
-IniDispatch \- Dispatch of a single INI member\&.  
+IniDispatch \- Dispatch of a single INI node\&.  
 
 .SH SYNOPSIS
 .br
@@ -42,7 +42,7 @@ IniDispatch \- Dispatch of a single INI member\&.
 .in -1c
 .SH "Detailed Description"
 .PP 
-Dispatch of a single INI member\&. 
+Dispatch of a single INI node\&. 
 .SH "Field Documentation"
 .PP 
 .SS "IniDispatch::append_to"
@@ -52,7 +52,7 @@ The length of the string \fC\fBIniDispatch::append_to\fP\fP
 .SS "IniDispatch::d_len"
 The length of the string \fC\fBIniDispatch::data\fP\fP 
 .SS "IniDispatch::data"
-It can be a comment, a section path or a key name 
+It can be the content of a comment, a section path or a key name 
 .SS "IniDispatch::dispatch_id"
 The dispatch id 
 .SS "IniDispatch::format"

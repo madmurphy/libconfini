@@ -33,18 +33,18 @@ No errors will be generated if any of the data above are absent.
 
 /* My stored data */
 struct ini_store {
-	char *my_section_my_string;
+	char *my_section_my_string;		/* only malloc() stuff here! */
 	signed int my_section_my_number;
 	bool my_section_my_boolean;
 	bool my_section_my_implicit_boolean;
-	char **my_section_my_array;
+	char **my_section_my_array;		/* only malloc() stuff here! */
 	unsigned int my_section_my_arr_len;
 	int _read_status_;
 };
 
 static int populate_array (char *part, size_t part_len, size_t idx, IniFormat format, void *v_array) {
 
-	ini_unquote(part, format);
+	ini_string_parse(part, format);
 	((char **) v_array)[idx] = part;
 	return 0;
 
@@ -65,11 +65,19 @@ static int my_ini_listener (IniDispatch *this, void *v_store) {
 
 			if (store->_read_status_ == 1) {
 
-				this->d_len = ini_unquote(this->data, this->format);
+				this->d_len = ini_string_parse(this->data, this->format);
 
 				if (ini_string_match_ss("my_string", this->data, this->format)) {
 
-					this->v_len = ini_unquote(this->value, this->format);
+					/* Free possible previously allocated memory */
+					if (store->my_section_my_string) {
+
+						free(store->my_section_my_string);
+
+					}
+
+					/* Allocate a new string */
+					this->v_len = ini_string_parse(this->value, this->format);
 					store->my_section_my_string = (char *) malloc((this->v_len + 1) * sizeof(char));
 					memcpy(store->my_section_my_string, this->value, this->v_len + 1);
 
@@ -87,8 +95,15 @@ static int my_ini_listener (IniDispatch *this, void *v_store) {
 
 				} else if (ini_string_match_ss("my_array", this->data, this->format)) {
 
+					/* Free possible previously allocated memory */
+					if (store->my_section_my_array) {
+
+						free(store->my_section_my_array);
+
+					}
+
 					/* Save memory (not strictly needed) */
-					this->v_len = ini_collapse_array(this->value, MY_ARRAY_DELIMITER, this->format);
+					this->v_len = ini_array_collapse(this->value, MY_ARRAY_DELIMITER, this->format);
 
 					/* Allocate a new array of strings */
 					store->my_section_my_arr_len = ini_array_get_length(this->value, MY_ARRAY_DELIMITER, this->format);
@@ -97,7 +112,7 @@ static int my_ini_listener (IniDispatch *this, void *v_store) {
 					memcpy(str_ptr, this->value, this->v_len + 1);
 
 					/* Populate the array */
-					ini_split_array(str_ptr, MY_ARRAY_DELIMITER, this->format, populate_array, store->my_section_my_array);
+					ini_array_split(str_ptr, MY_ARRAY_DELIMITER, this->format, populate_array, store->my_section_my_array);
 
 				}
 
@@ -146,9 +161,9 @@ int main () {
 
 	struct ini_store my_store = { NULL, -1, FALSE, FALSE, NULL, 0, 0 };
 
-	ini_set_implicit_value("YES", 0);
+	ini_global_set_implicit_value("YES", 0);
 	my_format = INI_DEFAULT_FORMAT;
-	my_format.semicolon = my_format.hash = INI_FORGET_COMMENT;
+	my_format.semicolon_marker = my_format.hash_marker = INI_IGNORE;
 	my_format.implicit_is_not_empty = TRUE;
 
 	if (load_ini_path("typed_ini.conf", my_format, NULL, my_ini_listener, &my_store)) {

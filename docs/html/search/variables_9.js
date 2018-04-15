@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['semicolon',['semicolon',['../structIniFormat.html#a90f42c0052d9a45ad137f2f5517fbb3c',1,'IniFormat']]]
+  ['preserve_5fempty_5fquotes',['preserve_empty_quotes',['../structIniFormat.html#ad224b6997bbb99d4715fba8a8bea4cd7',1,'IniFormat']]]
 ];

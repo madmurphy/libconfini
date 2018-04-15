@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['hash',['hash',['../structIniFormat.html#a8bcb597ed6feba60112a8467bdb4bfd7',1,'IniFormat']]]
+  ['hash_5fmarker',['hash_marker',['../structIniFormat.html#a4d9984334335612830eef223e0adc913',1,'IniFormat']]]
 ];

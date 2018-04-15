@@ -16,18 +16,9 @@
 
 
 
-\mainpage	libconfini
+\page		fnoverview	Functions overview
 
-Welcome to the documentation of **libconfini**!
-
-You can get started by reading the [motivations behind this library](@ref readme) and [the manual](@ref libconfini). Further useful resources include:
-
-- [**Source Code**](https://github.com/madmurphy/libconfini)
-- [**Releases**](https://github.com/madmurphy/libconfini/releases)
-- [confini.h File Reference](@ref confini.h)
-- `IniFormat`
-- `IniStatistics`
-- `IniDispatch`
+\brief		Complete list of functions
 
 
 
@@ -59,6 +50,24 @@ This file provides the markdown source code for the @ref libconfini.
 \file		ChangeLog.md
 
 This file provides the markdown source code for the @ref changelog.
+
+
+
+\mainpage	libconfini
+
+Welcome to the documentation of **libconfini**!
+
+You can get started by reading the
+[motivations behind this library](@ref readme) and
+[the manual](@ref libconfini). Further useful resources include:
+
+- [**Source Code**](https://github.com/madmurphy/libconfini)
+- [**Releases**](https://github.com/madmurphy/libconfini/releases)
+- **@ref fnoverview**
+- [confini.h File Reference](@ref confini.h)
+- `IniFormat`
+- `IniStatistics`
+- `IniDispatch`
 
 
 

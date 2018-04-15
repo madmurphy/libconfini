@@ -60,7 +60,7 @@ static int my_ini_listener (IniDispatch *dispatch, void *user_data) {
 
 	/* Check if this is an implicit key */
 
-	if (dispatch->value == INI_IMPLICIT_VALUE) {
+	if (dispatch->value == INI_GLOBAL_IMPLICIT_VALUE) {
 
 		printf("\n\tHey! This was an implicit value!\n");
 
@@ -78,15 +78,17 @@ int main () {
 	/* User data */
 	struct my_struct my_other;
 
+	/* Define the value to be shown in case of implicit keys, and its length */
+	ini_global_set_implicit_value("YES", 0);
+
 	my_other.my_date = "Thursday September 22th, 2016";
 	my_other.my_ini_file = "example.conf";
 
 	/* Use the default format as model for the new format */
 	my_format = INI_DEFAULT_FORMAT;
 
-	/* Define the value to be shown in case of implicit keys, and its length */
+	/* Enable implicit keys for this format */
 	my_format.implicit_is_not_empty = TRUE;
-	ini_set_implicit_value("YES", 0);
 
 	/* Load INI file */
 	if (load_ini_path("example.conf", my_format, print_ini_stats, my_ini_listener, &my_other)) {

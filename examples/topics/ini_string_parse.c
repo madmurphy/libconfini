@@ -1,4 +1,4 @@
-/* examples/topics/ini_unquote.c */
+/* examples/topics/ini_string_parse.c */
 
 #include <stdio.h>
 #include <confini.h>
@@ -7,7 +7,8 @@ int ini_listener (IniDispatch *dispatch, void *v_null) {
 
 	if (dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY) {
 
-		ini_unquote(dispatch->value, dispatch->format);
+		ini_string_parse(dispatch->data, dispatch->format);
+		ini_string_parse(dispatch->value, dispatch->format);
 
 	}
 

@@ -42,7 +42,7 @@ int main () {
 	}
 
 	/* Check if `load_ini_path()` has been interrupted by `passfinder()` */
-	retval	==	CONFINI_EFEINTR ?
+	retval	==	CONFINI_FEINTR ?
 				printf("We found it! It's the INI element number #%d!\n", membid)
 			:
 				printf("We didn't find it :-(\n");
