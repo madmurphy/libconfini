@@ -68,7 +68,9 @@
 	@property	IniFormat::preserve_empty_quotes
 					If set to `1` and if single/double quotes are metacharacters
 					ensures that empty strings enclosed between quotes (`""` or
-					`''`) will not be collapsed together with spaces.
+					`''`) will not be collapsed together with spaces within values.
+					Note that in section and key names empty strings enclosed
+					between quotes are always collapsed together with spaces.
 	@property	IniFormat::no_disabled_after_space
 					If set to `1`, prevents that what follows `/(?:^|\s+)[#;]\s/` be
 					parsed as a disabled entry
@@ -2210,7 +2212,7 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 			)
 		) {
 
-			//nbacksl = 0;
+			nbacksl = 0;
 			idx_s++;
 
 		} else {
@@ -2677,7 +2679,7 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 
 	@brief			Calls a custom function for each member of a stringified INI
 					array without modifying the content of the buffer -- useful for
-					read-only (const) stringified arrays
+					read-only (`const`) stringified arrays
 	@param			ini_string		The stringified array
 	@param			delimiter		The delimiter between the array members -- if
 									zero (see `#INI_ANY_SPACE`), any space is

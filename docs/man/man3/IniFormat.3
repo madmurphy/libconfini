@@ -93,7 +93,7 @@ If set to \fC1\fP, the single-quote character (\fC'\fP) will be considered as a 
 .SS "IniFormat::no_spaces_in_names"
 If set to \fC1\fP, key and section names containing spaces will be rendered as \fC\fBINI_UNKNOWN\fP\fP\&. Note that setting \fC\fBIniFormat::delimiter_symbol\fP\fP to \fCINI_ANY_SPACE\fP will not automatically set this option to \fC1\fP (spaces will still be allowed in section names)\&. 
 .SS "IniFormat::preserve_empty_quotes"
-If set to \fC1\fP and if single/double quotes are metacharacters ensures that empty strings enclosed between quotes (\fC''\fP or \fC''\fP) will not be collapsed together with spaces\&. 
+If set to \fC1\fP and if single/double quotes are metacharacters ensures that empty strings enclosed between quotes (\fC''\fP or \fC''\fP) will not be collapsed together with spaces within values\&. Note that in section and key names empty strings enclosed between quotes are always collapsed together with spaces\&. 
 .SS "IniFormat::semicolon_marker"
 The rule of the semicolon character (use enum \fC\fBIniCommentMarker\fP\fP for this) 
 

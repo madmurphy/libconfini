@@ -247,18 +247,18 @@ foo = bar       # this is an inline comment
 
 <p>Comments may in theory be multi-line, following the same syntax of multi-line disabled entries (see below). This is usually of little utility, except for inline comments that you want to make sure will refer to the previous entry:</p>
 
-<pre><code class="{.ini}">comedy1 = The Tempest
+<pre><code class="{.ini}">play1 = The Tempest
 
-comedy2 = Twelfth Night  # If music be the food of love, play on;      \
-                         # Give me excess of it; that, surfeiting,     \
-                         # The appetite may sicken, and so die.        \
-                         # That strain again; it had a dying fall:     \
-                         # O, it came oer my ear, like the sweet sound \
-                         # That breathes upon a bank of violets,       \
-                         # Stealing, and giving odour! Enough! No more.\
-                         # 'Tis not so sweet now as it was before.     \
-                         #                                             \
-                         #     Orsino, scene I
+play2 = Twelfth Night # If music be the food of love, play on;      \
+                      # Give me excess of it; that, surfeiting,     \
+                      # The appetite may sicken, and so die.        \
+                      # That strain again; it had a dying fall:     \
+                      # O, it came oer my ear, like the sweet sound \
+                      # That breathes upon a bank of violets,       \
+                      # Stealing, and giving odour! Enough! No more.\
+                      # 'Tis not so sweet now as it was before.     \
+                      #                                             \
+                      #     Orsino, scene I
 
 # This is also a masterpiece!
 comedy3 = The Merchant of Venice
@@ -457,37 +457,6 @@ int main () {
 
 <p>When an INI file is parsed it is parsed according to a format. The <code>IniFormat</code> bitfield is a description of such format.</p>
 
-<p>Each format can be represented also as a univocal 24-bit unsigned integer. In order to convert an <code>IniFormat</code> to an unsigned integer and vice versa the functions <code>ini_fton()</code> and <code>ini_ntof()</code> are available (see also <code>IniFormatNum</code>).</p>
-
-<p>For instance, imagine we want to create a format as close as possible to the typical Windows INI files. Probably we would define our format as follows:</p>
-
-<pre><code class="{.c}">#define NO 0
-#define YES 1
-
-IniFormat my_format = {
-    .delimiter_symbol = INI_EQUALS,
-    .semicolon_marker = INI_IGNORE,
-    .hash_marker = INI_IS_NOT_A_MARKER,
-    .multiline_nodes = INI_NO_MULTILINE,
-    .case_sensitive = YES,
-    .no_spaces_in_names = YES,
-    .no_single_quotes = NO,
-    .no_double_quotes = NO,
-    .implicit_is_not_empty = NO,
-    .do_not_collapse_values = NO,
-    .preserve_empty_quotes = NO,
-    .no_disabled_after_space = NO,
-    .disabled_can_be_implicit = NO
-};
-
-printf("Format No. %d\n", ini_fton(my_format));
-</code></pre>
-
-<p>The function <code>ini_fton()</code> tells us that this format is univocally the format No. 65085. The function <code>ini_ntof()</code> gives us then a shortcut to construct the very same format using its format number. Hence, the code above corresponds to:</p>
-
-<pre><code class="{.c}">IniFormat my_format = ini_ntof(65085);
-</code></pre>
-
 <h3 id="THE-MODEL-FORMAT">THE MODEL FORMAT</h3>
 
 <p>A model format named <code>INI_DEFAULT_FORMAT</code> is available.</p>
@@ -517,6 +486,41 @@ my_format.do_not_collapse_values = NO;
 my_format.preserve_empty_quotes = NO;
 my_format.no_disabled_after_space = NO;
 my_format.disabled_can_be_implicit = NO,
+</code></pre>
+
+<h3 id="THE-IniFormatNum-DATA-TYPE">THE <code>IniFormatNum</code> DATA TYPE</h3>
+
+<p>Each format can be represented also as a univocal 24-bit unsigned integer. In order to convert an <code>IniFormat</code> to an unsigned integer and vice versa the functions <code>ini_fton()</code> and <code>ini_ntof()</code> are available.</p>
+
+<p>For instance, imagine we want to create a format as close as possible to the typical Windows INI files. Probably we would define our format as follows:</p>
+
+<pre><code class="{.c}">#define NO 0
+#define YES 1
+
+IniFormat my_format = {
+    .delimiter_symbol = INI_EQUALS,
+    .semicolon_marker = INI_IGNORE,
+    .hash_marker = INI_IS_NOT_A_MARKER,
+    .multiline_nodes = INI_NO_MULTILINE,
+    .case_sensitive = YES,
+    .no_spaces_in_names = YES,
+    .no_single_quotes = NO,
+    .no_double_quotes = NO,
+    .implicit_is_not_empty = NO,
+    .do_not_collapse_values = NO,
+    .preserve_empty_quotes = NO,
+    .no_disabled_after_space = NO,
+    .disabled_can_be_implicit = NO
+};
+
+IniFormatNum my_format_num = ini_fton(my_format);
+
+printf("Format No. %d\n", my_format_num); // "Format No. 65085"
+</code></pre>
+
+<p>The function <code>ini_fton()</code> tells us that this format is univocally the format No. 65085. The function <code>ini_ntof()</code> gives us then a shortcut to construct the very same format using its format number. Hence, the code above corresponds to:</p>
+
+<pre><code class="{.c}">IniFormat my_format = ini_ntof(65085);
 </code></pre>
 
 <h2 id="THE-IniStatistics-AND-IniDispatch-STRUCTURES">THE <code>IniStatistics</code> AND <code>IniDispatch</code> STRUCTURES</h2>
@@ -710,7 +714,8 @@ int main () {
 
   );
 
-  /* `INI_GLOBAL_IMPLICIT_V_LEN` is 0 and not even used, so this cannot happen: */
+  /* `INI_GLOBAL_IMPLICIT_V_LEN` is 0 and not even used, so this cannot
+     happen: */
 
   if (check.buff_lengths &gt; check.bytes) {
 
@@ -751,7 +756,7 @@ int main () {
 
 <h2 id="FORMATTING-THE-KEY-NAMES">FORMATTING THE KEY NAMES</h2>
 
-<p>The function <code>ini_unquote()</code> may be useful for key names enclosed within quotes. This function is very similar to <code>ini_string_parse()</code>, except that does not collapse spaces &ndash; key names dispatched by <strong>libconfini</strong> are <em>always</em> collapsed strings.</p>
+<p>The function <code>ini_unquote()</code> may be useful for key names enclosed within quotes. This function is very similar to <code>ini_string_parse()</code>, except that does not collapse the spaces surrounding empty quotes after these have been removed &ndash; key names dispatched by <strong>libconfini</strong> are <em>always</em> collapsed strings.</p>
 
 <h2 id="FORMATTING-THE-SECTION-PATHS">FORMATTING THE SECTION PATHS</h2>
 
@@ -1044,7 +1049,7 @@ NODE #4 - TYPE: 4, DATA: "now=Sunday April 3rd, 2016", VALUE: ""
 
 <p>As one can see, all comments but <code>now=Sunday April 3rd, 2016</code> would be parsed as disabled entries &ndash; which is not what the author intended. Therefore, if you want to ensure that such INI file is parsed properly, you can follow two possible approaches.</p>
 
-<p><strong>1. Intervene on the INI file.</strong> The reason why <code>now=Sunday April 3rd, 2016</code> has been properly parsed as a comment &ndash; despite it really looks like a disabled entry &ndash; is because it has been nested in a comment block opened by more than one leading comment marker (in this case the two <code>#</code>). <em><strong>libconfini</strong> never parses a comment beginning with more than one leading comment marker as a disabled entry, therefore this is the surest way to ensure that proper comments are always considered as such.</em></p>
+<p><strong>1. Intervene on the INI file.</strong> The reason why <code>now=Sunday April 3rd, 2016</code> has been properly parsed as a comment &ndash; despite it really looks like a disabled entry &ndash; is because it has been nested in a comment block opened by more than one leading comment marker (in this case the two <code>#</code>). As a general rule, <em><strong>libconfini</strong> never parses a comment beginning with more than one leading comment marker as a disabled entry</em>, therefore this is the surest way to ensure that proper comments are always considered as such.</p>
 
 <p>Hence, by adding one more number sign to the first comment</p>
 
@@ -1076,7 +1081,7 @@ NODE #4 - TYPE: 4, DATA: "now=Sunday April 3rd, 2016", VALUE: ""
 
 <ul>
 <li><code>IniFormat::semicolon_marker</code> and <code>IniFormat::hash_marker</code> &ndash; The imaginary author of our INI file, if one observes the latter closer, chose the semicolon symbol as the leading character for disabled entries and the hash symbol as the leading character of comments. You may exploit this difference and set your <code>my_format.semicolon_marker</code> to <code>INI_DISABLED_OR_COMMENT</code> and your <code>my_format.hash_marker</code> to <code>INI_ONLY_COMMENT</code> to obtain the correct result. If you believe that this solution is too artificial, think that <code>/etc/samba/smb.conf</code> and <code>/etc/pulse/daemon.conf</code> are systematically distributed using this pattern.</li>
-<li><code>IniFormat::no_disabled_after_space</code> &ndash; Setting this property to <code>TRUE</code>, due to the initial space after the comment marker (<code># INI...</code>), forces <code># INI key/value delimiter -&gt; = (everywhere)</code> to be considered always as a comment. Some authors use this syntax to distinguish between comments and disabled entries (examples are <code>/etc/pacman.conf</code> and <code>/etc/bluetooth/main.conf</code>)</li>
+<li><code>IniFormat::no_disabled_after_space</code> &ndash; Setting this property to <code>TRUE</code>, due to the initial space that follows the comment marker (<code># INI...</code>), forces <code># INI key/value delimiter -&gt; = (everywhere)</code> to be considered always as a comment. Some authors use this syntax to distinguish between comments and disabled entries (examples are <code>/etc/pacman.conf</code> and <code>/etc/bluetooth/main.conf</code>)</li>
 </ul>
 
 

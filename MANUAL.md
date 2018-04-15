@@ -41,30 +41,30 @@ During the years, several interpretations of INI files appeared. In some impleme
 
 Equals sign used as delimiter between keys and values:
 
-~~~~~~~~~~~~~{.ini}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 # example1.ini
 
 home = Champ de Mars, 5 Avenue Anatole
 city = Paris
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Colon sign used as delimiter between keys and values:
 
-~~~~~~~~~~~~~{.ini}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 # example2.ini
 
 home: Champ de Mars, 5 Avenue Anatole
 city: Paris
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Space sequence used as delimiter between keys and values:
 
-~~~~~~~~~~~~~{.ini}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 # example3.ini
 
 home	Champ de Mars, 5 Avenue Anatole
 city	Paris
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This library has been born as a general INI parser for GNU, so the support of most part of INI dialects has been implemented within it.
 
@@ -186,23 +186,23 @@ foo = bar       # this is an inline comment
 
 Comments may in theory be multi-line, following the same syntax of multi-line disabled entries (see below). This is usually of little utility, except for inline comments that you want to make sure will refer to the previous entry:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
-comedy1 = The Tempest
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
+play1 = The Tempest
 
-comedy2 = Twelfth Night  # If music be the food of love, play on;      \
-                         # Give me excess of it; that, surfeiting,     \
-                         # The appetite may sicken, and so die.        \
-                         # That strain again; it had a dying fall:     \
-                         # O, it came oer my ear, like the sweet sound \
-                         # That breathes upon a bank of violets,       \
-                         # Stealing, and giving odour! Enough! No more.\
-                         # 'Tis not so sweet now as it was before.     \
-                         #                                             \
-                         #     Orsino, scene I
+play2 = Twelfth Night # If music be the food of love, play on;      \
+                      # Give me excess of it; that, surfeiting,     \
+                      # The appetite may sicken, and so die.        \
+                      # That strain again; it had a dying fall:     \
+                      # O, it came oer my ear, like the sweet sound \
+                      # That breathes upon a bank of violets,       \
+                      # Stealing, and giving odour! Enough! No more.\
+                      # 'Tis not so sweet now as it was before.     \
+                      #                                             \
+                      #     Orsino, scene I
 
 # This is also a masterpiece!
 comedy3 = The Merchant of Venice
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ### DISABLED ENTRIES
@@ -401,39 +401,6 @@ For a correct use of this library it is fundamental to understand the `IniFormat
 
 When an INI file is parsed it is parsed according to a format. The `IniFormat` bitfield is a description of such format.
 
-Each format can be represented also as a univocal 24-bit unsigned integer. In order to convert an `IniFormat` to an unsigned integer and vice versa the functions `ini_fton()` and `ini_ntof()` are available (see also `#IniFormatNum`).
-
-For instance, imagine we want to create a format as close as possible to the typical Windows INI files. Probably we would define our format as follows:
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-#define NO 0
-#define YES 1
-
-IniFormat my_format = {
-	.delimiter_symbol = INI_EQUALS,
-	.semicolon_marker = INI_IGNORE,
-	.hash_marker = INI_IS_NOT_A_MARKER,
-	.multiline_nodes = INI_NO_MULTILINE,
-	.case_sensitive = YES,
-	.no_spaces_in_names = YES,
-	.no_single_quotes = NO,
-	.no_double_quotes = NO,
-	.implicit_is_not_empty = NO,
-	.do_not_collapse_values = NO,
-	.preserve_empty_quotes = NO,
-	.no_disabled_after_space = NO,
-	.disabled_can_be_implicit = NO
-};
-
-printf("Format No. %d\n", ini_fton(my_format));
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The function `ini_fton()` tells us that this format is univocally the format No. 65085. The function `ini_ntof()` gives us then a shortcut to construct the very same format using its format number. Hence, the code above corresponds to:
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-IniFormat my_format = ini_ntof(65085);
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 ### THE MODEL FORMAT
 
@@ -467,6 +434,44 @@ my_format.preserve_empty_quotes = NO;
 my_format.no_disabled_after_space = NO;
 my_format.disabled_can_be_implicit = NO,
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+### THE `#IniFormatNum` DATA TYPE
+
+Each format can be represented also as a univocal 24-bit unsigned integer. In order to convert an `IniFormat` to an unsigned integer and vice versa the functions `ini_fton()` and `ini_ntof()` are available.
+
+For instance, imagine we want to create a format as close as possible to the typical Windows INI files. Probably we would define our format as follows:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+#define NO 0
+#define YES 1
+
+IniFormat my_format = {
+	.delimiter_symbol = INI_EQUALS,
+	.semicolon_marker = INI_IGNORE,
+	.hash_marker = INI_IS_NOT_A_MARKER,
+	.multiline_nodes = INI_NO_MULTILINE,
+	.case_sensitive = YES,
+	.no_spaces_in_names = YES,
+	.no_single_quotes = NO,
+	.no_double_quotes = NO,
+	.implicit_is_not_empty = NO,
+	.do_not_collapse_values = NO,
+	.preserve_empty_quotes = NO,
+	.no_disabled_after_space = NO,
+	.disabled_can_be_implicit = NO
+};
+
+IniFormatNum my_format_num = ini_fton(my_format);
+
+printf("Format No. %d\n", my_format_num); // "Format No. 65085"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The function `ini_fton()` tells us that this format is univocally the format No. 65085. The function `ini_ntof()` gives us then a shortcut to construct the very same format using its format number. Hence, the code above corresponds to:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+IniFormat my_format = ini_ntof(65085);
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ## THE `IniStatistics` AND `IniDispatch` STRUCTURES
@@ -539,18 +544,18 @@ int main () {
 
 In order to set the value to be assigned to implicit keys, please use the `ini_global_set_implicit_value()` function. A _zero-length `TRUE`-boolean_ is usually a good choice:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 ini_global_set_implicit_value("YES", 0);
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Alternatively, instead of `ini_global_set_implicit_value()` you can manually define at the beginning of your code the two global variables `#INI_GLOBAL_IMPLICIT_VALUE` and `#INI_GLOBAL_IMPLICIT_V_LEN`, which will be retrieved by **libconfini**:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 #include <confini.h>
 
 char *INI_GLOBAL_IMPLICIT_VALUE = "YES";
 size_t INI_GLOBAL_IMPLICIT_V_LEN = 3;
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If not defined elsewhere, these variables are respectively `NULL` and `0` by default.
 
@@ -662,7 +667,8 @@ int main () {
 
   );
 
-  /* `INI_GLOBAL_IMPLICIT_V_LEN` is 0 and not even used, so this cannot happen: */
+  /* `INI_GLOBAL_IMPLICIT_V_LEN` is 0 and not even used, so this cannot
+     happen: */
 
   if (check.buff_lengths > check.bytes) {
 
@@ -698,7 +704,7 @@ Together with the functions listed above the following links are available, in c
 
 ## FORMATTING THE KEY NAMES
 
-The function `ini_unquote()` may be useful for key names enclosed within quotes. This function is very similar to `ini_string_parse()`, except that does not collapse spaces -- key names dispatched by **libconfini** are _always_ collapsed strings.
+The function `ini_unquote()` may be useful for key names enclosed within quotes. This function is very similar to `ini_string_parse()`, except that does not collapse the spaces surrounding empty quotes after these have been removed -- key names dispatched by **libconfini** are _always_ collapsed strings.
 
 
 ## FORMATTING THE SECTION PATHS
@@ -816,7 +822,7 @@ hello = world
 
 Therefore...
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 char
 	string1[] = "This is a double quotation mark: \\\"!",
 	string2[] = "This is a double quotation mark: '\"'!";
@@ -829,7 +835,7 @@ printf(
 	:
 		"They don't match"
 );	// "They match"
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The three functions `ini_string_match_ss()`, `ini_string_match_si()`, `ini_string_match_ii()` perform case-sensitive or case-insensitive comparisons depending on the format given. UTF-8 codepoints out of the ASCII range are always compared case-sensitive.
 
@@ -842,14 +848,14 @@ Besides the two global variables `#INI_GLOBAL_IMPLICIT_VALUE` and `#INI_GLOBAL_I
 
 As with the other global variables, you can declare the variable `#INI_GLOBAL_LOWERCASE_MODE` at the beginning of your code:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 #define FALSE 0
 #define TRUE 1
 
 #include <confini.h>
 
 _Bool INI_GLOBAL_LOWERCASE_MODE = FALSE;
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Alternatively, this variable can be set through the function `ini_global_set_lowercase_mode()` without being explicitly declared.
 
@@ -934,7 +940,7 @@ int main () {
 
 By changing the properties of the variable `my_format` on the code above you may obtain different results.
 
-On my old laptop **libconfini** seems to parse around 20 MiB per second using the model format `INI_DEFAULT_FORMAT`. Whether this is enough for you or not, that depends on your needs.
+On my old laptop **libconfini** seems to parse around 20 MiB per second using the model format `#INI_DEFAULT_FORMAT`. Whether this is enough for you or not, that depends on your needs.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 54692353 bytes parsed in 2.575119 seconds.
@@ -998,7 +1004,7 @@ int main () {
 
 we would obtain the following result:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 :: Content of "ambiguous.conf" ::
 
 NODE #0 - TYPE: 7, DATA: "INI key/value delimiter -->", VALUE: "(everywhere)"
@@ -1006,11 +1012,11 @@ NODE #1 - TYPE: 2, DATA: "some_section", VALUE: ""
 NODE #2 - TYPE: 3, DATA: "hello", VALUE: "world"
 NODE #3 - TYPE: 7, DATA: "foo", VALUE: "bar"
 NODE #4 - TYPE: 4, DATA: "now=Sunday April 3rd, 2016", VALUE: ""
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As one can see, all comments but `now=Sunday April 3rd, 2016` would be parsed as disabled entries -- which is not what the author intended. Therefore, if you want to ensure that such INI file is parsed properly, you can follow two possible approaches.
 
-**1. Intervene on the INI file.** The reason why `now=Sunday April 3rd, 2016` has been properly parsed as a comment -- despite it really looks like a disabled entry -- is because it has been nested in a comment block opened by more than one leading comment marker (in this case the two `##`). _**libconfini** never parses a comment beginning with more than one leading comment marker as a disabled entry, therefore this is the surest way to ensure that proper comments are always considered as such._
+**1. Intervene on the INI file.** The reason why `now=Sunday April 3rd, 2016` has been properly parsed as a comment -- despite it really looks like a disabled entry -- is because it has been nested in a comment block opened by more than one leading comment marker (in this case the two `##`). As a general rule, _**libconfini** never parses a comment beginning with more than one leading comment marker as a disabled entry_, therefore this is the surest way to ensure that proper comments are always considered as such.
 
 Hence, by adding one more number sign to the first comment
 
@@ -1043,7 +1049,7 @@ NODE #4 - TYPE: 4, DATA: "now=Sunday April 3rd, 2016", VALUE: ""
 Reliable general patterns:
 
 * `IniFormat::semicolon_marker` and `IniFormat::hash_marker` -- The imaginary author of our INI file, if one observes the latter closer, chose the semicolon symbol as the leading character for disabled entries and the hash symbol as the leading character of comments. You may exploit this difference and set your `my_format.semicolon_marker` to `#INI_DISABLED_OR_COMMENT` and your `my_format.hash_marker` to `#INI_ONLY_COMMENT` to obtain the correct result. If you believe that this solution is too artificial, think that `/etc/samba/smb.conf` and `/etc/pulse/daemon.conf` are systematically distributed using this pattern.
-* `IniFormat::no_disabled_after_space` -- Setting this property to `TRUE`, due to the initial space after the comment marker (`# INI...`), forces `# INI key/value delimiter -> = (everywhere)` to be considered always as a comment. Some authors use this syntax to distinguish between comments and disabled entries (examples are `/etc/pacman.conf` and `/etc/bluetooth/main.conf`)
+* `IniFormat::no_disabled_after_space` -- Setting this property to `TRUE`, due to the initial space that follows the comment marker (`# INI...`), forces `# INI key/value delimiter -> = (everywhere)` to be considered always as a comment. Some authors use this syntax to distinguish between comments and disabled entries (examples are `/etc/pacman.conf` and `/etc/bluetooth/main.conf`)
 
 Temporary workarounds:
 

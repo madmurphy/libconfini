@@ -277,18 +277,18 @@ Comments may in theory be multi\-line, following the same syntax of multi\-line 
 .
 .nf
 
-comedy1 = The Tempest
+play1 = The Tempest
 
-comedy2 = Twelfth Night  # If music be the food of love, play on;      \e
-                         # Give me excess of it; that, surfeiting,     \e
-                         # The appetite may sicken, and so die\.        \e
-                         # That strain again; it had a dying fall:     \e
-                         # O, it came oer my ear, like the sweet sound \e
-                         # That breathes upon a bank of violets,       \e
-                         # Stealing, and giving odour! Enough! No more\.\e
-                         # \'Tis not so sweet now as it was before\.     \e
-                         #                                             \e
-                         #     Orsino, scene I
+play2 = Twelfth Night # If music be the food of love, play on;      \e
+                      # Give me excess of it; that, surfeiting,     \e
+                      # The appetite may sicken, and so die\.        \e
+                      # That strain again; it had a dying fall:     \e
+                      # O, it came oer my ear, like the sweet sound \e
+                      # That breathes upon a bank of violets,       \e
+                      # Stealing, and giving odour! Enough! No more\.\e
+                      # \'Tis not so sweet now as it was before\.     \e
+                      #                                             \e
+                      #     Orsino, scene I
 
 # This is also a masterpiece!
 comedy3 = The Merchant of Venice
@@ -559,54 +559,6 @@ For a correct use of this library it is fundamental to understand the \fBIniForm
 .P
 When an INI file is parsed it is parsed according to a format\. The \fBIniFormat\fR bitfield is a description of such format\.
 .
-.P
-Each format can be represented also as a univocal 24\-bit unsigned integer\. In order to convert an \fBIniFormat\fR to an unsigned integer and vice versa the functions \fBini_fton()\fR and \fBini_ntof()\fR are available (see also \fBIniFormatNum\fR)\.
-.
-.P
-For instance, imagine we want to create a format as close as possible to the typical Windows INI files\. Probably we would define our format as follows:
-.
-.IP "" 4
-.
-.nf
-
-#define NO 0
-#define YES 1
-
-IniFormat my_format = {
-    \.delimiter_symbol = INI_EQUALS,
-    \.semicolon_marker = INI_IGNORE,
-    \.hash_marker = INI_IS_NOT_A_MARKER,
-    \.multiline_nodes = INI_NO_MULTILINE,
-    \.case_sensitive = YES,
-    \.no_spaces_in_names = YES,
-    \.no_single_quotes = NO,
-    \.no_double_quotes = NO,
-    \.implicit_is_not_empty = NO,
-    \.do_not_collapse_values = NO,
-    \.preserve_empty_quotes = NO,
-    \.no_disabled_after_space = NO,
-    \.disabled_can_be_implicit = NO
-};
-
-printf("Format No\. %d\en", ini_fton(my_format));
-.
-.fi
-.
-.IP "" 0
-.
-.P
-The function \fBini_fton()\fR tells us that this format is univocally the format No\. 65085\. The function \fBini_ntof()\fR gives us then a shortcut to construct the very same format using its format number\. Hence, the code above corresponds to:
-.
-.IP "" 4
-.
-.nf
-
-IniFormat my_format = ini_ntof(65085);
-.
-.fi
-.
-.IP "" 0
-.
 .SS "THE MODEL FORMAT"
 A model format named \fBINI_DEFAULT_FORMAT\fR is available\.
 .
@@ -647,6 +599,56 @@ my_format\.do_not_collapse_values = NO;
 my_format\.preserve_empty_quotes = NO;
 my_format\.no_disabled_after_space = NO;
 my_format\.disabled_can_be_implicit = NO,
+.
+.fi
+.
+.IP "" 0
+.
+.SS "THE `IniFormatNum` DATA TYPE"
+Each format can be represented also as a univocal 24\-bit unsigned integer\. In order to convert an \fBIniFormat\fR to an unsigned integer and vice versa the functions \fBini_fton()\fR and \fBini_ntof()\fR are available\.
+.
+.P
+For instance, imagine we want to create a format as close as possible to the typical Windows INI files\. Probably we would define our format as follows:
+.
+.IP "" 4
+.
+.nf
+
+#define NO 0
+#define YES 1
+
+IniFormat my_format = {
+    \.delimiter_symbol = INI_EQUALS,
+    \.semicolon_marker = INI_IGNORE,
+    \.hash_marker = INI_IS_NOT_A_MARKER,
+    \.multiline_nodes = INI_NO_MULTILINE,
+    \.case_sensitive = YES,
+    \.no_spaces_in_names = YES,
+    \.no_single_quotes = NO,
+    \.no_double_quotes = NO,
+    \.implicit_is_not_empty = NO,
+    \.do_not_collapse_values = NO,
+    \.preserve_empty_quotes = NO,
+    \.no_disabled_after_space = NO,
+    \.disabled_can_be_implicit = NO
+};
+
+IniFormatNum my_format_num = ini_fton(my_format);
+
+printf("Format No\. %d\en", my_format_num); // "Format No\. 65085"
+.
+.fi
+.
+.IP "" 0
+.
+.P
+The function \fBini_fton()\fR tells us that this format is univocally the format No\. 65085\. The function \fBini_ntof()\fR gives us then a shortcut to construct the very same format using its format number\. Hence, the code above corresponds to:
+.
+.IP "" 4
+.
+.nf
+
+IniFormat my_format = ini_ntof(65085);
 .
 .fi
 .
@@ -893,7 +895,8 @@ int main () {
 
   );
 
-  /* `INI_GLOBAL_IMPLICIT_V_LEN` is 0 and not even used, so this cannot happen: */
+  /* `INI_GLOBAL_IMPLICIT_V_LEN` is 0 and not even used, so this cannot
+     happen: */
 
   if (check\.buff_lengths > check\.bytes) {
 
@@ -954,7 +957,7 @@ Together with the functions listed above the following links are available, in c
 .IP "" 0
 .
 .SH "FORMATTING THE KEY NAMES"
-The function \fBini_unquote()\fR may be useful for key names enclosed within quotes\. This function is very similar to \fBini_string_parse()\fR, except that does not collapse spaces – key names dispatched by \fBlibconfini\fR are \fIalways\fR collapsed strings\.
+The function \fBini_unquote()\fR may be useful for key names enclosed within quotes\. This function is very similar to \fBini_string_parse()\fR, except that does not collapse the spaces surrounding empty quotes after these have been removed – key names dispatched by \fBlibconfini\fR are \fIalways\fR collapsed strings\.
 .
 .SH "FORMATTING THE SECTION PATHS"
 In order to retrieve the parts of a section path, the functions \fBini_array_get_length()\fR, \fBini_array_foreach()\fR and \fBini_array_split()\fR can be used with \fB\'\.\'\fR as delimiter\. Note that section paths dispatched by \fBlibconfini\fR are \fIalways\fR collapsed arrays, therefore calling the function \fBini_array_collapse()\fR on them will have no effects\.
@@ -1368,7 +1371,7 @@ NODE #4 \- TYPE: 4, DATA: "now=Sunday April 3rd, 2016", VALUE: ""
 As one can see, all comments but \fBnow=Sunday April 3rd, 2016\fR would be parsed as disabled entries – which is not what the author intended\. Therefore, if you want to ensure that such INI file is parsed properly, you can follow two possible approaches\.
 .
 .P
-\fB1\. Intervene on the INI file\.\fR The reason why \fBnow=Sunday April 3rd, 2016\fR has been properly parsed as a comment – despite it really looks like a disabled entry – is because it has been nested in a comment block opened by more than one leading comment marker (in this case the two \fB#\fR)\. \fI\fBlibconfini\fR never parses a comment beginning with more than one leading comment marker as a disabled entry, therefore this is the surest way to ensure that proper comments are always considered as such\.\fR
+\fB1\. Intervene on the INI file\.\fR The reason why \fBnow=Sunday April 3rd, 2016\fR has been properly parsed as a comment – despite it really looks like a disabled entry – is because it has been nested in a comment block opened by more than one leading comment marker (in this case the two \fB#\fR)\. As a general rule, \fI\fBlibconfini\fR never parses a comment beginning with more than one leading comment marker as a disabled entry\fR, therefore this is the surest way to ensure that proper comments are always considered as such\.
 .
 .P
 Hence, by adding one more number sign to the first comment
@@ -1420,7 +1423,7 @@ Reliable general patterns:
 \fBIniFormat::semicolon_marker\fR and \fBIniFormat::hash_marker\fR – The imaginary author of our INI file, if one observes the latter closer, chose the semicolon symbol as the leading character for disabled entries and the hash symbol as the leading character of comments\. You may exploit this difference and set your \fBmy_format\.semicolon_marker\fR to \fBINI_DISABLED_OR_COMMENT\fR and your \fBmy_format\.hash_marker\fR to \fBINI_ONLY_COMMENT\fR to obtain the correct result\. If you believe that this solution is too artificial, think that \fB/etc/samba/smb\.conf\fR and \fB/etc/pulse/daemon\.conf\fR are systematically distributed using this pattern\.
 .
 .IP "\(bu" 4
-\fBIniFormat::no_disabled_after_space\fR – Setting this property to \fBTRUE\fR, due to the initial space after the comment marker (\fB# INI\.\.\.\fR), forces \fB# INI key/value delimiter \-> = (everywhere)\fR to be considered always as a comment\. Some authors use this syntax to distinguish between comments and disabled entries (examples are \fB/etc/pacman\.conf\fR and \fB/etc/bluetooth/main\.conf\fR)
+\fBIniFormat::no_disabled_after_space\fR – Setting this property to \fBTRUE\fR, due to the initial space that follows the comment marker (\fB# INI\.\.\.\fR), forces \fB# INI key/value delimiter \-> = (everywhere)\fR to be considered always as a comment\. Some authors use this syntax to distinguish between comments and disabled entries (examples are \fB/etc/pacman\.conf\fR and \fB/etc/bluetooth/main\.conf\fR)
 .
 .IP "" 0
 .

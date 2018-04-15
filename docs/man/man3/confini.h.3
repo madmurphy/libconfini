@@ -132,7 +132,7 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "int \fBini_array_foreach\fP (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(const char *fullstring, size_t memb_offset, size_t memb_length, size_t index, \fBIniFormat\fP format, void *foreach_other), void *user_data)"
 .br
-.RI "Calls a custom function for each member of a stringified INI array without modifying the content of the buffer – useful for read-only (const) stringified arrays\&. "
+.RI "Calls a custom function for each member of a stringified INI array without modifying the content of the buffer – useful for read-only (\fCconst\fP) stringified arrays\&. "
 .ti -1c
 .RI "size_t \fBini_array_collapse\fP (char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 .br
@@ -479,7 +479,7 @@ int main () {
 .SS "int ini_array_foreach (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(const char *fullstring, size_t memb_offset, size_t memb_length, size_t index, \fBIniFormat\fP format, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
-Calls a custom function for each member of a stringified INI array without modifying the content of the buffer – useful for read-only (const) stringified arrays\&. 
+Calls a custom function for each member of a stringified INI array without modifying the content of the buffer – useful for read-only (\fCconst\fP) stringified arrays\&. 
 .PP
 \fBParameters:\fP
 .RS 4

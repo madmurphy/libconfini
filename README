@@ -1,7 +1,7 @@
 libconfini {#readme}
 ====================
 
-The motivation behind this library came from the observation that many
+The motivation behind this library comes from the observation that many
 system applications in GNU/Linux rely on _INI-like_ files (systemd, pacman,
 networkmanager, etc.), and for many users who approach GNU/Linux for the
 first time it can be frustrating not to have a GUI for configuring their
