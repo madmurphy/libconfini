@@ -148,10 +148,9 @@
 */
 #define _LIBCONFINI_INLINE_MARKER_ 32
 /*
-	`_LIBCONFINI_BOOL_` and `_LIBCONFINI_BYTE_` are for internal usage only...
+	`_LIBCONFINI_BOOL_` is for internal usage only...
 */
 #define _LIBCONFINI_BOOL_ unsigned char
-#define _LIBCONFINI_BYTE_ unsigned char
 /*
 	Maybe in the future there will be support for UTF-8 casefold, but for now only
 	ASCII...
@@ -514,7 +513,7 @@ static size_t unescape_cr_lf (char * const str, const size_t len, const _LIBCONF
 
 	size_t iter, idx = 0, lshift = 0;
 
-	for (_LIBCONFINI_BYTE_ is_escaped = _LIBCONFINI_FALSE_, cr_or_lf = 5; idx < len; idx++) {
+	for (_LIBCONFINI_BOOL_ is_escaped = _LIBCONFINI_FALSE_, cr_or_lf = 5; idx < len; idx++) {
 
 		if (is_escaped && (str[idx] == _LIBCONFINI_SPACES_[cr_or_lf] || str[idx] == _LIBCONFINI_SPACES_[cr_or_lf ^= 1])) {
 
