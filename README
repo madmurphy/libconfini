@@ -8,15 +8,15 @@ first time it can be frustrating not to have a GUI for configuring their
 system. So, I thought, a general .conf/.ini editor for GNOME _in dconf-style_
 had to be done.
 
-One obstacle to a GUI editor was that configuration files often contain
-commented suggestions on how to write key/values pairs, what the default values
-are, etc.; and these suggestions can make a clear sense when editing a plain
-text, but normally disappear when the text is parsed by some application. So,
-eventually, an editor would have to be able to not loose the comments, and
-also to recognize among comments a disabled (commented) key or an entire
-disabled section, and being flexible enough to support the numerous INI
-dialects (multiline INI files, support for single/double quotes, different
-delimiter symbols, nesting sections, etc.).
+One obstacle to a GUI editor is that configuration files often contain commented
+suggestions on how to write key/values pairs, what the default values are, etc.;
+and these suggestions can make a clear sense when editing a plain text, but
+normally disappear when the text is parsed by some application. So, eventually,
+an editor would have to be able to not loose the comments, and also to recognize
+among comments a disabled (commented) key or an entire disabled section, and
+being flexible enough to support the numerous INI dialects (multiline INI files,
+support for single/double quotes, different delimiter symbols, nesting sections,
+etc.).
 
 With this in mind I wrote down the first algorithms for doing the job. As I
 said, it was the project of an INI editor for GNOME... But I love the free

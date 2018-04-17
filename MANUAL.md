@@ -207,7 +207,7 @@ comedy3 = The Merchant of Venice
 
 ### DISABLED ENTRIES
 
-A disabled entry is either a section or a key that has been nested inside a comment as its only child. Inline comments cannot represent disabled entries. According to some formats disabled entries can be multi-line, using `/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]+/` as multi-line escaping sequence. For example:
+A disabled entry is either a section or a key that has been nested inside a comment as its only child. Inline comments cannot represent disabled entries. According to some formats disabled entries can be multi-line, using `/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]/` as multi-line escaping sequence. For example:
 
 ~~~~~~~~~~~~~~~~{.ini}
 #this = is\
