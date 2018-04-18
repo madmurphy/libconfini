@@ -131,6 +131,7 @@
 
 #define _LIBCONFINI_FALSE_ 0
 #define _LIBCONFINI_TRUE_ 1
+#define _LIBCONFINI_SUCCESS_ 0
 #define _LIBCONFINI_BACKSLASH_ '\\'
 #define _LIBCONFINI_OPEN_SECTION_ '['
 #define _LIBCONFINI_CLOSE_SECTION_ ']'
@@ -146,7 +147,7 @@
 	This may be any character, in theory... But after the left-trim of each line a
 	leading space works pretty well as metacharacter...
 */
-#define _LIBCONFINI_INLINE_MARKER_ 32
+#define _LIBCONFINI_INLINE_MARKER_ _LIBCONFINI_SIMPLE_SPACE_
 /*
 	`_LIBCONFINI_BOOL_` is for internal usage only...
 */
@@ -216,7 +217,7 @@ static inline _LIBCONFINI_BOOL_ is_some_space (const char chr, const uint8_t dep
 **/
 static inline size_t ltrim_s (const char * const lt_s, const size_t start_from, const uint8_t depth) {
 	size_t lt_i = start_from;
-	for (; lt_s[lt_i] && is_some_space(lt_s[lt_i], depth); lt_i++);
+	while (lt_s[lt_i] && is_some_space(lt_s[lt_i], depth)) { lt_i++; }
 	return lt_i;
 }
 
@@ -233,7 +234,7 @@ static inline size_t ltrim_s (const char * const lt_s, const size_t start_from, 
 **/
 static inline size_t ltrim_h (char * const lt_s, const size_t start_from, const uint8_t depth) {
 	size_t lt_i = start_from;
-	for (; lt_s[lt_i] && is_some_space(lt_s[lt_i], depth); lt_s[lt_i++] = '\0');
+	while (lt_s[lt_i] && is_some_space(lt_s[lt_i], depth)) { lt_s[lt_i++] = '\0'; }
 	return lt_i;
 }
 
@@ -304,7 +305,7 @@ static inline size_t ultrim_h (char * const ult_s, const size_t start_from) {
 **/
 static inline size_t rtrim_s (const char * const rt_s, const size_t length, const uint8_t depth) {
 	size_t rt_l = length;
-	for (; rt_l > 0 && is_some_space(rt_s[rt_l - 1], depth); rt_l--);
+	while (rt_l > 0 && is_some_space(rt_s[rt_l - 1], depth)) { rt_l--; }
 	return rt_l;
 }
 
@@ -321,7 +322,7 @@ static inline size_t rtrim_s (const char * const rt_s, const size_t length, cons
 **/
 static inline size_t rtrim_h (char * const rt_s, const size_t length, const uint8_t depth) {
 	size_t rt_l = length;
-	for (; rt_l > 0 && is_some_space(rt_s[rt_l - 1], depth); rt_s[--rt_l] = '\0');
+	while (rt_l > 0 && is_some_space(rt_s[rt_l - 1], depth)) { rt_s[--rt_l] = '\0'; }
 	return rt_l;
 }
 
@@ -706,9 +707,9 @@ static size_t sanitize_key_name (char * const keystr, const IniFormat format) {
 								(format.no_double_quotes << 1) |
 								format.no_single_quotes;
 
-	size_t idx, lshift;
+	size_t idx = 0, lshift = 0;
 
-	for (lshift = 0, idx = 0; keystr[idx]; idx++) {
+	for (; keystr[idx]; idx++) {
 
 		/* Revision #1 */
 
@@ -788,9 +789,9 @@ static size_t collapse_spaces (char * const str, const IniFormat format) {
 	*/
 
 	register uint8_t abcd = (format.no_double_quotes ? 34 : 32) | format.no_single_quotes;
-	size_t idx, lshift;
+	size_t idx = 0, lshift = 0;
 
-	for (lshift = 0, idx = 0; str[idx]; idx++) {
+	for (; str[idx]; idx++) {
 
 		/* Revision #1 */
 
@@ -1415,7 +1416,7 @@ int load_ini_file (
 
 	}
 
-	int return_value = 0;
+	int return_value = _LIBCONFINI_SUCCESS_;
 
 	rewind(ini_file);
 
@@ -2630,7 +2631,7 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 		FLAG_8		Unescaped single quotes are odd right now
 		FLAG_16		Unescaped double quotes are odd right now
 		FLAG_32		We are in an odd sequence of backslashes
-		FLAG_64		This is *not* a space
+		FLAG_64		This is a space
 		FLAG_128	This is a delimiter
 
 	*/
@@ -2669,102 +2670,6 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 	}
 
 	return ~abcd & 68 ? counter + 1 : counter;
-
-}
-
-
-												/** @utility{ini_array_foreach} **/
-/**
-
-	@brief			Calls a custom function for each member of a stringified INI
-					array without modifying the content of the buffer -- useful for
-					read-only (`const`) stringified arrays
-	@param			ini_string		The stringified array
-	@param			delimiter		The delimiter between the array members -- if
-									zero (see `#INI_ANY_SPACE`), any space is
-									delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
-	@param			format			The format of the INI file
-	@param			f_foreach		The function that will be invoked for each array
-									member
-	@param			user_data		A custom argument, or NULL
-	@return			Zero for success, otherwise an error code
-
-	Usually @p ini_string comes from an `IniDispatch` (but any other string may be
-	used as well).
-
-	The function @p f_foreach will be invoked with six arguments: `fullstring` (a
-	pointer to @p ini_string), `memb_offset` (the offset of the member in bytes),
-	`memb_length` (the length of the member in bytes), `index` (the index of the
-	member in number of members), `format` (the format of the INI file),
-	`foreach_other` (the custom argument @p user_data previously passed). If
-	@p f_foreach returns a non-zero value the function `ini_array_foreach()` will be
-	interrupted.
-
-**/
-int ini_array_foreach (
-	const char * const ini_string,
-	const char delimiter,
-	const IniFormat format,
-	int (* const f_foreach) (
-		const char *fullstring,
-		size_t memb_offset,
-		size_t memb_length,
-		size_t index,
-		IniFormat format,
-		void *foreach_other
-	),
-	void *user_data
-) {
-
-	register uint8_t abcd;
-	size_t idx, offs, counter;
-
-	/* Mask `abcd` (8 bits used): as in `ini_array_get_length()` */
-
-	abcd	=	(delimiter ? 4 : 0) |
-				(format.no_double_quotes << 1) |
-				format.no_single_quotes;
-
-
-	for (offs = 0, counter = 0, idx = 0; !(abcd & 128); idx++) {
-
-		abcd	=	(delimiter ? ini_string[idx] == delimiter : is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_)) ?
-						abcd & 159
-					: ini_string[idx] == _LIBCONFINI_BACKSLASH_ ?
-						(abcd | 64) ^ 32
-					: !(abcd & 42) && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
-						((abcd & 223) | 64) ^ 16
-					: !(abcd & 49) && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
-						((abcd & 223) | 64) ^ 8
-					: ini_string[idx] ?
-						(abcd & 223) | 64
-					:
-						128;
-
-
-		if (!(abcd & 88)) {
-
-			if (!(abcd & 132)) {
-
-				idx = ltrim_s(ini_string, idx, _LIBCONFINI_WITH_EOL_) - 1;
-
-			}
-
-			offs = ltrim_s(ini_string, offs, _LIBCONFINI_WITH_EOL_);
-
-			if (f_foreach(ini_string, offs, rtrim_s(ini_string + offs, idx - offs, _LIBCONFINI_WITH_EOL_), counter++, format, user_data)) {
-
-				return CONFINI_FEINTR;
-
-			}
-
-			offs = idx + 1;
-
-		}
-
-	}
-
-	return 0;
 
 }
 
@@ -2964,6 +2869,112 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 }
 
 
+												/** @utility{ini_array_foreach} **/
+/**
+
+	@brief			Calls a custom function for each member of a stringified INI
+					array without modifying the content of the buffer -- useful for
+					read-only (`const`) stringified arrays
+	@param			ini_string		The stringified array
+	@param			delimiter		The delimiter between the array members -- if
+									zero (see `#INI_ANY_SPACE`), any space is
+									delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
+	@param			format			The format of the INI file
+	@param			f_foreach		The function that will be invoked for each array
+									member
+	@param			user_data		A custom argument, or NULL
+	@return			Zero for success, otherwise an error code
+
+	Usually @p ini_string comes from an `IniDispatch` (but any other string may be
+	used as well).
+
+	The function @p f_foreach will be invoked with six arguments: `fullstring` (a
+	pointer to @p ini_string), `memb_offset` (the offset of the member in bytes),
+	`memb_length` (the length of the member in bytes), `index` (the index of the
+	member in number of members), `format` (the format of the INI file),
+	`foreach_other` (the custom argument @p user_data previously passed). If
+	@p f_foreach returns a non-zero value the function `ini_array_foreach()` will be
+	interrupted.
+
+**/
+int ini_array_foreach (
+	const char * const ini_string,
+	const char delimiter,
+	const IniFormat format,
+	int (* const f_foreach) (
+		const char *fullstring,
+		size_t memb_offset,
+		size_t memb_length,
+		size_t index,
+		IniFormat format,
+		void *foreach_other
+	),
+	void *user_data
+) {
+
+	/*
+
+	Mask `abacus` (8 bits used):
+
+		FLAG_1		Single quotes are not metacharacters (const)
+		FLAG_2		Double quotes are not metacharacters (const)
+		FLAG_4		Delimiter is not any space (const)
+		FLAG_8		Unescaped single quotes are odd until now
+		FLAG_16		Unescaped double quotes are odd until now
+		FLAG_32		We are in an odd sequence of backslashes
+		FLAG_64		This is not a delimiter
+		FLAG_128	Stop the loop
+
+	*/
+
+	register uint8_t abcd	=	(delimiter ? 4 : 0) |
+								(format.no_double_quotes << 1) |
+								format.no_single_quotes;
+
+
+	for (size_t offs = 0, counter = 0, idx = 0; !(abcd & 128); idx++) {
+
+		abcd	=	(delimiter ? ini_string[idx] == delimiter : is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_)) ?
+						abcd & 159
+					: ini_string[idx] == _LIBCONFINI_BACKSLASH_ ?
+						(abcd | 64) ^ 32
+					: !(abcd & 42) && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+						((abcd & 223) | 64) ^ 16
+					: !(abcd & 49) && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
+						((abcd & 223) | 64) ^ 8
+					: ini_string[idx] ?
+						(abcd & 223) | 64
+					:
+						128;
+
+
+		if (!(abcd & 88)) {
+
+			if (!(abcd & 132)) {
+
+				idx = ltrim_s(ini_string, idx, _LIBCONFINI_WITH_EOL_) - 1;
+
+			}
+
+			offs = ltrim_s(ini_string, offs, _LIBCONFINI_WITH_EOL_);
+
+			if (f_foreach(ini_string, offs, rtrim_s(ini_string + offs, idx - offs, _LIBCONFINI_WITH_EOL_), counter++, format, user_data)) {
+
+				return CONFINI_FEINTR;
+
+			}
+
+			offs = idx + 1;
+
+		}
+
+	}
+
+	return _LIBCONFINI_SUCCESS_;
+
+}
+
+
 												/** @utility{ini_array_split} **/
 /**
 
@@ -3008,17 +3019,14 @@ int ini_array_split (
 	void *user_data
 ) {
 
-	register uint8_t abcd;
-	size_t offs, idx, counter;
+	/* Mask `abcd` (8 bits used): as in `ini_array_foreach()` */
 
-	/* Mask `abcd` (8 bits used): as in `ini_array_get_length()` */
-
-	abcd	=	(delimiter ? 4 : 0) |
-				(format.no_double_quotes << 1) |
-				format.no_single_quotes;
+	register uint8_t abcd	=	(delimiter ? 4 : 0) |
+								(format.no_double_quotes << 1) |
+								format.no_single_quotes;
 
 
-	for (offs = 0, counter = 0, idx = 0; !(abcd & 128); idx++) {
+	for (size_t offs = 0, counter = 0, idx = 0; !(abcd & 128); idx++) {
 
 		abcd	=	(delimiter ? ini_string[idx] == delimiter : is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_)) ?
 						abcd & 159
@@ -3057,7 +3065,7 @@ int ini_array_split (
 
 	}
 
-	return 0;
+	return _LIBCONFINI_SUCCESS_;
 
 }
 

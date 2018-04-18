@@ -166,6 +166,12 @@ extern size_t ini_array_get_length (
 	const IniFormat format
 );
 
+extern size_t ini_array_collapse (
+	char * const ini_string,
+	const char delimiter,
+	const IniFormat format
+);
+
 extern int ini_array_foreach (
 	const char * const ini_string,
 	const char delimiter,
@@ -179,12 +185,6 @@ extern int ini_array_foreach (
 		void *foreach_other
 	),
 	void *user_data
-);
-
-extern size_t ini_array_collapse (
-	char * const ini_string,
-	const char delimiter,
-	const IniFormat format
 );
 
 extern int ini_array_split (
