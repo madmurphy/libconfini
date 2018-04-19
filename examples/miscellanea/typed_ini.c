@@ -33,21 +33,34 @@ No errors will be generated if any of the data above are absent.
 
 /* My stored data */
 struct ini_store {
-	char *my_section_my_string;		/* only malloc() stuff here! */
+	char *my_section_my_string;
 	signed int my_section_my_number;
 	bool my_section_my_boolean;
 	bool my_section_my_implicit_boolean;
-	char **my_section_my_array;		/* only malloc() stuff here! */
-	unsigned int my_section_my_arr_len;
+	char **my_section_my_array;
+	size_t my_section_my_arr_len;
 	int _read_status_;
 };
 
-static int populate_array (char *part, size_t part_len, size_t idx, IniFormat format, void *v_array) {
+static int array_part_handler (char *part, size_t part_len, size_t idx, IniFormat format, void *v_array) {
 
 	ini_string_parse(part, format);
 	((char **) v_array)[idx] = part;
 	return 0;
 
+}
+ 
+static char ** make_array (size_t * arrlen, const char * src, const size_t buffsize, IniFormat ini_format) {
+ 
+	char ** dest;
+	*arrlen = ini_array_get_length(src, MY_ARRAY_DELIMITER, ini_format);
+	dest = (char **) malloc(*arrlen * sizeof(char *) + buffsize * sizeof(char));
+	char * const str_ptr = (char *) dest + *arrlen * sizeof(char *);
+	memcpy(str_ptr, src, buffsize);
+	ini_array_split(str_ptr, MY_ARRAY_DELIMITER, ini_format, array_part_handler, dest);
+ 
+	return dest;
+ 
 }
 
 static int my_ini_listener (IniDispatch *this, void *v_store) {
@@ -65,54 +78,33 @@ static int my_ini_listener (IniDispatch *this, void *v_store) {
 
 			if (store->_read_status_ == 1) {
 
-				this->d_len = ini_string_parse(this->data, this->format);
+				if (ini_string_match_si("my_string", this->data, this->format)) {
 
-				if (ini_string_match_ss("my_string", this->data, this->format)) {
-
-					/* Free possible previously allocated memory */
-					if (store->my_section_my_string) {
-
-						free(store->my_section_my_string);
-
-					}
+					this->v_len = ini_string_parse(this->value, this->format);
 
 					/* Allocate a new string */
-					this->v_len = ini_string_parse(this->value, this->format);
-					store->my_section_my_string = (char *) malloc((this->v_len + 1) * sizeof(char));
-					memcpy(store->my_section_my_string, this->value, this->v_len + 1);
+					if (store->my_section_my_string) { free(store->my_section_my_string); }
+					store->my_section_my_string = strndup(this->value, this->v_len);
 
-				} else if (ini_string_match_ss("my_number", this->data, this->format)) {
+				} else if (ini_string_match_si("my_number", this->data, this->format)) {
 
 					store->my_section_my_number = ini_get_int(this->value);
 
-				} else if (ini_string_match_ss("my_boolean", this->data, this->format)) {
+				} else if (ini_string_match_si("my_boolean", this->data, this->format)) {
 
 					store->my_section_my_boolean = ini_get_bool(this->value, 1);
 
-				} else if (ini_string_match_ss("my_implicit_boolean", this->data, this->format)) {
+				} else if (ini_string_match_si("my_implicit_boolean", this->data, this->format)) {
 
 					store->my_section_my_implicit_boolean = ini_get_bool(this->value, 1);
 
-				} else if (ini_string_match_ss("my_array", this->data, this->format)) {
+				} else if (ini_string_match_si("my_array", this->data, this->format)) {
 
-					/* Free possible previously allocated memory */
-					if (store->my_section_my_array) {
-
-						free(store->my_section_my_array);
-
-					}
-
-					/* Save memory (not strictly needed) */
-					this->v_len = ini_array_collapse(this->value, MY_ARRAY_DELIMITER, this->format);
+					this->v_len = ini_array_collapse(this->value, MY_ARRAY_DELIMITER, this->format); /* Save memory (not strictly needed) */
 
 					/* Allocate a new array of strings */
-					store->my_section_my_arr_len = ini_array_get_length(this->value, MY_ARRAY_DELIMITER, this->format);
-					store->my_section_my_array = (char **) malloc(store->my_section_my_arr_len * sizeof(char *) + (this->v_len + 1) * sizeof(char));
-					char * const str_ptr = (char *) store->my_section_my_array + store->my_section_my_arr_len * sizeof(char *);
-					memcpy(str_ptr, this->value, this->v_len + 1);
-
-					/* Populate the array */
-					ini_array_split(str_ptr, MY_ARRAY_DELIMITER, this->format, populate_array, store->my_section_my_array);
+					if (store->my_section_my_array) { free(store->my_section_my_array); }
+					store->my_section_my_array = make_array(&store->my_section_my_arr_len, this->value, this->v_len + 1, this->format);
 
 				}
 
@@ -138,14 +130,14 @@ static void print_stored_data (const struct ini_store * const store) {
 
 		store->my_section_my_string,
 		store->my_section_my_number,
-		store->my_section_my_boolean ? "true (`1`)" : "false (`0`)",
-		store->my_section_my_implicit_boolean ? "true (`1`)" : "false (`0`)",
+		store->my_section_my_boolean ? "True (`1`)" : "False (`0`)",
+		store->my_section_my_implicit_boolean ? "True (`1`)" : "False (`0`)",
 		store->my_section_my_arr_len,
 		store->my_section_my_arr_len ? store->my_section_my_array[0] : ""
 
 	);
 
-	for (unsigned int idx = 1; idx < store->my_section_my_arr_len; idx++) {
+	for (size_t idx = 1; idx < store->my_section_my_arr_len; idx++) {
 
 		printf("|%s", store->my_section_my_array[idx]);
 

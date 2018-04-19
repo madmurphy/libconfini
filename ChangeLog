@@ -2,7 +2,7 @@ Change Log {#changelog}
 =======================
 
 
-## 1.5.0 -- 2018-04-18
+## 1.5.0 -- 2018-04-19
 
 Changes:
 
@@ -46,6 +46,7 @@ Changes:
   formats that support quotes (relevant for space collapsing)
 * Removed unused internationalization support from autotools
 * Documentation
+* Examples
 
 Due to the many renamings this release is largely incompatible with previous
 versions. However it is possible to reach full backward compatibility with

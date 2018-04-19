@@ -2062,7 +2062,7 @@ IniFormat ini_ntof (IniFormatNum format_id) {
 	@return			A boolean: `TRUE` if the two strings match, `FALSE` otherwise
 
 	Simple strings are user-given strings or the result of `ini_string_parse()`. The
-	argument @p format is used for the following fields:
+	@p format argument is used for the following fields:
 
 	- `format.case_sensitive`
 
@@ -2111,7 +2111,7 @@ _Bool ini_string_match_ss (const char * const simple_string_a, const char * cons
 	`\\`, `\'` and `\"`. Simple strings are user-given strings or the result of
 	`ini_string_parse()`.
 
-	The argument @p format is used for the following fields:
+	The @p format argument is used for the following fields:
 
 	- `format.no_double_quotes`
 	- `format.no_single_quotes`
@@ -2244,7 +2244,7 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 	`load_ini_path()`, which may contain quotes and the three escaping sequences
 	`\\`, `\'` and `\"`.
 
-	The argument @p format is used for the following fields:
+	The @p format argument is used for the following fields:
 
 	- `format.no_double_quotes`
 	- `format.no_single_quotes`
@@ -2370,13 +2370,15 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 	@param			format			The format of the INI file
 	@return			The new length of the string
 
-	BLABLABLA
+	This function is very similar to `ini_string_parse()`, except that does not
+	collapse the spaces surrounding empty quotes after these have been removed --
+	key names dispatched by **libconfini** are _always_ collapsed strings.
 
 	Usually @p ini_string comes from an `IniDispatch` (but any other string may be
 	used as well). If the string does not contain quotes, or if quotes are
 	considered to be normal characters, no changes will be made.
 
-	The argument @p format is used for the following fields:
+	The @p format argument is used for the following fields:
 
 	- `format.no_double_quotes`
 	- `format.no_single_quotes`
@@ -2479,7 +2481,7 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 	used as well). If the string does not contain quotes, or if quotes are
 	considered to be normal characters, no changes will be made.
 
-	The argument @p format is used for the following fields:
+	The @p format argument is used for the following fields:
 
 	- `format.no_double_quotes`
 	- `format.no_single_quotes`
@@ -2699,7 +2701,7 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 	This function can be useful before invoking `memcpy()` using @p ini_string as
 	source.
 
-	The argument @p format is used for the following fields:
+	The @p format argument is used for the following fields:
 
 	- `format.no_double_quotes`
 	- `format.no_single_quotes`
