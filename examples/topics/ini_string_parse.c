@@ -7,7 +7,7 @@ int ini_listener (IniDispatch *dispatch, void *v_null) {
 
 	if (dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY) {
 
-		ini_string_parse(dispatch->data, dispatch->format);
+		ini_unquote(dispatch->data, dispatch->format);
 		ini_string_parse(dispatch->value, dispatch->format);
 
 	}
