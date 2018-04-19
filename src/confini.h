@@ -260,7 +260,7 @@ enum IniDelimiters {
 /** @brief	INI nodes types **/
 enum IniNodeType {
 	INI_UNKNOWN = 0,	/**< Node impossible to parse **/
-	INI_VALUE = 1,		/**< Not used here, but available for user's implementations **/
+	INI_VALUE = 1,		/**< Not used here (values are dispatched together with keys), but available for user's implementations **/
 	INI_SECTION = 2,
 	INI_KEY = 3,
 	INI_COMMENT = 4,

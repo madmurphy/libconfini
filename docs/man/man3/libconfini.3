@@ -353,7 +353,7 @@ value
 The syntaxes of \fBlibconfini\fR\'s parsing functions are:
 .
 .P
-#1 (using a pointer to a \fBFILE\fR structure)
+#1 Using a pointer to a \fBFILE\fR structure:
 .
 .IP "" 4
 .
@@ -378,7 +378,7 @@ int load_ini_file (
 .IP "" 0
 .
 .P
-#2 (using a path)
+#2 Using a path:
 .
 .IP "" 4
 .
@@ -451,7 +451,7 @@ The function \fBf_foreach()\fR will be invoked with two arguments:
 Both functions \fBload_ini_file()\fR and \fBload_ini_path()\fR will return zero if the INI file has been completely parsed, non\-zero otherwise\.
 .
 .SH "BASIC EXAMPLES"
-#1
+#1:
 .
 .IP "" 4
 .
@@ -502,7 +502,7 @@ int main () {
 .IP "" 0
 .
 .P
-#2
+#2:
 .
 .IP "" 4
 .
@@ -542,7 +542,7 @@ int main () {
 .IP "" 0
 .
 .SH "HOW IT WORKS"
-The function \fBload_ini_path()\fR is a shortcut to the function \fBload_ini_file()\fR for using a path instead of a \fBFILE\fR struct\.
+The function \fBload_ini_path()\fR is a shortcut to the function \fBload_ini_file()\fR that requires a path instead of a \fBFILE\fR struct\.
 .
 .P
 The function \fBload_ini_file()\fR dynamically allocates at once the whole INI file into the heap, and the two structures \fBIniStatistics\fR and \fBIniDispatch\fR into the stack\. All the members of the INI file are then dispatched to the custom listener \fBf_foreach()\fR\. Finally the allocated memory gets automatically freed\.
@@ -957,7 +957,7 @@ Together with the functions listed above the following links are available, in c
 .IP "" 0
 .
 .SH "FORMATTING THE KEY NAMES"
-The function \fBini_unquote()\fR may be useful for key names enclosed within quotes\. This function is very similar to \fBini_string_parse()\fR, except that does not collapse the spaces surrounding empty quotes after these have been removed – key names dispatched by \fBlibconfini\fR are \fIalways\fR collapsed strings\.
+The function \fBini_unquote()\fR may be useful for key names enclosed within quotes\. This function is very similar to \fBini_string_parse()\fR, except that does not collapse the spaces surrounding empty quotes after the latter have been removed – this is never necessary since empty quotes surrounded by spaces in key and section names are always collapsed before the dispatching\.
 .
 .SH "FORMATTING THE SECTION PATHS"
 In order to retrieve the parts of a section path, the functions \fBini_array_get_length()\fR, \fBini_array_foreach()\fR and \fBini_array_split()\fR can be used with \fB\'\.\'\fR as delimiter\. Note that section paths dispatched by \fBlibconfini\fR are \fIalways\fR collapsed arrays, therefore calling the function \fBini_array_collapse()\fR on them will have no effects\.
@@ -1167,7 +1167,7 @@ _Bool INI_GLOBAL_LOWERCASE_MODE = FALSE;
 Alternatively, this variable can be set through the function \fBini_global_set_lowercase_mode()\fR without being explicitly declared\.
 .
 .P
-When the variable \fBINI_GLOBAL_LOWERCASE_MODE\fR is set to \fBTRUE\fR, \fBlibconfini\fR will always convert all ASCII letters to lowercase (except within values) – \fIeven when these are enclosed within quotes\fR – but will \fBnot\fR convert UTF\-8 code points to lowercase (for instance, \fBĀ\fR will not be rendered as \fBā\fR, but will be rather rendered verbatim)\. \fIIn general it is a good practice to use UTF\-8 within values, but to use ASCII only within keys names and sections names\.\fR
+When the variable \fBINI_GLOBAL_LOWERCASE_MODE\fR is set to \fBTRUE\fR, \fBlibconfini\fR will always convert to lowercase \fIall\fR ASCII letters of key and section names in case\-insensitive formats – \fIeven when these are enclosed within quotes\fR – but will \fBnot\fR convert UTF\-8 code points to lowercase (for instance, \fBĀ\fR will not be rendered as \fBā\fR, but will be rather rendered verbatim)\. \fIIn general it is a good practice to use UTF\-8 within values, but to use ASCII only within keys names and sections names\.\fR
 .
 .P
 Normally \fBINI_GLOBAL_LOWERCASE_MODE\fR does not need to be set to \fBTRUE\fR, since string comparisons made by libconfini are always either case\-sensitive or case\-insensitive depending on the format given\.
@@ -1293,7 +1293,7 @@ In most of the cases \fBlibconfini\fR is smart enough to distinguish a disabled 
 .
 .nf
 
-# INI key/value delimiter \-> = (everywhere)
+# INI key/value delimiter: = (everywhere)
 
 [some_section]
 
@@ -1357,7 +1357,7 @@ we would obtain the following result:
 
 :: Content of "ambiguous\.conf" ::
 
-NODE #0 \- TYPE: 7, DATA: "INI key/value delimiter \-\->", VALUE: "(everywhere)"
+NODE #0 \- TYPE: 7, DATA: "INI key/value delimiter:", VALUE: "(everywhere)"
 NODE #1 \- TYPE: 2, DATA: "some_section", VALUE: ""
 NODE #2 \- TYPE: 3, DATA: "hello", VALUE: "world"
 NODE #3 \- TYPE: 7, DATA: "foo", VALUE: "bar"
@@ -1380,7 +1380,7 @@ Hence, by adding one more number sign to the first comment
 .
 .nf
 
-## INI key/value delimiter \-> = (everywhere)
+## INI key/value delimiter: = (everywhere)
 
 [some_section]
 
@@ -1403,7 +1403,7 @@ one obtains the wanted result:
 
 :: Content of "ambiguous\.conf" ::
 
-NODE #0 \- TYPE: 4, DATA: "INI key/value delimiter \-\-> = (everywhere)", VALUE: ""
+NODE #0 \- TYPE: 4, DATA: "INI key/value delimiter: = (everywhere)", VALUE: ""
 NODE #1 \- TYPE: 2, DATA: "some_section", VALUE: ""
 NODE #2 \- TYPE: 3, DATA: "hello", VALUE: "world"
 NODE #3 \- TYPE: 7, DATA: "foo", VALUE: "bar"
@@ -1423,7 +1423,7 @@ Reliable general patterns:
 \fBIniFormat::semicolon_marker\fR and \fBIniFormat::hash_marker\fR – The imaginary author of our INI file, if one observes the latter closer, chose the semicolon symbol as the leading character for disabled entries and the hash symbol as the leading character of comments\. You may exploit this difference and set your \fBmy_format\.semicolon_marker\fR to \fBINI_DISABLED_OR_COMMENT\fR and your \fBmy_format\.hash_marker\fR to \fBINI_ONLY_COMMENT\fR to obtain the correct result\. If you believe that this solution is too artificial, think that \fB/etc/samba/smb\.conf\fR and \fB/etc/pulse/daemon\.conf\fR are systematically distributed using this pattern\.
 .
 .IP "\(bu" 4
-\fBIniFormat::no_disabled_after_space\fR – Setting this property to \fBTRUE\fR, due to the initial space that follows the comment marker (\fB# INI\.\.\.\fR), forces \fB# INI key/value delimiter \-> = (everywhere)\fR to be considered always as a comment\. Some authors use this syntax to distinguish between comments and disabled entries (examples are \fB/etc/pacman\.conf\fR and \fB/etc/bluetooth/main\.conf\fR)
+\fBIniFormat::no_disabled_after_space\fR – Setting this property to \fBTRUE\fR, due to the initial space that follows the comment marker (\fB# INI\.\.\.\fR), forces \fB# INI key/value delimiter: = (everywhere)\fR to be considered as a comment\. Some authors use this syntax to distinguish between comments and disabled entries (examples are \fB/etc/pacman\.conf\fR and \fB/etc/bluetooth/main\.conf\fR)
 .
 .IP "" 0
 .

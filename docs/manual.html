@@ -299,7 +299,7 @@ value
 
 <p>The syntaxes of <strong>libconfini</strong>'s parsing functions are:</p>
 
-<p>#1 (using a pointer to a <code>FILE</code> structure)</p>
+<p>#1 Using a pointer to a <code>FILE</code> structure:</p>
 
 <pre><code class="{.c}">int load_ini_file (
     FILE * ini_file,
@@ -316,7 +316,7 @@ value
 )
 </code></pre>
 
-<p>#2 (using a path)</p>
+<p>#2 Using a path:</p>
 
 <pre><code class="{.c}">int load_ini_path (
     char *path,
@@ -366,7 +366,7 @@ value
 
 <h2 id="BASIC-EXAMPLES">BASIC EXAMPLES</h2>
 
-<p>#1</p>
+<p>#1:</p>
 
 <pre><code class="{.c}">/* examples/topics/load_ini_file.c */
 
@@ -409,7 +409,7 @@ int main () {
 }
 </code></pre>
 
-<p>#2</p>
+<p>#2:</p>
 
 <pre><code class="{.c}">/* examples/topics/load_ini_path.c */
 
@@ -443,7 +443,7 @@ int main () {
 
 <h2 id="HOW-IT-WORKS">HOW IT WORKS</h2>
 
-<p>The function <code>load_ini_path()</code> is a shortcut to the function <code>load_ini_file()</code> for using a path instead of a <code>FILE</code> struct.</p>
+<p>The function <code>load_ini_path()</code> is a shortcut to the function <code>load_ini_file()</code> that requires a path instead of a <code>FILE</code> struct.</p>
 
 <p>The function <code>load_ini_file()</code> dynamically allocates at once the whole INI file into the heap, and the two structures <code>IniStatistics</code> and <code>IniDispatch</code> into the stack. All the members of the INI file are then dispatched to the custom listener <code>f_foreach()</code>. Finally the allocated memory gets automatically freed.</p>
 
@@ -756,7 +756,7 @@ int main () {
 
 <h2 id="FORMATTING-THE-KEY-NAMES">FORMATTING THE KEY NAMES</h2>
 
-<p>The function <code>ini_unquote()</code> may be useful for key names enclosed within quotes. This function is very similar to <code>ini_string_parse()</code>, except that does not collapse the spaces surrounding empty quotes after these have been removed &ndash; key names dispatched by <strong>libconfini</strong> are <em>always</em> collapsed strings.</p>
+<p>The function <code>ini_unquote()</code> may be useful for key names enclosed within quotes. This function is very similar to <code>ini_string_parse()</code>, except that does not collapse the spaces surrounding empty quotes after the latter have been removed &ndash; this is never necessary since empty quotes surrounded by spaces in key and section names are always collapsed before the dispatching.</p>
 
 <h2 id="FORMATTING-THE-SECTION-PATHS">FORMATTING THE SECTION PATHS</h2>
 
@@ -904,7 +904,7 @@ _Bool INI_GLOBAL_LOWERCASE_MODE = FALSE;
 
 <p>Alternatively, this variable can be set through the function <code>ini_global_set_lowercase_mode()</code> without being explicitly declared.</p>
 
-<p>When the variable <code>INI_GLOBAL_LOWERCASE_MODE</code> is set to <code>TRUE</code>, <strong>libconfini</strong> will always convert all ASCII letters to lowercase (except within values) &ndash; <em>even when these are enclosed within quotes</em> &ndash; but will <strong>not</strong> convert UTF-8 code points to lowercase (for instance, <code>&Amacr;</code> will not be rendered as <code>&amacr;</code>, but will be rather rendered verbatim). <em>In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names.</em></p>
+<p>When the variable <code>INI_GLOBAL_LOWERCASE_MODE</code> is set to <code>TRUE</code>, <strong>libconfini</strong> will always convert to lowercase <em>all</em> ASCII letters of key and section names in case-insensitive formats &ndash; <em>even when these are enclosed within quotes</em> &ndash; but will <strong>not</strong> convert UTF-8 code points to lowercase (for instance, <code>&Amacr;</code> will not be rendered as <code>&amacr;</code>, but will be rather rendered verbatim). <em>In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names.</em></p>
 
 <p>Normally <code>INI_GLOBAL_LOWERCASE_MODE</code> does not need to be set to <code>TRUE</code>, since string comparisons made by libconfini are always either case-sensitive or case-insensitive depending on the format given.</p>
 
@@ -993,7 +993,7 @@ Number of bytes parsed per second: 21238767.218136
 
 <p>In most of the cases <strong>libconfini</strong> is smart enough to distinguish a disabled entry from a comment. However some INI files can be tricky and might require some workarounds. For instance, imagine to have the following INI file:</p>
 
-<pre><code class="{.ini}"># INI key/value delimiter -&gt; = (everywhere)
+<pre><code class="{.ini}"># INI key/value delimiter: = (everywhere)
 
 [some_section]
 
@@ -1040,7 +1040,7 @@ int main () {
 
 <pre><code>:: Content of "ambiguous.conf" ::
 
-NODE #0 - TYPE: 7, DATA: "INI key/value delimiter --&gt;", VALUE: "(everywhere)"
+NODE #0 - TYPE: 7, DATA: "INI key/value delimiter:", VALUE: "(everywhere)"
 NODE #1 - TYPE: 2, DATA: "some_section", VALUE: ""
 NODE #2 - TYPE: 3, DATA: "hello", VALUE: "world"
 NODE #3 - TYPE: 7, DATA: "foo", VALUE: "bar"
@@ -1053,7 +1053,7 @@ NODE #4 - TYPE: 4, DATA: "now=Sunday April 3rd, 2016", VALUE: ""
 
 <p>Hence, by adding one more number sign to the first comment</p>
 
-<pre><code class="{.ini}">## INI key/value delimiter -&gt; = (everywhere)
+<pre><code class="{.ini}">## INI key/value delimiter: = (everywhere)
 
 [some_section]
 
@@ -1068,7 +1068,7 @@ hello = world
 
 <pre><code>:: Content of "ambiguous.conf" ::
 
-NODE #0 - TYPE: 4, DATA: "INI key/value delimiter --&gt; = (everywhere)", VALUE: ""
+NODE #0 - TYPE: 4, DATA: "INI key/value delimiter: = (everywhere)", VALUE: ""
 NODE #1 - TYPE: 2, DATA: "some_section", VALUE: ""
 NODE #2 - TYPE: 3, DATA: "hello", VALUE: "world"
 NODE #3 - TYPE: 7, DATA: "foo", VALUE: "bar"
@@ -1081,7 +1081,7 @@ NODE #4 - TYPE: 4, DATA: "now=Sunday April 3rd, 2016", VALUE: ""
 
 <ul>
 <li><code>IniFormat::semicolon_marker</code> and <code>IniFormat::hash_marker</code> &ndash; The imaginary author of our INI file, if one observes the latter closer, chose the semicolon symbol as the leading character for disabled entries and the hash symbol as the leading character of comments. You may exploit this difference and set your <code>my_format.semicolon_marker</code> to <code>INI_DISABLED_OR_COMMENT</code> and your <code>my_format.hash_marker</code> to <code>INI_ONLY_COMMENT</code> to obtain the correct result. If you believe that this solution is too artificial, think that <code>/etc/samba/smb.conf</code> and <code>/etc/pulse/daemon.conf</code> are systematically distributed using this pattern.</li>
-<li><code>IniFormat::no_disabled_after_space</code> &ndash; Setting this property to <code>TRUE</code>, due to the initial space that follows the comment marker (<code># INI...</code>), forces <code># INI key/value delimiter -&gt; = (everywhere)</code> to be considered always as a comment. Some authors use this syntax to distinguish between comments and disabled entries (examples are <code>/etc/pacman.conf</code> and <code>/etc/bluetooth/main.conf</code>)</li>
+<li><code>IniFormat::no_disabled_after_space</code> &ndash; Setting this property to <code>TRUE</code>, due to the initial space that follows the comment marker (<code># INI...</code>), forces <code># INI key/value delimiter: = (everywhere)</code> to be considered as a comment. Some authors use this syntax to distinguish between comments and disabled entries (examples are <code>/etc/pacman.conf</code> and <code>/etc/bluetooth/main.conf</code>)</li>
 </ul>
 
 

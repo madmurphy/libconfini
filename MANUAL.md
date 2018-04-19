@@ -245,7 +245,7 @@ value
 
 The syntaxes of **libconfini**'s parsing functions are:
 
-\#1 (using a pointer to a `FILE` structure)
+\#1 Using a pointer to a `FILE` structure:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 int load_ini_file (
@@ -263,7 +263,7 @@ int load_ini_file (
 )
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-\#2 (using a path)
+\#2 Using a path:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 int load_ini_path (
@@ -306,7 +306,7 @@ Both functions `load_ini_file()` and `load_ini_path()` will return zero if the I
 
 ## BASIC EXAMPLES
 
-\#1
+\#1:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 /* examples/topics/load_ini_file.c */
@@ -350,7 +350,7 @@ int main () {
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-\#2
+\#2:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 /* examples/topics/load_ini_path.c */
@@ -386,7 +386,7 @@ int main () {
 
 ## HOW IT WORKS
 
-The function `load_ini_path()` is a shortcut to the function `load_ini_file()` for using a path instead of a `FILE` struct.
+The function `load_ini_path()` is a shortcut to the function `load_ini_file()` that requires a path instead of a `FILE` struct.
 
 The function `load_ini_file()` dynamically allocates at once the whole INI file into the heap, and the two structures `IniStatistics` and `IniDispatch` into the stack. All the members of the INI file are then dispatched to the custom listener `f_foreach()`. Finally the allocated memory gets automatically freed.
 
@@ -704,7 +704,7 @@ Together with the functions listed above the following links are available, in c
 
 ## FORMATTING THE KEY NAMES
 
-The function `ini_unquote()` may be useful for key names enclosed within quotes. This function is very similar to `ini_string_parse()`, except that does not collapse the spaces surrounding empty quotes after these have been removed -- key names dispatched by **libconfini** are _always_ collapsed strings.
+The function `ini_unquote()` may be useful for key names enclosed within quotes. This function is very similar to `ini_string_parse()`, except that does not collapse the spaces surrounding empty quotes after the latter have been removed -- this is never necessary since empty quotes surrounded by spaces in key and section names are always collapsed before the dispatching.
 
 
 ## FORMATTING THE SECTION PATHS
@@ -859,7 +859,7 @@ _Bool INI_GLOBAL_LOWERCASE_MODE = FALSE;
 
 Alternatively, this variable can be set through the function `ini_global_set_lowercase_mode()` without being explicitly declared.
 
-When the variable `#INI_GLOBAL_LOWERCASE_MODE` is set to `TRUE`, **libconfini** will always convert all ASCII letters to lowercase (except within values) -- _even when these are enclosed within quotes_ -- but will **not** convert UTF-8 code points to lowercase (for instance, `Ā` will not be rendered as `ā`, but will be rather rendered verbatim). _In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names._
+When the variable `#INI_GLOBAL_LOWERCASE_MODE` is set to `TRUE`, **libconfini** will always convert to lowercase _all_ ASCII letters of key and section names in case-insensitive formats -- _even when these are enclosed within quotes_ -- but will **not** convert UTF-8 code points to lowercase (for instance, `Ā` will not be rendered as `ā`, but will be rather rendered verbatim). _In general it is a good practice to use UTF-8 within values, but to use ASCII only within keys names and sections names._
 
 Normally `#INI_GLOBAL_LOWERCASE_MODE` does not need to be set to `TRUE`, since string comparisons made by libconfini are always either case-sensitive or case-insensitive depending on the format given.
 
@@ -957,8 +957,8 @@ I can hardly imagine a reason to be interested in disabled entries if not for wr
 
 In most of the cases **libconfini** is smart enough to distinguish a disabled entry from a comment. However some INI files can be tricky and might require some workarounds. For instance, imagine to have the following INI file:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
-# INI key/value delimiter -> = (everywhere)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
+# INI key/value delimiter: = (everywhere)
 
 [some_section]
 
@@ -967,7 +967,7 @@ hello = world
 ;foo = bar
 
 ##now=Sunday April 3rd, 2016
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 And imagine that for unknown reasons the author of the INI file wanted only `;foo = bar` to be considered as a disabled entry, and the first and last lines as normal comments.
 
@@ -1004,15 +1004,15 @@ int main () {
 
 we would obtain the following result:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 :: Content of "ambiguous.conf" ::
 
-NODE #0 - TYPE: 7, DATA: "INI key/value delimiter -->", VALUE: "(everywhere)"
+NODE #0 - TYPE: 7, DATA: "INI key/value delimiter:", VALUE: "(everywhere)"
 NODE #1 - TYPE: 2, DATA: "some_section", VALUE: ""
 NODE #2 - TYPE: 3, DATA: "hello", VALUE: "world"
 NODE #3 - TYPE: 7, DATA: "foo", VALUE: "bar"
 NODE #4 - TYPE: 4, DATA: "now=Sunday April 3rd, 2016", VALUE: ""
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As one can see, all comments but `now=Sunday April 3rd, 2016` would be parsed as disabled entries -- which is not what the author intended. Therefore, if you want to ensure that such INI file is parsed properly, you can follow two possible approaches.
 
@@ -1020,8 +1020,8 @@ As one can see, all comments but `now=Sunday April 3rd, 2016` would be parsed as
 
 Hence, by adding one more number sign to the first comment
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
-## INI key/value delimiter -> = (everywhere)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
+## INI key/value delimiter: = (everywhere)
 
 [some_section]
 
@@ -1030,26 +1030,26 @@ hello = world
 ;foo = bar
 
 ##now=Sunday April 3rd, 2016
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 one obtains the wanted result:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 :: Content of "ambiguous.conf" ::
 
-NODE #0 - TYPE: 4, DATA: "INI key/value delimiter --> = (everywhere)", VALUE: ""
+NODE #0 - TYPE: 4, DATA: "INI key/value delimiter: = (everywhere)", VALUE: ""
 NODE #1 - TYPE: 2, DATA: "some_section", VALUE: ""
 NODE #2 - TYPE: 3, DATA: "hello", VALUE: "world"
 NODE #3 - TYPE: 7, DATA: "foo", VALUE: "bar"
 NODE #4 - TYPE: 4, DATA: "now=Sunday April 3rd, 2016", VALUE: ""
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **2. Intervene on the format.** There are cases where the INI file is automatically generated by machines (comments included), or distributed as such, and human intervention would be required on each machine-generated realease of the INI file. In these cases -- and if you are sure about the expected content of the INI file -- you can restrict the format chosen in order to parse comments and disabled entries properly. In particular, the following fields of the `IniFormat` bitfield may have an impact on the disambiguation between comments and disabled entries.
 
 Reliable general patterns:
 
 * `IniFormat::semicolon_marker` and `IniFormat::hash_marker` -- The imaginary author of our INI file, if one observes the latter closer, chose the semicolon symbol as the leading character for disabled entries and the hash symbol as the leading character of comments. You may exploit this difference and set your `my_format.semicolon_marker` to `#INI_DISABLED_OR_COMMENT` and your `my_format.hash_marker` to `#INI_ONLY_COMMENT` to obtain the correct result. If you believe that this solution is too artificial, think that `/etc/samba/smb.conf` and `/etc/pulse/daemon.conf` are systematically distributed using this pattern.
-* `IniFormat::no_disabled_after_space` -- Setting this property to `TRUE`, due to the initial space that follows the comment marker (`# INI...`), forces `# INI key/value delimiter -> = (everywhere)` to be considered always as a comment. Some authors use this syntax to distinguish between comments and disabled entries (examples are `/etc/pacman.conf` and `/etc/bluetooth/main.conf`)
+* `IniFormat::no_disabled_after_space` -- Setting this property to `TRUE`, due to the initial space that follows the comment marker (`# INI...`), forces `# INI key/value delimiter: = (everywhere)` to be considered as a comment. Some authors use this syntax to distinguish between comments and disabled entries (examples are `/etc/pacman.conf` and `/etc/bluetooth/main.conf`)
 
 Temporary workarounds:
 
