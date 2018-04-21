@@ -83,7 +83,7 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a9ddb62401d28f769968bbbc07481bba7"><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a9ddb62401d28f769968bbbc07481bba7">is_some_space</a> (const char chr, const uint8_t depth)</td></tr>
-<tr class="memdesc:a9ddb62401d28f769968bbbc07481bba7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a characters matches one of the first n elements of <code>_LIBCONFINI_SPACES_</code>  <a href="#a9ddb62401d28f769968bbbc07481bba7">More...</a><br /></td></tr>
+<tr class="memdesc:a9ddb62401d28f769968bbbc07481bba7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a character is a space.  <a href="#a9ddb62401d28f769968bbbc07481bba7">More...</a><br /></td></tr>
 <tr class="separator:a9ddb62401d28f769968bbbc07481bba7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3ee4d5d2fe6bfc8196c6cd9e5d37f37"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ac3ee4d5d2fe6bfc8196c6cd9e5d37f37">ltrim_s</a> (const char *const lt_s, const size_t start_from, const uint8_t depth)</td></tr>
 <tr class="memdesc:ac3ee4d5d2fe6bfc8196c6cd9e5d37f37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Soft left trim &ndash; does not change the buffer.  <a href="#ac3ee4d5d2fe6bfc8196c6cd9e5d37f37">More...</a><br /></td></tr>
@@ -185,14 +185,17 @@ Functions</h2></td></tr>
 <tr class="memdesc:ab2bc80803309f369ad8736b0ce115c3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Splits a stringified INI array into NUL-separated members and calls a custom function for each member.  <a href="#ab2bc80803309f369ad8736b0ce115c3d">More...</a><br /></td></tr>
 <tr class="separator:ab2bc80803309f369ad8736b0ce115c3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a8dcc3d8ff26554486691423cce4ea0"><td class="memItemLeft" align="right" valign="top">signed int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a2a8dcc3d8ff26554486691423cce4ea0">ini_get_bool</a> (const char *const ini_string, const signed int return_value)</td></tr>
-<tr class="memdesc:a2a8dcc3d8ff26554486691423cce4ea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <code>_LIBCONFINI_BOOLEANS_</code> (case insensitive)  <a href="#a2a8dcc3d8ff26554486691423cce4ea0">More...</a><br /></td></tr>
+<tr class="memdesc:a2a8dcc3d8ff26554486691423cce4ea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <code><a class="el" href="confini_8c.html#afdb9fd02d693536253da07f0f468aaef" title="A list of possible string representations of boolean pairs. ">INI_BOOLEANS</a></code> (case insensitive)  <a href="#a2a8dcc3d8ff26554486691423cce4ea0">More...</a><br /></td></tr>
 <tr class="separator:a2a8dcc3d8ff26554486691423cce4ea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad95262d09842c25e8bb610bf95c42cd3"><td class="memItemLeft" align="right" valign="top">signed int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ad95262d09842c25e8bb610bf95c42cd3">ini_get_lazy_bool</a> (const char *const ini_string, const signed int return_value)</td></tr>
-<tr class="memdesc:ad95262d09842c25e8bb610bf95c42cd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <code>_LIBCONFINI_BOOLEANS_</code> (case insensitive)  <a href="#ad95262d09842c25e8bb610bf95c42cd3">More...</a><br /></td></tr>
+<tr class="memdesc:ad95262d09842c25e8bb610bf95c42cd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <code><a class="el" href="confini_8c.html#afdb9fd02d693536253da07f0f468aaef" title="A list of possible string representations of boolean pairs. ">INI_BOOLEANS</a></code> (case insensitive)  <a href="#ad95262d09842c25e8bb610bf95c42cd3">More...</a><br /></td></tr>
 <tr class="separator:ad95262d09842c25e8bb610bf95c42cd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
+<tr class="memitem:afdb9fd02d693536253da07f0f468aaef"><td class="memItemLeft" align="right" valign="top">static const char *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#afdb9fd02d693536253da07f0f468aaef">INI_BOOLEANS</a> [][2]</td></tr>
+<tr class="memdesc:afdb9fd02d693536253da07f0f468aaef"><td class="mdescLeft">&#160;</td><td class="mdescRight">A list of possible string representations of boolean pairs.  <a href="#afdb9fd02d693536253da07f0f468aaef">More...</a><br /></td></tr>
+<tr class="separator:afdb9fd02d693536253da07f0f468aaef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adba0d5ee273d05ed845c66f01a621119"><td class="memItemLeft" align="right" valign="top">int(*const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#adba0d5ee273d05ed845c66f01a621119">ini_get_int</a> )(const char *ini_string) = &amp;atoi</td></tr>
 <tr class="memdesc:adba0d5ee273d05ed845c66f01a621119"><td class="mdescLeft">&#160;</td><td class="mdescRight">Link to <a href="http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoi"><code>atoi()</code></a>  <a href="#adba0d5ee273d05ed845c66f01a621119">More...</a><br /></td></tr>
 <tr class="separator:adba0d5ee273d05ed845c66f01a621119"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -718,7 +721,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <code>_LIBCONFINI_BOOLEANS_</code> (case insensitive) </p>
+<p>Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <code><a class="el" href="confini_8c.html#afdb9fd02d693536253da07f0f468aaef" title="A list of possible string representations of boolean pairs. ">INI_BOOLEANS</a></code> (case insensitive) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ini_string</td><td>A string to be checked </td></tr>
@@ -757,7 +760,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <code>_LIBCONFINI_BOOLEANS_</code> (case insensitive) </p>
+<p>Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <code><a class="el" href="confini_8c.html#afdb9fd02d693536253da07f0f468aaef" title="A list of possible string representations of boolean pairs. ">INI_BOOLEANS</a></code> (case insensitive) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ini_string</td><td>A string to be checked </td></tr>
@@ -1284,7 +1287,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Checks whether a characters matches one of the first n elements of <code>_LIBCONFINI_SPACES_</code> </p>
+<p>Checks whether a character is a space. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">chr</td><td>The target character </td></tr>
@@ -1968,6 +1971,37 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
+<a id="afdb9fd02d693536253da07f0f468aaef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdb9fd02d693536253da07f0f468aaef">&#9670;&nbsp;</a></span>INI_BOOLEANS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* const INI_BOOLEANS[][2]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div><div class="line">    { <span class="stringliteral">&quot;no&quot;</span>, <span class="stringliteral">&quot;yes&quot;</span> },</div><div class="line">    { <span class="stringliteral">&quot;false&quot;</span>, <span class="stringliteral">&quot;true&quot;</span> },</div><div class="line">    { <span class="stringliteral">&quot;0&quot;</span>, <span class="stringliteral">&quot;1&quot;</span> }</div><div class="line">}</div></div><!-- fragment -->
+<p>A list of possible string representations of boolean pairs. </p>
+<p>Each pair must be presented in this order:</p>
+<ol type="1">
+<li>Signifier of <code>FALSE</code></li>
+<li>Signifier of <code>TRUE</code>.</li>
+</ol>
+<p>There may be infinite pairs here, but be aware of the lazy behavior of <code><a class="el" href="confini_8c.html#ad95262d09842c25e8bb610bf95c42cd3" title="Checks whether the first letter of a string matches the first letter of one of the booleans listed in...">ini_get_lazy_bool()</a></code>.</p>
+<p>Everything lowercase in this list! </p>
+
+</div>
+</div>
 <a id="a26dd8ef0bfb57aaedbeac8007fd1a03a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a26dd8ef0bfb57aaedbeac8007fd1a03a">&#9670;&nbsp;</a></span>ini_get_float</h2>
 

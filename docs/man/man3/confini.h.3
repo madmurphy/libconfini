@@ -144,11 +144,11 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "signed int \fBini_get_bool\fP (const char *const ini_string, const signed int return_value)"
 .br
-.RI "Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fC_LIBCONFINI_BOOLEANS_\fP (case insensitive) "
+.RI "Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fC\fBINI_BOOLEANS\fP\fP (case insensitive) "
 .ti -1c
 .RI "signed int \fBini_get_lazy_bool\fP (const char *const ini_string, const signed int return_value)"
 .br
-.RI "Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fC_LIBCONFINI_BOOLEANS_\fP (case insensitive) "
+.RI "Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fC\fBINI_BOOLEANS\fP\fP (case insensitive) "
 .in -1c
 .SS "Variables"
 
@@ -571,7 +571,7 @@ The mask representing the format
 .SS "signed int ini_get_bool (const char *const ini_string, const signed int return_value)"
 
 .PP
-Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fC_LIBCONFINI_BOOLEANS_\fP (case insensitive) 
+Checks whether a string matches \fIexactly\fP one of the booleans listed in the private constant \fC\fBINI_BOOLEANS\fP\fP (case insensitive) 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -787,7 +787,7 @@ int main () {
 .SS "signed int ini_get_lazy_bool (const char *const ini_string, const signed int return_value)"
 
 .PP
-Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fC_LIBCONFINI_BOOLEANS_\fP (case insensitive) 
+Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant \fC\fBINI_BOOLEANS\fP\fP (case insensitive) 
 .PP
 \fBParameters:\fP
 .RS 4

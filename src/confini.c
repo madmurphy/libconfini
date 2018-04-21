@@ -143,24 +143,26 @@
 #define _LIBCONFINI_HASH_ '#'
 #define _LIBCONFINI_LF_ '\n'
 #define _LIBCONFINI_CR_ '\r'
+
 /*
 	This may be any character, in theory... But after the left-trim of each line a
 	leading space works pretty well as metacharacter...
 */
 #define _LIBCONFINI_INLINE_MARKER_ _LIBCONFINI_SIMPLE_SPACE_
-/*
-	`_LIBCONFINI_BOOL_` is for internal usage only...
-*/
+
+/* `_LIBCONFINI_BOOL_` is for internal usage only... */
 #define _LIBCONFINI_BOOL_ unsigned char
+
+
+
+		/* FUNCTIONAL MACROS AND CONSTANTS */
+
+
 /*
 	Maybe in the future there will be support for UTF-8 casefold, but for now only
 	ASCII...
 */
 #define _LIBCONFINI_CHR_CASEFOLD_(CHR) (CHR > 0x40 && CHR < 0x5b ? CHR | 0x60 : CHR)
-
-
-		/* FUNCTIONAL CONSTANTS */
-
 
 /*
 	Possible depths of `_LIBCONFINI_SPACES_` (see function `is_some_space()`).
@@ -190,11 +192,18 @@ static const char _LIBCONFINI_SPACES_[_LIBCONFINI_SPALEN_] = {
 
 	@brief	A list of possible string representations of boolean pairs
 
+	Each pair must be presented in this order:
+
+	1. Signifier of `FALSE`
+	2. Signifier of `TRUE`.
+
 	There may be infinite pairs here, but be aware of the lazy behavior	of
-	`ini_get_lazy_bool()`. Everything lowercase in this list!
+	`ini_get_lazy_bool()`. 
+
+	Everything lowercase in this list!
 
 **/
-static const char * const _LIBCONFINI_BOOLEANS_[][2] = {
+static const char * const INI_BOOLEANS[][2] = {
 	{ "no", "yes" },
 	{ "false", "true" },
 	{ "0", "1" }
@@ -207,8 +216,7 @@ static const char * const _LIBCONFINI_BOOLEANS_[][2] = {
 
 /**
 
-	@brief			Checks whether a characters matches one of the first n elements
-					of `_LIBCONFINI_SPACES_`
+	@brief			Checks whether a character is a space
 	@param			chr				The target character
 	@param			depth			What is actually considered a space (possible
 									values: `_LIBCONFINI_WITH_EOL_`,
@@ -292,6 +300,7 @@ static inline size_t ultrim_h (char * const ult_s, const size_t start_from) {
 					: ult_s[ult_i] == _LIBCONFINI_LF_ || ult_s[ult_i] == _LIBCONFINI_CR_ ? abcd | 3
 					: (abcd & 2) && ult_s[ult_i] == _LIBCONFINI_BACKSLASH_ ? 12
 					: abcd & 2;
+
 
 		if (abcd & 1) {
 
@@ -671,6 +680,7 @@ static size_t sanitize_section_path (char * const secpath, const IniFormat forma
 					:
 						(abcd & 2319) | 2304;
 
+
 		if (abcd & 1536) {
 
 			lshift++;
@@ -912,6 +922,7 @@ static size_t uncomment (char * const commstr, size_t len, const IniFormat forma
 						:
 							(abcd & 33) | 32;
 
+
 			if (abcd & 28) {
 
 				lshift++;
@@ -1013,6 +1024,7 @@ static uint8_t get_type_as_active (
 							:
 								(abcd & 1648) | ((abcd & 64) && (abcd & 384) ? 1088 : 64);
 
+
 				if (abcd & 1024) {
 
 					return INI_UNKNOWN;
@@ -1073,8 +1085,7 @@ static uint8_t get_type_as_active (
 
 	*/
 
-	abcd	=	(format.no_spaces_in_names && format.delimiter_symbol ? 2 : 0) |
-				(allow_implicit ? 0 : 1);
+	abcd = (format.no_spaces_in_names && format.delimiter_symbol ? 2 : 0) | (allow_implicit ? 0 : 1);
 
 	if (abcd) {
 
@@ -1166,6 +1177,7 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 					(abcd & 3) | 128
 				:
 					abcd & 3;
+
 
 	if (abcd & 192) {
 
@@ -1312,6 +1324,7 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 							(abcd | 96) ^ 4
 						:
 							(abcd & 111) | 96;
+
 
 			if (!(abcd & 124)) {
 
@@ -2198,6 +2211,7 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 					:
 						(abcd & 15) | 64;
 
+
 		if (abcd & 128) {
 
 			idx_i++;
@@ -2334,6 +2348,7 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 							:
 								(a_abcd[side] & 15) | 64;
 
+
 		if (a_abcd[side] & 128) {
 
 			a_idx[side]++;
@@ -2448,6 +2463,7 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 						(abcd & 31) | 16
 					:
 						abcd & 15;
+
 
 		if (!(nbacksl & 1) && (abcd & 48)) {
 
@@ -2875,7 +2891,7 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 				(fallback = idx_d)
 			:
 				idx_d
-		] =								(abcd & 1636) && ((abcd & 1392) ^ 16) ?
+		]							=	(abcd & 1636) && ((abcd & 1392) ^ 16) ?
 											ini_string[idx_s]
 										:
 											_LIBCONFINI_SIMPLE_SPACE_;
@@ -3118,7 +3134,7 @@ int ini_array_split (
 /**
 
 	@brief			Checks whether a string matches *exactly* one of the booleans
-					listed in the private constant `_LIBCONFINI_BOOLEANS_` (case
+					listed in the private constant `#INI_BOOLEANS` (case
 					insensitive)
 	@param			ini_string			A string to be checked
 	@param			return_value		A value that is returned if no matching
@@ -3137,11 +3153,11 @@ signed int ini_get_bool (const char * const ini_string, const signed int return_
 	uint8_t bool_idx;
 	size_t pair_idx, chr_idx;
 
-	for (pair_idx = 0; pair_idx < sizeof(_LIBCONFINI_BOOLEANS_) / 2 / sizeof(char *); pair_idx++) {
+	for (pair_idx = 0; pair_idx < sizeof(INI_BOOLEANS) / 2 / sizeof(char *); pair_idx++) {
 
 		for (bool_idx = 0; bool_idx < 2; bool_idx++) {
 
-			for (chr_idx = 0; _LIBCONFINI_CHR_CASEFOLD_(ini_string[chr_idx]) == _LIBCONFINI_BOOLEANS_[pair_idx][bool_idx][chr_idx]; chr_idx++) {
+			for (chr_idx = 0; _LIBCONFINI_CHR_CASEFOLD_(ini_string[chr_idx]) == INI_BOOLEANS[pair_idx][bool_idx][chr_idx]; chr_idx++) {
 
 				if (!ini_string[chr_idx]) {
 
@@ -3165,7 +3181,7 @@ signed int ini_get_bool (const char * const ini_string, const signed int return_
 
 	@brief			Checks whether the first letter of a string matches the first
 					letter of one of the booleans listed in the private constant
-					`_LIBCONFINI_BOOLEANS_` (case insensitive)
+					`#INI_BOOLEANS` (case insensitive)
 	@param			ini_string			A string to be checked
 	@param			return_value		A value that is returned if no matching
 										boolean has been found
@@ -3181,11 +3197,11 @@ signed int ini_get_lazy_bool (const char * const ini_string, const signed int re
 	uint8_t bool_idx;
 	size_t pair_idx;
 
-	for (pair_idx = 0; pair_idx < sizeof(_LIBCONFINI_BOOLEANS_) / 2 / sizeof(char *); pair_idx++) {
+	for (pair_idx = 0; pair_idx < sizeof(INI_BOOLEANS) / 2 / sizeof(char *); pair_idx++) {
 
 		for (bool_idx = 0; bool_idx < 2; bool_idx++) {
 
-			if (_LIBCONFINI_CHR_CASEFOLD_(*ini_string) == *_LIBCONFINI_BOOLEANS_[pair_idx][bool_idx]) {
+			if (_LIBCONFINI_CHR_CASEFOLD_(*ini_string) == *INI_BOOLEANS[pair_idx][bool_idx]) {
 
 				return bool_idx;
 
