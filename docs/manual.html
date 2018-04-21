@@ -849,7 +849,7 @@ int main () {
 &rArr; Behavior of <code>ini_string_parse()</code>: only <code>\\</code> will be unescaped, then the new length of the string will be returned.</li>
 <li>Condition: <code>format.no_single_quotes &amp;&amp; format.no_double_quotes &amp;&amp; format.multiline_nodes == INI_NO_MULTILINE</code><br />
 &rArr; Escape sequences: No escape sequences<br />
-&rArr; Behavior of <code>ini_string_parse()</code>: No changes will be made, only the length of the string will be counted and returned.</li>
+&rArr; Behavior of <code>ini_string_parse()</code>: Spaces at the beginning and at the end of the string will be removed, then the new length of the string will be returned.</li>
 </ol>
 
 

@@ -1086,7 +1086,7 @@ Condition: \fBformat\.no_single_quotes && format\.no_double_quotes && format\.mu
 ⇒ Escape sequences: No escape sequences
 .
 .br
-⇒ Behavior of \fBini_string_parse()\fR: No changes will be made, only the length of the string will be counted and returned\.
+⇒ Behavior of \fBini_string_parse()\fR: Spaces at the beginning and at the end of the string will be removed, then the new length of the string will be returned\.
 .
 .IP "" 0
 .

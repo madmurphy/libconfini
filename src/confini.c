@@ -162,13 +162,29 @@
 		/* FUNCTIONAL CONSTANTS */
 
 
-/* The list of space characters -- do not change its order! */
-static const char _LIBCONFINI_SPACES_[] = { _LIBCONFINI_SIMPLE_SPACE_, '\t', '\f', '\v', _LIBCONFINI_LF_, _LIBCONFINI_CR_ };
+/*
+	Possible depths of `_LIBCONFINI_SPACES_` (see function `is_some_space()`).
+	Please, consider the three following constants as belonging together to a
+	virtual opaque `enum`.
+*/
+#define _LIBCONFINI_WITH_EOL_ -1
+#define _LIBCONFINI_NO_EOL_ 1
+#define _LIBCONFINI_JUST_S_T_ 3
 
-/* Possible lengths of array `_LIBCONFINI_SPACES_` */
-#define _LIBCONFINI_JUST_S_T_ 2
-#define _LIBCONFINI_NO_EOL_ 4
-#define _LIBCONFINI_WITH_EOL_ 6
+/* Other constants related to `_LIBCONFINI_SPACES_` */
+#define _LIBCONFINI_EOL_IDX_ 0
+#define _LIBCONFINI_SPALEN_ 6
+
+/* The list of space characters -- do not change its order! */
+static const char _LIBCONFINI_SPACES_[_LIBCONFINI_SPALEN_] = {
+	_LIBCONFINI_LF_,
+	_LIBCONFINI_CR_,
+	'\v',
+	'\f',
+	'\t',
+	_LIBCONFINI_SIMPLE_SPACE_
+};
+
 
 /**
 
@@ -188,20 +204,22 @@ static const char * const _LIBCONFINI_BOOLEANS_[][2] = {
 
 		/* ABSTRACT UTILITIES */
 
+
 /**
 
 	@brief			Checks whether a characters matches one of the first n elements
 					of `_LIBCONFINI_SPACES_`
 	@param			chr				The target character
-	@param			depth			The number of elements to check (maximum
-									allowed: `6`)
+	@param			depth			What is actually considered a space (possible
+									values: `_LIBCONFINI_WITH_EOL_`,
+									`_LIBCONFINI_NO_EOL_`, `_LIBCONFINI_JUST_S_T_`)
 	@return			A boolean: `TRUE` if the character matches, `FALSE` otherwise
 
 **/
 static inline _LIBCONFINI_BOOL_ is_some_space (const char chr, const uint8_t depth) {
-	uint8_t idx = depth;
-	while (idx-- > 0 && chr != _LIBCONFINI_SPACES_[idx]);
-	return idx + 1 < depth;
+	int8_t idx = depth;
+	while (++idx < _LIBCONFINI_SPALEN_ && chr != _LIBCONFINI_SPACES_[idx]);
+	return idx < _LIBCONFINI_SPALEN_;
 }
 
 
@@ -210,8 +228,9 @@ static inline _LIBCONFINI_BOOL_ is_some_space (const char chr, const uint8_t dep
 	@brief			Soft left trim -- does not change the buffer
 	@param			lt_s			The target string
 	@param			start_from		The offset where to start the left trim
-	@param			depth			What is actually considered a space -- a number
-									ranging from 1 to 6
+	@param			depth			What is actually considered a space (possible
+									values: `_LIBCONFINI_WITH_EOL_`,
+									`_LIBCONFINI_NO_EOL_`, `_LIBCONFINI_JUST_S_T_`)
 	@return			The offset of the first non-space character
 
 **/
@@ -227,8 +246,9 @@ static inline size_t ltrim_s (const char * const lt_s, const size_t start_from, 
 	@brief			Hard left trim -- **does** change the buffer
 	@param			lt_s			The target string
 	@param			start_from		The offset where to start the left trim
-	@param			depth			What is actually considered a space -- a number
-									ranging from 1 to 6
+	@param			depth			What is actually considered a space (possible
+									values: `_LIBCONFINI_WITH_EOL_`,
+									`_LIBCONFINI_NO_EOL_`, `_LIBCONFINI_JUST_S_T_`)
 	@return			The offset of the first non-space character
 
 **/
@@ -298,8 +318,9 @@ static inline size_t ultrim_h (char * const ult_s, const size_t start_from) {
 	@brief			Soft right trim -- does **not** change the buffer
 	@param			rt_s			The target string
 	@param			length			The length of the string
-	@param			depth			What is actually considered a space -- a subset
-									of `_LIBCONFINI_SPACES_` ranging from 1 to 6
+	@param			depth			What is actually considered a space (possible
+									values: `_LIBCONFINI_WITH_EOL_`,
+									`_LIBCONFINI_NO_EOL_`, `_LIBCONFINI_JUST_S_T_`)
 	@return			The length of the string until the last non-space character
 
 **/
@@ -315,9 +336,10 @@ static inline size_t rtrim_s (const char * const rt_s, const size_t length, cons
 	@brief			Hard right trim -- **does** change the buffer
 	@param			rt_s			The target string
 	@param			length			The length of the string
-	@param			depth			What is actually considered a space -- a
-									number ranging from 1 to 6
-	@return			The length of the string until the last non-space character
+	@param			depth			What is actually considered a space (possible
+									values: `_LIBCONFINI_WITH_EOL_`,
+									`_LIBCONFINI_NO_EOL_`, `_LIBCONFINI_JUST_S_T_`)
+	@return			The new length of the string
 
 **/
 static inline size_t rtrim_h (char * const rt_s, const size_t length, const uint8_t depth) {
@@ -514,7 +536,7 @@ static size_t unescape_cr_lf (char * const str, const size_t len, const _LIBCONF
 
 	size_t iter, idx = 0, lshift = 0;
 
-	for (_LIBCONFINI_BOOL_ is_escaped = _LIBCONFINI_FALSE_, cr_or_lf = 5; idx < len; idx++) {
+	for (_LIBCONFINI_BOOL_ is_escaped = _LIBCONFINI_FALSE_, cr_or_lf = _LIBCONFINI_EOL_IDX_; idx < len; idx++) {
 
 		if (is_escaped && (str[idx] == _LIBCONFINI_SPACES_[cr_or_lf] || str[idx] == _LIBCONFINI_SPACES_[cr_or_lf ^= 1])) {
 
@@ -1134,16 +1156,16 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 
 	*/
 
-	abcd		=	is_parsable_char(segment[search_at], format) && !(
-						format.no_disabled_after_space && is_some_space(segment[search_at + 1], _LIBCONFINI_NO_EOL_)
-					) ?
-						(abcd & 3) | 64
-					: !format.multiline_nodes && (
-						segment[search_at] == _LIBCONFINI_INLINE_MARKER_ || is_comment_char(segment[search_at], format)
-					) ?
-						(abcd & 3) | 128
-					:
-						abcd & 3;
+	abcd	=	is_parsable_char(segment[search_at], format) && !(
+					format.no_disabled_after_space && is_some_space(segment[search_at + 1], _LIBCONFINI_NO_EOL_)
+				) ?
+					(abcd & 3) | 64
+				: !format.multiline_nodes && (
+					segment[search_at] == _LIBCONFINI_INLINE_MARKER_ || is_comment_char(segment[search_at], format)
+				) ?
+					(abcd & 3) | 128
+				:
+					abcd & 3;
 
 	if (abcd & 192) {
 
@@ -1447,7 +1469,7 @@ int load_ini_file (
 	for (
 
 		__N_MEMBERS__ = 0,
-		__EOL_ID__ = 5,
+		__EOL_ID__ = _LIBCONFINI_EOL_IDX_,
 		__ISNT_ESCAPED__ = _LIBCONFINI_TRUE_,
 		node_at = 0,
 		idx = __SHIFT_LEN__;
@@ -2165,16 +2187,16 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 
 		}
 
-		abcd		=	!(abcd & 6) && ini_string[idx_i] == _LIBCONFINI_DOUBLE_QUOTES_ ?
-							(nbacksl & 1 ? (abcd & 47) | 32 : ((abcd & 239) | 160) ^ 8)
-						: !(abcd & 9) && ini_string[idx_i] == _LIBCONFINI_SINGLE_QUOTES_ ?
-							(nbacksl & 1 ? (abcd & 31) | 16 : ((abcd & 223) | 144) ^ 4)
-						: (abcd & 12) || !is_some_space(ini_string[idx_i], _LIBCONFINI_WITH_EOL_) ?
-							abcd & 15
-						: abcd & 64 ?
-							(abcd & 207) | 128
-						:
-							(abcd & 15) | 64;
+		abcd	=	!(abcd & 6) && ini_string[idx_i] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+						(nbacksl & 1 ? (abcd & 47) | 32 : ((abcd & 239) | 160) ^ 8)
+					: !(abcd & 9) && ini_string[idx_i] == _LIBCONFINI_SINGLE_QUOTES_ ?
+						(nbacksl & 1 ? (abcd & 31) | 16 : ((abcd & 223) | 144) ^ 4)
+					: (abcd & 12) || !is_some_space(ini_string[idx_i], _LIBCONFINI_WITH_EOL_) ?
+						abcd & 15
+					: abcd & 64 ?
+						(abcd & 207) | 128
+					:
+						(abcd & 15) | 64;
 
 		if (abcd & 128) {
 
@@ -2380,9 +2402,9 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 
 	The @p format argument is used for the following fields:
 
-	- `format.no_double_quotes`
-	- `format.no_single_quotes`
 	- `format.multiline_nodes`
+	- `format.no_single_quotes`
+	- `format.no_double_quotes`
 
 	@include topics/ini_string_parse.c
 
@@ -2420,12 +2442,12 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 
 	for (register uint8_t abcd = (format.no_double_quotes << 1) | format.no_single_quotes; ini_string[idx]; idx++) {
 
-		abcd		=	!(abcd & 6) && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
-							(abcd & 47) | 32
-						: !(abcd & 9) && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
-							(abcd & 31) | 16
-						:
-							abcd & 15;
+		abcd	=	!(abcd & 6) && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+						(abcd & 47) | 32
+					: !(abcd & 9) && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
+						(abcd & 31) | 16
+					:
+						abcd & 15;
 
 		if (!(nbacksl & 1) && (abcd & 48)) {
 
@@ -2460,7 +2482,9 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 
 	}
 
-	for (idx -= lshift + (nbacksl >> 1); ini_string[idx]; ini_string[idx++] = '\0');
+	lshift += nbacksl >> 1;
+
+	for (idx -= lshift; ini_string[idx]; ini_string[idx++] = '\0');
 
 	return idx - lshift;
 
@@ -2478,61 +2502,26 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 	@return			The new length of the string
 
 	Usually @p ini_string comes from an `IniDispatch` (but any other string may be
-	used as well). If the string does not contain quotes, or if quotes are
-	considered to be normal characters, no changes will be made.
+	used as well). If `format.do_not_collapse_values` is set to non-zero, spaces
+	surrounding empty quotes will be collapsed together with the latter.
 
 	The @p format argument is used for the following fields:
 
-	- `format.no_double_quotes`
-	- `format.no_single_quotes`
 	- `format.multiline_nodes`
+	- `format.no_single_quotes`
+	- `format.no_double_quotes`
+	- `format.do_not_collapse_values`
+
+	Note:	`format.multiline_nodes` is used only to figure out whether there are
+			escape sequences or not. For all other purposes new line characters will
+			be considered to be equal to any other spaces, even if the format is not
+			multi-line -- new line characters in non-multi-line formats should never
+			appear (unless you wrote yourself the INI string to parse).
 
 	@include topics/ini_string_parse.c
 
 **/
 size_t ini_string_parse (char * const ini_string, const IniFormat format) {
-
-	register uint8_t abcd;
-	size_t idx = 0, lshift = 0;
-
-	if (format.do_not_collapse_values) {
-
-		return ini_unquote(ini_string, format);
-
-	}
-
-	if (format.no_double_quotes && format.no_single_quotes && format.multiline_nodes == INI_NO_MULTILINE) {
-
-		/* There are no escape sequences but spaces must still be collapsed. */
-
-		/*
-
-		Mask `abcd` (2 bits used):
-
-			FLAG_1		This is a space
-			FLAG_2		Skip this character
-
-		*/
-
-		for (abcd = 0; ini_string[idx]; idx++) {
-
-			abcd = !is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_) ? 0 : abcd & 1 ? 3 : 1;
-
-			if (abcd & 2) {
-
-				lshift++;
-
-			} else if (lshift) {
-
-				ini_string[idx - lshift] = ini_string[idx];
-
-			}
-
-		}
-
-		return idx;
-
-	}
 
 	/*
 
@@ -2540,31 +2529,86 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 		FLAG_1		Single quotes are not metacharacters (const)
 		FLAG_2		Double quotes are not metacharacters (const)
-		FLAG_4		Unescaped single quotes are odd right now
-		FLAG_8		Unescaped double quotes are odd right now
-		FLAG_16		This is an unescaped single quote and format supports single
-					quotes
-		FLAG_32		This is an unescaped double quote and format supports double
-					quotes
+		FLAG_4		Do not collapse spaces within members (const)
+		FLAG_8		Unescaped single quotes are odd right now
+		FLAG_16		Unescaped double quotes are odd right now
+		FLAG_32		This is an *escaped* single/double quote and format supports
+					single/double quotes
 		FLAG_64		This is a space
 		FLAG_128	Skip this character
 
 	*/
 
+	size_t idx = 0, lshift = 0;
+	register uint8_t abcd	=	(format.do_not_collapse_values ? 68 : 64) |
+								(format.no_double_quotes << 1) |
+								format.no_single_quotes;
+
+
+	if (abcd == 67 && format.multiline_nodes == INI_NO_MULTILINE) {
+
+		/* There are no escape sequences but spaces must still be collapsed. */
+
+		for (; ini_string[idx]; idx++) {
+
+			abcd = !is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_) ? 3 : abcd & 64 ? 195 : 67;
+
+			if (abcd & 128) {
+
+				lshift++;
+
+			} else {
+
+				ini_string[idx - lshift] = abcd & 64 ? _LIBCONFINI_SIMPLE_SPACE_ : ini_string[idx];
+
+			}
+
+		}
+
+		for (idx -= abcd & 64 ? ++lshift : lshift; ini_string[idx]; ini_string[idx++] = '\0');
+
+		return idx - lshift;
+
+	}
+
+	if (abcd & 4) {
+
+		for (; ini_string[lshift] && is_some_space(ini_string[lshift], _LIBCONFINI_WITH_EOL_); lshift++);
+
+		if (format.no_double_quotes && format.no_single_quotes && format.multiline_nodes == INI_NO_MULTILINE) {
+
+			/* There are no escape sequences and spaces must not be collapsed, but left and right trim might still be necessary. */
+
+			for (; ini_string[idx]; idx++) {
+
+				ini_string[idx - lshift] = ini_string[idx];
+
+			}
+
+			for (idx -= lshift; ini_string[idx]; ini_string[idx++] = '\0');
+
+			return rtrim_h(ini_string, idx - lshift, _LIBCONFINI_WITH_EOL_);
+
+		}
+
+	}
+
+	/* There might be escape sequences */
+
 	size_t nbacksl = 0;
 
-	for (abcd = (format.no_double_quotes << 1) | format.no_single_quotes; ini_string[idx]; idx++) {
+	for (; ini_string[idx]; idx++) {
 
-		abcd		=	!(abcd & 6) && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
-							(nbacksl & 1 ? (abcd & 47) | 32 : ((abcd & 239) | 160) ^ 8)
-						: !(abcd & 9) && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
-							(nbacksl & 1 ? (abcd & 31) | 16 : ((abcd & 223) | 144) ^ 4)
-						: (abcd & 12) || !is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_) ?
-							abcd & 15
-						: abcd & 64 ?
-							(abcd & 207) | 128
-						:
-							(abcd & 15) | 64;
+		abcd	=	!(abcd & 10) && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+						(nbacksl & 1 ? (abcd & 63) | 32 : ((abcd & 223) | 128) ^ 16)
+					: !(abcd & 17) && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
+						(nbacksl & 1 ? (abcd & 63) | 32 : ((abcd & 223) | 128) ^ 8)
+					: (abcd & 28) || !is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_) ?
+						abcd & 31
+					: abcd & 64 ?
+						(abcd & 223) | 128
+					:
+						(abcd & 95) | 64;
 
 
 		if (abcd & 128) {
@@ -2580,7 +2624,7 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 		} else {
 
-			if ((nbacksl & 1) && (abcd & 48)) {
+			if (abcd & 32) {
 
 				lshift++;
 
@@ -2591,17 +2635,15 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 		}
 
-		if (lshift) {
-
-			ini_string[idx - lshift] = ini_string[idx];
-
-		}
+		ini_string[idx - lshift] = abcd & 64 ? _LIBCONFINI_SIMPLE_SPACE_ : ini_string[idx];
 
 	}
 
-	for (idx -= lshift + (nbacksl >> 1); ini_string[idx]; ini_string[idx++] = '\0');
+	lshift += nbacksl >> 1;
 
-	return idx - lshift;
+	for (idx -= abcd & 64 ? ++lshift : lshift; ini_string[idx]; ini_string[idx++] = '\0');
+
+	return abcd & 4 ? rtrim_h(ini_string, idx - lshift, _LIBCONFINI_WITH_EOL_) : idx - lshift;
 
 }
 

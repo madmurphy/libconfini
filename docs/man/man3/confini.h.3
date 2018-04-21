@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Thu Apr 19 2018" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Sat Apr 21 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -1069,17 +1069,21 @@ Unescapes \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP and removes all unescaped quotes (
 The new length of the string
 .RE
 .PP
-Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other string may be used as well)\&. If the string does not contain quotes, or if quotes are considered to be normal characters, no changes will be made\&.
+Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other string may be used as well)\&. If \fCformat\&.do_not_collapse_values\fP is set to non-zero, spaces surrounding empty quotes will be collapsed together with the latter\&.
 .PP
 The \fCformat\fP argument is used for the following fields:
 .PP
 .IP "\(bu" 2
-\fCformat\&.no_double_quotes\fP
+\fCformat\&.multiline_nodes\fP
 .IP "\(bu" 2
 \fCformat\&.no_single_quotes\fP
 .IP "\(bu" 2
-\fCformat\&.multiline_nodes\fP
+\fCformat\&.no_double_quotes\fP
+.IP "\(bu" 2
+\fCformat\&.do_not_collapse_values\fP
 .PP
+.PP
+Note: \fCformat\&.multiline_nodes\fP is used only to figure out whether there are escape sequences or not\&. For all other purposes new line characters will be considered to be equal to any other spaces, even if the format is not multi-line – new line characters in non-multi-line formats should never appear (unless you wrote yourself the INI string to parse)\&.
 .PP
 .PP
 .nf
@@ -1142,11 +1146,11 @@ Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other st
 The \fCformat\fP argument is used for the following fields:
 .PP
 .IP "\(bu" 2
-\fCformat\&.no_double_quotes\fP
+\fCformat\&.multiline_nodes\fP
 .IP "\(bu" 2
 \fCformat\&.no_single_quotes\fP
 .IP "\(bu" 2
-\fCformat\&.multiline_nodes\fP
+\fCformat\&.no_double_quotes\fP
 .PP
 .PP
 .PP

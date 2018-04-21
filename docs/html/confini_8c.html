@@ -1054,13 +1054,15 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The new length of the string</dd></dl>
-<p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI node. ">IniDispatch</a></code> (but any other string may be used as well). If the string does not contain quotes, or if quotes are considered to be normal characters, no changes will be made.</p>
+<p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI node. ">IniDispatch</a></code> (but any other string may be used as well). If <code>format.do_not_collapse_values</code> is set to non-zero, spaces surrounding empty quotes will be collapsed together with the latter.</p>
 <p>The <code>format</code> argument is used for the following fields:</p>
 <ul>
-<li><code>format.no_double_quotes</code></li>
-<li><code>format.no_single_quotes</code></li>
 <li><code>format.multiline_nodes</code></li>
+<li><code>format.no_single_quotes</code></li>
+<li><code>format.no_double_quotes</code></li>
+<li><code>format.do_not_collapse_values</code></li>
 </ul>
+<p>Note: <code>format.multiline_nodes</code> is used only to figure out whether there are escape sequences or not. For all other purposes new line characters will be considered to be equal to any other spaces, even if the format is not multi-line &ndash; new line characters in non-multi-line formats should never appear (unless you wrote yourself the INI string to parse).</p>
 <div class="fragment"><div class="line"><span class="comment">/* examples/topics/ini_string_parse.c */</span></div><div class="line"></div><div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div><div class="line"></div><div class="line"><span class="keywordtype">int</span> ini_listener (<a class="code" href="structIniDispatch.html">IniDispatch</a> *dispatch, <span class="keywordtype">void</span> *v_null) {</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (dispatch-&gt;<a class="code" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a> == <a class="code" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba97333d01dfff8f9a9c690fc559751b45">INI_KEY</a> || dispatch-&gt;<a class="code" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a> == <a class="code" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba9b68a1fa247c1b1ae3fc2ce615359c7b">INI_DISABLED_KEY</a>) {</div><div class="line"></div><div class="line">        <a class="code" href="confini_8c.html#ac55f3fab95f697ac5058533df100fc11">ini_unquote</a>(dispatch-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#adfda221d4a9effcb4f3ee6a99c5f2de2">format</a>);</div><div class="line">        <a class="code" href="confini_8c.html#ab4e3d48f0eb0438ba0c84fc77e362aa3">ini_string_parse</a>(dispatch-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#adfda221d4a9effcb4f3ee6a99c5f2de2">format</a>);</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    printf(<span class="stringliteral">&quot;DATA: %s\nVALUE: %s\n&quot;</span>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a>);</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">int</span> main () {</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="confini_8c.html#ae4b70cf57595a191a7b8c075f9b00780">load_ini_path</a>(<span class="stringliteral">&quot;example.conf&quot;</span>, <a class="code" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a>, NULL, ini_listener, NULL)) {</div><div class="line"></div><div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Sorry, something went wrong :-(\n&quot;</span>);</div><div class="line">        <span class="keywordflow">return</span> 1;</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div></div><!-- fragment --> 
 </div>
 </div>
@@ -1103,9 +1105,9 @@ Variables</h2></td></tr>
 <p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI node. ">IniDispatch</a></code> (but any other string may be used as well). If the string does not contain quotes, or if quotes are considered to be normal characters, no changes will be made.</p>
 <p>The <code>format</code> argument is used for the following fields:</p>
 <ul>
-<li><code>format.no_double_quotes</code></li>
-<li><code>format.no_single_quotes</code></li>
 <li><code>format.multiline_nodes</code></li>
+<li><code>format.no_single_quotes</code></li>
+<li><code>format.no_double_quotes</code></li>
 </ul>
 <div class="fragment"><div class="line"><span class="comment">/* examples/topics/ini_string_parse.c */</span></div><div class="line"></div><div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div><div class="line"></div><div class="line"><span class="keywordtype">int</span> ini_listener (<a class="code" href="structIniDispatch.html">IniDispatch</a> *dispatch, <span class="keywordtype">void</span> *v_null) {</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (dispatch-&gt;<a class="code" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a> == <a class="code" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba97333d01dfff8f9a9c690fc559751b45">INI_KEY</a> || dispatch-&gt;<a class="code" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a> == <a class="code" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba9b68a1fa247c1b1ae3fc2ce615359c7b">INI_DISABLED_KEY</a>) {</div><div class="line"></div><div class="line">        <a class="code" href="confini_8c.html#ac55f3fab95f697ac5058533df100fc11">ini_unquote</a>(dispatch-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#adfda221d4a9effcb4f3ee6a99c5f2de2">format</a>);</div><div class="line">        <a class="code" href="confini_8c.html#ab4e3d48f0eb0438ba0c84fc77e362aa3">ini_string_parse</a>(dispatch-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#adfda221d4a9effcb4f3ee6a99c5f2de2">format</a>);</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    printf(<span class="stringliteral">&quot;DATA: %s\nVALUE: %s\n&quot;</span>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a>);</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">int</span> main () {</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="confini_8c.html#ae4b70cf57595a191a7b8c075f9b00780">load_ini_path</a>(<span class="stringliteral">&quot;example.conf&quot;</span>, <a class="code" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a>, NULL, ini_listener, NULL)) {</div><div class="line"></div><div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Sorry, something went wrong :-(\n&quot;</span>);</div><div class="line">        <span class="keywordflow">return</span> 1;</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div></div><!-- fragment --> 
 </div>
@@ -1286,7 +1288,7 @@ Variables</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">chr</td><td>The target character </td></tr>
-    <tr><td class="paramname">depth</td><td>The number of elements to check (maximum allowed: <code>6</code>) </td></tr>
+    <tr><td class="paramname">depth</td><td>What is actually considered a space (possible values: <code>_LIBCONFINI_WITH_EOL_</code>, <code>_LIBCONFINI_NO_EOL_</code>, <code>_LIBCONFINI_JUST_S_T_</code>) </td></tr>
   </table>
   </dd>
 </dl>
@@ -1460,7 +1462,7 @@ Variables</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">lt_s</td><td>The target string </td></tr>
     <tr><td class="paramname">start_from</td><td>The offset where to start the left trim </td></tr>
-    <tr><td class="paramname">depth</td><td>What is actually considered a space &ndash; a number ranging from 1 to 6 </td></tr>
+    <tr><td class="paramname">depth</td><td>What is actually considered a space (possible values: <code>_LIBCONFINI_WITH_EOL_</code>, <code>_LIBCONFINI_NO_EOL_</code>, <code>_LIBCONFINI_JUST_S_T_</code>) </td></tr>
   </table>
   </dd>
 </dl>
@@ -1513,7 +1515,7 @@ Variables</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">lt_s</td><td>The target string </td></tr>
     <tr><td class="paramname">start_from</td><td>The offset where to start the left trim </td></tr>
-    <tr><td class="paramname">depth</td><td>What is actually considered a space &ndash; a number ranging from 1 to 6 </td></tr>
+    <tr><td class="paramname">depth</td><td>What is actually considered a space (possible values: <code>_LIBCONFINI_WITH_EOL_</code>, <code>_LIBCONFINI_NO_EOL_</code>, <code>_LIBCONFINI_JUST_S_T_</code>) </td></tr>
   </table>
   </dd>
 </dl>
@@ -1566,11 +1568,11 @@ Variables</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">rt_s</td><td>The target string </td></tr>
     <tr><td class="paramname">length</td><td>The length of the string </td></tr>
-    <tr><td class="paramname">depth</td><td>What is actually considered a space &ndash; a number ranging from 1 to 6 </td></tr>
+    <tr><td class="paramname">depth</td><td>What is actually considered a space (possible values: <code>_LIBCONFINI_WITH_EOL_</code>, <code>_LIBCONFINI_NO_EOL_</code>, <code>_LIBCONFINI_JUST_S_T_</code>) </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The length of the string until the last non-space character </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The new length of the string </dd></dl>
 
 </div>
 </div>
@@ -1619,7 +1621,7 @@ Variables</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">rt_s</td><td>The target string </td></tr>
     <tr><td class="paramname">length</td><td>The length of the string </td></tr>
-    <tr><td class="paramname">depth</td><td>What is actually considered a space &ndash; a subset of <code>_LIBCONFINI_SPACES_</code> ranging from 1 to 6 </td></tr>
+    <tr><td class="paramname">depth</td><td>What is actually considered a space (possible values: <code>_LIBCONFINI_WITH_EOL_</code>, <code>_LIBCONFINI_NO_EOL_</code>, <code>_LIBCONFINI_JUST_S_T_</code>) </td></tr>
   </table>
   </dd>
 </dl>

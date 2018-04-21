@@ -801,7 +801,7 @@ The behavior of these functions depends on the format given. In particular, usin
    ⇒ Behavior of `ini_string_parse()`: only `\\` will be unescaped, then the new length of the string will be returned.
 5. Condition: `format.no_single_quotes && format.no_double_quotes && format.multiline_nodes == INI_NO_MULTILINE`<br />
    ⇒ Escape sequences: No escape sequences<br />
-   ⇒ Behavior of `ini_string_parse()`: No changes will be made, only the length of the string will be counted and returned.
+   ⇒ Behavior of `ini_string_parse()`: Spaces at the beginning and at the end of the string will be removed, then the new length of the string will be returned.
 
 
 ### STRING COMPARISONS
