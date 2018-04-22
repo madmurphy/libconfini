@@ -110,8 +110,15 @@ static int populate_hash_table (IniDispatch *this, void *v_hash_table) {
 		str_b[tmp_size] = this->data[tmp_size] == '.' ? _DOT_REPLACEMENT_ : this->data[tmp_size]
 	);
 
-	/* We can *finally* leave `str_b` available for pointing to the value part */
+	/* We are borrowing again `str_b` in order to search for duplicate keys */
+	if (g_hash_table_lookup_extended((GHashTable *) v_hash_table, str_a, (gpointer) &str_b, NULL)) {
 
+		printf("`%s` will be overwritten (duplicate value found)\n", str_a);
+		g_hash_table_remove((GHashTable *) v_hash_table, str_b);
+
+	}
+
+	/* We can *finally* leave `str_b` available for pointing to the value part */
 	str_b = (char *) malloc(this->v_len + 1);
 	_MALLOC_CHECK_(str_b)
 
