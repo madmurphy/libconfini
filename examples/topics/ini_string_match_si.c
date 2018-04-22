@@ -5,10 +5,10 @@
 
 static int passfinder (IniDispatch *disp, void *v_membid) {
 
-	/* Search for `password = "Hello world"` in the INI file */
+	/* Search for `password = "hello world"` in the INI file */
 	if (
 		ini_string_match_si("password", disp->data, disp->format)
-		&& ini_string_match_si("Hello world", disp->value, disp->format)
+		&& ini_string_match_si("hello world", disp->value, disp->format)
 	) {
 
 		*((size_t *) v_membid) = disp->dispatch_id;

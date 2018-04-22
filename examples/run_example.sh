@@ -47,7 +47,7 @@ fi
 _DONE_=0
 
 # other variables declared in this script:
-# _GOOD_ANSWER_, _DONT_RUN_, _ITER_, _FILENAME_, _CHOICE_, _CHOSEN_LONG_, _CHOSEN_SHORT_, _EXIT_CODE_
+# _GOOD_ANSWER_, _DONT_RUN_, _ITER_, _FILENAME_, _CHOICE_, _CHOSEN_LONG_, _CHOSEN_SHORT_, _GCC_CMD_, _EXIT_CODE_
 
 while [[ "${_DONE_}" -eq 0 ]] ; do
 	_GOOD_ANSWER_=0
@@ -78,10 +78,15 @@ while [[ "${_DONE_}" -eq 0 ]] ; do
 	done
 	if [[ "${_DONT_RUN_}" -eq 0 ]] ; then
 		_CHOSEN_LONG_="${_SRCS_[$(expr ${_CHOICE_} - 1)]}"
-		_CHOSEN_SHORT_=${_CHOSEN_LONG_:_THIS_PATH_LENGTH_}
+		_CHOSEN_SHORT_="${_CHOSEN_LONG_:_THIS_PATH_LENGTH_}"
+		_GCC_CMD_="gcc -pedantic -lconfini"
+		if [[ "${_CHOSEN_SHORT_}" == *"glib_"* ]]; then
+			# We need glib for this...
+			_GCC_CMD_="${_GCC_CMD_} -lglib-2.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include"
+		fi
 		echo -e "  ${_COL_BBLUE_}->${_COL_DEFAULT_} Compiling \"${_CHOSEN_SHORT_}\" with gcc"
-		echo -e "     (\x60${_COL_YELLOW_}gcc -lconfini -pedantic \"${_CHOSEN_SHORT_}\"${_COL_DEFAULT_}\x60)..."
-		if gcc -lconfini -pedantic "${_CHOSEN_LONG_}" -o "${_COMPILE_TO_}" ; then
+		echo -e "     (\x60${_COL_YELLOW_}${_GCC_CMD_} \"${_CHOSEN_SHORT_}\"${_COL_DEFAULT_}\x60)..."
+		if eval "${_GCC_CMD_} \"${_CHOSEN_LONG_}\" -o \"${_COMPILE_TO_}\""; then
 			echo -e "  ${_COL_BBLUE_}->${_COL_DEFAULT_} File \"${_CHOSEN_SHORT_}\" has been successifully compiled. Run it..."
 			echo
 			echo -e "${_COL_BYELLOW_}-----------------[${_COL_BCYAN_}${_CHOSEN_SHORT_}${_COL_BYELLOW_}]-----------------${_COL_DEFAULT_}"

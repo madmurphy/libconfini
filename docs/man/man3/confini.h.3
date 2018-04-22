@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Sat Apr 21 2018" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Sun Apr 22 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -981,10 +981,10 @@ The \fCformat\fP argument is used for the following fields:
 
 static int passfinder (IniDispatch *disp, void *v_membid) {
 
-    /* Search for `password = "Hello world"` in the INI file */
+    /* Search for `password = "hello world"` in the INI file */
     if (
         ini_string_match_si("password", disp->data, disp->format)
-        && ini_string_match_si("Hello world", disp->value, disp->format)
+        && ini_string_match_si("hello world", disp->value, disp->format)
     ) {
 
         *((size_t *) v_membid) = disp->dispatch_id;

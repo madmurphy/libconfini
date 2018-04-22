@@ -24,6 +24,7 @@ examples_DATA = \
 	examples/ambiguous.conf \
 	examples/bad_ini.conf \
 	examples/example.conf \
+	examples/hash_table.conf \
 	examples/run_example.sh \
 	examples/typed_ini.conf
 
@@ -31,6 +32,7 @@ examplesotherdir = $(examplesdir)/miscellanea
 examplesother_DATA = \
 	examples/miscellanea/disambiguate.c \
         examples/miscellanea/dispatch_everything.c \
+        examples/miscellanea/glib_hash_table.c \
 	examples/miscellanea/print_format.c \
 	examples/miscellanea/typed_ini.c
 
