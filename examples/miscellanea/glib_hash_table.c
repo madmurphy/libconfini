@@ -2,9 +2,9 @@
 /*
 
 The following code will try to use glib's `GHashTable` object to store
-the entire content of an INI file. Each key will be stored with its full path --
-e.g.: `[section.[subsection.[subsubsection.]]]key`. Comments and disabled
-entries will be ignored.
+the entire content of an INI file. Each key will be accessible through its full
+path -- e.g.: `[section.[subsection.[subsubsection.]]]key`. Comments and
+disabled entries will be ignored.
 
 Moreover, after the content has been stored, the `main()` function will attempt
 to read the value of the key `my_section.my_subsection.find_me`.
@@ -113,7 +113,7 @@ static int populate_hash_table (IniDispatch *this, void *v_hash_table) {
 	/* We are borrowing again `str_b` in order to search for duplicate keys */
 	if (g_hash_table_lookup_extended((GHashTable *) v_hash_table, str_a, (gpointer) &str_b, NULL)) {
 
-		printf("`%s` will be overwritten (duplicate value found)\n", str_a);
+		printf("`%s` will be overwritten (duplicate key found)\n", str_a);
 		g_hash_table_remove((GHashTable *) v_hash_table, str_b);
 
 	}
