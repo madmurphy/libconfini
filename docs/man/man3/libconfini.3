@@ -687,7 +687,7 @@ The strings passed with each dispatch, as already said, must not be freed\. \fIN
 Be sure that your edit remains within the buffer lengths given (see: \fBIniDispatch::d_len\fR and \fBIniDispatch::v_len\fR)\.
 .
 .IP "2." 4
-If you want to edit the content of \fBIniDispatch::data\fR and this contains a section path, the \fBIniDispatch::append_to\fR properties of its children \fImay\fR refer to the same buffer: in this case, if you edit it, you can no more rely on its children\'s \fBIniDispatch::append_to\fR properties (you will not make any damage, the loop will continue just fine: so if you think you are going to never use the property \fBIniDispatch::append_to\fR just do it); alternatively, use \fBstrdup()\fR\. If, instead, \fBIniDispatch::data\fR contains a key name or a comment, no other dispatch will share this buffer, so feel free to edit it before it gets lost\.
+If you want to edit the content of \fBIniDispatch::data\fR and this contains a section path, the \fBIniDispatch::append_to\fR properties of its children \fImay\fR refer to the same buffer\. In this case, if you edit it, you can no more rely on its children\'s \fBIniDispatch::append_to\fR properties (you will not make any damage, the loop will continue just fine: so if you think you are going to never use the property \fBIniDispatch::append_to\fR just do it); alternatively, use \fBstrdup()\fR\. If, instead, \fBIniDispatch::data\fR contains a key name or a comment, no other dispatch will share this buffer, so feel free to edit it before it gets lost\.
 .
 .IP "3." 4
 Regarding \fBIniDispatch::value\fR, the buffer is never shared between dispatches, so feel free to edit it\.

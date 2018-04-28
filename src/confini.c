@@ -613,7 +613,7 @@ static size_t unescape_cr_lf (char * const str, const size_t len, const _LIBCONF
 	`secpath.replace(/\.*\s*$|(?:\s*(\.))+\s*|^\s+/g, "$1").replace(/\s+/g, " ")`
 
 	A section path can start with a dot (append), but cannot end with a dot. Spaces
-	sorrounding dots will be removed. Fragments sorrounded by single or double
+	surrounding dots will be removed. Fragments surrounded by single or double
 	quotes (if these are enabled) prevent changes.
 
 **/
@@ -2742,7 +2742,7 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 /**
 
 	@brief			Compresses the distribution of the data of a stringified INI
-					array, by removing all the white spaces that sorround its
+					array, by removing all the white spaces that surround its
 					delimiters, empty quotes, collapsable spaces, etc.
 	@param			ini_string		The stringified array
 	@param			delimiter		The delimiter between the array members --
