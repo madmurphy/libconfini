@@ -21,12 +21,15 @@ man_MANS = docs/man/man3/confini.h.3 \
 
 examplesdir = $(docdir)/examples
 examples_DATA = \
-	examples/ambiguous.conf \
-	examples/bad_ini.conf \
-	examples/example.conf \
-	examples/hash_table.conf \
-	examples/run_example.sh \
-	examples/typed_ini.conf
+	examples/run_example.sh
+
+examplesinifilesdir = $(examplesdir)/ini_files
+examplesinifiles_DATA = \
+	examples/ini_files/ambiguous.conf \
+	examples/ini_files/bad_ini.conf \
+	examples/ini_files/example.conf \
+	examples/ini_files/hash_table.conf \
+	examples/ini_files/typed_ini.conf
 
 examplesotherdir = $(examplesdir)/miscellanea
 examplesother_DATA = \
@@ -45,7 +48,7 @@ examplestopics_DATA = \
 	examples/topics/load_ini_file.c \
 	examples/topics/load_ini_path.c
 
-# Make doc scripts executable
+# Make doc script executable
 install-data-hook:
 	chmod +x $(DESTDIR)$(examplesdir)/run_example.sh
 

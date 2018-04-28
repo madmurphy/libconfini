@@ -238,7 +238,7 @@ extern double (* const ini_get_float) (
 
 
 /** @brief	Error flag (not present in user-generated interruptions) -- its value should be considered opaque **/
-#define CONFINI_ERROR 4
+#define CONFINI_ERROR 252
 
 /** @brief	Error codes -- the actual values of each constant should be considered opaque **/
 enum ConfiniInterruptNo {
@@ -261,12 +261,12 @@ enum IniDelimiters {
 enum IniNodeType {
 	INI_UNKNOWN = 0,	/**< Node impossible to parse **/
 	INI_VALUE = 1,		/**< Not used here (values are dispatched together with keys), but available for user's implementations **/
-	INI_SECTION = 2,
-	INI_KEY = 3,
+	INI_KEY = 2,
+	INI_SECTION = 3,
 	INI_COMMENT = 4,
 	INI_INLINE_COMMENT = 5,
-	INI_DISABLED_SECTION = 6,
-	INI_DISABLED_KEY = 7
+	INI_DISABLED_KEY = 6,
+	INI_DISABLED_SECTION = 7
 };
 
 /** @brief	Possible values for IniFormat::semicolon_marker and IniFormat::hash_marker (i.e., meaning of `/\s+[#;]/` in respect to a format) **/

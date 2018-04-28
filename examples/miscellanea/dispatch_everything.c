@@ -91,7 +91,7 @@ int main () {
 	my_format.implicit_is_not_empty = TRUE;
 
 	/* Load INI file */
-	if (load_ini_path("example.conf", my_format, print_ini_stats, my_ini_listener, &my_other)) {
+	if (load_ini_path("ini_files/example.conf", my_format, print_ini_stats, my_ini_listener, &my_other)) {
 
 		fprintf(stderr, "Sorry, something went wrong :-(\n");
 		return 1;

@@ -57,7 +57,7 @@ static int my_ini_listener (IniDispatch *dispatch, void *v_null) {
 
 int main () {
 
-	if (load_ini_path("typed_ini.conf", INI_DEFAULT_FORMAT, NULL, my_ini_listener, NULL)) {
+	if (load_ini_path("ini_files/typed_ini.conf", INI_DEFAULT_FORMAT, NULL, my_ini_listener, NULL)) {
 
 		fprintf(stderr, "Sorry, something went wrong :-(\n");
 		return 1;

@@ -102,10 +102,10 @@ while [[ "${_DONE_}" -eq 0 ]] ; do
 			echo
 			echo -e "  ${_COL_BBLUE_}->${_COL_DEFAULT_} Program exited with status "$([[ "${_EXIT_CODE_}" -eq 0 ]] && echo -n "${_COL_BGREEN_}" || echo -n "${_COL_BRED_}")"${_EXIT_CODE_}${_COL_DEFAULT_}."
 			echo
-			echo -ne "${_COL_BGREEN_}==>${_COL_BWHITE_} Do you want to have a look at the source code? (Y/n)${_COL_DEFAULT_} "
+			echo -ne "${_COL_BGREEN_}==>${_COL_BWHITE_} Do you want to have a look at the source code? (y/N)${_COL_DEFAULT_} "
 			read -n1 _CHOICE_
 			[[ "${_CHOICE_}" == "${EOF}" ]] || echo
-			if [[ "${_CHOICE_}" == "${EOF}" ]] || [[ "${_CHOICE_,,}" == 'y' ]] ; then
+			if [[ "${_CHOICE_,,}" == 'y' ]] ; then
 				if [[ "${_HIGHLIGHT_}" -eq 0 ]] || [[ ! "${_COLORS_}" -ge 8 ]] ; then
 					cat "${_CHOSEN_LONG_}" | less
 					[[ "${_COLORS_}" -ge 8 ]] &&\

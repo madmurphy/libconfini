@@ -158,7 +158,7 @@ int main () {
 	my_format.semicolon_marker = my_format.hash_marker = INI_IGNORE;
 	my_format.implicit_is_not_empty = TRUE;
 
-	if (load_ini_path("typed_ini.conf", my_format, NULL, my_ini_listener, &my_store)) {
+	if (load_ini_path("ini_files/typed_ini.conf", my_format, NULL, my_ini_listener, &my_store)) {
 
 		fprintf(stderr, "Sorry, something went wrong :-(\n");
 		return 1;

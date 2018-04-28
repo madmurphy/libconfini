@@ -16,7 +16,7 @@ int ini_listener (IniDispatch *dispatch, void *v_null) {
 
 int main () {
 
-	FILE * const ini_file = fopen("example.conf", "r");
+	FILE * const ini_file = fopen("ini_files/example.conf", "r");
 
 	if (ini_file == NULL) {
 

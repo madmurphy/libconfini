@@ -34,7 +34,7 @@ int main () {
 	/* Without setting this, implicit keys will be anyway considered empty: */
 	my_format.implicit_is_not_empty = YES;
 
-	if (load_ini_path("example.conf", my_format, NULL, ini_listener, NULL)) {
+	if (load_ini_path("ini_files/example.conf", my_format, NULL, ini_listener, NULL)) {
 
 		fprintf(stderr, "Sorry, something went wrong :-(\n");
 		return 1;

@@ -2,6 +2,15 @@ Change Log {#changelog}
 =======================
 
 
+## 1.5.1 -- 2018-04-28
+
+Changes:
+
+* Changed internal values of `INI_KEY`, `INI_SECTION`, `INI_DISABLED_KEY` and
+  `INI_DISABLED_SECTION` (see `enum` `IniNodeType`)
+* Moved example INI files to `examples/ini_files`
+
+
 ## 1.5.0 -- 2018-04-22
 
 Changes:

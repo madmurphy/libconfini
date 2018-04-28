@@ -451,7 +451,7 @@ IniFormat my_format = {
 	.semicolon_marker = INI_IGNORE,
 	.hash_marker = INI_IS_NOT_A_MARKER,
 	.multiline_nodes = INI_NO_MULTILINE,
-	.case_sensitive = YES,
+	.case_sensitive = NO,
 	.no_spaces_in_names = YES,
 	.no_single_quotes = NO,
 	.no_double_quotes = NO,
@@ -464,13 +464,13 @@ IniFormat my_format = {
 
 IniFormatNum my_format_num = ini_fton(my_format);
 
-printf("Format No. %d\n", my_format_num); // "Format No. 65085"
+printf("Format No. %d\n", my_format_num); // "Format No. 48701"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The function `ini_fton()` tells us that this format is univocally the format No. 65085. The function `ini_ntof()` gives us then a shortcut to construct the very same format using its format number. Hence, the code above corresponds to:
+The function `ini_fton()` tells us that this format is univocally the format No. 48701. The function `ini_ntof()` gives us then a shortcut to construct the very same format using its format number. Hence, the code above corresponds to:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-IniFormat my_format = ini_ntof(65085);
+IniFormat my_format = ini_ntof(48701);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -495,9 +495,9 @@ The output strings dispatched by **libconfini** will follow some formatting rule
 The strings passed with each dispatch, as already said, must not be freed. _Nevertheless, before being copied or analyzed they can be edited, **with some precautions**_:
 
 1. Be sure that your edit remains within the buffer lengths given (see: `IniDispatch::d_len` and `IniDispatch::v_len`).
-2. If you want to edit the content of `IniDispatch::data` and this contains a section path, the `IniDispatch::append_to` properties of its children _may_ refer to the same buffer: if you edit it you can no more rely on its children's `IniDispatch::append_to` properties (you will not make any damage, the loop will continue just fine: so if you think you are going to never use the property `IniDispatch::append_to` just do it).
+2. If you want to edit the content of `IniDispatch::data` and this contains a section path, the `IniDispatch::append_to` properties of its children _may_ refer to the same buffer: in this case, if you edit it, you can no more rely on its children's `IniDispatch::append_to` properties (you will not make any damage, the loop will continue just fine: so if you think you are going to never use the property `IniDispatch::append_to` just do it); alternatively, use `strdup()`. If, instead, `IniDispatch::data` contains a key name or a comment, no other dispatch will share this buffer, so feel free to edit it before it gets lost.
 3. Regarding `IniDispatch::value`, the buffer is never shared between dispatches, so feel free to edit it.
-4. Regarding `IniDispatch::append_to`, this buffer is likely to be shared with other dispatches: again, you will not destroy the world nor generate errors, but you will make the next `IniDispatch::append_to`s useless. Therefore **the property `IniDispatch::append_to` should be considered read-only** -- this is just a logical imposition (and this is why `IniDispatch::append_to` is not passed as `const`).
+4. Regarding `IniDispatch::append_to`, this buffer is likely to be shared with other dispatches: again, you will not destroy the world nor generate errors, but you will make the next `IniDispatch::append_to`s useless. Therefore **the property `IniDispatch::append_to` should be considered read-only** -- this is just a logical imposition (and this is why `IniDispatch::append_to` is not passed as `const`). To format this field please use `strdup()`.
 
 Typical peaceful edits are the calls of the functions `ini_array_collapse()` and `ini_string_parse()` directly on the buffer `IniDispatch::value` -- but make sure that you are not going to edit the global string `#INI_GLOBAL_IMPLICIT_VALUE`, if used (see below):
 
@@ -1005,13 +1005,13 @@ int main () {
 we would obtain the following result:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-:: Content of "ambiguous.conf" ::
+:: Content of 'ambiguous.conf' ::
 
-NODE #0 - TYPE: 7, DATA: "INI key/value delimiter:", VALUE: "(everywhere)"
-NODE #1 - TYPE: 2, DATA: "some_section", VALUE: ""
-NODE #2 - TYPE: 3, DATA: "hello", VALUE: "world"
-NODE #3 - TYPE: 7, DATA: "foo", VALUE: "bar"
-NODE #4 - TYPE: 4, DATA: "now=Sunday April 3rd, 2016", VALUE: ""
+NODE #0 - TYPE: 6, DATA: 'INI key/value delimiter:', VALUE: '(everywhere)'
+NODE #1 - TYPE: 3, DATA: 'some_section', VALUE: ''
+NODE #2 - TYPE: 2, DATA: 'hello', VALUE: 'world'
+NODE #3 - TYPE: 6, DATA: 'foo', VALUE: 'bar'
+NODE #4 - TYPE: 4, DATA: 'now=Sunday April 3rd, 2016', VALUE: ''
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As one can see, all comments but `now=Sunday April 3rd, 2016` would be parsed as disabled entries -- which is not what the author intended. Therefore, if you want to ensure that such INI file is parsed properly, you can follow two possible approaches.
@@ -1034,15 +1034,15 @@ hello = world
 
 one obtains the wanted result:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-:: Content of "ambiguous.conf" ::
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:: Content of 'ambiguous.conf' ::
 
-NODE #0 - TYPE: 4, DATA: "INI key/value delimiter: = (everywhere)", VALUE: ""
-NODE #1 - TYPE: 2, DATA: "some_section", VALUE: ""
-NODE #2 - TYPE: 3, DATA: "hello", VALUE: "world"
-NODE #3 - TYPE: 7, DATA: "foo", VALUE: "bar"
-NODE #4 - TYPE: 4, DATA: "now=Sunday April 3rd, 2016", VALUE: ""
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+NODE #0 - TYPE: 4, DATA: ' INI key/value delimiter: = (everywhere)', VALUE: ''
+NODE #1 - TYPE: 3, DATA: 'some_section', VALUE: ''
+NODE #2 - TYPE: 2, DATA: 'hello', VALUE: 'world'
+NODE #3 - TYPE: 6, DATA: 'foo', VALUE: 'bar'
+NODE #4 - TYPE: 4, DATA: 'now=Sunday April 3rd, 2016', VALUE: ''
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **2. Intervene on the format.** There are cases where the INI file is automatically generated by machines (comments included), or distributed as such, and human intervention would be required on each machine-generated realease of the INI file. In these cases -- and if you are sure about the expected content of the INI file -- you can restrict the format chosen in order to parse comments and disabled entries properly. In particular, the following fields of the `IniFormat` bitfield may have an impact on the disambiguation between comments and disabled entries.
 

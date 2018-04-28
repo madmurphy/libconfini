@@ -136,13 +136,16 @@
 #define _LIBCONFINI_OPEN_SECTION_ '['
 #define _LIBCONFINI_CLOSE_SECTION_ ']'
 #define _LIBCONFINI_SUBSECTION_ '.'
+#define _LIBCONFINI_SEMICOLON_ ';'
+#define _LIBCONFINI_HASH_ '#'
 #define _LIBCONFINI_DOUBLE_QUOTES_ '"'
 #define _LIBCONFINI_SINGLE_QUOTES_ '\''
 #define _LIBCONFINI_SIMPLE_SPACE_ 32
-#define _LIBCONFINI_SEMICOLON_ ';'
-#define _LIBCONFINI_HASH_ '#'
-#define _LIBCONFINI_LF_ '\n'
+#define _LIBCONFINI_HT_ '\t'
+#define _LIBCONFINI_FF_ '\f'
+#define _LIBCONFINI_VT_ '\v'
 #define _LIBCONFINI_CR_ '\r'
+#define _LIBCONFINI_LF_ '\n'
 
 /*
 	This may be any character, in theory... But after the left-trim of each line a
@@ -181,9 +184,9 @@
 static const char _LIBCONFINI_SPACES_[_LIBCONFINI_SPALEN_] = {
 	_LIBCONFINI_LF_,
 	_LIBCONFINI_CR_,
-	'\v',
-	'\f',
-	'\t',
+	_LIBCONFINI_VT_,
+	_LIBCONFINI_FF_,
+	_LIBCONFINI_HT_,
 	_LIBCONFINI_SIMPLE_SPACE_
 };
 
@@ -233,7 +236,7 @@ static inline _LIBCONFINI_BOOL_ is_some_space (const char chr, const uint8_t dep
 
 /**
 
-	@brief			Soft left trim -- does not change the buffer
+	@brief			Soft left trim -- does **not** change the buffer
 	@param			lt_s			The target string
 	@param			start_from		The offset where to start the left trim
 	@param			depth			What is actually considered a space (possible
@@ -1443,7 +1446,7 @@ int load_ini_file (
 	#define __N_BYTES__ tmp_size_1
 
 	size_t tmp_size_1 = ftell(ini_file);
-	char * const cache = (char *) malloc((__N_BYTES__ + 1) * sizeof(char));
+	char * const cache = (char *) malloc(__N_BYTES__ + 1);
 
 	if (cache == NULL) {
 
@@ -1455,7 +1458,7 @@ int load_ini_file (
 
 	rewind(ini_file);
 
-	if (fread(cache, sizeof(char), __N_BYTES__, ini_file) < __N_BYTES__) {
+	if (fread(cache, 1, __N_BYTES__, ini_file) < __N_BYTES__) {
 
 		return_value = CONFINI_EIO;
 		goto free_and_exit;
@@ -1918,6 +1921,7 @@ int load_ini_file (
 	#undef __PARENT_IS_DISABLED__
 
 	free(cache);
+
 	return return_value;
 
 
@@ -2974,7 +2978,7 @@ int ini_array_foreach (
 
 	/*
 
-	Mask `abacus` (8 bits used):
+	Mask `abcd` (8 bits used):
 
 		FLAG_1		Single quotes are not metacharacters (const)
 		FLAG_2		Double quotes are not metacharacters (const)

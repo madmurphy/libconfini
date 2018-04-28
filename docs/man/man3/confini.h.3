@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Sun Apr 22 2018" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Sat Apr 28 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -30,7 +30,7 @@ src/confini.h \- libconfini header
 
 .in +1c
 .ti -1c
-.RI "#define \fBCONFINI_ERROR\fP   4"
+.RI "#define \fBCONFINI_ERROR\fP   252"
 .br
 .RI "Error flag (not present in user-generated interruptions) – its value should be considered opaque\&. "
 .in -1c
@@ -66,7 +66,7 @@ src/confini.h \- libconfini header
 .br
 .RI "Most used delimiters (but a delimiter can also be any other ASCII character) "
 .ti -1c
-.RI "enum \fBIniNodeType\fP { \fBINI_UNKNOWN\fP = 0, \fBINI_VALUE\fP = 1, \fBINI_SECTION\fP = 2, \fBINI_KEY\fP = 3, \fBINI_COMMENT\fP = 4, \fBINI_INLINE_COMMENT\fP = 5, \fBINI_DISABLED_SECTION\fP = 6, \fBINI_DISABLED_KEY\fP = 7 }"
+.RI "enum \fBIniNodeType\fP { \fBINI_UNKNOWN\fP = 0, \fBINI_VALUE\fP = 1, \fBINI_KEY\fP = 2, \fBINI_SECTION\fP = 3, \fBINI_COMMENT\fP = 4, \fBINI_INLINE_COMMENT\fP = 5, \fBINI_DISABLED_KEY\fP = 6, \fBINI_DISABLED_SECTION\fP = 7 }"
 .br
 .RI "INI nodes types\&. "
 .ti -1c
@@ -215,7 +215,7 @@ Source code at https://github.com/madmurphy/libconfini/blob/master/src/confini.h
 
 .SH "Macro Definition Documentation"
 .PP 
-.SS "#define CONFINI_ERROR   4"
+.SS "#define CONFINI_ERROR   252"
 
 .PP
 Error flag (not present in user-generated interruptions) – its value should be considered opaque\&. 
@@ -332,17 +332,17 @@ Node impossible to parse
 \fB\fIINI_VALUE \fP\fP
 Not used here (values are dispatched together with keys), but available for user's implementations 
 .TP
-\fB\fIINI_SECTION \fP\fP
-.TP
 \fB\fIINI_KEY \fP\fP
+.TP
+\fB\fIINI_SECTION \fP\fP
 .TP
 \fB\fIINI_COMMENT \fP\fP
 .TP
 \fB\fIINI_INLINE_COMMENT \fP\fP
 .TP
-\fB\fIINI_DISABLED_SECTION \fP\fP
-.TP
 \fB\fIINI_DISABLED_KEY \fP\fP
+.TP
+\fB\fIINI_DISABLED_SECTION \fP\fP
 .SH "Function Documentation"
 .PP 
 .SS "size_t ini_array_collapse (char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
@@ -463,7 +463,7 @@ static int my_ini_listener (IniDispatch *dispatch, void *v_null) {
 
 int main () {
 
-    if (load_ini_path("typed_ini\&.conf", INI_DEFAULT_FORMAT, NULL, my_ini_listener, NULL)) {
+    if (load_ini_path("ini_files/typed_ini\&.conf", INI_DEFAULT_FORMAT, NULL, my_ini_listener, NULL)) {
 
         fprintf(stderr, "Sorry, something went wrong :-(\n");
         return 1;
@@ -749,7 +749,7 @@ int main () {
     my_format\&.semicolon_marker = my_format\&.hash_marker = INI_IGNORE;
     my_format\&.implicit_is_not_empty = TRUE;
 
-    if (load_ini_path("typed_ini\&.conf", my_format, NULL, my_ini_listener, &my_store)) {
+    if (load_ini_path("ini_files/typed_ini\&.conf", my_format, NULL, my_ini_listener, &my_store)) {
 
         fprintf(stderr, "Sorry, something went wrong :-(\n");
         return 1;
@@ -859,7 +859,7 @@ int main () {
     /* Without setting this, implicit keys will be anyway considered empty: */
     my_format\&.implicit_is_not_empty = YES;
 
-    if (load_ini_path("example\&.conf", my_format, NULL, ini_listener, NULL)) {
+    if (load_ini_path("ini_files/example\&.conf", my_format, NULL, ini_listener, NULL)) {
 
         fprintf(stderr, "Sorry, something went wrong :-(\n");
         return 1;
@@ -1002,7 +1002,7 @@ int main () {
 
     /* Load INI file */
     int retval = load_ini_path(
-        "example\&.conf",
+        "ini_files/example\&.conf",
         INI_DEFAULT_FORMAT,
         NULL,
         passfinder,
@@ -1109,7 +1109,7 @@ int ini_listener (IniDispatch *dispatch, void *v_null) {
 
 int main () {
 
-    if (load_ini_path("example\&.conf", INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
+    if (load_ini_path("ini_files/example\&.conf", INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
 
         fprintf(stderr, "Sorry, something went wrong :-(\n");
         return 1;
@@ -1177,7 +1177,7 @@ int ini_listener (IniDispatch *dispatch, void *v_null) {
 
 int main () {
 
-    if (load_ini_path("example\&.conf", INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
+    if (load_ini_path("ini_files/example\&.conf", INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
 
         fprintf(stderr, "Sorry, something went wrong :-(\n");
         return 1;
@@ -1237,7 +1237,7 @@ int ini_listener (IniDispatch *dispatch, void *v_null) {
 
 int main () {
 
-    FILE * const ini_file = fopen("example\&.conf", "r");
+    FILE * const ini_file = fopen("ini_files/example\&.conf", "r");
 
     if (ini_file == NULL) {
 
@@ -1306,7 +1306,7 @@ int ini_listener (IniDispatch *dispatch, void *v_null) {
 
 int main () {
 
-    if (load_ini_path("example\&.conf", INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
+    if (load_ini_path("ini_files/example\&.conf", INI_DEFAULT_FORMAT, NULL, ini_listener, NULL)) {
 
         fprintf(stderr, "Sorry, something went wrong :-(\n");
         return 1;

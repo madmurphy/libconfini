@@ -40,7 +40,7 @@ int main () {
 
 	printf(":: Content of \"ambiguous.conf\" ::\n\n");
 
-	if (load_ini_path("ambiguous.conf", my_format, NULL, ini_listener, NULL)) {
+	if (load_ini_path("ini_files/ambiguous.conf", my_format, NULL, ini_listener, NULL)) {
 
 		fprintf(stderr, "Sorry, something went wrong :-(\n");
 		return 1;
