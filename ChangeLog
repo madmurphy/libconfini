@@ -6,6 +6,7 @@ Change Log {#changelog}
 
 Changes:
 
+* Changed fields order and sizes in the `IniFormat` bitfield
 * Changed internal values of `INI_KEY`, `INI_SECTION`, `INI_DISABLED_KEY` and
   `INI_DISABLED_SECTION` (see `enum` `IniNodeType`)
 * Moved example INI files to `examples/ini_files`

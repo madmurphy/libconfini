@@ -522,6 +522,8 @@ printf("Format No. %d\n", my_format_num); // "Format No. 48701"
 <pre><code class="{.c}">IniFormat my_format = ini_ntof(48701);
 </code></pre>
 
+<p><em>Please be aware that the same INI format might have different format numbers in different versions of this library.</em></p>
+
 <h2 id="THE-IniStatistics-AND-IniDispatch-STRUCTURES">THE <code>IniStatistics</code> AND <code>IniDispatch</code> STRUCTURES</h2>
 
 <p>When the functions <code>load_ini_file()</code> and <code>load_ini_path()</code> read an INI file, they dispatch the file content to the <code>f_foreach()</code> listener. Before the dispatching begins some statistics about the parsed file can be dispatched to the <code>f_init()</code> listener (if this is non-<code>NULL</code>).</p>

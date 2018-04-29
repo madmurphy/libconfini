@@ -473,6 +473,8 @@ The function `ini_fton()` tells us that this format is univocally the format No.
 IniFormat my_format = ini_ntof(48701);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+_Please be aware that the same INI format might have different format numbers in different versions of this library._
+
 
 ## THE `IniStatistics` AND `IniDispatch` STRUCTURES
 

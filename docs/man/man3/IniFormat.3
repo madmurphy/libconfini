@@ -13,7 +13,10 @@ IniFormat \- 24-bit bitfield representing a unique format of an INI file (INI di
 
 .in +1c
 .ti -1c
-.RI "unsigned char \fBdelimiter_symbol\fP: 8"
+.RI "unsigned char \fBdelimiter_symbol\fP: 7"
+.br
+.ti -1c
+.RI "unsigned char \fBcase_sensitive\fP: 1"
 .br
 .ti -1c
 .RI "unsigned char \fBsemicolon_marker\fP: 2"
@@ -25,16 +28,13 @@ IniFormat \- 24-bit bitfield representing a unique format of an INI file (INI di
 .RI "unsigned char \fBmultiline_nodes\fP: 2"
 .br
 .ti -1c
-.RI "unsigned char \fBcase_sensitive\fP: 1"
-.br
-.ti -1c
-.RI "unsigned char \fBno_spaces_in_names\fP: 1"
-.br
-.ti -1c
 .RI "unsigned char \fBno_single_quotes\fP: 1"
 .br
 .ti -1c
 .RI "unsigned char \fBno_double_quotes\fP: 1"
+.br
+.ti -1c
+.RI "unsigned char \fBno_spaces_in_names\fP: 1"
 .br
 .ti -1c
 .RI "unsigned char \fBimplicit_is_not_empty\fP: 1"
@@ -73,7 +73,7 @@ Bit 24: not used
 .SS "IniFormat::case_sensitive"
 If set to \fC1\fP, string comparisons will always be performed case-sensitive 
 .SS "IniFormat::delimiter_symbol"
-The symbol to be used as delimiter; if set to \fC0\fP, any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
+The symbol to be used as delimiter (only ASCII allowed); if set to \fC0\fP, any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
 .SS "IniFormat::disabled_can_be_implicit"
 If set to \fC1\fP, comments non containing a delimiter symbol will not be parsed as disabled implicit keys, but as simple comments 
 .SS "IniFormat::do_not_collapse_values"

@@ -654,6 +654,9 @@ IniFormat my_format = ini_ntof(48701);
 .
 .IP "" 0
 .
+.P
+\fIPlease be aware that the same INI format might have different format numbers in different versions of this library\.\fR
+.
 .SH "THE `IniStatistics` AND `IniDispatch` STRUCTURES"
 When the functions \fBload_ini_file()\fR and \fBload_ini_path()\fR read an INI file, they dispatch the file content to the \fBf_foreach()\fR listener\. Before the dispatching begins some statistics about the parsed file can be dispatched to the \fBf_init()\fR listener (if this is non\-\fBNULL\fR)\.
 .

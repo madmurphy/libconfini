@@ -29,8 +29,9 @@
 	- Bit 24: not used
 
 	@property	IniFormat::delimiter_symbol
-					The symbol to be used as delimiter; if set to `0`, any space is
-					delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
+					The symbol to be used as delimiter (only ASCII allowed); if set
+					to `0`, any space is delimiter
+					(`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
 	@property	IniFormat::semicolon_marker
 					The rule of the semicolon character (use enum
 					`#IniCommentMarker` for this)

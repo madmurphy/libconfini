@@ -19,9 +19,10 @@
 /* PRIVATE (HEADER-SCOPED) MACROS */
 
 
-#define _LIBCONFINI_INIFORMAT_DECLARATION_(SIZE, PROPERTY, DEFVAL) unsigned char PROPERTY:SIZE;
-#define _LIBCONFINI_INIFORMAT_ASSIGNEMENT_(SIZE, PROPERTY, DEFVAL) DEFVAL,
-#define _LIBCONFINI_INIFORMAT_STRUCT_ struct IniFormat { _LIBCONFINI_INIFORMAT_AS_(_LIBCONFINI_INIFORMAT_DECLARATION_) }
+#define _LIBCONFINI_INIFORMAT_DECLARATION_(SIZE, PROPERTY, DEFAULT) unsigned char PROPERTY:SIZE;
+#define _LIBCONFINI_INIFORMAT_ASSIGNEMENT_(SIZE, PROPERTY, DEFAULT) DEFAULT,
+#define _LIBCONFINI_INIFORMAT_UNUSED_ unsigned char _LIBCONFINI_RESERVED_:2;
+#define _LIBCONFINI_INIFORMAT_STRUCT_ struct IniFormat { _LIBCONFINI_INIFORMAT_AS_(_LIBCONFINI_INIFORMAT_DECLARATION_) _LIBCONFINI_INIFORMAT_UNUSED_ }
 #define _LIBCONFINI_DEFAULT_FORMAT_ { _LIBCONFINI_INIFORMAT_AS_(_LIBCONFINI_INIFORMAT_ASSIGNEMENT_) }
 
 
@@ -33,22 +34,21 @@
 
     ______(    BITS    NAME                       DEFAULT VALUE            )/--/
                                                                            /-*/\
-    ______(    8,      delimiter_symbol,          INI_EQUALS               )/*-/
+    ______(    7,      delimiter_symbol,          INI_EQUALS               )   \
+    ______(    1,      case_sensitive,            0                        )/*-/
                                                                            /-*/\
     ______(    2,      semicolon_marker,          INI_DISABLED_OR_COMMENT  )   \
     ______(    2,      hash_marker,               INI_DISABLED_OR_COMMENT  )   \
     ______(    2,      multiline_nodes,           INI_MULTILINE_EVERYWHERE )   \
-    ______(    1,      case_sensitive,            0                        )   \
-    ______(    1,      no_spaces_in_names,        0                        )/*-/
-                                                                           /-*/\
     ______(    1,      no_single_quotes,          0                        )   \
-    ______(    1,      no_double_quotes,          0                        )   \
+    ______(    1,      no_double_quotes,          0                        )/*-/
+                                                                           /-*/\
+    ______(    1,      no_spaces_in_names,        0                        )   \
     ______(    1,      implicit_is_not_empty,     0                        )   \
     ______(    1,      do_not_collapse_values,    0                        )   \
     ______(    1,      preserve_empty_quotes,     0                        )   \
     ______(    1,      no_disabled_after_space,   0                        )   \
-    ______(    1,      disabled_can_be_implicit,  0                        )   \
-    ______(    1,      _LIBCONFINI_RESERVED_,     0                        )/*-/
+    ______(    1,      disabled_can_be_implicit,  0                        )/*-/
                                                                            /-*/
 
 
@@ -304,6 +304,7 @@ extern size_t INI_GLOBAL_IMPLICIT_V_LEN;
 
 #undef _LIBCONFINI_INIFORMAT_DECLARATION_
 #undef _LIBCONFINI_INIFORMAT_ASSIGNEMENT_
+#undef _LIBCONFINI_INIFORMAT_UNUSED_
 #undef _LIBCONFINI_INIFORMAT_STRUCT_
 #undef _LIBCONFINI_DEFAULT_FORMAT_
 
