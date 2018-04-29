@@ -237,7 +237,7 @@ extern double (* const ini_get_float) (
 /* PUBLIC CONSTANTS AND VARIABLES */
 
 
-/** @brief	Error flag (not present in user-generated interruptions) -- its value should be considered opaque **/
+/** @brief	Error mask (flags not present in user-generated interruptions) -- its value should be considered opaque **/
 #define CONFINI_ERROR 252
 
 /** @brief	Error codes -- the actual values of each constant should be considered opaque **/
@@ -269,7 +269,7 @@ enum IniNodeType {
 	INI_DISABLED_SECTION = 7
 };
 
-/** @brief	Possible values for IniFormat::semicolon_marker and IniFormat::hash_marker (i.e., meaning of `/\s+[#;]/` in respect to a format) **/
+/** @brief	Possible values of `IniFormat::semicolon_marker` and `IniFormat::hash_marker` (i.e., meaning of `/\s+[#;]/` in respect to a format) **/
 enum IniCommentMarker {
 	INI_DISABLED_OR_COMMENT = 0,	/**< This marker opens a comment or a disabled entry **/
 	INI_ONLY_COMMENT = 1,		/**< This marker opens a comment **/
@@ -294,7 +294,7 @@ extern _Bool INI_GLOBAL_LOWERCASE_MODE;
 /** @brief	Value to be dispatched in case of implicit keys (default value: `NULL`) **/
 extern char *INI_GLOBAL_IMPLICIT_VALUE;
 
-/** @brief	Length of the value dispatched in case of implicit keys -- it can be set to any unsigned number, independently of the real length of #INI_GLOBAL_IMPLICIT_VALUE (default value: `0`) **/
+/** @brief	Length of the value dispatched in case of implicit keys -- it can be set to any unsigned number, independently of the real length of `#INI_GLOBAL_IMPLICIT_VALUE` (default value: `0`) **/
 extern size_t INI_GLOBAL_IMPLICIT_V_LEN;
 
 

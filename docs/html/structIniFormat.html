@@ -107,10 +107,10 @@ Data Fields</h2></td></tr>
 <div class="textblock"><p>24-bit bitfield representing a unique format of an INI file (INI dialect) &ndash; <code>sizeof(IniFormat)</code> should be <code>3</code> </p>
 <p>Structure of the bitfield:</p>
 <ul>
-<li>Bits 1-18: INI syntax</li>
-<li>Bits 19-21: INI semantics</li>
-<li>Bits 22-23: human syntax (disabled entries)</li>
-<li>Bit 24: not used </li>
+<li>Bits 1-17: INI syntax</li>
+<li>Bits 18-20: INI semantics</li>
+<li>Bits 21-22: human syntax (disabled entries)</li>
+<li>Bits 23-24: not used </li>
 </ul>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="a50f562eda0d26ed7e0d3c57afeb46d2d"></a>
@@ -184,7 +184,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The rule of the hash character (use enum <code><a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcd" title="Possible values for IniFormat::semicolon_marker and IniFormat::hash_marker (i.e., meaning of /\s+[#;]...">IniCommentMarker</a></code> for this) </p>
+<p>The rule of the hash character (use enum <code><a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcd" title="Possible values of IniFormat::semicolon_marker and IniFormat::hash_marker (i.e., meaning of /\s+[#;]/...">IniCommentMarker</a></code> for this) </p>
 
 </div>
 </div>
@@ -304,7 +304,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The rule of the semicolon character (use enum <code><a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcd" title="Possible values for IniFormat::semicolon_marker and IniFormat::hash_marker (i.e., meaning of /\s+[#;]...">IniCommentMarker</a></code> for this) </p>
+<p>The rule of the semicolon character (use enum <code><a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcd" title="Possible values of IniFormat::semicolon_marker and IniFormat::hash_marker (i.e., meaning of /\s+[#;]/...">IniCommentMarker</a></code> for this) </p>
 
 </div>
 </div>

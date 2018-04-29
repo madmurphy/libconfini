@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Sun Apr 29 2018" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Mon Apr 30 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -32,7 +32,7 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "#define \fBCONFINI_ERROR\fP   252"
 .br
-.RI "Error flag (not present in user-generated interruptions) – its value should be considered opaque\&. "
+.RI "Error mask (flags not present in user-generated interruptions) – its value should be considered opaque\&. "
 .in -1c
 .SS "Typedefs"
 
@@ -72,7 +72,7 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "enum \fBIniCommentMarker\fP { \fBINI_DISABLED_OR_COMMENT\fP = 0, \fBINI_ONLY_COMMENT\fP = 1, \fBINI_IGNORE\fP = 2, \fBINI_IS_NOT_A_MARKER\fP = 3 }"
 .br
-.RI "Possible values for \fBIniFormat::semicolon_marker\fP and \fBIniFormat::hash_marker\fP (i\&.e\&., meaning of \fC/\\s+[#;]/\fP in respect to a format) "
+.RI "Possible values of \fC\fBIniFormat::semicolon_marker\fP\fP and \fC\fBIniFormat::hash_marker\fP\fP (i\&.e\&., meaning of \fC/\\s+[#;]/\fP in respect to a format) "
 .ti -1c
 .RI "enum \fBIniMultiline\fP { \fBINI_MULTILINE_EVERYWHERE\fP = 0, \fBINI_BUT_COMMENTS\fP = 1, \fBINI_BUT_DISABLED_AND_COMMENTS\fP = 2, \fBINI_NO_MULTILINE\fP = 3 }"
 .br
@@ -184,7 +184,7 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "size_t \fBINI_GLOBAL_IMPLICIT_V_LEN\fP"
 .br
-.RI "Length of the value dispatched in case of implicit keys – it can be set to any unsigned number, independently of the real length of \fBINI_GLOBAL_IMPLICIT_VALUE\fP (default value: \fC0\fP) "
+.RI "Length of the value dispatched in case of implicit keys – it can be set to any unsigned number, independently of the real length of \fC\fBINI_GLOBAL_IMPLICIT_VALUE\fP\fP (default value: \fC0\fP) "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -218,7 +218,7 @@ Source code at https://github.com/madmurphy/libconfini/blob/master/src/confini.h
 .SS "#define CONFINI_ERROR   252"
 
 .PP
-Error flag (not present in user-generated interruptions) – its value should be considered opaque\&. 
+Error mask (flags not present in user-generated interruptions) – its value should be considered opaque\&. 
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBIniDispatch\fP  \fBIniDispatch\fP"
@@ -267,7 +267,7 @@ The loop is longer than expected (out of range)
 .SS "enum \fBIniCommentMarker\fP"
 
 .PP
-Possible values for \fBIniFormat::semicolon_marker\fP and \fBIniFormat::hash_marker\fP (i\&.e\&., meaning of \fC/\\s+[#;]/\fP in respect to a format) 
+Possible values of \fC\fBIniFormat::semicolon_marker\fP\fP and \fC\fBIniFormat::hash_marker\fP\fP (i\&.e\&., meaning of \fC/\\s+[#;]/\fP in respect to a format) 
 .PP
 \fBEnumerator\fP
 .in +1c
@@ -1355,7 +1355,7 @@ Link to \fC\fCatoll()\fP\fP
 .SS "size_t INI_GLOBAL_IMPLICIT_V_LEN"
 
 .PP
-Length of the value dispatched in case of implicit keys – it can be set to any unsigned number, independently of the real length of \fBINI_GLOBAL_IMPLICIT_VALUE\fP (default value: \fC0\fP) 
+Length of the value dispatched in case of implicit keys – it can be set to any unsigned number, independently of the real length of \fC\fBINI_GLOBAL_IMPLICIT_VALUE\fP\fP (default value: \fC0\fP) 
 .SS "char* INI_GLOBAL_IMPLICIT_VALUE"
 
 .PP

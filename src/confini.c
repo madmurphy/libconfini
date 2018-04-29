@@ -23,10 +23,10 @@
 
 	Structure of the bitfield:
 
-	- Bits 1-18: INI syntax
-	- Bits 19-21: INI semantics
-	- Bits 22-23: human syntax (disabled entries)
-	- Bit 24: not used
+	- Bits 1-17: INI syntax
+	- Bits 18-20: INI semantics
+	- Bits 21-22: human syntax (disabled entries)
+	- Bits 23-24: not used
 
 	@property	IniFormat::delimiter_symbol
 					The symbol to be used as delimiter (only ASCII allowed); if set
