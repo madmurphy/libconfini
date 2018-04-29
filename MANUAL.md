@@ -421,13 +421,13 @@ The code above corresponds to:
 IniFormat my_format;
 
 my_format.delimiter_symbol = INI_EQUALS;	/* or `my_format.delimiter_symbol = '='` */
+my_format.case_sensitive = NO;
 my_format.semicolon_marker = INI_DISABLED_OR_COMMENT;
 my_format.hash_marker = INI_DISABLED_OR_COMMENT;
 my_format.multiline_nodes = INI_MULTILINE_EVERYWHERE;
-my_format.case_sensitive = NO;
-my_format.no_spaces_in_names = NO;
 my_format.no_single_quotes = NO;
 my_format.no_double_quotes = NO;
+my_format.no_spaces_in_names = NO;
 my_format.implicit_is_not_empty = NO;
 my_format.do_not_collapse_values = NO;
 my_format.preserve_empty_quotes = NO;
@@ -448,13 +448,13 @@ For instance, imagine we want to create a format as close as possible to the typ
 
 IniFormat my_format = {
 	.delimiter_symbol = INI_EQUALS,
+	.case_sensitive = NO,
 	.semicolon_marker = INI_IGNORE,
 	.hash_marker = INI_IS_NOT_A_MARKER,
 	.multiline_nodes = INI_NO_MULTILINE,
-	.case_sensitive = NO,
-	.no_spaces_in_names = YES,
 	.no_single_quotes = NO,
 	.no_double_quotes = NO,
+	.no_spaces_in_names = YES,
 	.implicit_is_not_empty = NO,
 	.do_not_collapse_values = NO,
 	.preserve_empty_quotes = NO,
@@ -464,13 +464,13 @@ IniFormat my_format = {
 
 IniFormatNum my_format_num = ini_fton(my_format);
 
-printf("Format No. %d\n", my_format_num); // "Format No. 48701"
+printf("Format No. %d\n", my_format_num); // "Format No. 81469"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The function `ini_fton()` tells us that this format is univocally the format No. 48701. The function `ini_ntof()` gives us then a shortcut to construct the very same format using its format number. Hence, the code above corresponds to:
+The function `ini_fton()` tells us that this format is univocally the format No. 81469. The function `ini_ntof()` gives us then a shortcut to construct the very same format using its format number. Hence, the code above corresponds to:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-IniFormat my_format = ini_ntof(48701);
+IniFormat my_format = ini_ntof(81469);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 _Please be aware that the same INI format might have different format numbers in different versions of this library._

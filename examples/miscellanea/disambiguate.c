@@ -21,13 +21,13 @@ int main () {
 
 	IniFormat my_format = {
 		.delimiter_symbol = INI_EQUALS,
+		.case_sensitive = NO,
 		.semicolon_marker = INI_DISABLED_OR_COMMENT,
 		.hash_marker = INI_ONLY_COMMENT,
 		.multiline_nodes = INI_MULTILINE_EVERYWHERE,
-		.case_sensitive = NO,
-		.no_spaces_in_names = NO,
 		.no_single_quotes = NO,
 		.no_double_quotes = NO,
+		.no_spaces_in_names = NO,
 		.implicit_is_not_empty = YES,
 		.do_not_collapse_values = NO,
 		.preserve_empty_quotes = NO,

@@ -27,7 +27,7 @@ int ini_listener (IniDispatch *dispatch, void *v_null) {
 
 int main () {
 
-	IniFormat my_format;
+	IniFormat my_format = INI_DEFAULT_FORMAT;
 
 	ini_global_set_implicit_value("[implicit default value]", 0);
 

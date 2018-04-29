@@ -473,13 +473,13 @@ my_format = INI_DEFAULT_FORMAT;
 IniFormat my_format;
 
 my_format.delimiter_symbol = INI_EQUALS;    /* or `my_format.delimiter_symbol = '='` */
+my_format.case_sensitive = NO;
 my_format.semicolon_marker = INI_DISABLED_OR_COMMENT;
 my_format.hash_marker = INI_DISABLED_OR_COMMENT;
 my_format.multiline_nodes = INI_MULTILINE_EVERYWHERE;
-my_format.case_sensitive = NO;
-my_format.no_spaces_in_names = NO;
 my_format.no_single_quotes = NO;
 my_format.no_double_quotes = NO;
+my_format.no_spaces_in_names = NO;
 my_format.implicit_is_not_empty = NO;
 my_format.do_not_collapse_values = NO;
 my_format.preserve_empty_quotes = NO;
@@ -498,13 +498,13 @@ my_format.disabled_can_be_implicit = NO,
 
 IniFormat my_format = {
     .delimiter_symbol = INI_EQUALS,
+    .case_sensitive = NO,
     .semicolon_marker = INI_IGNORE,
     .hash_marker = INI_IS_NOT_A_MARKER,
     .multiline_nodes = INI_NO_MULTILINE,
-    .case_sensitive = NO,
-    .no_spaces_in_names = YES,
     .no_single_quotes = NO,
     .no_double_quotes = NO,
+    .no_spaces_in_names = YES,
     .implicit_is_not_empty = NO,
     .do_not_collapse_values = NO,
     .preserve_empty_quotes = NO,
@@ -514,12 +514,12 @@ IniFormat my_format = {
 
 IniFormatNum my_format_num = ini_fton(my_format);
 
-printf("Format No. %d\n", my_format_num); // "Format No. 48701"
+printf("Format No. %d\n", my_format_num); // "Format No. 81469"
 </code></pre>
 
-<p>The function <code>ini_fton()</code> tells us that this format is univocally the format No. 48701. The function <code>ini_ntof()</code> gives us then a shortcut to construct the very same format using its format number. Hence, the code above corresponds to:</p>
+<p>The function <code>ini_fton()</code> tells us that this format is univocally the format No. 81469. The function <code>ini_ntof()</code> gives us then a shortcut to construct the very same format using its format number. Hence, the code above corresponds to:</p>
 
-<pre><code class="{.c}">IniFormat my_format = ini_ntof(48701);
+<pre><code class="{.c}">IniFormat my_format = ini_ntof(81469);
 </code></pre>
 
 <p><em>Please be aware that the same INI format might have different format numbers in different versions of this library.</em></p>
