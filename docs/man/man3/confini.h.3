@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Sat Apr 28 2018" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Sun Apr 29 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -134,11 +134,11 @@ src/confini.h \- libconfini header
 .br
 .RI "Compresses the distribution of the data of a stringified INI array, by removing all the white spaces that surround its delimiters, empty quotes, collapsable spaces, etc\&. "
 .ti -1c
-.RI "int \fBini_array_foreach\fP (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(const char *fullstring, size_t memb_offset, size_t memb_length, size_t index, \fBIniFormat\fP format, void *foreach_other), void *user_data)"
+.RI "int \fBini_array_foreach\fP (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(const char *fullstring, size_t memb_offset, size_t memb_length, size_t memb_num, \fBIniFormat\fP format, void *foreach_other), void *user_data)"
 .br
 .RI "Calls a custom function for each member of a stringified INI array without modifying the content of the buffer – useful for read-only (\fCconst\fP) stringified arrays\&. "
 .ti -1c
-.RI "int \fBini_array_split\fP (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(char *member, size_t memb_length, size_t index, \fBIniFormat\fP format, void *foreach_other), void *user_data)"
+.RI "int \fBini_array_split\fP (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(char *member, size_t memb_length, size_t memb_num, \fBIniFormat\fP format, void *foreach_other), void *user_data)"
 .br
 .RI "Splits a stringified INI array into NUL-separated members and calls a custom function for each member\&. "
 .ti -1c
@@ -434,26 +434,30 @@ static int my_ini_listener (IniDispatch *dispatch, void *v_null) {
 
         /* Allocate a new array of strings with `malloc()` */
         my_array_length = ini_array_get_length(dispatch->value, DELIMITER, dispatch->format);
-        my_array = (char **) malloc(my_array_length * sizeof(char *) + (dispatch->v_len + 1) * sizeof(char));
+        my_array = (char **) malloc(my_array_length * sizeof(char *) + dispatch->v_len + 1);
 
         /* Copy the strings with `memcpy()` */
-        memcpy(
-            (char *) my_array + my_array_length * sizeof(char *),
-            dispatch->value,
-            dispatch->v_len + 1
-        );
+        memcpy(my_array + my_array_length, dispatch->value, dispatch->v_len + 1);
 
         /* Populate the array */
         ini_array_split(
-            (char *) my_array + my_array_length * sizeof(char *),
+            (char *) (my_array + my_array_length),
             DELIMITER,
             dispatch->format,
             populate_array,
             my_array
         );
 
+        #undef DELIMITER
+
         /* Do something with `my_array` */
-        printf("Array `my_array` has been created\&.\n");
+        printf("Array `my_array` has been created\&.\n\n");
+
+        for (size_t idx = 0; idx < my_array_length; idx++) {
+
+            printf("my_array[%d] -> %s\n", idx, my_array[idx]);
+
+        }
 
     }
 
@@ -475,8 +479,14 @@ int main () {
 }
 .fi
 .PP
- 
-.SS "int ini_array_foreach (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(const char *fullstring, size_t memb_offset, size_t memb_length, size_t index, \fBIniFormat\fP format, void *foreach_other) f_foreach, void * user_data)"
+.PP
+\fBNote:\fP
+.RS 4
+The actual space occupied by the array might get further reduced after each member is parsed by \fC\fBini_string_parse()\fP\fP\&. 
+.RE
+.PP
+
+.SS "int ini_array_foreach (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(const char *fullstring, size_t memb_offset, size_t memb_length, size_t memb_num, \fBIniFormat\fP format, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
 Calls a custom function for each member of a stringified INI array without modifying the content of the buffer – useful for read-only (\fCconst\fP) stringified arrays\&. 
@@ -501,7 +511,7 @@ Zero for success, otherwise an error code
 .PP
 Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other string may be used as well)\&.
 .PP
-The function \fCf_foreach\fP will be invoked with six arguments: \fCfullstring\fP (a pointer to \fCini_string\fP), \fCmemb_offset\fP (the offset of the member in bytes), \fCmemb_length\fP (the length of the member in bytes), \fCindex\fP (the index of the member in number of members), \fCformat\fP (the format of the INI file), \fCforeach_other\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the function \fC\fBini_array_foreach()\fP\fP will be interrupted\&. 
+The function \fCf_foreach\fP will be invoked with six arguments: \fCfullstring\fP (a pointer to \fCini_string\fP), \fCmemb_offset\fP (the offset of the member in bytes), \fCmemb_length\fP (the length of the member in bytes), \fCmemb_num\fP (the index of the member in number of members), \fCformat\fP (the format of the INI file), \fCforeach_other\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the function \fC\fBini_array_foreach()\fP\fP will be interrupted\&. 
 .SS "size_t ini_array_get_length (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 
 .PP
@@ -522,7 +532,7 @@ The length of the INI array
 .RE
 .PP
 Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other string may be used as well)\&. 
-.SS "int ini_array_split (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(char *member, size_t memb_length, size_t index, \fBIniFormat\fP format, void *foreach_other) f_foreach, void * user_data)"
+.SS "int ini_array_split (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(char *member, size_t memb_length, size_t memb_num, \fBIniFormat\fP format, void *foreach_other) f_foreach, void * user_data)"
 
 .PP
 Splits a stringified INI array into NUL-separated members and calls a custom function for each member\&. 
@@ -547,7 +557,9 @@ Zero for success, otherwise an error code
 .PP
 Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other string may be used as well)\&.
 .PP
-The function \fCf_foreach\fP will be invoked with five arguments: \fCmember\fP (a pointer to \fCini_string\fP), \fCmemb_length\fP (the length of the member in bytes), \fCindex\fP (the index of the member in number of members), \fCformat\fP (the format of the INI file), \fCforeach_other\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the function \fC\fBini_array_split()\fP\fP will be interrupted\&.
+The function \fCf_foreach\fP will be invoked with five arguments: \fCmember\fP (a pointer to \fCini_string\fP), \fCmemb_length\fP (the length of the member in bytes),
+.PP
+\fCmemb_num\fP (the index of the member in number of members), \fCformat\fP (the format of the INI file), \fCforeach_other\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the function \fC\fBini_array_split()\fP\fP will be interrupted\&.
 .PP
 Similarly to \fCstrtok()\fP this function can be used only once for a given string\&.
 .PP
@@ -645,10 +657,9 @@ static char ** make_array (size_t * arrlen, const char * src, const size_t buffs
  
     char ** dest;
     *arrlen = ini_array_get_length(src, MY_ARRAY_DELIMITER, ini_format);
-    dest = (char **) malloc(*arrlen * sizeof(char *) + buffsize * sizeof(char));
-    char * const str_ptr = (char *) dest + *arrlen * sizeof(char *);
-    memcpy(str_ptr, src, buffsize);
-    ini_array_split(str_ptr, MY_ARRAY_DELIMITER, ini_format, array_part_handler, dest);
+    dest = (char **) malloc(*arrlen * sizeof(char *) + buffsize);
+    memcpy(dest + *arrlen, src, buffsize);
+    ini_array_split((char *) (dest + *arrlen), MY_ARRAY_DELIMITER, ini_format, array_part_handler, dest);
  
     return dest;
  

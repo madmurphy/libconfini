@@ -28,26 +28,30 @@ static int my_ini_listener (IniDispatch *dispatch, void *v_null) {
 
 		/* Allocate a new array of strings with `malloc()` */
 		my_array_length = ini_array_get_length(dispatch->value, DELIMITER, dispatch->format);
-		my_array = (char **) malloc(my_array_length * sizeof(char *) + (dispatch->v_len + 1) * sizeof(char));
+		my_array = (char **) malloc(my_array_length * sizeof(char *) + dispatch->v_len + 1);
 
 		/* Copy the strings with `memcpy()` */
-		memcpy(
-			(char *) my_array + my_array_length * sizeof(char *),
-			dispatch->value,
-			dispatch->v_len + 1
-		);
+		memcpy(my_array + my_array_length, dispatch->value, dispatch->v_len + 1);
 
 		/* Populate the array */
 		ini_array_split(
-			(char *) my_array + my_array_length * sizeof(char *),
+			(char *) (my_array + my_array_length),
 			DELIMITER,
 			dispatch->format,
 			populate_array,
 			my_array
 		);
 
+		#undef DELIMITER
+
 		/* Do something with `my_array` */
-		printf("Array `my_array` has been created.\n");
+		printf("Array `my_array` has been created.\n\n");
+
+		for (size_t idx = 0; idx < my_array_length; idx++) {
+
+			printf("my_array[%d] -> %s\n", idx, my_array[idx]);
+
+		}
 
 	}
 

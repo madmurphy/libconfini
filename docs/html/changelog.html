@@ -67,11 +67,12 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Record of notable changes</p>
-<h2>1.5.1 &ndash; 2018-04-28</h2>
+<h2>1.5.1 &ndash; 2018-04-29</h2>
 <p>Changes:</p>
 <ul>
 <li>Changed internal values of <code>INI_KEY</code>, <code>INI_SECTION</code>, <code>INI_DISABLED_KEY</code> and <code>INI_DISABLED_SECTION</code> (see <code>enum</code> <code>IniNodeType</code>)</li>
 <li>Moved example INI files to <code>examples/ini_files</code></li>
+<li>Documentation</li>
 </ul>
 <h2>1.5.0 &ndash; 2018-04-22</h2>
 <p>Changes:</p>
@@ -80,7 +81,7 @@ $(function() {
 <li><code>IniFormat::hash</code>, <code>IniFormat::semicolon</code> and <code>IniFormat::multiline_entries</code> have been renamed to <code><a class="el" href="structIniFormat.html#a4d9984334335612830eef223e0adc913">IniFormat::hash_marker</a></code>, <code><a class="el" href="structIniFormat.html#aab0c2bf1e89593bbbfc9ac5fc5f6f552">IniFormat::semicolon_marker</a></code> and <code><a class="el" href="structIniFormat.html#a8a4a1d116d66bad0c61d9876bf9f87ee">IniFormat::multiline_nodes</a></code></li>
 <li>Function <code><a class="el" href="confini_8c.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescapes \\, \&#39; and \&quot; and removes all unescaped quotes (if single/double quotes are considered meta...">ini_string_parse()</a></code> has been created</li>
 <li>Function <code>ini_collapse_array()</code> has been renamed to <code><a class="el" href="confini_8c.html#aa0721fcae5f04e5a9edd485dc1ddd2fa" title="Compresses the distribution of the data of a stringified INI array, by removing all the white spaces ...">ini_array_collapse()</a></code></li>
-<li>Function <code>ini_split_array()</code> has been renamed to <code><a class="el" href="confini_8c.html#ab2bc80803309f369ad8736b0ce115c3d" title="Splits a stringified INI array into NUL-separated members and calls a custom function for each member...">ini_array_split()</a></code></li>
+<li>Function <code>ini_split_array()</code> has been renamed to <code><a class="el" href="confini_8c.html#adb4525d732d5a08d87d9c64744f9f51e" title="Splits a stringified INI array into NUL-separated members and calls a custom function for each member...">ini_array_split()</a></code></li>
 <li>Function <code>ini_set_implicit_value()</code> has been renamed to <code><a class="el" href="confini_8c.html#a3a6eb3b79a88304864341075240ee412" title="Sets the value used for implicit keys. ">ini_global_set_implicit_value()</a></code></li>
 <li>Function <code>confini_global_set_lowercase_mode()</code> has been renamed to <code><a class="el" href="confini_8c.html#a7a940a6820371d950ec9428f8457a2a1" title="Sets the value of the global variable INI_GLOBAL_LOWERCASE_MODE ">ini_global_set_lowercase_mode()</a></code></li>
 <li>Global variable <code>INI_INSENSITIVE_LOWERCASE</code> has been renamed to <code>INI_GLOBAL_LOWERCASE_MODE</code></li>
@@ -146,7 +147,7 @@ $(function() {
 <li>Moved <code>#include &lt;stdio.h&gt;</code> from <code><a class="el" href="confini_8c.html" title="libconfini functions ">confini.c</a></code> to <code><a class="el" href="confini_8h.html" title="libconfini header ">confini.h</a></code></li>
 <li><code>nul</code> characters found in INI files will be skipped</li>
 <li><code>unsigned long int</code> replaced with <code>size_t</code> in return values of <code><a class="el" href="confini_8c.html#ac55f3fab95f697ac5058533df100fc11" title="Unescapes \\, \&#39; and \&quot; and removes all unescaped quotes (if single/double quotes are considered meta...">ini_unquote()</a></code>, <code><a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array. ">ini_array_get_length()</a></code> and <code>ini_collapse_array()</code></li>
-<li><code>unsigned int</code> replaced with <code>int</code> in return values of <code><a class="el" href="confini_8c.html#a5109b2e8c8a76b8376931a12d4bcbd79" title="Parses an INI file and dispatches its content. ">load_ini_file()</a></code>, <code><a class="el" href="confini_8c.html#a4d0619b3d26be629b76b9403cc5ff00e" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> and <code>ini_split_array()</code></li>
+<li><code>unsigned int</code> replaced with <code>int</code> in return values of <code><a class="el" href="confini_8c.html#a5109b2e8c8a76b8376931a12d4bcbd79" title="Parses an INI file and dispatches its content. ">load_ini_file()</a></code>, <code><a class="el" href="confini_8c.html#af0b43ef7d273359a9ccad47754b57d18" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> and <code>ini_split_array()</code></li>
 <li>UTF-8 BOM recognized and skipped</li>
 <li>Version numbering standardized (<code>${major}.${minor}.${revision}</code> instead of <code>${major}.${minor}-${release}</code>)</li>
 <li>Documentation</li>
@@ -179,7 +180,7 @@ $(function() {
 <p>Changes:</p>
 <ul>
 <li><code>ini_collapse_array()</code> has been created</li>
-<li><code>index</code> and <code>format</code> parameters have been added to callback function in <code><a class="el" href="confini_8c.html#a4d0619b3d26be629b76b9403cc5ff00e" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> and <code>ini_split_array()</code></li>
+<li><code>index</code> and <code>format</code> parameters have been added to callback function in <code><a class="el" href="confini_8c.html#af0b43ef7d273359a9ccad47754b57d18" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> and <code>ini_split_array()</code></li>
 <li><code>INI_ERASE_COMMENT</code> has been renamed to <code>INI_FORGET_COMMENT</code></li>
 <li>Added new documentation and examples</li>
 </ul>
@@ -213,7 +214,7 @@ $(function() {
 <ul>
 <li>Fixed quotes nesting bug</li>
 <li>enum <code>IniDelimiters</code> has been created</li>
-<li>Added support for <code>INI_ANY_SPACE</code> (<code>0</code>) as delimiter in <code><a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array. ">ini_array_get_length()</a></code>, <code><a class="el" href="confini_8c.html#a4d0619b3d26be629b76b9403cc5ff00e" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> and <code>ini_split_array()</code></li>
+<li>Added support for <code>INI_ANY_SPACE</code> (<code>0</code>) as delimiter in <code><a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array. ">ini_array_get_length()</a></code>, <code><a class="el" href="confini_8c.html#af0b43ef7d273359a9ccad47754b57d18" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> and <code>ini_split_array()</code></li>
 <li><code><a class="el" href="structIniFormat.html#a491e94bda3f8545471a86f0845c92474">IniFormat::no_spaces_in_names</a></code> has been created</li>
 <li><code>IniFormat::no_disabled_after_spaces</code> has been renamed to <code><a class="el" href="structIniFormat.html#a40a08a472ae9053fbaf4e7042967503d">IniFormat::no_disabled_after_space</a></code></li>
 <li><code>IniFormat::preserve_spaces_in_values</code> has been renamed to <code>IniFormat::no_collapsed_values</code></li>

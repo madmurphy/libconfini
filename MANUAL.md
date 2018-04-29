@@ -481,7 +481,6 @@ When the functions `load_ini_file()` and `load_ini_path()` read an INI file, the
 The information passed to `f_init()` is passed through an `IniStatistics` structure, while the information passed to `f_foreach()` is passed through an `IniDispatch` structure.
 
 
-
 ## RENDERING
 
 The output strings dispatched by **libconfini** will follow some formatting rules depending on their role within the INI file. First, the multi-line sequences will be unescaped, then
@@ -497,7 +496,7 @@ The strings passed with each dispatch, as already said, must not be freed. _Neve
 1. Be sure that your edit remains within the buffer lengths given (see: `IniDispatch::d_len` and `IniDispatch::v_len`).
 2. If you want to edit the content of `IniDispatch::data` and this contains a section path, the `IniDispatch::append_to` properties of its children _may_ refer to the same buffer. In this case, if you edit it, you can no more rely on its children's `IniDispatch::append_to` properties (you will not make any damage, the loop will continue just fine: so if you think you are going to never use the property `IniDispatch::append_to` just do it); alternatively, use `strdup()`. If, instead, `IniDispatch::data` contains a key name or a comment, no other dispatch will share this buffer, so feel free to edit it before it gets lost.
 3. Regarding `IniDispatch::value`, the buffer is never shared between dispatches, so feel free to edit it.
-4. Regarding `IniDispatch::append_to`, this buffer is likely to be shared with other dispatches: again, you will not destroy the world nor generate errors, but you will make the next `IniDispatch::append_to`s useless. Therefore **the property `IniDispatch::append_to` should be considered read-only** -- this is just a logical imposition (and this is why `IniDispatch::append_to` is not passed as `const`). To format this field please use `strdup()`.
+4. Regarding `IniDispatch::append_to`, this buffer is likely to be shared with other dispatches. Again, you will not destroy the world nor generate errors, but you will make the next `IniDispatch::append_to`s useless. Therefore **the property `IniDispatch::append_to` should be considered read-only** -- this is just a logical imposition (and this is why `IniDispatch::append_to` is not passed as `const`). To format this field please use `strdup()`.
 
 Typical peaceful edits are the calls of the functions `ini_array_collapse()` and `ini_string_parse()` directly on the buffer `IniDispatch::value` -- but make sure that you are not going to edit the global string `#INI_GLOBAL_IMPLICIT_VALUE`, if used (see below):
 
@@ -559,7 +558,7 @@ size_t INI_GLOBAL_IMPLICIT_V_LEN = 3;
 
 If not defined elsewhere, these variables are respectively `NULL` and `0` by default.
 
-After having set the value to be assigned to implicit key elements, it is possible to test whether a dispatched key is implicit or not by comparing the address of its `value` property with the global variable `#INI_GLOBAL_IMPLICIT_VALUE`:
+After having set the value to be assigned to implicit key elements and having enabled `IniFormat::implicit_is_not_empty` in the format, it is possible to test whether a dispatched key is implicit or not by comparing the address of its `value` property with the global variable `#INI_GLOBAL_IMPLICIT_VALUE`:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 /* examples/topics/ini_global_set_implicit_value.c */
@@ -610,77 +609,6 @@ int main () {
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-## SIZE OF THE DISPATCHED DATA
-
-Within an INI file it is granted that if one sums together all the `(dispatch->d_len + 1)` and all the `(dispatch->v_len > 0 ? dispatch->v_len + 1 : 0)` received, the result will always be less-than or equal-to `(statistics->bytes + 1)` (where `+ 1` represents the NUL terminators). **If one adds to this also all the `dispatch->at_len` properties, or if the `dispatch->v_len` properties of implicit keys are non-zero, the sum may exceed it.** This can be relevant or irrelevant depending on your code.
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-#include <stdio.h>
-#include <confini.h>
-
-struct size_check {
-  size_t bytes, buff_lengths;
-};
-
-int ini_init (IniStatistics *stats, void *v_check_struct) {
-
-  ((struct size_check *) v_check_struct)->bytes = stats->bytes;
-  ((struct size_check *) v_check_struct)->buff_lengths = 0;
-  return 0;
-
-}
-
-int ini_listener (IniDispatch *this, void *v_check_struct) {
-
-  ((struct size_check *) v_check_struct)->buff_lengths += this->d_len + 1 +
-    (this->v_len ? this->v_len + 1 : 0);
-
-  return 0;
-
-}
-
-int main () {
-
-  struct size_check check;
-
-  if (load_ini_path(
-    "my_file.ini",
-    INI_DEFAULT_FORMAT,
-    ini_init,
-    ini_listener,
-    &check
-  )) {
-
-    fprintf(stderr, "Sorry, something went wrong :-(\n");
-    return 1;
-
-  }
-
-  printf(
-
-    "The file is %d bytes large.\n\nThe sum of the lengths of all "
-    "IniDispatch::data buffers plus the lengths of all non-empty "
-    "IniDispatch::value buffers is %d.\n",
-
-    check.bytes, check.buff_lengths
-
-  );
-
-  /* `INI_GLOBAL_IMPLICIT_V_LEN` is 0 and not even used, so this cannot
-     happen: */
-
-  if (check.buff_lengths > check.bytes) {
-
-    fprintf(stderr, "The end is near!");
-    return 1;
-
-  }
-
-  return 0;
-
-}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ## FORMATTING THE VALUES
 
@@ -840,6 +768,78 @@ printf(
 The three functions `ini_string_match_ss()`, `ini_string_match_si()`, `ini_string_match_ii()` perform case-sensitive or case-insensitive comparisons depending on the format given. UTF-8 codepoints out of the ASCII range are always compared case-sensitive.
 
 Note that, within INI strings, empty quotes and spaces out of quotes are always collapsed during comparisons. Furthermore, remember that the multi-line escaping sequence (`/\\(?:\n\r?|\r\n?)/`) is _not_ considered as such in INI strings, since this is the only escaping sequence automatically unescaped by **libconfini** _before_ each dispatch.
+
+
+### SIZE OF THE DISPATCHED DATA
+
+Within an INI file it is granted that if one sums together all the `(dispatch->d_len + 1)` and all the `(dispatch->v_len > 0 ? dispatch->v_len + 1 : 0)` received, the result will always be less-than or equal-to `(statistics->bytes + 1)` (where `+ 1` represents the NUL terminators). **If one adds to this also all the `dispatch->at_len` properties, or if the `dispatch->v_len` properties of implicit keys are non-zero, the sum may exceed it.** This can be relevant or irrelevant depending on your code.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+#include <stdio.h>
+#include <confini.h>
+
+struct size_check {
+  size_t bytes, buff_lengths;
+};
+
+int ini_init (IniStatistics *stats, void *v_check_struct) {
+
+  ((struct size_check *) v_check_struct)->bytes = stats->bytes;
+  ((struct size_check *) v_check_struct)->buff_lengths = 0;
+  return 0;
+
+}
+
+int ini_listener (IniDispatch *this, void *v_check_struct) {
+
+  ((struct size_check *) v_check_struct)->buff_lengths += this->d_len + 1 +
+    (this->v_len ? this->v_len + 1 : 0);
+
+  return 0;
+
+}
+
+int main () {
+
+  struct size_check check;
+
+  if (load_ini_path(
+    "my_file.ini",
+    INI_DEFAULT_FORMAT,
+    ini_init,
+    ini_listener,
+    &check
+  )) {
+
+    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    return 1;
+
+  }
+
+  printf(
+
+    "The file is %d bytes large.\n\nThe sum of the lengths of all "
+    "IniDispatch::data buffers plus the lengths of all non-empty "
+    "IniDispatch::value buffers is %d.\n",
+
+    check.bytes, check.buff_lengths
+
+  );
+
+  /* `INI_GLOBAL_IMPLICIT_V_LEN` is 0 and not even used, so this cannot
+     happen: */
+
+  if (check.buff_lengths > check.bytes) {
+
+    fprintf(stderr, "The end is near!");
+    return 1;
+
+  }
+
+  return 0;
+
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ### OTHER GLOBAL SETTINGS

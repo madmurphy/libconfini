@@ -693,7 +693,7 @@ If you want to edit the content of \fBIniDispatch::data\fR and this contains a s
 Regarding \fBIniDispatch::value\fR, the buffer is never shared between dispatches, so feel free to edit it\.
 .
 .IP "4." 4
-Regarding \fBIniDispatch::append_to\fR, this buffer is likely to be shared with other dispatches: again, you will not destroy the world nor generate errors, but you will make the next \fBIniDispatch::append_to\fRs useless\. Therefore \fBthe property \fBIniDispatch::append_to\fR should be considered read\-only\fR – this is just a logical imposition (and this is why \fBIniDispatch::append_to\fR is not passed as \fBconst\fR)\. To format this field please use \fBstrdup()\fR\.
+Regarding \fBIniDispatch::append_to\fR, this buffer is likely to be shared with other dispatches\. Again, you will not destroy the world nor generate errors, but you will make the next \fBIniDispatch::append_to\fRs useless\. Therefore \fBthe property \fBIniDispatch::append_to\fR should be considered read\-only\fR – this is just a logical imposition (and this is why \fBIniDispatch::append_to\fR is not passed as \fBconst\fR)\. To format this field please use \fBstrdup()\fR\.
 .
 .IP "" 0
 .
@@ -780,7 +780,7 @@ size_t INI_GLOBAL_IMPLICIT_V_LEN = 3;
 If not defined elsewhere, these variables are respectively \fBNULL\fR and \fB0\fR by default\.
 .
 .P
-After having set the value to be assigned to implicit key elements, it is possible to test whether a dispatched key is implicit or not by comparing the address of its \fBvalue\fR property with the global variable \fBINI_GLOBAL_IMPLICIT_VALUE\fR:
+After having set the value to be assigned to implicit key elements and having enabled \fBIniFormat::implicit_is_not_empty\fR in the format, it is possible to test whether a dispatched key is implicit or not by comparing the address of its \fBvalue\fR property with the global variable \fBINI_GLOBAL_IMPLICIT_VALUE\fR:
 .
 .IP "" 4
 .
@@ -825,82 +825,6 @@ int main () {
   if (load_ini_path("example\.conf", my_format, NULL, ini_listener, NULL)) {
 
     fprintf(stderr, "Sorry, something went wrong :\-(\en");
-    return 1;
-
-  }
-
-  return 0;
-
-}
-.
-.fi
-.
-.IP "" 0
-.
-.SH "SIZE OF THE DISPATCHED DATA"
-Within an INI file it is granted that if one sums together all the \fB(dispatch\->d_len + 1)\fR and all the \fB(dispatch\->v_len > 0 ? dispatch\->v_len + 1 : 0)\fR received, the result will always be less\-than or equal\-to \fB(statistics\->bytes + 1)\fR (where \fB+ 1\fR represents the NUL terminators)\. \fBIf one adds to this also all the \fBdispatch\->at_len\fR properties, or if the \fBdispatch\->v_len\fR properties of implicit keys are non\-zero, the sum may exceed it\.\fR This can be relevant or irrelevant depending on your code\.
-.
-.IP "" 4
-.
-.nf
-
-#include <stdio\.h>
-#include <confini\.h>
-
-struct size_check {
-  size_t bytes, buff_lengths;
-};
-
-int ini_init (IniStatistics *stats, void *v_check_struct) {
-
-  ((struct size_check *) v_check_struct)\->bytes = stats\->bytes;
-  ((struct size_check *) v_check_struct)\->buff_lengths = 0;
-  return 0;
-
-}
-
-int ini_listener (IniDispatch *this, void *v_check_struct) {
-
-  ((struct size_check *) v_check_struct)\->buff_lengths += this\->d_len + 1 +
-    (this\->v_len ? this\->v_len + 1 : 0);
-
-  return 0;
-
-}
-
-int main () {
-
-  struct size_check check;
-
-  if (load_ini_path(
-    "my_file\.ini",
-    INI_DEFAULT_FORMAT,
-    ini_init,
-    ini_listener,
-    &check
-  )) {
-
-    fprintf(stderr, "Sorry, something went wrong :\-(\en");
-    return 1;
-
-  }
-
-  printf(
-
-    "The file is %d bytes large\.\en\enThe sum of the lengths of all "
-    "IniDispatch::data buffers plus the lengths of all non\-empty "
-    "IniDispatch::value buffers is %d\.\en",
-
-    check\.bytes, check\.buff_lengths
-
-  );
-
-  /* `INI_GLOBAL_IMPLICIT_V_LEN` is 0 and not even used, so this cannot
-     happen: */
-
-  if (check\.buff_lengths > check\.bytes) {
-
-    fprintf(stderr, "The end is near!");
     return 1;
 
   }
@@ -1141,6 +1065,82 @@ The three functions \fBini_string_match_ss()\fR, \fBini_string_match_si()\fR, \f
 .
 .P
 Note that, within INI strings, empty quotes and spaces out of quotes are always collapsed during comparisons\. Furthermore, remember that the multi\-line escaping sequence (\fB/\e\e(?:\en\er?|\er\en?)/\fR) is \fInot\fR considered as such in INI strings, since this is the only escaping sequence automatically unescaped by \fBlibconfini\fR \fIbefore\fR each dispatch\.
+.
+.SS "SIZE OF THE DISPATCHED DATA"
+Within an INI file it is granted that if one sums together all the \fB(dispatch\->d_len + 1)\fR and all the \fB(dispatch\->v_len > 0 ? dispatch\->v_len + 1 : 0)\fR received, the result will always be less\-than or equal\-to \fB(statistics\->bytes + 1)\fR (where \fB+ 1\fR represents the NUL terminators)\. \fBIf one adds to this also all the \fBdispatch\->at_len\fR properties, or if the \fBdispatch\->v_len\fR properties of implicit keys are non\-zero, the sum may exceed it\.\fR This can be relevant or irrelevant depending on your code\.
+.
+.IP "" 4
+.
+.nf
+
+#include <stdio\.h>
+#include <confini\.h>
+
+struct size_check {
+  size_t bytes, buff_lengths;
+};
+
+int ini_init (IniStatistics *stats, void *v_check_struct) {
+
+  ((struct size_check *) v_check_struct)\->bytes = stats\->bytes;
+  ((struct size_check *) v_check_struct)\->buff_lengths = 0;
+  return 0;
+
+}
+
+int ini_listener (IniDispatch *this, void *v_check_struct) {
+
+  ((struct size_check *) v_check_struct)\->buff_lengths += this\->d_len + 1 +
+    (this\->v_len ? this\->v_len + 1 : 0);
+
+  return 0;
+
+}
+
+int main () {
+
+  struct size_check check;
+
+  if (load_ini_path(
+    "my_file\.ini",
+    INI_DEFAULT_FORMAT,
+    ini_init,
+    ini_listener,
+    &check
+  )) {
+
+    fprintf(stderr, "Sorry, something went wrong :\-(\en");
+    return 1;
+
+  }
+
+  printf(
+
+    "The file is %d bytes large\.\en\enThe sum of the lengths of all "
+    "IniDispatch::data buffers plus the lengths of all non\-empty "
+    "IniDispatch::value buffers is %d\.\en",
+
+    check\.bytes, check\.buff_lengths
+
+  );
+
+  /* `INI_GLOBAL_IMPLICIT_V_LEN` is 0 and not even used, so this cannot
+     happen: */
+
+  if (check\.buff_lengths > check\.bytes) {
+
+    fprintf(stderr, "The end is near!");
+    return 1;
+
+  }
+
+  return 0;
+
+}
+.
+.fi
+.
+.IP "" 0
 .
 .SS "OTHER GLOBAL SETTINGS"
 Besides the two global variables \fBINI_GLOBAL_IMPLICIT_VALUE\fR and \fBINI_GLOBAL_IMPLICIT_V_LEN\fR, a third variable named \fBINI_GLOBAL_LOWERCASE_MODE\fR tells \fBlibconfini\fR whether to dispatch key names and section paths lower\-case or not in case\-insensitive INI files\.

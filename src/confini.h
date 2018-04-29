@@ -180,7 +180,7 @@ extern int ini_array_foreach (
 		const char *fullstring,
 		size_t memb_offset,
 		size_t memb_length,
-		size_t index,
+		size_t memb_num,
 		IniFormat format,
 		void *foreach_other
 	),
@@ -194,7 +194,7 @@ extern int ini_array_split (
 	int (* const f_foreach) (
 		char *member,
 		size_t memb_length,
-		size_t index,
+		size_t memb_num,
 		IniFormat format,
 		void *foreach_other
 	),

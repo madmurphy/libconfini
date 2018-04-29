@@ -67,10 +67,14 @@
 					(`/\s{2,}/`) will not be collapsed
 	@property	IniFormat::preserve_empty_quotes
 					If set to `1` and if single/double quotes are metacharacters
-					ensures that empty strings enclosed between quotes (`""` or
-					`''`) will not be collapsed together with spaces within values.
-					Note that in section and key names empty strings enclosed
-					between quotes are always collapsed together with spaces.
+					ensures that, within values, empty strings enclosed between
+					quotes (`""` or `''`) will not be collapsed together with the
+					spaces that surround them. This option is useful for values
+					containing space-delimited arrays in order to preserve their
+					empty members -- as in, for instance: `coordinates = "" ""`.
+					Note that, in section and key names, empty strings enclosed
+					between quotes are _always_ collapsed together with their
+					surrounding spaces.
 	@property	IniFormat::no_disabled_after_space
 					If set to `1`, prevents that what follows `/(?:^|\s+)[#;]\s/` be
 					parsed as a disabled entry
@@ -372,34 +376,44 @@ static inline size_t rtrim_h (char * const rt_s, const size_t length, const uint
 **/
 static inline size_t urtrim_s (const char * const urt_s, const size_t length) {
 
+	register uint8_t abcd = 1;
 	size_t urt_l = length;
 
-	/*
+	/* ====> */   continue_trim:   /* <==== */
 
-	Mask `abcd` (2 bits used):
+	if (urt_l < 1) {
 
-		FLAG_1		Continue the loop
-		FLAG_2		Next character is a new line character
+		return urt_l;
 
-	*/
+	}
 
-	for (
+	switch (urt_s[--urt_l]) {
 
-		register uint8_t abcd = 1;
+		case _LIBCONFINI_VT_:
+		case _LIBCONFINI_FF_:
+		case _LIBCONFINI_HT_:
+		case _LIBCONFINI_SIMPLE_SPACE_:
 
-			(
-				abcd	=	urt_l < 1 ? 0
-							: urt_s[urt_l - 1] == _LIBCONFINI_LF_ || urt_s[urt_l - 1] == _LIBCONFINI_CR_ ? 3
-							: urt_s[urt_l - 1] == _LIBCONFINI_BACKSLASH_ ? abcd >> 1
-							: is_some_space(urt_s[urt_l - 1], _LIBCONFINI_NO_EOL_) ? 1
-							: 0
-			) & 1;
+			abcd = 1;
+			goto continue_trim;
 
-		urt_l--
+		case _LIBCONFINI_LF_:
+		case _LIBCONFINI_CR_:
 
-	);
+			abcd = 3;
+			goto continue_trim;
 
-	return urt_l;
+		case _LIBCONFINI_BACKSLASH_:
+
+			if (abcd >>= 1) {
+
+				goto continue_trim;
+
+			}
+
+	}
+
+	return urt_l + 1;
 
 }
 
@@ -2783,6 +2797,9 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 
 	@include topics/ini_array_collapse.c
 
+	@note	The actual space occupied by the array might get further reduced after
+			each member is parsed by `ini_string_parse()`.
+
 **/
 size_t ini_array_collapse (char * const ini_string, const char delimiter, const IniFormat format) {
 
@@ -2954,7 +2971,7 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 
 	The function @p f_foreach will be invoked with six arguments: `fullstring` (a
 	pointer to @p ini_string), `memb_offset` (the offset of the member in bytes),
-	`memb_length` (the length of the member in bytes), `index` (the index of the
+	`memb_length` (the length of the member in bytes), `memb_num` (the index of the
 	member in number of members), `format` (the format of the INI file),
 	`foreach_other` (the custom argument @p user_data previously passed). If
 	@p f_foreach returns a non-zero value the function `ini_array_foreach()` will be
@@ -2969,7 +2986,7 @@ int ini_array_foreach (
 		const char *fullstring,
 		size_t memb_offset,
 		size_t memb_length,
-		size_t index,
+		size_t memb_num,
 		IniFormat format,
 		void *foreach_other
 	),
@@ -3059,10 +3076,11 @@ int ini_array_foreach (
 
 	The function @p f_foreach will be invoked with five arguments: `member` (a
 	pointer to @p ini_string), `memb_length` (the length of the member in bytes),
-	`index` (the index of the member in number of members), `format` (the format of
-	the INI file), `foreach_other` (the custom argument @p user_data previously
-	passed). If @p f_foreach returns a non-zero value the function `ini_array_split()`
-	will be interrupted.
+
+	`memb_num` (the index of the member in number of members), `format` (the format
+	of the INI file), `foreach_other` (the custom argument @p user_data previously
+	passed). If @p f_foreach returns a non-zero value the function
+	`ini_array_split()` will be interrupted.
 
 	Similarly to `strtok()` this function can be used only once for a given string.
 
@@ -3076,7 +3094,7 @@ int ini_array_split (
 	int (* const f_foreach) (
 		char *member,
 		size_t memb_length,
-		size_t index,
+		size_t memb_num,
 		IniFormat format,
 		void *foreach_other
 	),

@@ -54,10 +54,9 @@ static char ** make_array (size_t * arrlen, const char * src, const size_t buffs
  
 	char ** dest;
 	*arrlen = ini_array_get_length(src, MY_ARRAY_DELIMITER, ini_format);
-	dest = (char **) malloc(*arrlen * sizeof(char *) + buffsize * sizeof(char));
-	char * const str_ptr = (char *) dest + *arrlen * sizeof(char *);
-	memcpy(str_ptr, src, buffsize);
-	ini_array_split(str_ptr, MY_ARRAY_DELIMITER, ini_format, array_part_handler, dest);
+	dest = (char **) malloc(*arrlen * sizeof(char *) + buffsize);
+	memcpy(dest + *arrlen, src, buffsize);
+	ini_array_split((char *) (dest + *arrlen), MY_ARRAY_DELIMITER, ini_format, array_part_handler, dest);
  
 	return dest;
  
