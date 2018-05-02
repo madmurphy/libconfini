@@ -1,4 +1,4 @@
-.TH "IniFormat" 3 "Mon Apr 30 2018" "libconfini" \" -*- nroff -*-
+.TH "IniFormat" 3 "Thu May 3 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -23,6 +23,9 @@ IniFormat \- 24-bit bitfield representing a unique format of an INI file (INI di
 .br
 .ti -1c
 .RI "unsigned char \fBhash_marker\fP: 2"
+.br
+.ti -1c
+.RI "unsigned char \fBsection_paths\fP: 2"
 .br
 .ti -1c
 .RI "unsigned char \fBmultiline_nodes\fP: 2"
@@ -59,13 +62,11 @@ IniFormat \- 24-bit bitfield representing a unique format of an INI file (INI di
 Structure of the bitfield:
 .PP
 .IP "\(bu" 2
-Bits 1-17: INI syntax
+Bits 1-19: INI syntax
 .IP "\(bu" 2
-Bits 18-20: INI semantics
+Bits 20-22: INI semantics
 .IP "\(bu" 2
-Bits 21-22: human syntax (disabled entries)
-.IP "\(bu" 2
-Bits 23-24: not used 
+Bits 23-24: Human syntax (disabled entries) 
 .PP
 
 .SH "Field Documentation"
@@ -91,9 +92,11 @@ If set to \fC1\fP, the double-quote character (\fC"\fP) will be considered as a 
 .SS "IniFormat::no_single_quotes"
 If set to \fC1\fP, the single-quote character (\fC'\fP) will be considered as a normal character 
 .SS "IniFormat::no_spaces_in_names"
-If set to \fC1\fP, key and section names containing spaces will be rendered as \fC\fBINI_UNKNOWN\fP\fP\&. Note that setting \fC\fBIniFormat::delimiter_symbol\fP\fP to \fCINI_ANY_SPACE\fP will not automatically set this option to \fC1\fP (spaces will still be allowed in section names)\&. 
+If set to \fC1\fP, key and section names containing spaces (even within quotes) will be rendered as \fC\fBINI_UNKNOWN\fP\fP\&. Note that setting \fC\fBIniFormat::delimiter_symbol\fP\fP to \fCINI_ANY_SPACE\fP will not automatically set this option to \fC1\fP (spaces will still be allowed in section names)\&. 
 .SS "IniFormat::preserve_empty_quotes"
 If set to \fC1\fP and if single/double quotes are metacharacters ensures that, within values, empty strings enclosed between quotes (\fC''\fP or \fC''\fP) will not be collapsed together with the spaces that surround them\&. This option is useful for values containing space-delimited arrays in order to preserve their empty members – as in, for instance: \fCcoordinates = '' ''\fP\&. Note that, in section and key names, empty strings enclosed between quotes are \fIalways\fP collapsed together with their surrounding spaces\&. 
+.SS "IniFormat::section_paths"
+Defines whether and how the format supports sections (use enum \fC\fBIniSectionPaths\fP\fP for this) 
 .SS "IniFormat::semicolon_marker"
 The rule of the semicolon character (use enum \fC\fBIniCommentMarker\fP\fP for this) 
 

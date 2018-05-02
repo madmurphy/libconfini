@@ -27,6 +27,7 @@ int main () {
 		.case_sensitive = NO,
 		.semicolon_marker = INI_DISABLED_OR_COMMENT,
 		.hash_marker = INI_DISABLED_OR_COMMENT,
+		.section_paths = INI_ABSOLUTE_AND_RELATIVE,
 		.multiline_nodes = INI_MULTILINE_EVERYWHERE,
 		.no_single_quotes = NO,
 		.no_double_quotes = NO,

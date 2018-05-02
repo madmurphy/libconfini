@@ -67,6 +67,15 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Record of notable changes</p>
+<h2>1.5.2 &ndash; 2018-05-03</h2>
+<p>Changes:</p>
+<ul>
+<li>Added <code><a class="el" href="structIniFormat.html#a3168fd8d019de9a2f648a1805718b310">IniFormat::section_paths</a></code> option to the <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) – sizeof(IniFormat) should...">IniFormat</a></code> bitfield</li>
+<li>Created <code>enum</code> <code>IniSectionPaths</code></li>
+<li>Made sure that implicit keys containing only empty quotes are ignored</li>
+<li>Private function <code>ultrim_h()</code> has been renamed to <code><a class="el" href="confini_8c.html#af77eb8992f30ecc98c0cf246532ec914" title="Unparsed hard left trim (left trim of ‘/^(+|\[ ]|’&#39;|&quot;&quot;)+/`) – does change the buffer. ">qultrim_h()</a></code> and rewritten</li>
+<li>Code review (private function <code><a class="el" href="confini_8c.html#aed03fec7ca2061877cd335451177b4fc" title="Tries to determine the type of a member &quot;as if it was active&quot;. ">get_type_as_active()</a></code>)</li>
+</ul>
 <h2>1.5.1 &ndash; 2018-04-30</h2>
 <p>Changes:</p>
 <ul>

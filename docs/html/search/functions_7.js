@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['ultrim_5fh',['ultrim_h',['../confini_8c.html#ac1ce04bace4e334495fbca85d3e60839',1,'confini.c']]],
-  ['uncomment',['uncomment',['../confini_8c.html#abb60f6ecb39dbd9a25d878283c5d37f0',1,'confini.c']]],
-  ['unescape_5fcr_5flf',['unescape_cr_lf',['../confini_8c.html#a305519f4ff7a81558868de3315707d7a',1,'confini.c']]],
-  ['urtrim_5fs',['urtrim_s',['../confini_8c.html#ad86a82dfd90c62b81348c4af4f9cca51',1,'confini.c']]]
+  ['sanitize_5fkey_5fname',['sanitize_key_name',['../confini_8c.html#abf29e5b2933a67e2a2a720f426dd381e',1,'confini.c']]],
+  ['sanitize_5fsection_5fpath',['sanitize_section_path',['../confini_8c.html#aa17889754780149f18e417607e5ffb24',1,'confini.c']]],
+  ['string_5ftolower',['string_tolower',['../confini_8c.html#ad6e6972b13052e995b3ceb2fb4996ede',1,'confini.c']]]
 ];

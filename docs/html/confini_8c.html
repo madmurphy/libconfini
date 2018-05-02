@@ -91,9 +91,6 @@ Functions</h2></td></tr>
 <tr class="memitem:af2c15586840bec19629c510017210a24"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#af2c15586840bec19629c510017210a24">ltrim_h</a> (char *const lt_s, const size_t start_from, const uint8_t depth)</td></tr>
 <tr class="memdesc:af2c15586840bec19629c510017210a24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hard left trim &ndash; <b>does</b> change the buffer.  <a href="#af2c15586840bec19629c510017210a24">More...</a><br /></td></tr>
 <tr class="separator:af2c15586840bec19629c510017210a24"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1ce04bace4e334495fbca85d3e60839"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ac1ce04bace4e334495fbca85d3e60839">ultrim_h</a> (char *const ult_s, const size_t start_from)</td></tr>
-<tr class="memdesc:ac1ce04bace4e334495fbca85d3e60839"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescaped hard left trim (left trim of <code>/^(\s+|\\[\n\r])+/</code>) &ndash; <b>does</b> change the buffer.  <a href="#ac1ce04bace4e334495fbca85d3e60839">More...</a><br /></td></tr>
-<tr class="separator:ac1ce04bace4e334495fbca85d3e60839"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec164c03cb3655b94347a3a1678de0a9"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#aec164c03cb3655b94347a3a1678de0a9">rtrim_s</a> (const char *const rt_s, const size_t length, const uint8_t depth)</td></tr>
 <tr class="memdesc:aec164c03cb3655b94347a3a1678de0a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Soft right trim &ndash; does <b>not</b> change the buffer.  <a href="#aec164c03cb3655b94347a3a1678de0a9">More...</a><br /></td></tr>
 <tr class="separator:aec164c03cb3655b94347a3a1678de0a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,6 +112,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a0dd382a417b6c868b92bce236a065051"><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a0dd382a417b6c868b92bce236a065051">is_forget_char</a> (const char chr, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
 <tr class="memdesc:a0dd382a417b6c868b92bce236a065051"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a character represents the beginning of a comment that must be ignored within a given format.  <a href="#a0dd382a417b6c868b92bce236a065051">More...</a><br /></td></tr>
 <tr class="separator:a0dd382a417b6c868b92bce236a065051"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af77eb8992f30ecc98c0cf246532ec914"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#af77eb8992f30ecc98c0cf246532ec914">qultrim_h</a> (char *const ult_s, const size_t start_from, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
+<tr class="memdesc:af77eb8992f30ecc98c0cf246532ec914"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unparsed hard left trim (left trim of &lsquo;/^(+|\[<br />
+]|&rsquo;'|"")+/`) &ndash; <b>does</b> change the buffer.  <a href="#af77eb8992f30ecc98c0cf246532ec914">More...</a><br /></td></tr>
+<tr class="separator:af77eb8992f30ecc98c0cf246532ec914"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9217de2d9be4b2d6dcd75725a8d96478"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a9217de2d9be4b2d6dcd75725a8d96478">get_delimiter_pos</a> (const char *const pairstr, const size_t len, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
 <tr class="memdesc:a9217de2d9be4b2d6dcd75725a8d96478"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the position of the first delimiter out of quotes.  <a href="#a9217de2d9be4b2d6dcd75725a8d96478">More...</a><br /></td></tr>
 <tr class="separator:a9217de2d9be4b2d6dcd75725a8d96478"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1528,6 +1529,59 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="af77eb8992f30ecc98c0cf246532ec914"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af77eb8992f30ecc98c0cf246532ec914">&#9670;&nbsp;</a></span>qultrim_h()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static size_t qultrim_h </td>
+          <td>(</td>
+          <td class="paramtype">char *const&#160;</td>
+          <td class="paramname"><em>ult_s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>start_from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td>
+          <td class="paramname"><em>format</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unparsed hard left trim (left trim of &lsquo;/^(+|\[<br />
+]|&rsquo;'|"")+/`) &ndash; <b>does</b> change the buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ult_s</td><td>The target string </td></tr>
+    <tr><td class="paramname">start_from</td><td>The offset where to start the left trim </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The offset of the first non-space character </dd></dl>
+
+</div>
+</div>
 <a id="a83f9285ee4a8cde02d9caf06703d9ccd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a83f9285ee4a8cde02d9caf06703d9ccd">&#9670;&nbsp;</a></span>rtrim_h()</h2>
 
@@ -1760,52 +1814,6 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Nothing </dd></dl>
-
-</div>
-</div>
-<a id="ac1ce04bace4e334495fbca85d3e60839"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac1ce04bace4e334495fbca85d3e60839">&#9670;&nbsp;</a></span>ultrim_h()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static size_t ultrim_h </td>
-          <td>(</td>
-          <td class="paramtype">char *const&#160;</td>
-          <td class="paramname"><em>ult_s</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>start_from</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Unescaped hard left trim (left trim of <code>/^(\s+|\\[\n\r])+/</code>) &ndash; <b>does</b> change the buffer. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">ult_s</td><td>The target string </td></tr>
-    <tr><td class="paramname">start_from</td><td>The offset where to start the left trim </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The offset of the first non-space character </dd></dl>
 
 </div>
 </div>

@@ -1,6 +1,8 @@
 var searchData=
 [
   ['implicit_5fis_5fnot_5fempty',['implicit_is_not_empty',['../structIniFormat.html#ae5722efd535f1d27c624a927eea622c3',1,'IniFormat']]],
+  ['ini_5fabsolute_5fand_5frelative',['INI_ABSOLUTE_AND_RELATIVE',['../confini_8h.html#a4b01f84229fe403d5b061378ebe86134a369aca51c7228abeae22d232a7fbe1f9',1,'confini.h']]],
+  ['ini_5fabsolute_5fonly',['INI_ABSOLUTE_ONLY',['../confini_8h.html#a4b01f84229fe403d5b061378ebe86134a1126b82b479382f2d3dada130c08962f',1,'confini.h']]],
   ['ini_5fany_5fspace',['INI_ANY_SPACE',['../confini_8h.html#ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd',1,'confini.h']]],
   ['ini_5farray_5fcollapse',['ini_array_collapse',['../confini_8c.html#aa0721fcae5f04e5a9edd485dc1ddd2fa',1,'ini_array_collapse(char *const ini_string, const char delimiter, const IniFormat format):&#160;confini.c'],['../confini_8h.html#aa0721fcae5f04e5a9edd485dc1ddd2fa',1,'ini_array_collapse(char *const ini_string, const char delimiter, const IniFormat format):&#160;confini.c']]],
   ['ini_5farray_5fforeach',['ini_array_foreach',['../confini_8c.html#af0b43ef7d273359a9ccad47754b57d18',1,'ini_array_foreach(const char *const ini_string, const char delimiter, const IniFormat format, int(*const f_foreach)(const char *fullstring, size_t memb_offset, size_t memb_length, size_t memb_num, IniFormat format, void *foreach_other), void *user_data):&#160;confini.c'],['../confini_8h.html#af0b43ef7d273359a9ccad47754b57d18',1,'ini_array_foreach(const char *const ini_string, const char delimiter, const IniFormat format, int(*const f_foreach)(const char *fullstring, size_t memb_offset, size_t memb_length, size_t memb_num, IniFormat format, void *foreach_other), void *user_data):&#160;confini.c']]],
@@ -34,7 +36,9 @@ var searchData=
   ['ini_5fkey',['INI_KEY',['../confini_8h.html#a4e394db479f56eaa830ade09c907461ba97333d01dfff8f9a9c690fc559751b45',1,'confini.h']]],
   ['ini_5fmultiline_5feverywhere',['INI_MULTILINE_EVERYWHERE',['../confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa32940b5375486473634a3e06043b1789',1,'confini.h']]],
   ['ini_5fno_5fmultiline',['INI_NO_MULTILINE',['../confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa287fd13b8c6d991694f9e5fb2c3a334a',1,'confini.h']]],
+  ['ini_5fno_5fsections',['INI_NO_SECTIONS',['../confini_8h.html#a4b01f84229fe403d5b061378ebe86134a950b824b44a557cb26647b9f2f922d1c',1,'confini.h']]],
   ['ini_5fntof',['ini_ntof',['../confini_8c.html#a6126371aef71be174ee8e1262a231ef5',1,'ini_ntof(IniFormatNum format_id):&#160;confini.c'],['../confini_8h.html#a6126371aef71be174ee8e1262a231ef5',1,'ini_ntof(IniFormatNum format_id):&#160;confini.c']]],
+  ['ini_5fone_5flevel_5fonly',['INI_ONE_LEVEL_ONLY',['../confini_8h.html#a4b01f84229fe403d5b061378ebe86134a19bed9466377f57a5b3bb1ff3f484033',1,'confini.h']]],
   ['ini_5fonly_5fcomment',['INI_ONLY_COMMENT',['../confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcdab8a602bb219c0f0ce8ac35fb9225fc3d',1,'confini.h']]],
   ['ini_5fsection',['INI_SECTION',['../confini_8h.html#a4e394db479f56eaa830ade09c907461ba596f391d896636da6f004a7d010edb50',1,'confini.h']]],
   ['ini_5fstring_5fmatch_5fii',['ini_string_match_ii',['../confini_8c.html#a24a43707c6c2f056615ae02b67f6d3cc',1,'ini_string_match_ii(const char *const ini_string_a, const char *const ini_string_b, const IniFormat format):&#160;confini.c'],['../confini_8h.html#a24a43707c6c2f056615ae02b67f6d3cc',1,'ini_string_match_ii(const char *const ini_string_a, const char *const ini_string_b, const IniFormat format):&#160;confini.c']]],
@@ -51,6 +55,7 @@ var searchData=
   ['iniformatnum',['IniFormatNum',['../confini_8h.html#a8dfc7ebbb087a23d4076c1d688572b1c',1,'confini.h']]],
   ['inimultiline',['IniMultiline',['../confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55f',1,'confini.h']]],
   ['ininodetype',['IniNodeType',['../confini_8h.html#a4e394db479f56eaa830ade09c907461b',1,'confini.h']]],
+  ['inisectionpaths',['IniSectionPaths',['../confini_8h.html#a4b01f84229fe403d5b061378ebe86134',1,'confini.h']]],
   ['inistatistics',['IniStatistics',['../structIniStatistics.html',1,'IniStatistics'],['../confini_8h.html#af59b765f17d37553506a0ff5c8c41aa6',1,'IniStatistics():&#160;confini.h']]],
   ['is_5fcomment_5fchar',['is_comment_char',['../confini_8c.html#a8a269b22d9dd6e6fe9d604f87e443604',1,'confini.c']]],
   ['is_5fforget_5fchar',['is_forget_char',['../confini_8c.html#a0dd382a417b6c868b92bce236a065051',1,'confini.c']]],

@@ -476,6 +476,7 @@ my_format.delimiter_symbol = INI_EQUALS;    /* or `my_format.delimiter_symbol = 
 my_format.case_sensitive = NO;
 my_format.semicolon_marker = INI_DISABLED_OR_COMMENT;
 my_format.hash_marker = INI_DISABLED_OR_COMMENT;
+my_format.section_paths = INI_ABSOLUTE_AND_RELATIVE;
 my_format.multiline_nodes = INI_MULTILINE_EVERYWHERE;
 my_format.no_single_quotes = NO;
 my_format.no_double_quotes = NO;
@@ -502,9 +503,10 @@ IniFormat my_format = {
     .semicolon_marker = INI_IGNORE,
     .hash_marker = INI_IS_NOT_A_MARKER,
     .multiline_nodes = INI_NO_MULTILINE,
+    .section_paths = INI_ABSOLUTE_ONLY,
     .no_single_quotes = NO,
     .no_double_quotes = NO,
-    .no_spaces_in_names = YES,
+    .no_spaces_in_names = NO,
     .implicit_is_not_empty = NO,
     .do_not_collapse_values = NO,
     .preserve_empty_quotes = NO,
@@ -514,12 +516,12 @@ IniFormat my_format = {
 
 IniFormatNum my_format_num = ini_fton(my_format);
 
-printf("Format No. %d\n", my_format_num); // "Format No. 81469"
+printf("Format No. %d\n", my_format_num); // "Format No. 56893"
 </code></pre>
 
-<p>The function <code>ini_fton()</code> tells us that this format is univocally the format No. 81469. The function <code>ini_ntof()</code> gives us then a shortcut to construct the very same format using its format number. Hence, the code above corresponds to:</p>
+<p>The function <code>ini_fton()</code> tells us that this format is univocally the format No. 56893. The function <code>ini_ntof()</code> gives us then a shortcut to construct the very same format using its format number. Hence, the code above corresponds to:</p>
 
-<pre><code class="{.c}">IniFormat my_format = ini_ntof(81469);
+<pre><code class="{.c}">IniFormat my_format = ini_ntof(56893);
 </code></pre>
 
 <p><em>Please be aware that the same INI format might have different format numbers in different versions of this library.</em></p>
@@ -535,10 +537,10 @@ printf("Format No. %d\n", my_format_num); // "Format No. 81469"
 <p>The output strings dispatched by <strong>libconfini</strong> will follow some formatting rules depending on their role within the INI file. First, the multi-line sequences will be unescaped, then</p>
 
 <ul>
-<li><strong>Section paths</strong> will be rendered according to ECMAScript <code>section_name.replace(/\.*\s*$|(?:\s*(\.))+\s*|^\s+/g, "$1").replace(/\s+/g, " ")</code> &ndash; within single or double quotes, if active, the text will be rendered verbatim</li>
-<li><strong>Key names</strong> will be rendered according to ECMAScript <code>key_name.replace(/^[\n\r]\s*|\s+/g, " ")</code> &ndash; within single or double quotes, if active, the text will be rendered verbatim</li>
-<li><strong>Values</strong>, if <code>format.do_not_collapse_values</code> is active, will only be cleaned of spaces at the beginning and at the end, otherwise, will be rendered through the same algorithm used for key names (with the difference that, if <code>format.preserve_empty_quotes</code> is set to <code>1</code>, empty quotes surrounded by spaces will be preserved).</li>
-<li><strong>Comments</strong>: if multi-line, ECMAScript <code>comment_string.replace(/(^|\n\r?|\r\n?)[ \t\v\f]*[#;]+/g, "$1")</code>; otherwise, ECMAScript <code>comment_string.replace(/^[ \t\v\f]*[#;]+/, "")</code>.</li>
+<li><strong>Key names</strong> will be rendered according to ECMAScript <code>key_name.replace(/^[\n\r]\s*|\s+/g, " ")</code> &ndash; within single or double quotes, if active, the text will be rendered verbatim.</li>
+<li><strong>Section paths</strong>, if format supports nesting, will be rendered according to ECMAScript <code>section_name.replace(/\.*\s*$|(?:\s*(\.))+\s*|^\s+/g, "$1").replace(/\s+/g, " ")</code> &ndash; within single or double quotes, if active, the text will be rendered verbatim &ndash; otherwise, will be rendered through the same algorithm used for key names.</li>
+<li><strong>Values</strong>, if <code>format.do_not_collapse_values</code> is active, will only be cleaned of spaces at the beginning and at the end; otherwise will be rendered through the same algorithm used for key names (with the difference that, if <code>format.preserve_empty_quotes</code> is set to <code>1</code>, empty quotes surrounded by spaces will be preserved).</li>
+<li><strong>Comments</strong>, in multi-line formats, will be rendered according to ECMAScript <code>comment_string.replace(/(^|\n\r?|\r\n?)[ \t\v\f]*[#;]+/g, "$1")</code>; elsewhere, according to ECMAScript <code>comment_string.replace(/^[ \t\v\f]*[#;]+/, "")</code>.</li>
 <li><strong>Unknown nodes</strong> will be rendered verbatim.</li>
 </ul>
 
@@ -1090,7 +1092,7 @@ NODE #4 - TYPE: 4, DATA: 'now=Sunday April 3rd, 2016', VALUE: ''
 
 <ul>
 <li><code>IniFormat::no_spaces_in_names</code> &ndash; If your INI file has only comments containing more than one word and you are sure that key and section names cannot contain internal white spaces, you can set this property to <code>TRUE</code> to enhance the disambiguation.</li>
-<li><code>IniFormat::disabled_can_be_implicit</code> &ndash; This property, if set to <code>FALSE</code>, forces all comments that do not contain a key-value delimiter to never be considered as disabled entries. Despite not having an impact on our example, it has a big impact on the disambiguation algorithm used by <strong>libconfini</strong>. Its value in <code>INI_DEFAULT_FORMAT</code> is set to <code>FALSE</code>.</li>
+<li><code>IniFormat::disabled_can_be_implicit</code> &ndash; This property, if set to <code>FALSE</code>, forces all comments that do not contain a key-value delimiter to be never considered as disabled entries. Despite not having an impact on our example, it has a big impact on the disambiguation algorithm used by <strong>libconfini</strong>. Its value in <code>INI_DEFAULT_FORMAT</code> is set to <code>FALSE</code>.</li>
 </ul>
 
 
@@ -1099,7 +1101,7 @@ NODE #4 - TYPE: 4, DATA: 'now=Sunday April 3rd, 2016', VALUE: ''
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'>Stefano Gioffr&eacute;</li>
-    <li class='tc'>April 2018</li>
+    <li class='tc'>May 2018</li>
     <li class='tr'>libconfini(3)</li>
   </ol>
 

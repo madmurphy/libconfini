@@ -2,9 +2,12 @@ NEWS
 ====
 
 
-## 1.5.0 -- 2018-04-22
+## 1.5.2 -- 2018-05-03
 
-Changes:
+* Added `IniFormat::section_paths` option to the `IniFormat` bitfield
+
+
+## 1.5.0 -- 2018-04-22
 
 * Added `IniFormat::preserve_empty_quotes` option to the `IniFormat` bitfield
 * Function `ini_string_parse()` has been created

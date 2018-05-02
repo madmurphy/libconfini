@@ -84,6 +84,8 @@ Data Fields</h2></td></tr>
 <tr class="separator:aab0c2bf1e89593bbbfc9ac5fc5f6f552"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d9984334335612830eef223e0adc913"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#a4d9984334335612830eef223e0adc913">hash_marker</a>: 2</td></tr>
 <tr class="separator:a4d9984334335612830eef223e0adc913"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3168fd8d019de9a2f648a1805718b310"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#a3168fd8d019de9a2f648a1805718b310">section_paths</a>: 2</td></tr>
+<tr class="separator:a3168fd8d019de9a2f648a1805718b310"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a4a1d116d66bad0c61d9876bf9f87ee"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#a8a4a1d116d66bad0c61d9876bf9f87ee">multiline_nodes</a>: 2</td></tr>
 <tr class="separator:a8a4a1d116d66bad0c61d9876bf9f87ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2fe0e57e8a802f828bc12a6462438e38"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#a2fe0e57e8a802f828bc12a6462438e38">no_single_quotes</a>: 1</td></tr>
@@ -107,10 +109,9 @@ Data Fields</h2></td></tr>
 <div class="textblock"><p>24-bit bitfield representing a unique format of an INI file (INI dialect) &ndash; <code>sizeof(IniFormat)</code> should be <code>3</code> </p>
 <p>Structure of the bitfield:</p>
 <ul>
-<li>Bits 1-17: INI syntax</li>
-<li>Bits 18-20: INI semantics</li>
-<li>Bits 21-22: human syntax (disabled entries)</li>
-<li>Bits 23-24: not used </li>
+<li>Bits 1-19: INI syntax</li>
+<li>Bits 20-22: INI semantics</li>
+<li>Bits 23-24: Human syntax (disabled entries) </li>
 </ul>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="a50f562eda0d26ed7e0d3c57afeb46d2d"></a>
@@ -274,7 +275,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to <code>1</code>, key and section names containing spaces will be rendered as <code><a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461baffa9e27deb46c0e436bc75329cc5f7a6">INI_UNKNOWN</a></code>. Note that setting <code><a class="el" href="structIniFormat.html#a6d9981301f5a16d73e2c38cb80f7f962">IniFormat::delimiter_symbol</a></code> to <code>INI_ANY_SPACE</code> will not automatically set this option to <code>1</code> (spaces will still be allowed in section names). </p>
+<p>If set to <code>1</code>, key and section names containing spaces (even within quotes) will be rendered as <code><a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461baffa9e27deb46c0e436bc75329cc5f7a6">INI_UNKNOWN</a></code>. Note that setting <code><a class="el" href="structIniFormat.html#a6d9981301f5a16d73e2c38cb80f7f962">IniFormat::delimiter_symbol</a></code> to <code>INI_ANY_SPACE</code> will not automatically set this option to <code>1</code> (spaces will still be allowed in section names). </p>
 
 </div>
 </div>
@@ -290,6 +291,21 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>If set to <code>1</code> and if single/double quotes are metacharacters ensures that, within values, empty strings enclosed between quotes (<code>""</code> or <code>''</code>) will not be collapsed together with the spaces that surround them. This option is useful for values containing space-delimited arrays in order to preserve their empty members &ndash; as in, for instance: <code>coordinates = "" ""</code>. Note that, in section and key names, empty strings enclosed between quotes are <em>always</em> collapsed together with their surrounding spaces. </p>
+
+</div>
+</div>
+<a id="a3168fd8d019de9a2f648a1805718b310"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3168fd8d019de9a2f648a1805718b310">&#9670;&nbsp;</a></span>section_paths</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IniFormat::section_paths</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Defines whether and how the format supports sections (use enum <code><a class="el" href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134" title="Possible values of IniFormat::section_paths ">IniSectionPaths</a></code> for this) </p>
 
 </div>
 </div>

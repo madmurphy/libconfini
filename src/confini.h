@@ -1,3 +1,5 @@
+/*	-*- Mode: C; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*-	*/
+
 /**
 
 	@file		confini.h
@@ -21,8 +23,7 @@
 
 #define _LIBCONFINI_INIFORMAT_DECLARATION_(SIZE, PROPERTY, DEFAULT) unsigned char PROPERTY:SIZE;
 #define _LIBCONFINI_INIFORMAT_ASSIGNEMENT_(SIZE, PROPERTY, DEFAULT) DEFAULT,
-#define _LIBCONFINI_INIFORMAT_UNUSED_ unsigned char _LIBCONFINI_RESERVED_:2;
-#define _LIBCONFINI_INIFORMAT_STRUCT_ struct IniFormat { _LIBCONFINI_INIFORMAT_AS_(_LIBCONFINI_INIFORMAT_DECLARATION_) _LIBCONFINI_INIFORMAT_UNUSED_ }
+#define _LIBCONFINI_INIFORMAT_STRUCT_ struct IniFormat { _LIBCONFINI_INIFORMAT_AS_(_LIBCONFINI_INIFORMAT_DECLARATION_) }
 #define _LIBCONFINI_DEFAULT_FORMAT_ { _LIBCONFINI_INIFORMAT_AS_(_LIBCONFINI_INIFORMAT_ASSIGNEMENT_) }
 
 
@@ -30,26 +31,27 @@
 /* PUBLIC MACROS */
 
 
-#define _LIBCONFINI_INIFORMAT_AS_(______)                                  /*-*\
+#define _LIBCONFINI_INIFORMAT_AS_(______)                                   /*-*\
 
-    ______(    BITS    NAME                       DEFAULT VALUE            )/--/
-                                                                           /-*/\
-    ______(    7,      delimiter_symbol,          INI_EQUALS               )   \
-    ______(    1,      case_sensitive,            0                        )/*-/
-                                                                           /-*/\
-    ______(    2,      semicolon_marker,          INI_DISABLED_OR_COMMENT  )   \
-    ______(    2,      hash_marker,               INI_DISABLED_OR_COMMENT  )   \
-    ______(    2,      multiline_nodes,           INI_MULTILINE_EVERYWHERE )   \
-    ______(    1,      no_single_quotes,          0                        )   \
-    ______(    1,      no_double_quotes,          0                        )/*-/
-                                                                           /-*/\
-    ______(    1,      no_spaces_in_names,        0                        )   \
-    ______(    1,      implicit_is_not_empty,     0                        )   \
-    ______(    1,      do_not_collapse_values,    0                        )   \
-    ______(    1,      preserve_empty_quotes,     0                        )   \
-    ______(    1,      no_disabled_after_space,   0                        )   \
-    ______(    1,      disabled_can_be_implicit,  0                        )/*-/
-                                                                           /-*/
+    ______(    BITS    NAME                       DEFAULT VALUE             )/--/
+                                                                            /-*/\
+    ______(    7,      delimiter_symbol,          INI_EQUALS                )   \
+    ______(    1,      case_sensitive,            0                         )/*-/
+                                                                            /-*/\
+    ______(    2,      semicolon_marker,          INI_DISABLED_OR_COMMENT   )   \
+    ______(    2,      hash_marker,               INI_DISABLED_OR_COMMENT   )   \
+    ______(    2,      section_paths,             INI_ABSOLUTE_AND_RELATIVE )   \
+    ______(    2,      multiline_nodes,           INI_MULTILINE_EVERYWHERE  )/*-/
+                                                                            /-*/\
+    ______(    1,      no_single_quotes,          0                         )   \
+    ______(    1,      no_double_quotes,          0                         )   \
+    ______(    1,      no_spaces_in_names,        0                         )   \
+    ______(    1,      implicit_is_not_empty,     0                         )   \
+    ______(    1,      do_not_collapse_values,    0                         )   \
+    ______(    1,      preserve_empty_quotes,     0                         )   \
+    ______(    1,      no_disabled_after_space,   0                         )   \
+    ______(    1,      disabled_can_be_implicit,  0                         )/*-/
+                                                                            /-*/
 
 
 
@@ -250,13 +252,6 @@ enum ConfiniInterruptNo {
 	CONFINI_EFEOOR = 7	/**< The loop is longer than expected (out of range) **/
 };
 
-/** @brief	Most used delimiters (but a delimiter can also be any other ASCII character) **/
-enum IniDelimiters {
-	INI_ANY_SPACE = 0,	/**< In multi-line INIs: `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`, in non-multi-line INIs: `/[\t \v\f])+/` **/
-	INI_EQUALS = '=',	/**< `=` **/
-	INI_COLON = ':'		/**< `:` **/
-};
-
 /** @brief	INI nodes types **/
 enum IniNodeType {
 	INI_UNKNOWN = 0,	/**< Node impossible to parse **/
@@ -269,12 +264,27 @@ enum IniNodeType {
 	INI_DISABLED_SECTION = 7
 };
 
+/** @brief	Most used delimiters (but a delimiter can also be any other ASCII character) **/
+enum IniDelimiters {
+	INI_ANY_SPACE = 0,	/**< In multi-line INIs: `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`, in non-multi-line INIs: `/[\t \v\f])+/` **/
+	INI_EQUALS = '=',	/**< `=` **/
+	INI_COLON = ':'		/**< `:` **/
+};
+
 /** @brief	Possible values of `IniFormat::semicolon_marker` and `IniFormat::hash_marker` (i.e., meaning of `/\s+[#;]/` in respect to a format) **/
 enum IniCommentMarker {
 	INI_DISABLED_OR_COMMENT = 0,	/**< This marker opens a comment or a disabled entry **/
 	INI_ONLY_COMMENT = 1,		/**< This marker opens a comment **/
 	INI_IGNORE = 2,			/**< This marker opens a comment that must be ignored **/
 	INI_IS_NOT_A_MARKER = 3		/**< This is a normal character **/
+};
+
+/** @brief	Possible values of `IniFormat::section_paths` **/
+enum IniSectionPaths {
+	INI_ABSOLUTE_AND_RELATIVE = 0,	/**< Section paths starting with a dot express nesting to the current parent, to root otherwise **/
+	INI_ABSOLUTE_ONLY = 1,		/**< Section paths starting with a dot will be simply cleaned of their leading dot and appended to root **/
+	INI_ONE_LEVEL_ONLY = 2,		/**< The format supports sections, but the dot does not express nesting and is not a meta-character **/
+	INI_NO_SECTIONS = 3		/**< The format does *not* support sections -- `/\[[^\]]*\]/g` will be treated as keys! **/
 };
 
 /** @brief	Possible values of IniFormat::multiline_nodes **/
@@ -304,7 +314,6 @@ extern size_t INI_GLOBAL_IMPLICIT_V_LEN;
 
 #undef _LIBCONFINI_INIFORMAT_DECLARATION_
 #undef _LIBCONFINI_INIFORMAT_ASSIGNEMENT_
-#undef _LIBCONFINI_INIFORMAT_UNUSED_
 #undef _LIBCONFINI_INIFORMAT_STRUCT_
 #undef _LIBCONFINI_DEFAULT_FORMAT_
 

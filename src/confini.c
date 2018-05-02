@@ -23,32 +23,34 @@
 
 	Structure of the bitfield:
 
-	- Bits 1-17: INI syntax
-	- Bits 18-20: INI semantics
-	- Bits 21-22: human syntax (disabled entries)
-	- Bits 23-24: not used
+	- Bits 1-19: INI syntax
+	- Bits 20-22: INI semantics
+	- Bits 23-24: Human syntax (disabled entries)
 
 	@property	IniFormat::delimiter_symbol
 					The symbol to be used as delimiter (only ASCII allowed); if set
 					to `0`, any space is delimiter
 					(`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
+	@property	IniFormat::case_sensitive
+					If set to `1`, string comparisons will always be performed
+					case-sensitive
 	@property	IniFormat::semicolon_marker
 					The rule of the semicolon character (use enum
 					`#IniCommentMarker` for this)
 	@property	IniFormat::hash_marker
 					The rule of the hash character (use enum `#IniCommentMarker` for
 					this)
+	@property	IniFormat::section_paths
+					Defines whether and how the format supports sections (use enum
+					`#IniSectionPaths` for this)
 	@property	IniFormat::multiline_nodes
 					Defines which class of entries are allowed to be multi-line (use
 					enum `#IniMultiline` for this)
-	@property	IniFormat::case_sensitive
-					If set to `1`, string comparisons will always be performed
-					case-sensitive
 	@property	IniFormat::no_spaces_in_names
-					If set to `1`, key and section names containing spaces will be
-					rendered as `#INI_UNKNOWN`. Note that setting
-					`IniFormat::delimiter_symbol` to `INI_ANY_SPACE` will not
-					automatically set this option to `1` (spaces will still be
+					If set to `1`, key and section names containing spaces (even
+					within quotes) will be rendered as `#INI_UNKNOWN`. Note that
+					setting `IniFormat::delimiter_symbol` to `INI_ANY_SPACE` will
+					not automatically set this option to `1` (spaces will still be
 					allowed in section names).
 	@property	IniFormat::no_single_quotes
 					If set to `1`, the single-quote character (`'`) will be
@@ -277,61 +279,6 @@ static inline size_t ltrim_h (char * const lt_s, const size_t start_from, const 
 
 /**
 
-	@brief			Unescaped hard left trim (left trim of `/^(\s+|\\[\n\r])+/`)
-					-- **does** change the buffer
-	@param			ult_s			The target string
-	@param			start_from		The offset where to start the left trim
-	@return			The offset of the first non-space character
-
-**/
-static inline size_t ultrim_h (char * const ult_s, const size_t start_from) {
-
-	register uint8_t abcd = 10;
-	size_t ult_i = start_from;
-
-	/*
-
-	Mask `abcd` (5 bits used):
-
-		FLAG_1		This is any space (`/[\t \v\f\n\r]/`)
-		FLAG_2		This is not a backslash
-					and previous was not a backslash
-		FLAG_4		This is a backslash OR this is a new line and previous was a
-					backslash
-		FLAG_8		Continue the loop
-
-	*/
-
-	for (; abcd & 8; ult_i++) {
-
-		abcd	=	(abcd & 2) && is_some_space(ult_s[ult_i], _LIBCONFINI_NO_EOL_) ? 11
-					: ult_s[ult_i] == _LIBCONFINI_LF_ || ult_s[ult_i] == _LIBCONFINI_CR_ ? abcd | 3
-					: (abcd & 2) && ult_s[ult_i] == _LIBCONFINI_BACKSLASH_ ? 12
-					: abcd & 2;
-
-
-		if (abcd & 1) {
-
-			ult_s[ult_i] = '\0';
-
-		}
-
-		if (abcd == 15) {
-
-			ult_s[ult_i - 1] = '\0';
-			abcd &= 11;
-
-		}
-
-	}
-
-	return abcd & 2 ? ult_i - 1 : ult_i - 2;
-
-}
-
-
-/**
-
 	@brief			Soft right trim -- does **not** change the buffer
 	@param			rt_s			The target string
 	@param			length			The length of the string
@@ -493,6 +440,82 @@ static inline _LIBCONFINI_BOOL_ is_forget_char (const char chr, const IniFormat 
 			) || (
 				format.hash_marker == INI_IGNORE && chr == _LIBCONFINI_HASH_
 			);
+
+}
+
+
+/**
+
+	@brief			Unparsed hard left trim (left trim of
+					`/^(\s+|\\[\n\r]|''|"")+/`) -- **does** change the buffer
+	@param			ult_s			The target string
+	@param			start_from		The offset where to start the left trim
+	@return			The offset of the first non-space character
+
+**/
+static inline size_t qultrim_h (char * const ult_s, const size_t start_from, const IniFormat format) {
+
+	/*
+
+	Mask `abcd` (8 bits used):
+
+		FLAG_1		Single quotes are not metacharacters (const)
+		FLAG_2		Double quotes are not metacharacters (const)
+		FLAG_4		Unescaped single quotes are odd right now
+		FLAG_8		Unescaped double quotes are odd right now
+		FLAG_16		We are in an odd sequence of backslashes
+		FLAG_32		Erase previous character
+		FLAG_64		Erase this character
+		FLAG_128	Continue the loop
+
+	*/
+
+	register uint8_t abcd = (format.no_double_quotes ? 130 : 128) | format.no_single_quotes;
+	size_t ult_i = start_from;
+
+	for (; abcd & 128; ult_i++) {
+
+		abcd	= 	!(abcd & 25) && ult_s[ult_i] == _LIBCONFINI_SINGLE_QUOTES_ ?
+						(
+							abcd & 4 ?
+								(abcd & 235) | 96
+							:
+								(abcd & 143) | 4
+						)
+					: !(abcd & 22) && ult_s[ult_i] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+						(
+							abcd & 8 ?
+								(abcd & 231) | 96
+							:
+								(abcd & 159) | 8
+						)
+					: ult_s[ult_i] == _LIBCONFINI_BACKSLASH_ ?
+						(abcd & 159) ^ 16
+					: !(abcd & 28) && is_some_space(ult_s[ult_i], _LIBCONFINI_NO_EOL_) ?
+						(abcd & 207) | 64
+					: (abcd & 12) || (ult_s[ult_i] != _LIBCONFINI_LF_ && ult_s[ult_i] != _LIBCONFINI_CR_) ?
+						abcd & 31
+					: abcd & 16 ?
+						(abcd & 239) | 96
+					:
+						abcd | 64;
+
+
+		if (abcd & 32) {
+
+			ult_s[ult_i - 1] = '\0';
+
+		}
+
+		if (abcd & 64) {
+
+			ult_s[ult_i] = '\0';
+
+		}
+
+	}
+
+	return abcd & 28 ? ult_i - 2 : ult_i - 1;
 
 }
 
@@ -991,7 +1014,7 @@ static uint8_t get_type_as_active (
 	register uint16_t abcd;
 	size_t idx;
 
-	if (*nodestr == _LIBCONFINI_OPEN_SECTION_) {
+	if (format.section_paths != INI_NO_SECTIONS && *nodestr == _LIBCONFINI_OPEN_SECTION_) {
 
 		if (format.no_spaces_in_names) {
 
@@ -1000,62 +1023,86 @@ static uint8_t get_type_as_active (
 				Search of the CLOSE_SECTION character and possible spaces in
 				names -- i.e., ECMAScript `/[^\.\s]\s+[^\.\s]/g.test(nodestr)`.
 				The algorithm is made more complex by the fact that LF and CR
-				characters can still be escaped at this stage (C-string
-				fragments `"\\\n"`, `"\\\r"`).
+				characters are still escaped at this stage.
 
 			*/
 
 			/*
 
-			Mask `abcd` (11 bits used):
+			Mask `abcd` (10 bits used):
 
-				FLAG_1		We are in an odd sequence of backslashes
-				FLAG_2		More than one backslash is here
-				FLAG_4		Single quotes are not metacharacters (const)
-				FLAG_8		Double quotes are not metacharacters (const)
-				FLAG_16		Unescaped single quotes are odd right now
-				FLAG_32		Unescaped double quotes are odd right now
-				FLAG_64		We are not around a dot
-				FLAG_128	This is a space
-				FLAG_256	This is a new line
-				FLAG_512	Section name end character found
-				FLAG_1024	Name contains spaces
+				FLAG_1		Single quotes are not metacharacters (const)
+				FLAG_2		Double quotes are not metacharacters (const)
+				FLAG_4		Only one level of nesting is allowed (const)
+				FLAG_8		Unescaped single quotes are odd right now
+				FLAG_16		Unescaped double quotes are odd right now
+				FLAG_32		We are in an odd sequence of backslashes
+				FLAG_64		This is a space
+				FLAG_128	We are inside a section name
+				FLAG_256	Continue the loop
+				FLAG_512	Section path is valid
 
 			*/
 
-			for (abcd = (format.no_double_quotes << 3) | (format.no_single_quotes << 2), idx = 1; idx < len; idx++) {
+			/* Revision #1 */
 
-				abcd	=	nodestr[idx] == _LIBCONFINI_BACKSLASH_ ?
-								(abcd | (((abcd << 1) & 2) & (~abcd & 2))) ^ 1
-							: !(abcd & 51) && nodestr[idx] == _LIBCONFINI_SUBSECTION_ ?
-								abcd & 1968
-							: !(abcd & 49) && is_some_space(nodestr[idx], _LIBCONFINI_NO_EOL_) ?
-								(abcd & 2046) | (abcd & 2 ? 192 : 128)
-							: !(abcd & 48) && (nodestr[idx] == _LIBCONFINI_LF_ || nodestr[idx] == _LIBCONFINI_CR_) ?
-								(abcd & 2046) | (abcd & 2 ? 320 : 256)
-							: !(abcd & 25) && nodestr[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
-								((abcd ^ 32) & 1649) | ((abcd & 64) && (abcd & 384) ? 1088 : 64)
-							: !(abcd & 37) && nodestr[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
-								((abcd ^ 16) & 1649) | ((abcd & 64) && (abcd & 384) ? 1088 : 64)
-							: !(abcd & 48) && nodestr[idx] == _LIBCONFINI_CLOSE_SECTION_ ?
-								(abcd & 1968) | 512
+			for (
+
+				idx = 1,
+				abcd	=	(format.section_paths == INI_ONE_LEVEL_ONLY ? 260: 256) |
+							(format.no_double_quotes << 1) |
+							format.no_single_quotes;
+
+					abcd & 256;
+
+				abcd	=	idx >= len ?
+								abcd & 767
+							: !(abcd & 42) && nodestr[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+								(abcd & 991) ^ 16
+							: !(abcd & 49) && nodestr[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
+								(abcd & 991) ^ 8
+							: nodestr[idx] == _LIBCONFINI_LF_ || nodestr[idx] == _LIBCONFINI_CR_ ?
+								(abcd & 991) | 64
+							: is_some_space(nodestr[idx], _LIBCONFINI_NO_EOL_) ?
+								(
+									abcd & 32 ?
+										(abcd & 767) | 64
+									:
+										abcd | 64
+								)
+							: !(abcd & 28) && nodestr[idx] == _LIBCONFINI_SUBSECTION_ ?
+								(
+									~abcd & 224 ?
+										abcd & 831
+									:
+										abcd & 767
+								)
+							: !(abcd & 24) && nodestr[idx] == _LIBCONFINI_CLOSE_SECTION_ ?
+								(
+									~abcd & 224 ?
+										(abcd & 671) | 512
+									:
+										abcd & 767
+								)
+							: nodestr[idx] != _LIBCONFINI_BACKSLASH_ ?
+								(
+									~abcd & 192 ?
+										(abcd & 927) | 128
+									:
+										(abcd & 671) | 128
+								)
+							: !(abcd & 32) ?
+								abcd | 32
+							: abcd & 64 ?
+								(abcd & 735) | 128
 							:
-								(abcd & 1648) | ((abcd & 64) && (abcd & 384) ? 1088 : 64);
+								(abcd & 991) | 128,
 
+				idx++
 
-				if (abcd & 1024) {
+			);
 
-					return INI_UNKNOWN;
-
-				}
-
-				if (abcd & 512) {
-
-					return INI_SECTION;
-
-				}
-
-			}
+			return abcd & 512 ? INI_SECTION : INI_UNKNOWN;
 
 		} else {
 
@@ -1384,7 +1431,7 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 
 			if (segment[idx] == _LIBCONFINI_LF_ || segment[idx] == _LIBCONFINI_CR_) {
 
-				search_at = ultrim_h(segment, idx);
+				search_at = qultrim_h(segment, idx, format);
 				goto search_for_cuts;
 
 			}
@@ -1518,7 +1565,7 @@ int load_ini_file (
 			if (format.multiline_nodes == INI_NO_MULTILINE || __ISNT_ESCAPED__) {
 
 				cache[idx - __SHIFT_LEN__] = '\0';
-				__N_MEMBERS__ += further_cuts(cache + ultrim_h(cache, node_at), format);
+				__N_MEMBERS__ += further_cuts(cache + qultrim_h(cache, node_at, format), format);
 				node_at = idx - __SHIFT_LEN__ + 1;
 
 			} else if (cache[idx + 1] == _LIBCONFINI_SPACES_[__EOL_ID__ ^ 1]) {
@@ -1555,7 +1602,7 @@ int load_ini_file (
 
 	}
 
-	__N_MEMBERS__ += further_cuts(cache + ultrim_h(cache, node_at), format);
+	__N_MEMBERS__ += further_cuts(cache + qultrim_h(cache, node_at, format), format);
 
 	IniStatistics this_doc = {
 		.format = format,
@@ -1834,27 +1881,34 @@ int load_ini_file (
 
 				}
 
-				this_disp.d_len = sanitize_section_path(this_disp.data, format);
+				this_disp.d_len		=	format.section_paths == INI_ONE_LEVEL_ONLY ?
+											sanitize_key_name(this_disp.data, format)
+										:
+											sanitize_section_path(this_disp.data, format);
 
-				if (__CURR_PARENT_LEN__ && this_disp.d_len != 1 && *this_disp.data == _LIBCONFINI_SUBSECTION_) {
 
-					subparent_str = this_disp.data;
+				if (format.section_paths == INI_ONE_LEVEL_ONLY || *this_disp.data != _LIBCONFINI_SUBSECTION_) {
 
-				} else if (!__CURR_PARENT_LEN__ && this_disp.d_len != 1 && *this_disp.data == _LIBCONFINI_SUBSECTION_) {
+					/* Append to root (it is an absolute path) */
+					curr_parent_str = this_disp.data;
+					__CURR_PARENT_LEN__ = this_disp.d_len;
+					subparent_str = cache + idx;
+					this_disp.append_to = subparent_str;
+					this_disp.at_len = 0;
 
+				} else if (format.section_paths == INI_ABSOLUTE_ONLY || !__CURR_PARENT_LEN__) {
+
+					/* Append to root and remove the leading dot (it is a relative path, but parent is root or relative paths are not allowed) */
 					curr_parent_str = ++this_disp.data;
 					__CURR_PARENT_LEN__ = --this_disp.d_len;
 					subparent_str = cache + idx;
 					this_disp.append_to = subparent_str;
 					this_disp.at_len = 0;
 
-				} else if (this_disp.d_len != 1 || *this_disp.data != _LIBCONFINI_SUBSECTION_) {
+				} else if (this_disp.d_len != 1) {
 
-					curr_parent_str = this_disp.data;
-					__CURR_PARENT_LEN__ = this_disp.d_len;
-					subparent_str = cache + idx;
-					this_disp.append_to = subparent_str;
-					this_disp.at_len = 0;
+					/* Append to the current parent (it is a relative path and parent is not root) */
+					subparent_str = this_disp.data;
 
 				}
 

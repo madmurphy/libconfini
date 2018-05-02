@@ -131,12 +131,6 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a4b42cb63e48154fb799599eccd25ce29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error codes &ndash; the actual values of each constant should be considered opaque.  <a href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29">More...</a><br /></td></tr>
 <tr class="separator:a4b42cb63e48154fb799599eccd25ce29"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad342637c37d95454c9392a8cc73bced8"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8">IniDelimiters</a> { <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd">INI_ANY_SPACE</a> = 0, 
-<a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f">INI_EQUALS</a> = '=', 
-<a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8a19ee5c58c00443deea6b1e27d6e4c5fb">INI_COLON</a> = ':'
- }</td></tr>
-<tr class="memdesc:ad342637c37d95454c9392a8cc73bced8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Most used delimiters (but a delimiter can also be any other ASCII character)  <a href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8">More...</a><br /></td></tr>
-<tr class="separator:ad342637c37d95454c9392a8cc73bced8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e394db479f56eaa830ade09c907461b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461b">IniNodeType</a> { <br />
 &#160;&#160;<a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461baffa9e27deb46c0e436bc75329cc5f7a6">INI_UNKNOWN</a> = 0, 
 <a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba918d23a1b37bc9f91a79d0d11c221dc9">INI_VALUE</a> = 1, 
@@ -151,6 +145,12 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a4e394db479f56eaa830ade09c907461b"><td class="mdescLeft">&#160;</td><td class="mdescRight">INI nodes types.  <a href="confini_8h.html#a4e394db479f56eaa830ade09c907461b">More...</a><br /></td></tr>
 <tr class="separator:a4e394db479f56eaa830ade09c907461b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad342637c37d95454c9392a8cc73bced8"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8">IniDelimiters</a> { <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd">INI_ANY_SPACE</a> = 0, 
+<a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f">INI_EQUALS</a> = '=', 
+<a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8a19ee5c58c00443deea6b1e27d6e4c5fb">INI_COLON</a> = ':'
+ }</td></tr>
+<tr class="memdesc:ad342637c37d95454c9392a8cc73bced8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Most used delimiters (but a delimiter can also be any other ASCII character)  <a href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8">More...</a><br /></td></tr>
+<tr class="separator:ad342637c37d95454c9392a8cc73bced8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f7ff029dfae5a0e3bb5bc08f887bdcd"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcd">IniCommentMarker</a> { <a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcda468cf45c03530c48597e4ed6383e74c5">INI_DISABLED_OR_COMMENT</a> = 0, 
 <a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcdab8a602bb219c0f0ce8ac35fb9225fc3d">INI_ONLY_COMMENT</a> = 1, 
 <a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcda37cb73b9bfc8bc6cc9d887108b4168bd">INI_IGNORE</a> = 2, 
@@ -158,6 +158,13 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a6f7ff029dfae5a0e3bb5bc08f887bdcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Possible values of <code><a class="el" href="structIniFormat.html#aab0c2bf1e89593bbbfc9ac5fc5f6f552">IniFormat::semicolon_marker</a></code> and <code><a class="el" href="structIniFormat.html#a4d9984334335612830eef223e0adc913">IniFormat::hash_marker</a></code> (i.e., meaning of <code>/\s+[#;]/</code> in respect to a format)  <a href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcd">More...</a><br /></td></tr>
 <tr class="separator:a6f7ff029dfae5a0e3bb5bc08f887bdcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b01f84229fe403d5b061378ebe86134"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134">IniSectionPaths</a> { <a class="el" href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134a369aca51c7228abeae22d232a7fbe1f9">INI_ABSOLUTE_AND_RELATIVE</a> = 0, 
+<a class="el" href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134a1126b82b479382f2d3dada130c08962f">INI_ABSOLUTE_ONLY</a> = 1, 
+<a class="el" href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134a19bed9466377f57a5b3bb1ff3f484033">INI_ONE_LEVEL_ONLY</a> = 2, 
+<a class="el" href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134a950b824b44a557cb26647b9f2f922d1c">INI_NO_SECTIONS</a> = 3
+ }</td></tr>
+<tr class="memdesc:a4b01f84229fe403d5b061378ebe86134"><td class="mdescLeft">&#160;</td><td class="mdescRight">Possible values of <code><a class="el" href="structIniFormat.html#a3168fd8d019de9a2f648a1805718b310">IniFormat::section_paths</a></code>  <a href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134">More...</a><br /></td></tr>
+<tr class="separator:a4b01f84229fe403d5b061378ebe86134"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac670c2fdf19ae6eee3de83dd183ae55f"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55f">IniMultiline</a> { <a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa32940b5375486473634a3e06043b1789">INI_MULTILINE_EVERYWHERE</a> = 0, 
 <a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa3d9f1dec2fc277d90bf58e6826bf1759">INI_BUT_COMMENTS</a> = 1, 
 <a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fae4ea119991a19bb4d5639be5e84c9e1f">INI_BUT_DISABLED_AND_COMMENTS</a> = 2, 
@@ -234,7 +241,7 @@ Variables</h2></td></tr>
 <tr class="memitem:a178704d02ede6101f757bbd37e5bd697"><td class="memItemLeft" align="right" valign="top">double(*const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a178704d02ede6101f757bbd37e5bd697">ini_get_float</a> )(const char *ini_string)</td></tr>
 <tr class="memdesc:a178704d02ede6101f757bbd37e5bd697"><td class="mdescLeft">&#160;</td><td class="mdescRight">Link to <a href="http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atof"><code>atof()</code></a>  <a href="#a178704d02ede6101f757bbd37e5bd697">More...</a><br /></td></tr>
 <tr class="separator:a178704d02ede6101f757bbd37e5bd697"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aafa50d590c715f37b74fa5938a35a56f"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a> = { <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f">INI_EQUALS</a> , 0 , <a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcda468cf45c03530c48597e4ed6383e74c5">INI_DISABLED_OR_COMMENT</a> , <a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcda468cf45c03530c48597e4ed6383e74c5">INI_DISABLED_OR_COMMENT</a> , <a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa32940b5375486473634a3e06043b1789">INI_MULTILINE_EVERYWHERE</a> , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }</td></tr>
+<tr class="memitem:aafa50d590c715f37b74fa5938a35a56f"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a> = { <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f">INI_EQUALS</a> , 0 , <a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcda468cf45c03530c48597e4ed6383e74c5">INI_DISABLED_OR_COMMENT</a> , <a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcda468cf45c03530c48597e4ed6383e74c5">INI_DISABLED_OR_COMMENT</a> , <a class="el" href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134a369aca51c7228abeae22d232a7fbe1f9">INI_ABSOLUTE_AND_RELATIVE</a> , <a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa32940b5375486473634a3e06043b1789">INI_MULTILINE_EVERYWHERE</a> , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }</td></tr>
 <tr class="memdesc:aafa50d590c715f37b74fa5938a35a56f"><td class="mdescLeft">&#160;</td><td class="mdescRight">A model format.  <a href="#aafa50d590c715f37b74fa5938a35a56f">More...</a><br /></td></tr>
 <tr class="separator:aafa50d590c715f37b74fa5938a35a56f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af55e2631f0e3f941175a9b406b66ab06"><td class="memItemLeft" align="right" valign="top">_Bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#af55e2631f0e3f941175a9b406b66ab06">INI_GLOBAL_LOWERCASE_MODE</a></td></tr>
@@ -466,6 +473,32 @@ Variables</h2></td></tr>
 <tr><td class="fieldname"><a id="a4e394db479f56eaa830ade09c907461ba92f6493ac98e3743c82d05f20e20c6cc"></a>INI_INLINE_COMMENT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a4e394db479f56eaa830ade09c907461ba9b68a1fa247c1b1ae3fc2ce615359c7b"></a>INI_DISABLED_KEY&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a4e394db479f56eaa830ade09c907461ba38e952e2092e426a29e6618698772bff"></a>INI_DISABLED_SECTION&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
+<a id="a4b01f84229fe403d5b061378ebe86134"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b01f84229fe403d5b061378ebe86134">&#9670;&nbsp;</a></span>IniSectionPaths</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134">IniSectionPaths</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Possible values of <code><a class="el" href="structIniFormat.html#a3168fd8d019de9a2f648a1805718b310">IniFormat::section_paths</a></code> </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a4b01f84229fe403d5b061378ebe86134a369aca51c7228abeae22d232a7fbe1f9"></a>INI_ABSOLUTE_AND_RELATIVE&#160;</td><td class="fielddoc"><p>Section paths starting with a dot express nesting to the current parent, to root otherwise </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4b01f84229fe403d5b061378ebe86134a1126b82b479382f2d3dada130c08962f"></a>INI_ABSOLUTE_ONLY&#160;</td><td class="fielddoc"><p>Section paths starting with a dot will be simply cleaned of their leading dot and appended to root </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4b01f84229fe403d5b061378ebe86134a19bed9466377f57a5b3bb1ff3f484033"></a>INI_ONE_LEVEL_ONLY&#160;</td><td class="fielddoc"><p>The format supports sections, but the dot does not express nesting and is not a meta-character </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4b01f84229fe403d5b061378ebe86134a950b824b44a557cb26647b9f2f922d1c"></a>INI_NO_SECTIONS&#160;</td><td class="fielddoc"><p>The format does <em>not</em> support sections &ndash; <code>/\[[^\]]*\]/g</code> will be treated as keys! </p>
+</td></tr>
 </table>
 
 </div>
@@ -1290,7 +1323,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="structIniFormat.html">IniFormat</a> INI_DEFAULT_FORMAT = { <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f">INI_EQUALS</a> , 0 , <a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcda468cf45c03530c48597e4ed6383e74c5">INI_DISABLED_OR_COMMENT</a> , <a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcda468cf45c03530c48597e4ed6383e74c5">INI_DISABLED_OR_COMMENT</a> , <a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa32940b5375486473634a3e06043b1789">INI_MULTILINE_EVERYWHERE</a> , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }</td>
+          <td class="memname">const <a class="el" href="structIniFormat.html">IniFormat</a> INI_DEFAULT_FORMAT = { <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f">INI_EQUALS</a> , 0 , <a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcda468cf45c03530c48597e4ed6383e74c5">INI_DISABLED_OR_COMMENT</a> , <a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcda468cf45c03530c48597e4ed6383e74c5">INI_DISABLED_OR_COMMENT</a> , <a class="el" href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134a369aca51c7228abeae22d232a7fbe1f9">INI_ABSOLUTE_AND_RELATIVE</a> , <a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa32940b5375486473634a3e06043b1789">INI_MULTILINE_EVERYWHERE</a> , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }</td>
         </tr>
       </table>
   </td>

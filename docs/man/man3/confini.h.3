@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Mon Apr 30 2018" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Thu May 3 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -62,17 +62,21 @@ src/confini.h \- libconfini header
 .br
 .RI "Error codes – the actual values of each constant should be considered opaque\&. "
 .ti -1c
-.RI "enum \fBIniDelimiters\fP { \fBINI_ANY_SPACE\fP = 0, \fBINI_EQUALS\fP = '=', \fBINI_COLON\fP = ':' }"
-.br
-.RI "Most used delimiters (but a delimiter can also be any other ASCII character) "
-.ti -1c
 .RI "enum \fBIniNodeType\fP { \fBINI_UNKNOWN\fP = 0, \fBINI_VALUE\fP = 1, \fBINI_KEY\fP = 2, \fBINI_SECTION\fP = 3, \fBINI_COMMENT\fP = 4, \fBINI_INLINE_COMMENT\fP = 5, \fBINI_DISABLED_KEY\fP = 6, \fBINI_DISABLED_SECTION\fP = 7 }"
 .br
 .RI "INI nodes types\&. "
 .ti -1c
+.RI "enum \fBIniDelimiters\fP { \fBINI_ANY_SPACE\fP = 0, \fBINI_EQUALS\fP = '=', \fBINI_COLON\fP = ':' }"
+.br
+.RI "Most used delimiters (but a delimiter can also be any other ASCII character) "
+.ti -1c
 .RI "enum \fBIniCommentMarker\fP { \fBINI_DISABLED_OR_COMMENT\fP = 0, \fBINI_ONLY_COMMENT\fP = 1, \fBINI_IGNORE\fP = 2, \fBINI_IS_NOT_A_MARKER\fP = 3 }"
 .br
 .RI "Possible values of \fC\fBIniFormat::semicolon_marker\fP\fP and \fC\fBIniFormat::hash_marker\fP\fP (i\&.e\&., meaning of \fC/\\s+[#;]/\fP in respect to a format) "
+.ti -1c
+.RI "enum \fBIniSectionPaths\fP { \fBINI_ABSOLUTE_AND_RELATIVE\fP = 0, \fBINI_ABSOLUTE_ONLY\fP = 1, \fBINI_ONE_LEVEL_ONLY\fP = 2, \fBINI_NO_SECTIONS\fP = 3 }"
+.br
+.RI "Possible values of \fC\fBIniFormat::section_paths\fP\fP "
 .ti -1c
 .RI "enum \fBIniMultiline\fP { \fBINI_MULTILINE_EVERYWHERE\fP = 0, \fBINI_BUT_COMMENTS\fP = 1, \fBINI_BUT_DISABLED_AND_COMMENTS\fP = 2, \fBINI_NO_MULTILINE\fP = 3 }"
 .br
@@ -170,7 +174,7 @@ src/confini.h \- libconfini header
 .br
 .RI "Link to \fC\fCatof()\fP\fP "
 .ti -1c
-.RI "static const \fBIniFormat\fP \fBINI_DEFAULT_FORMAT\fP = { \fBINI_EQUALS\fP , 0 , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_MULTILINE_EVERYWHERE\fP , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }"
+.RI "static const \fBIniFormat\fP \fBINI_DEFAULT_FORMAT\fP = { \fBINI_EQUALS\fP , 0 , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_ABSOLUTE_AND_RELATIVE\fP , \fBINI_MULTILINE_EVERYWHERE\fP , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }"
 .br
 .RI "A model format\&. "
 .ti -1c
@@ -343,6 +347,25 @@ Not used here (values are dispatched together with keys), but available for user
 \fB\fIINI_DISABLED_KEY \fP\fP
 .TP
 \fB\fIINI_DISABLED_SECTION \fP\fP
+.SS "enum \fBIniSectionPaths\fP"
+
+.PP
+Possible values of \fC\fBIniFormat::section_paths\fP\fP 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIINI_ABSOLUTE_AND_RELATIVE \fP\fP
+Section paths starting with a dot express nesting to the current parent, to root otherwise 
+.TP
+\fB\fIINI_ABSOLUTE_ONLY \fP\fP
+Section paths starting with a dot will be simply cleaned of their leading dot and appended to root 
+.TP
+\fB\fIINI_ONE_LEVEL_ONLY \fP\fP
+The format supports sections, but the dot does not express nesting and is not a meta-character 
+.TP
+\fB\fIINI_NO_SECTIONS \fP\fP
+The format does \fInot\fP support sections – \fC/\\[[^\\]]*\\]/g\fP will be treated as keys! 
 .SH "Function Documentation"
 .PP 
 .SS "size_t ini_array_collapse (char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
@@ -1332,7 +1355,7 @@ int main () {
  
 .SH "Variable Documentation"
 .PP 
-.SS "const \fBIniFormat\fP INI_DEFAULT_FORMAT = { \fBINI_EQUALS\fP , 0 , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_MULTILINE_EVERYWHERE\fP , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }\fC [static]\fP"
+.SS "const \fBIniFormat\fP INI_DEFAULT_FORMAT = { \fBINI_EQUALS\fP , 0 , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_ABSOLUTE_AND_RELATIVE\fP , \fBINI_MULTILINE_EVERYWHERE\fP , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }\fC [static]\fP"
 
 .PP
 A model format\&. 

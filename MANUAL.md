@@ -424,6 +424,7 @@ my_format.delimiter_symbol = INI_EQUALS;	/* or `my_format.delimiter_symbol = '='
 my_format.case_sensitive = NO;
 my_format.semicolon_marker = INI_DISABLED_OR_COMMENT;
 my_format.hash_marker = INI_DISABLED_OR_COMMENT;
+my_format.section_paths = INI_ABSOLUTE_AND_RELATIVE;
 my_format.multiline_nodes = INI_MULTILINE_EVERYWHERE;
 my_format.no_single_quotes = NO;
 my_format.no_double_quotes = NO;
@@ -452,9 +453,10 @@ IniFormat my_format = {
 	.semicolon_marker = INI_IGNORE,
 	.hash_marker = INI_IS_NOT_A_MARKER,
 	.multiline_nodes = INI_NO_MULTILINE,
+	.section_paths = INI_ABSOLUTE_ONLY,
 	.no_single_quotes = NO,
 	.no_double_quotes = NO,
-	.no_spaces_in_names = YES,
+	.no_spaces_in_names = NO,
 	.implicit_is_not_empty = NO,
 	.do_not_collapse_values = NO,
 	.preserve_empty_quotes = NO,
@@ -464,13 +466,13 @@ IniFormat my_format = {
 
 IniFormatNum my_format_num = ini_fton(my_format);
 
-printf("Format No. %d\n", my_format_num); // "Format No. 81469"
+printf("Format No. %d\n", my_format_num); // "Format No. 56893"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The function `ini_fton()` tells us that this format is univocally the format No. 81469. The function `ini_ntof()` gives us then a shortcut to construct the very same format using its format number. Hence, the code above corresponds to:
+The function `ini_fton()` tells us that this format is univocally the format No. 56893. The function `ini_ntof()` gives us then a shortcut to construct the very same format using its format number. Hence, the code above corresponds to:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-IniFormat my_format = ini_ntof(81469);
+IniFormat my_format = ini_ntof(56893);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 _Please be aware that the same INI format might have different format numbers in different versions of this library._
@@ -487,10 +489,10 @@ The information passed to `f_init()` is passed through an `IniStatistics` struct
 
 The output strings dispatched by **libconfini** will follow some formatting rules depending on their role within the INI file. First, the multi-line sequences will be unescaped, then
 
-* **Section paths** will be rendered according to ECMAScript `section_name.replace(/\.*\s*$|(?:\s*(\.))+\s*|^\s+/g, "$1").replace(/\s+/g, " ")` -- within single or double quotes, if active, the text will be rendered verbatim
-* **Key names** will be rendered according to ECMAScript `key_name.replace(/^[\n\r]\s*|\s+/g, " ")` -- within single or double quotes, if active, the text will be rendered verbatim
-* **Values**, if `format.do_not_collapse_values` is active, will only be cleaned of spaces at the beginning and at the end, otherwise, will be rendered through the same algorithm used for key names (with the difference that, if `format.preserve_empty_quotes` is set to `1`, empty quotes surrounded by spaces will be preserved).
-* **Comments**: if multi-line, ECMAScript `comment_string.replace(/(^|\n\r?|\r\n?)[ \t\v\f]*[#;]+/g, "$1")`; otherwise, ECMAScript `comment_string.replace(/^[ \t\v\f]*[#;]+/, "")`.
+* **Key names** will be rendered according to ECMAScript `key_name.replace(/^[\n\r]\s*|\s+/g, " ")` -- within single or double quotes, if active, the text will be rendered verbatim.
+* **Section paths**, if format supports nesting, will be rendered according to ECMAScript `section_name.replace(/\.*\s*$|(?:\s*(\.))+\s*|^\s+/g, "$1").replace(/\s+/g, " ")` -- within single or double quotes, if active, the text will be rendered verbatim -- otherwise, will be rendered through the same algorithm used for key names.
+* **Values**, if `format.do_not_collapse_values` is active, will only be cleaned of spaces at the beginning and at the end; otherwise will be rendered through the same algorithm used for key names (with the difference that, if `format.preserve_empty_quotes` is set to `1`, empty quotes surrounded by spaces will be preserved).
+* **Comments**, in multi-line formats, will be rendered according to ECMAScript `comment_string.replace(/(^|\n\r?|\r\n?)[ \t\v\f]*[#;]+/g, "$1")`; elsewhere, according to ECMAScript `comment_string.replace(/^[ \t\v\f]*[#;]+/, "")`.
 * **Unknown nodes** will be rendered verbatim.
 
 The strings passed with each dispatch, as already said, must not be freed. _Nevertheless, before being copied or analyzed they can be edited, **with some precautions**_:
@@ -1056,7 +1058,7 @@ Reliable general patterns:
 Temporary workarounds:
 
 * `IniFormat::no_spaces_in_names` -- If your INI file has only comments containing more than one word and you are sure that key and section names cannot contain internal white spaces, you can set this property to `TRUE` to enhance the disambiguation.
-* `IniFormat::disabled_can_be_implicit` -- This property, if set to `FALSE`, forces all comments that do not contain a key-value delimiter to never be considered as disabled entries. Despite not having an impact on our example, it has a big impact on the disambiguation algorithm used by **libconfini**. Its value in `#INI_DEFAULT_FORMAT` is set to `FALSE`.
+* `IniFormat::disabled_can_be_implicit` -- This property, if set to `FALSE`, forces all comments that do not contain a key-value delimiter to be never considered as disabled entries. Despite not having an impact on our example, it has a big impact on the disambiguation algorithm used by **libconfini**. Its value in `#INI_DEFAULT_FORMAT` is set to `FALSE`.
 
 As a general rule **libconfini** will always try to parse as a disabled entry whatever comment is allowed (by the format) to contain one. Only if this fails, the block will be dispatched as a normal comment.
 
