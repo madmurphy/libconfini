@@ -244,7 +244,7 @@ static inline _LIBCONFINI_BOOL_ is_some_space (const char chr, const uint8_t dep
 /**
 
 	@brief			Soft left trim -- does **not** change the buffer
-	@param			lt_s			The target string
+	@param			ltstr			The target string
 	@param			start_from		The offset where to start the left trim
 	@param			depth			What is actually considered a space (possible
 									values: `_LIBCONFINI_WITH_EOL_`,
@@ -252,17 +252,17 @@ static inline _LIBCONFINI_BOOL_ is_some_space (const char chr, const uint8_t dep
 	@return			The offset of the first non-space character
 
 **/
-static inline size_t ltrim_s (const char * const lt_s, const size_t start_from, const uint8_t depth) {
-	size_t lt_i = start_from;
-	while (lt_s[lt_i] && is_some_space(lt_s[lt_i], depth)) { lt_i++; }
-	return lt_i;
+static inline size_t ltrim_s (const char * const ltstr, const size_t start_from, const uint8_t depth) {
+	size_t idx = start_from;
+	while (ltstr[idx] && is_some_space(ltstr[idx], depth)) { idx++; }
+	return idx;
 }
 
 
 /**
 
 	@brief			Hard left trim -- **does** change the buffer
-	@param			lt_s			The target string
+	@param			ltstr			The target string
 	@param			start_from		The offset where to start the left trim
 	@param			depth			What is actually considered a space (possible
 									values: `_LIBCONFINI_WITH_EOL_`,
@@ -270,17 +270,17 @@ static inline size_t ltrim_s (const char * const lt_s, const size_t start_from, 
 	@return			The offset of the first non-space character
 
 **/
-static inline size_t ltrim_h (char * const lt_s, const size_t start_from, const uint8_t depth) {
-	size_t lt_i = start_from;
-	while (lt_s[lt_i] && is_some_space(lt_s[lt_i], depth)) { lt_s[lt_i++] = '\0'; }
-	return lt_i;
+static inline size_t ltrim_h (char * const ltstr, const size_t start_from, const uint8_t depth) {
+	size_t idx = start_from;
+	while (ltstr[idx] && is_some_space(ltstr[idx], depth)) { ltstr[idx++] = '\0'; }
+	return idx;
 }
 
 
 /**
 
 	@brief			Soft right trim -- does **not** change the buffer
-	@param			rt_s			The target string
+	@param			rtstr			The target string
 	@param			length			The length of the string
 	@param			depth			What is actually considered a space (possible
 									values: `_LIBCONFINI_WITH_EOL_`,
@@ -288,17 +288,17 @@ static inline size_t ltrim_h (char * const lt_s, const size_t start_from, const 
 	@return			The length of the string until the last non-space character
 
 **/
-static inline size_t rtrim_s (const char * const rt_s, const size_t length, const uint8_t depth) {
-	size_t rt_l = length;
-	while (rt_l > 0 && is_some_space(rt_s[rt_l - 1], depth)) { rt_l--; }
-	return rt_l;
+static inline size_t rtrim_s (const char * const rtstr, const size_t length, const uint8_t depth) {
+	size_t newlen = length;
+	while (newlen > 0 && is_some_space(rtstr[newlen - 1], depth)) { newlen--; }
+	return newlen;
 }
 
 
 /**
 
 	@brief			Hard right trim -- **does** change the buffer
-	@param			rt_s			The target string
+	@param			rtstr			The target string
 	@param			length			The length of the string
 	@param			depth			What is actually considered a space (possible
 									values: `_LIBCONFINI_WITH_EOL_`,
@@ -306,10 +306,10 @@ static inline size_t rtrim_s (const char * const rt_s, const size_t length, cons
 	@return			The new length of the string
 
 **/
-static inline size_t rtrim_h (char * const rt_s, const size_t length, const uint8_t depth) {
-	size_t rt_l = length;
-	while (rt_l > 0 && is_some_space(rt_s[rt_l - 1], depth)) { rt_s[--rt_l] = '\0'; }
-	return rt_l;
+static inline size_t rtrim_h (char * const rtstr, const size_t length, const uint8_t depth) {
+	size_t newlen = length;
+	while (newlen > 0 && is_some_space(rtstr[newlen - 1], depth)) { rtstr[--newlen] = '\0'; }
+	return newlen;
 }
 
 
@@ -317,25 +317,25 @@ static inline size_t rtrim_h (char * const rt_s, const size_t length, const uint
 
 	@brief			Unescaped soft right trim (right trim of `/(\s+|\\[\n\r])+$/`)
 					-- does **not** change the buffer
-	@param			urt_s			The target string
+	@param			urtstr			The target string
 	@param			length			The length of the string
 	@return			The length of the string until the last non-space character
 
 **/
-static inline size_t urtrim_s (const char * const urt_s, const size_t length) {
+static inline size_t urtrim_s (const char * const urtstr, const size_t length) {
 
 	register uint8_t abcd = 1;
-	size_t urt_l = length;
+	size_t idx = length;
 
 	/* ====> */   continue_trim:   /* <==== */
 
-	if (urt_l < 1) {
+	if (idx < 1) {
 
-		return urt_l;
+		return idx;
 
 	}
 
-	switch (urt_s[--urt_l]) {
+	switch (urtstr[--idx]) {
 
 		case _LIBCONFINI_VT_:
 		case _LIBCONFINI_FF_:
@@ -361,7 +361,7 @@ static inline size_t urtrim_s (const char * const urt_s, const size_t length) {
 
 	}
 
-	return urt_l + 1;
+	return idx + 1;
 
 }
 
@@ -448,12 +448,12 @@ static inline _LIBCONFINI_BOOL_ is_forget_char (const char chr, const IniFormat 
 
 	@brief			Unparsed hard left trim (left trim of
 					`/^(\s+|\\[\n\r]|''|"")+/`) -- **does** change the buffer
-	@param			ult_s			The target string
+	@param			qultstr			The target string
 	@param			start_from		The offset where to start the left trim
 	@return			The offset of the first non-space character
 
 **/
-static inline size_t qultrim_h (char * const ult_s, const size_t start_from, const IniFormat format) {
+static inline size_t qultrim_h (char * const qultstr, const size_t start_from, const IniFormat format) {
 
 	/*
 
@@ -471,51 +471,54 @@ static inline size_t qultrim_h (char * const ult_s, const size_t start_from, con
 	*/
 
 	register uint8_t abcd = (format.no_double_quotes ? 130 : 128) | format.no_single_quotes;
-	size_t ult_i = start_from;
+	size_t idx = start_from;
 
-	for (; abcd & 128; ult_i++) {
+	for (; abcd & 128; idx++) {
 
-		abcd	= 	!(abcd & 25) && ult_s[ult_i] == _LIBCONFINI_SINGLE_QUOTES_ ?
+		abcd	= 	!(abcd & 28) && is_some_space(qultstr[idx], _LIBCONFINI_NO_EOL_) ?
+						(abcd & 207) | 64
+					: !(abcd & 12) && (qultstr[idx] == _LIBCONFINI_LF_ || qultstr[idx] == _LIBCONFINI_CR_) ?
+						(
+							 abcd & 16 ?
+								(abcd & 239) | 96
+							:
+								abcd | 64
+						)
+					: !(abcd & 25) && qultstr[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
 						(
 							abcd & 4 ?
 								(abcd & 235) | 96
 							:
 								(abcd & 143) | 4
 						)
-					: !(abcd & 22) && ult_s[ult_i] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+					: !(abcd & 22) && qultstr[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
 						(
 							abcd & 8 ?
 								(abcd & 231) | 96
 							:
 								(abcd & 159) | 8
 						)
-					: ult_s[ult_i] == _LIBCONFINI_BACKSLASH_ ?
+					: qultstr[idx] == _LIBCONFINI_BACKSLASH_ ?
 						(abcd & 159) ^ 16
-					: !(abcd & 28) && is_some_space(ult_s[ult_i], _LIBCONFINI_NO_EOL_) ?
-						(abcd & 207) | 64
-					: (abcd & 12) || (ult_s[ult_i] != _LIBCONFINI_LF_ && ult_s[ult_i] != _LIBCONFINI_CR_) ?
-						abcd & 31
-					: abcd & 16 ?
-						(abcd & 239) | 96
 					:
-						abcd | 64;
+						abcd & 31;
 
 
 		if (abcd & 32) {
 
-			ult_s[ult_i - 1] = '\0';
+			qultstr[idx - 1] = '\0';
 
 		}
 
 		if (abcd & 64) {
 
-			ult_s[ult_i] = '\0';
+			qultstr[idx] = '\0';
 
 		}
 
 	}
 
-	return abcd & 28 ? ult_i - 2 : ult_i - 1;
+	return abcd & 28 ? idx - 2 : idx - 1;
 
 }
 
@@ -916,23 +919,9 @@ static size_t uncomment (char * const commstr, size_t len, const IniFormat forma
 
 	size_t lshift, idx;
 
-	if (format.multiline_nodes) {
+	if (format.multiline_nodes == INI_MULTILINE_EVERYWHERE) {
 
-		/* The comment is not multi-line */
-
-		for (lshift = 0; lshift < len && is_comment_char(commstr[lshift], format); lshift++);
-
-		if (!lshift) {
-
-			return len;
-
-		}
-
-		for (idx = lshift; idx < len; commstr[idx - lshift] = commstr[idx], idx++);
-
-	} else {
-
-		/* The comment is multi-line */
+		/* The comment can be multi-line */
 
 		register uint8_t abcd;
 
@@ -977,6 +966,20 @@ static size_t uncomment (char * const commstr, size_t len, const IniFormat forma
 			}
 
 		}
+
+	} else {
+
+		/* The comment cannot be multi-line */
+
+		for (lshift = 0; lshift < len && is_comment_char(commstr[lshift], format); lshift++);
+
+		if (!lshift) {
+
+			return len;
+
+		}
+
+		for (idx = lshift; idx < len; commstr[idx - lshift] = commstr[idx], idx++);
 
 	}
 
@@ -1236,7 +1239,7 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 					format.no_disabled_after_space && is_some_space(segment[search_at + 1], _LIBCONFINI_NO_EOL_)
 				) ?
 					(abcd & 3) | 64
-				: !format.multiline_nodes && (
+				: format.multiline_nodes == INI_MULTILINE_EVERYWHERE && (
 					segment[search_at] == _LIBCONFINI_INLINE_MARKER_ || is_comment_char(segment[search_at], format)
 				) ?
 					(abcd & 3) | 128
@@ -1267,14 +1270,14 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 
 						segment[idx - 1] = '\0';
 
-						if (format.multiline_nodes) {
+						if (format.multiline_nodes != INI_MULTILINE_EVERYWHERE) {
 
 							unparsable_at = idx + 1;
 							break;
 
 						}
 
-					} else if (format.multiline_nodes) {
+					} else if (format.multiline_nodes != INI_MULTILINE_EVERYWHERE) {
 
 						unparsable_at = search_at + 1;
 						break;
@@ -1302,7 +1305,7 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 									format.no_disabled_after_space && (abcd & 64) && is_some_space(segment[idx + 1], _LIBCONFINI_NO_EOL_)
 								)
 							) || (
-								!format.multiline_nodes && is_comment_char(segment[idx], format) && !(
+								format.multiline_nodes == INI_MULTILINE_EVERYWHERE && is_comment_char(segment[idx], format) && !(
 									(abcd & 64) && get_type_as_active(
 										segment + focus_at,
 										idx - focus_at,
@@ -1341,7 +1344,7 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 
 		}
 
-		if (format.multiline_nodes && !unparsable_at) {
+		if (format.multiline_nodes != INI_MULTILINE_EVERYWHERE && !unparsable_at) {
 
 			focus_at = ltrim_s(segment, search_at + 1, _LIBCONFINI_NO_EOL_);
 
@@ -1399,7 +1402,7 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 
 					segment[idx] = _LIBCONFINI_INLINE_MARKER_;
 
-					if (format.multiline_nodes) {
+					if (format.multiline_nodes != INI_MULTILINE_EVERYWHERE) {
 
 						segm_size++;
 
@@ -1407,7 +1410,7 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 
 				}
 
-				if (format.multiline_nodes) {
+				if (format.multiline_nodes != INI_MULTILINE_EVERYWHERE) {
 
 					unparsable_at = idx + 1;
 					break;
@@ -1820,7 +1823,7 @@ int load_ini_file (
 									uncomment(this_disp.data, idx - node_at, format)
 								: this_disp.type == INI_INLINE_COMMENT ? 
 									uncomment(++this_disp.data, idx - node_at - 1, format)
-								: format.multiline_nodes < 3 ?
+								: format.multiline_nodes != INI_NO_MULTILINE ?
 									unescape_cr_lf(this_disp.data, idx - node_at, this_disp.type & 4, format)
 								:
 									idx - node_at;
