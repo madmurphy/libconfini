@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['rtrim_5fh',['rtrim_h',['../confini_8c.html#a83f9285ee4a8cde02d9caf06703d9ccd',1,'confini.c']]],
-  ['rtrim_5fs',['rtrim_s',['../confini_8c.html#aec164c03cb3655b94347a3a1678de0a9',1,'confini.c']]]
+  ['rtrim_5fh',['rtrim_h',['../confini_8c.html#a0b1869614c299f77292827e725c43dd2',1,'confini.c']]],
+  ['rtrim_5fs',['rtrim_s',['../confini_8c.html#a7dfbd0c5cf4d6a75ce90028ea1ddd7a3',1,'confini.c']]]
 ];

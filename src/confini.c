@@ -556,8 +556,8 @@ static inline size_t get_delimiter_pos (const char * const pairstr, const size_t
 			idx < len && (
 				(abcd & 12) || !(
 					format.delimiter_symbol ?
-						*((unsigned char *) pairstr + idx) == format.delimiter_symbol
-						: is_some_space(pairstr[idx], _LIBCONFINI_NO_EOL_)
+						pairstr[idx] == format.delimiter_symbol
+						: is_some_space(pairstr[idx], _LIBCONFINI_WITH_EOL_)
 				)
 			);
 
@@ -1318,7 +1318,7 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 				) {
 
 					rtrim_h(segment, idx, _LIBCONFINI_WITH_EOL_);
-					search_at = idx;
+					search_at = qultrim_h(segment, idx, format);
 					goto search_for_cuts;
 
 				}
@@ -3089,17 +3089,17 @@ int ini_array_foreach (
 
 		if (!(abcd & 88)) {
 
-			if (!(abcd & 132)) {
-
-				idx = ltrim_s(ini_string, idx, _LIBCONFINI_WITH_EOL_) - 1;
-
-			}
-
 			offs = ltrim_s(ini_string, offs, _LIBCONFINI_WITH_EOL_);
 
 			if (f_foreach(ini_string, offs, rtrim_s(ini_string + offs, idx - offs, _LIBCONFINI_WITH_EOL_), counter++, format, user_data)) {
 
 				return CONFINI_FEINTR;
+
+			}
+
+			if (!(abcd & 132)) {
+
+				idx = ltrim_s(ini_string, idx, _LIBCONFINI_WITH_EOL_) - 1;
 
 			}
 
@@ -3184,18 +3184,18 @@ int ini_array_split (
 
 		if (!(abcd & 88)) {
 
-			if (!(abcd & 132)) {
-
-				idx = ltrim_h(ini_string, idx, _LIBCONFINI_WITH_EOL_) - 1;
-
-			}
-
 			ini_string[idx] = '\0';
 			offs = ltrim_h(ini_string, offs, _LIBCONFINI_WITH_EOL_);
 
 			if (f_foreach(ini_string + offs, rtrim_h(ini_string + offs, idx - offs, _LIBCONFINI_WITH_EOL_), counter++, format, user_data)) {
 
 				return CONFINI_FEINTR;
+
+			}
+
+			if (!(abcd & 132)) {
+
+				idx = ltrim_h(ini_string, idx, _LIBCONFINI_WITH_EOL_) - 1;
 
 			}
 

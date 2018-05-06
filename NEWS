@@ -2,7 +2,7 @@ NEWS
 ====
 
 
-## 1.5.2 -- 2018-05-03
+## 1.5.2 -- 2018-05-06
 
 * Added `IniFormat::section_paths` option to the `IniFormat` bitfield
 

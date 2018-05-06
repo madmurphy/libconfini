@@ -2,15 +2,17 @@ Change Log {#changelog}
 =======================
 
 
-## 1.5.2 -- 2018-05-03
+## 1.5.2 -- 2018-05-06
 
 Changes:
 
 * Added `IniFormat::section_paths` option to the `IniFormat` bitfield
 * Created `enum` `IniSectionPaths`
-* Made sure that implicit keys containing only empty quotes are ignored
+* Made sure that implicit keys containing only empty quotes are ignored in
+  formats that support quotes
 * Private function `ultrim_h()` has been renamed to `qultrim_h()` and rewritten
-* Code review (private function `get_type_as_active()`)
+* Code review (`ini_array_foreach()`, `ini_array_split()`, private functions
+  `get_delimiter_pos()` and `get_type_as_active()`)
 
 
 ## 1.5.1 -- 2018-04-30
