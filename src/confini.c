@@ -2657,7 +2657,7 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 		}
 
-		for (idx -= abcd & 64 ? ++lshift : lshift; ini_string[idx]; ini_string[idx++] = '\0');
+		for (idx -= (abcd & 64) && idx - lshift ? ++lshift : lshift; ini_string[idx]; ini_string[idx++] = '\0');
 
 		return idx - lshift;
 
@@ -2733,9 +2733,9 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 	lshift += nbacksl >> 1;
 
-	for (idx -= abcd & 64 ? ++lshift : lshift; ini_string[idx]; ini_string[idx++] = '\0');
+	for (idx -= (abcd & 64) && idx - lshift ? ++lshift : lshift; ini_string[idx]; ini_string[idx++] = '\0');
 
-	return abcd & 4 ? rtrim_h(ini_string, idx - lshift, _LIBCONFINI_WITH_EOL_) : idx - lshift;
+	return (abcd ^ 4) & 28 ? idx - lshift : rtrim_h(ini_string, idx - lshift, _LIBCONFINI_WITH_EOL_);
 
 }
 
