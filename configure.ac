@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT(libconfini, 1.5)
+AC_INIT(libconfini, 1.6)
 
 AC_CONFIG_HEADERS([config.h])
 
@@ -41,7 +41,7 @@ LT_INIT([win32-dll])
 
 AC_OUTPUT([
 Makefile
-src/confini-1.5.pc
+src/confini-1.6.pc
 src/Makefile
 ])
 

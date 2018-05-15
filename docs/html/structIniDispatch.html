@@ -78,13 +78,13 @@ $(function() {
 Data Fields</h2></td></tr>
 <tr class="memitem:adfda221d4a9effcb4f3ee6a99c5f2de2"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniDispatch.html#adfda221d4a9effcb4f3ee6a99c5f2de2">format</a></td></tr>
 <tr class="separator:adfda221d4a9effcb4f3ee6a99c5f2de2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f6ebc6713aae413c4157ce68008a8a8"><td class="memItemLeft" align="right" valign="top">unsigned short int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a></td></tr>
+<tr class="memitem:a7f6ebc6713aae413c4157ce68008a8a8"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a></td></tr>
 <tr class="separator:a7f6ebc6713aae413c4157ce68008a8a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3821b15b23e587eca172763dd4acd954"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a></td></tr>
 <tr class="separator:a3821b15b23e587eca172763dd4acd954"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d7eb3387ff5ecb79900fae717234d16"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a></td></tr>
 <tr class="separator:a8d7eb3387ff5ecb79900fae717234d16"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3aca4d49e430c9180b4f80b3f0624d9"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">append_to</a></td></tr>
+<tr class="memitem:ae3aca4d49e430c9180b4f80b3f0624d9"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">append_to</a></td></tr>
 <tr class="separator:ae3aca4d49e430c9180b4f80b3f0624d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34937218fa772fa66ceaa38923437791"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniDispatch.html#a34937218fa772fa66ceaa38923437791">d_len</a></td></tr>
 <tr class="separator:a34937218fa772fa66ceaa38923437791"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -184,7 +184,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The format of the INI file (see struct <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) – sizeof(IniFormat) should...">IniFormat</a></code>) </p>
+<p>The format of the INI file (see struct <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect) ">IniFormat</a></code>) </p>
 
 </div>
 </div>
@@ -199,7 +199,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The dispatch type (see enum <code><a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461b" title="INI nodes types. ">IniNodeType</a></code>) </p>
+<p>The dispatch type (see <code>enum</code> <code><a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461b" title="INI nodes types. ">IniNodeType</a></code>) </p>
 
 </div>
 </div>
@@ -229,7 +229,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>It can be the value of a key element or an empty string </p>
+<p>It can be the value of a key element, an empty string or it can point to the address pointed by the global variable <code><a class="el" href="confini_8h.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL) ">INI_GLOBAL_IMPLICIT_VALUE</a></code> </p>
 
 </div>
 </div>

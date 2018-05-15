@@ -68,40 +68,24 @@ $(function() {
 <div class="contents">
 <div class="textblock"><p>Complete list of functions</p>
 <dl>
-<dt><code><a class="el" href="confini_8c.html#a5109b2e8c8a76b8376931a12d4bcbd79" title="Parses an INI file and dispatches its content. ">load_ini_file()</a></code> </dt>
-<dd><p class="startdd">Parses an INI file and dispatches its content. </p>
+<dt><code><a class="el" href="confini_8c.html#a326e804687b2b46f0a295ae724d84628" title="Parses an INI file and dispatches its content using a FILE structure as argument. ...">load_ini_file()</a></code> </dt>
+<dd><p class="startdd">Parses an INI file and dispatches its content using a <code>FILE</code> structure as argument. </p>
 <p class="enddd"></p>
 </dd>
-<dt><code><a class="el" href="confini_8c.html#ae4b70cf57595a191a7b8c075f9b00780" title="Parses an INI file and dispatches its content. ">load_ini_path()</a></code> </dt>
-<dd><p class="startdd">Parses an INI file and dispatches its content. </p>
-<p class="enddd"></p>
-</dd>
-<dt><code><a class="el" href="confini_8c.html#a7a940a6820371d950ec9428f8457a2a1" title="Sets the value of the global variable INI_GLOBAL_LOWERCASE_MODE ">ini_global_set_lowercase_mode()</a></code> </dt>
-<dd><p class="startdd">Sets the value of the global variable <code><a class="el" href="confini_8c.html#af55e2631f0e3f941175a9b406b66ab06" title="If set to TRUE key and section names in case-insensitive INI formats will be dispatched lowercase...">INI_GLOBAL_LOWERCASE_MODE</a></code> </p>
-<p class="enddd"></p>
-</dd>
-<dt><code><a class="el" href="confini_8c.html#a3a6eb3b79a88304864341075240ee412" title="Sets the value used for implicit keys. ">ini_global_set_implicit_value()</a></code> </dt>
-<dd><p class="startdd">Sets the value used for implicit keys. </p>
-<p class="enddd"></p>
-</dd>
-<dt><code><a class="el" href="confini_8c.html#a02bf5a1299ffb85fbd2f087cffbc1db8" title="Converts an IniFormat into an IniFormatNum ">ini_fton()</a></code> </dt>
-<dd><p class="startdd">Converts an <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) – sizeof(IniFormat) should...">IniFormat</a></code> into an <code><a class="el" href="confini_8h.html#a8dfc7ebbb087a23d4076c1d688572b1c" title="24-bit bitmask representing the format of an INI file ">IniFormatNum</a></code> </p>
-<p class="enddd"></p>
-</dd>
-<dt><code><a class="el" href="confini_8c.html#a6126371aef71be174ee8e1262a231ef5" title="Constructs an IniFormat from an IniFormatNum ">ini_ntof()</a></code> </dt>
-<dd><p class="startdd">Constructs an <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) – sizeof(IniFormat) should...">IniFormat</a></code> from an <code><a class="el" href="confini_8h.html#a8dfc7ebbb087a23d4076c1d688572b1c" title="24-bit bitmask representing the format of an INI file ">IniFormatNum</a></code> </p>
+<dt><code><a class="el" href="confini_8c.html#a307e84bd8a6775c4e8d9c00736e201ab" title="Parses an INI file and dispatches its content using a path as argument. ">load_ini_path()</a></code> </dt>
+<dd><p class="startdd">Parses an INI file and dispatches its content using a path as argument. </p>
 <p class="enddd"></p>
 </dd>
 <dt><code><a class="el" href="confini_8c.html#af9784469081947db46d173de14fa2a2f" title="Compares two simple strings and checks if they match. ">ini_string_match_ss()</a></code> </dt>
 <dd><p class="startdd">Compares two simple strings and checks if they match. </p>
 <p class="enddd"></p>
 </dd>
-<dt><code><a class="el" href="confini_8c.html#ad04ddad7ba1f627379ac714e656a693a" title="Compares an INI string with a simple string and checks if they match according to a format...">ini_string_match_si()</a></code> </dt>
-<dd><p class="startdd">Compares an INI string with a simple string and checks if they match according to a format. </p>
+<dt><code><a class="el" href="confini_8c.html#ad04ddad7ba1f627379ac714e656a693a" title="Compares a simple string an INI string and and checks if they match. ">ini_string_match_si()</a></code> </dt>
+<dd><p class="startdd">Compares a simple string an INI string and and checks if they match. </p>
 <p class="enddd"></p>
 </dd>
-<dt><code><a class="el" href="confini_8c.html#a24a43707c6c2f056615ae02b67f6d3cc" title="Compares two INI strings and checks if they match according to a format. ">ini_string_match_ii()</a></code> </dt>
-<dd><p class="startdd">Compares two INI strings and checks if they match according to a format. </p>
+<dt><code><a class="el" href="confini_8c.html#a24a43707c6c2f056615ae02b67f6d3cc" title="Compares two INI strings and checks if they match. ">ini_string_match_ii()</a></code> </dt>
+<dd><p class="startdd">Compares two INI strings and checks if they match. </p>
 <p class="enddd"></p>
 </dd>
 <dt><code><a class="el" href="confini_8c.html#ac55f3fab95f697ac5058533df100fc11" title="Unescapes \\, \&#39; and \&quot; and removes all unescaped quotes (if single/double quotes are considered meta...">ini_unquote()</a></code> </dt>
@@ -109,31 +93,55 @@ $(function() {
 <p class="enddd"></p>
 </dd>
 <dt><code><a class="el" href="confini_8c.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescapes \\, \&#39; and \&quot; and removes all unescaped quotes (if single/double quotes are considered meta...">ini_string_parse()</a></code> </dt>
-<dd><p class="startdd">Unescapes <code>\\</code>, <code>\'</code> and <code>\&quot;</code> and removes all unescaped quotes (if single/double quotes are considered metacharacters in respect to the format given) </p>
+<dd><p class="startdd">Unescapes <code>\\</code>, <code>\'</code> and <code>\&quot;</code> and removes all unescaped quotes (if single/double quotes are considered metacharacters in respect to the format given); if the format allows it, sequences of one or more spaces out of quotes will be collapsed. </p>
 <p class="enddd"></p>
 </dd>
-<dt><code><a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array. ">ini_array_get_length()</a></code> </dt>
-<dd><p class="startdd">Gets the length of a stringified INI array. </p>
+<dt><code><a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array in number of members. ">ini_array_get_length()</a></code> </dt>
+<dd><p class="startdd">Gets the length of a stringified INI array in number of members. </p>
 <p class="enddd"></p>
 </dd>
-<dt><code><a class="el" href="confini_8c.html#aa0721fcae5f04e5a9edd485dc1ddd2fa" title="Compresses the distribution of the data of a stringified INI array, by removing all the white spaces ...">ini_array_collapse()</a></code> </dt>
-<dd><p class="startdd">Compresses the distribution of the data of a stringified INI array, by removing all the white spaces that surround its delimiters, empty quotes, collapsable spaces, etc. </p>
-<p class="enddd"></p>
-</dd>
-<dt><code><a class="el" href="confini_8c.html#af0b43ef7d273359a9ccad47754b57d18" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> </dt>
+<dt><code><a class="el" href="confini_8c.html#a94bc649f5b58d4e2ad481080d918c41e" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> </dt>
 <dd><p class="startdd">Calls a custom function for each member of a stringified INI array without modifying the content of the buffer &ndash; useful for read-only (<code>const</code>) stringified arrays. </p>
 <p class="enddd"></p>
 </dd>
-<dt><code><a class="el" href="confini_8c.html#adb4525d732d5a08d87d9c64744f9f51e" title="Splits a stringified INI array into NUL-separated members and calls a custom function for each member...">ini_array_split()</a></code> </dt>
+<dt><code><a class="el" href="confini_8c.html#a6ca567ad863caef4609f8def7de0401a" title="Shifts the location pointed by ini_strptr to the next member of the INI array (without modifying the ...">ini_array_shift()</a></code> </dt>
+<dd><p class="startdd">Shifts the location pointed by <code>ini_strptr</code> to the next member of the INI array (without modifying the content of the buffer), or to <code>NULL</code> if the INI array has no more members &ndash; useful for read-only (<code>const</code>) stringified arrays. </p>
+<p class="enddd"></p>
+</dd>
+<dt><code><a class="el" href="confini_8c.html#aa0721fcae5f04e5a9edd485dc1ddd2fa" title="Compresses the distribution of the data of a stringified INI array by removing all the white spaces t...">ini_array_collapse()</a></code> </dt>
+<dd><p class="startdd">Compresses the distribution of the data of a stringified INI array by removing all the white spaces that surround its delimiters, empty quotes, collapsable spaces, etc. </p>
+<p class="enddd"></p>
+</dd>
+<dt><code><a class="el" href="confini_8c.html#a75809c0e952d9f9e14333e085ba6b910" title="Replaces the first delimiter found (together with the spaces that surround it) with \0 ...">ini_array_break()</a></code> </dt>
+<dd><p class="startdd">Replaces the first delimiter found (together with the spaces that surround it) with <code>\0</code> </p>
+<p class="enddd"></p>
+</dd>
+<dt><code><a class="el" href="confini_8c.html#a2b34dc032fc37dda829dadf80bf34d26" title="Replaces the first delimiter found (together with the spaces that surround it) with \0...">ini_array_release()</a></code> </dt>
+<dd><p class="startdd">Replaces the first delimiter found (together with the spaces that surround it) with <code>\0</code>, then shifts the location pointed by <code>ini_strptr</code> to the next member of the INI array, or to <code>NULL</code> if the INI array has no more members. </p>
+<p class="enddd"></p>
+</dd>
+<dt><code><a class="el" href="confini_8c.html#a2cc490a4e05c48497340370f54fe3ba2" title="Splits a stringified INI array into NUL-separated members and calls a custom function for each member...">ini_array_split()</a></code> </dt>
 <dd><p class="startdd">Splits a stringified INI array into NUL-separated members and calls a custom function for each member. </p>
 <p class="enddd"></p>
 </dd>
-<dt><code><a class="el" href="confini_8c.html#a2a8dcc3d8ff26554486691423cce4ea0" title="Checks whether a string matches exactly one of the booleans listed in the private constant INI_BOOLEA...">ini_get_bool()</a></code> </dt>
-<dd><p class="startdd">Checks whether a string matches <em>exactly</em> one of the booleans listed in the private constant <code><a class="el" href="confini_8c.html#afdb9fd02d693536253da07f0f468aaef" title="A list of possible string representations of boolean pairs. ">INI_BOOLEANS</a></code> (case insensitive) </p>
+<dt><code><a class="el" href="confini_8c.html#a7a940a6820371d950ec9428f8457a2a1" title="Sets the value of the global variable INI_GLOBAL_LOWERCASE_MODE ">ini_global_set_lowercase_mode()</a></code> </dt>
+<dd><p class="startdd">Sets the value of the global variable <code><a class="el" href="confini_8c.html#af55e2631f0e3f941175a9b406b66ab06" title="If set to TRUE, key and section names in case-insensitive INI formats will be dispatched lowercase...">INI_GLOBAL_LOWERCASE_MODE</a></code> </p>
 <p class="enddd"></p>
 </dd>
-<dt><code><a class="el" href="confini_8c.html#ad95262d09842c25e8bb610bf95c42cd3" title="Checks whether the first letter of a string matches the first letter of one of the booleans listed in...">ini_get_lazy_bool()</a></code> </dt>
-<dd><p class="startdd">Checks whether the first letter of a string matches the first letter of one of the booleans listed in the private constant <code><a class="el" href="confini_8c.html#afdb9fd02d693536253da07f0f468aaef" title="A list of possible string representations of boolean pairs. ">INI_BOOLEANS</a></code> (case insensitive) </p>
+<dt><code><a class="el" href="confini_8c.html#a3a6eb3b79a88304864341075240ee412" title="Sets the value to be to be assigned to implicit keys. ">ini_global_set_implicit_value()</a></code> </dt>
+<dd><p class="startdd">Sets the value to be to be assigned to implicit keys. </p>
+<p class="enddd"></p>
+</dd>
+<dt><code><a class="el" href="confini_8c.html#a02bf5a1299ffb85fbd2f087cffbc1db8" title="Calculates the IniFormatNum of an IniFormat ">ini_fton()</a></code> </dt>
+<dd><p class="startdd">Calculates the <code><a class="el" href="confini_8h.html#a8dfc7ebbb087a23d4076c1d688572b1c" title="The unique ID number of an INI format (24-bit maximum) ">IniFormatNum</a></code> of an <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect) ">IniFormat</a></code> </p>
+<p class="enddd"></p>
+</dd>
+<dt><code><a class="el" href="confini_8c.html#a6126371aef71be174ee8e1262a231ef5" title="Constructs a new IniFormat according to an IniFormatNum ">ini_ntof()</a></code> </dt>
+<dd><p class="startdd">Constructs a new <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect) ">IniFormat</a></code> according to an <code><a class="el" href="confini_8h.html#a8dfc7ebbb087a23d4076c1d688572b1c" title="The unique ID number of an INI format (24-bit maximum) ">IniFormatNum</a></code> </p>
+<p class="enddd"></p>
+</dd>
+<dt><code><a class="el" href="confini_8c.html#a2a8dcc3d8ff26554486691423cce4ea0" title="Checks whether a string matches one of the booleans listed in the private constant INI_BOOLEANS (case...">ini_get_bool()</a></code> </dt>
+<dd><p class="startdd">Checks whether a string matches one of the booleans listed in the private constant <code><a class="el" href="confini_8c.html#afdb9fd02d693536253da07f0f468aaef" title="A list of possible string representations of boolean pairs. ">INI_BOOLEANS</a></code> (case-insensitive) </p>
 <p class="enddd"></p>
 </dd>
 <dt><code><a class="el" href="confini_8c.html#adba0d5ee273d05ed845c66f01a621119" title="Link to atoi() ">ini_get_int()</a></code> </dt>

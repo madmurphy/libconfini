@@ -2,7 +2,33 @@ Change Log {#changelog}
 =======================
 
 
-## 1.5.2 -- 2018-05-12
+## 1.6.0 -- 2018-05-15
+
+Changes:
+
+* Functions `ini_array_shift()`, `ini_array_break()`, `ini_array_release()` have
+  been created
+* Made sure that escapable characters cannot be used as delimiters in formats
+  that support escape sequences
+* Boolean pair `OFF`/`ON` has been added to the list of supported INI booleans
+* Boolean pair `0`/`1` has been removed from the list of supported INI booleans
+* Public macro `INIFORMAT_HAS_NO_ESC` has been created
+* Redundant function † `ini_get_lazy_bool()` has been removed
+* The buffer pointed by `IniDispatch::append_to` is now passed as `const`
+* Code review (`ini_string_match_ss()`, `ini_string_match_si()`,
+  `ini_string_match_ii()`, `ini_string_parse()`, `ini_array_get_length()`,
+  `ini_array_foreach()`, `ini_array_split()`, private functions `uncomment()`
+  and `further_cuts()`)
+* Private functions `get_metachar_pos()` and `collapse_empty_quotes()` have been
+  created
+* Private functions † `sanitize_key_name()` and † `get_delimiter_pos()` have
+  been renamed to `collapse_everything()` and `getn_metachar_pos()` (the latter
+  now requires one more argument)
+* Documentation
+* Examples
+
+
+## 1.5.2 -- 2018-05-06
 
 Changes:
 
@@ -10,9 +36,10 @@ Changes:
 * Created `enum` `IniSectionPaths`
 * Made sure that implicit keys containing only empty quotes are ignored in
   formats that support quotes
-* Private function `ultrim_h()` has been renamed to `qultrim_h()` and rewritten
+* Private function † `ultrim_h()` has been renamed to `qultrim_h()` and
+  rewritten
 * Code review (`ini_array_foreach()`, `ini_array_split()`, `ini_string_parse()`,
-  private functions `get_delimiter_pos()` and `get_type_as_active()`)
+  private functions † `get_delimiter_pos()` and `get_type_as_active()`)
 
 
 ## 1.5.1 -- 2018-04-30
@@ -31,36 +58,37 @@ Changes:
 Changes:
 
 * Added `IniFormat::preserve_empty_quotes` option to the `IniFormat` bitfield
-* `IniFormat::hash`, `IniFormat::semicolon` and `IniFormat::multiline_entries`
-  have been renamed to `IniFormat::hash_marker`, `IniFormat::semicolon_marker`
-  and `IniFormat::multiline_nodes`
+* † `IniFormat::hash`, † `IniFormat::semicolon` and
+  † `IniFormat::multiline_entries` have been renamed to
+  `IniFormat::hash_marker`, `IniFormat::semicolon_marker` and
+  `IniFormat::multiline_nodes`
 * Function `ini_string_parse()` has been created
-* Function `ini_collapse_array()` has been renamed to `ini_array_collapse()`
-* Function `ini_split_array()` has been renamed to `ini_array_split()`
-* Function `ini_set_implicit_value()` has been renamed to
+* Function † `ini_collapse_array()` has been renamed to `ini_array_collapse()`
+* Function † `ini_split_array()` has been renamed to `ini_array_split()`
+* Function † `ini_set_implicit_value()` has been renamed to
   `ini_global_set_implicit_value()`
-* Function `confini_global_set_lowercase_mode()` has been renamed to
+* Function † `confini_global_set_lowercase_mode()` has been renamed to
   `ini_global_set_lowercase_mode()`
-* Global variable `INI_INSENSITIVE_LOWERCASE` has been renamed to
+* Global variable † `INI_INSENSITIVE_LOWERCASE` has been renamed to
   `INI_GLOBAL_LOWERCASE_MODE`
 * Default value of `INI_GLOBAL_LOWERCASE_MODE` has been set to `FALSE`
-* Data type `IniFormatId` has been renamed to `IniFormatNum`
-* `ini_format_get_id()` has been renamed to `ini_fton()`
-* `ini_format_set_to_id()` has been renamed to `ini_ntof()` -- now accepts only
-  one argument and has a return value
-* Constants `INI_PARSE_COMMENT`, `INI_SHOW_COMMENT`, `INI_FORGET_COMMENT` and
-  `INI_NORMAL_CHARACTER` have been renamed to `INI_DISABLED_OR_COMMENT`,
+* Data type † `IniFormatId` has been renamed to `IniFormatNum`
+* † `ini_format_get_id()` has been renamed to `ini_fton()`
+* † `ini_format_set_to_id()` has been renamed to `ini_ntof()` -- now accepts
+  only one argument and has a return value
+* Constants † `INI_PARSE_COMMENT`, † `INI_SHOW_COMMENT`, † `INI_FORGET_COMMENT`
+  and † `INI_NORMAL_CHARACTER` have been renamed to `INI_DISABLED_OR_COMMENT`,
   `INI_ONLY_COMMENT`, `INI_IGNORE` and `INI_IS_NOT_A_MARKER`
-* Constants `INI_EVERYTHING_MULTILINE`, `INI_ACTIVE_AND_DISABLED_MULTILINE` and
-  `INI_ACTIVE_MULTILINE` have been renamed to `INI_MULTILINE_EVERYWHERE`,
+* Constants † `INI_EVERYTHING_MULTILINE`, † `INI_ACTIVE_AND_DISABLED_MULTILINE`
+  and † `INI_ACTIVE_MULTILINE` have been renamed to `INI_MULTILINE_EVERYWHERE`,
   `INI_BUT_COMMENTS`, and `INI_BUT_DISABLED_AND_COMMENTS`
-* Constants `CONFINI_EIINTR` and `CONFINI_EFEINTR` have been renamed to
+* Constants † `CONFINI_EIINTR` and † `CONFINI_EFEINTR` have been renamed to
   `CONFINI_IINTR` and `CONFINI_FEINTR`
-* `enum` tags `ConfiniErrorNo` and `IniComments` have been renamed to
+* `enum` tags † `ConfiniErrorNo` and † `IniComments` have been renamed to
   `ConfiniInterruptNo` and `IniCommentMarker`
-* Private function `sanitize_section_name()` has been renamed to
+* Private function † `sanitize_section_name()` has been renamed to
   `sanitize_section_path()`
-* Created private function `sanitize_key_name()`
+* Created private function † `sanitize_key_name()`
 * Code review (`ini_array_get_length()`, `ini_string_match_si()`,
   `ini_string_match_ii()`, private functions `sanitize_section_path()` and
   `collapse_spaces()`)
@@ -101,7 +129,7 @@ version 1.4.2 by using the following aliases:
 
 Changes:
 
-* Code review and bug fix in private function `sanitize_section_name()`
+* Code review and bug fix in private function † `sanitize_section_name()`
 
 
 ## 1.4.1 -- 2017-10-02
@@ -109,10 +137,10 @@ Changes:
 Changes:
 
 * Created global preprocessor constant `CONFINI_ERROR`
-* Created global variable `INI_INSENSITIVE_LOWERCASE`
-* Created functions `confini_global_set_lowercase_mode()`,
+* Created global variable † `INI_INSENSITIVE_LOWERCASE`
+* Created functions † `confini_global_set_lowercase_mode()`,
   `ini_string_match_ss()`, `ini_string_match_si()` and `ini_string_match_ii()`
-* Code review (data types, `enum` `ConfiniErrorNo`, `load_ini_file()`,
+* Code review (data types, `enum` † `ConfiniErrorNo`, `load_ini_file()`,
   `ini_unquote()`)
 * Moved `#include <stdint.h>` from `confini.c` to `confini.h`
 * Moved back `#include <stdio.h>` from `confini.h` to `confini.c`
@@ -126,14 +154,15 @@ Changes:
 Changes:
 
 * Function `load_ini_file()` now uses a `FILE` structure instead of a path -- in
-  order to use a path (a string), the shortcut `load_ini_path()` has been created
+  order to use a path (a string), the shortcut `load_ini_path()` has
+  been created
 * Added `#include <stdint.h>` to `confini.c`
 * Moved `#include <stdio.h>` from `confini.c` to `confini.h`
 * `nul` characters found in INI files will be skipped
 * `unsigned long int` replaced with `size_t` in return values of
-  `ini_unquote()`, `ini_array_get_length()` and `ini_collapse_array()`
+  `ini_unquote()`, `ini_array_get_length()` and † `ini_collapse_array()`
 * `unsigned int` replaced with `int` in return values of `load_ini_file()`,
-  `ini_array_foreach()` and `ini_split_array()`
+  `ini_array_foreach()` and † `ini_split_array()`
 * UTF-8 BOM recognized and skipped
 * Version numbering standardized (`${major}.${minor}.${revision}` instead of
   `${major}.${minor}-${release}`)
@@ -176,10 +205,10 @@ Changes:
 
 Changes:
 
-* `ini_collapse_array()` has been created
+* † `ini_collapse_array()` has been created
 * `index` and `format` parameters have been added to callback function in
-  `ini_array_foreach()` and `ini_split_array()`
-* `INI_ERASE_COMMENT` has been renamed to `INI_FORGET_COMMENT`
+  `ini_array_foreach()` and † `ini_split_array()`
+* † `INI_ERASE_COMMENT` has been renamed to † `INI_FORGET_COMMENT`
 * Added new documentation and examples
 
 
@@ -196,12 +225,12 @@ Changes:
 Changes:
 
 * Order of the `IniFormat` bitfield has been changed
-* `IniFormat::implicit_is_special` has been renamed to
+* † `IniFormat::implicit_is_special` has been renamed to
   `IniFormat::implicit_is_not_empty`
-* `IniFormat::no_collapsed_values` has been renamed to
+* † `IniFormat::no_collapsed_values` has been renamed to
   `IniFormat::do_not_collapse_values`
-* `IniDispatch::d_length` has been renamed to `IniDispatch::d_len`
-* `IniDispatch::v_length` has been renamed to `IniDispatch::v_len`
+* † `IniDispatch::d_length` has been renamed to `IniDispatch::d_len`
+* † `IniDispatch::v_length` has been renamed to `IniDispatch::v_len`
 * `IniDispatch::at_len` (length of `IniDispatch::append_to`) has been created
 
 
@@ -209,9 +238,9 @@ Changes:
 
 Changes:
 
-* `IniFormatMask` has been renamed to `IniFormatId`
-* `ini_format_set_from_mask()` has been renamed to `ini_format_set_to_id()`
-* `ini_format_calculate_mask()` has been renamed to `ini_format_get_id()`
+* † `IniFormatMask` has been renamed to `IniFormatId`
+* † `ini_format_set_from_mask()` has been renamed to † `ini_format_set_to_id()`
+* † `ini_format_calculate_mask()` has been renamed to † `ini_format_get_id()`
 * `IniFormat::no_spaces_in_names`: small bug fixed
 * General code review
 
@@ -223,25 +252,25 @@ Changes:
 * Fixed quotes nesting bug
 * enum `IniDelimiters` has been created
 * Added support for `INI_ANY_SPACE` (`0`) as delimiter in
-  `ini_array_get_length()`, `ini_array_foreach()` and `ini_split_array()`
+  `ini_array_get_length()`, `ini_array_foreach()` and † `ini_split_array()`
 * `IniFormat::no_spaces_in_names` has been created
-* `IniFormat::no_disabled_after_spaces` has been renamed to
+* † `IniFormat::no_disabled_after_spaces` has been renamed to
   `IniFormat::no_disabled_after_space`
-* `IniFormat::preserve_spaces_in_values` has been renamed to
-  `IniFormat::no_collapsed_values`
+* † `IniFormat::preserve_spaces_in_values` has been renamed to
+  † `IniFormat::no_collapsed_values`
 
 
 ## 1.0-1 -- 2016-10-10
 
 Changes:
 
-* `ini_array_getlength()` has been renamed to `ini_array_get_length()`
-* `ini_getbool()` has been renamed to `ini_get_bool()`
-* `ini_getlazybool()` has been renamed to `ini_get_lazy_bool()`
-* `ini_getfloat()` has been renamed to `ini_get_float()`
-* `ini_getllint()` has been renamed to `ini_get_llint()`
-* `get_ini_format_mask()` has been renamed to `ini_format_calculate_mask()`
-* `read_ini_format_mask()` has been renamed to `ini_format_set_from_mask()`
+* † `ini_array_getlength()` has been renamed to `ini_array_get_length()`
+* † `ini_getbool()` has been renamed to `ini_get_bool()`
+* † `ini_getlazybool()` has been renamed to `ini_get_lazy_bool()`
+* † `ini_getfloat()` has been renamed to `ini_get_float()`
+* † `ini_getllint()` has been renamed to `ini_get_llint()`
+* † `get_ini_format_mask()` has been renamed to † `ini_format_calculate_mask()`
+* † `read_ini_format_mask()` has been renamed to † `ini_format_set_from_mask()`
 
 
 ## 0.9-4 -- 2016-10-07

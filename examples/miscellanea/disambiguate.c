@@ -1,9 +1,9 @@
-/* examples/miscellanea/ambiguous.c */
+/*  examples/miscellanea/disambiguate.c  */
 
 #include <stdio.h>
 #include <confini.h>
 
-int ini_listener (IniDispatch *dispatch, void *v_null) {
+static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
 	printf(
 		"NODE #%d - TYPE: %d, DATA: \"%s\", VALUE: \"%s\"\n",

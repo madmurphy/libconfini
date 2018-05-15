@@ -1,4 +1,4 @@
-/* examples/miscellanea/typed_ini.c */
+/*  examples/miscellanea/typed_ini.c  */
 /*
 
 The following code will try to read an INI section called `my_section`, expected to
@@ -23,93 +23,90 @@ No errors will be generated if any of the data above are absent.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <confini.h>
-
-#define FALSE 0
-#define TRUE 1
-#define bool unsigned char
 
 #define MY_ARRAY_DELIMITER ','
 
-/* My stored data */
+/*  My stored data  */
 struct ini_store {
-	char *my_section_my_string;
+	char * my_section_my_string;
 	signed int my_section_my_number;
 	bool my_section_my_boolean;
 	bool my_section_my_implicit_boolean;
-	char **my_section_my_array;
+	char ** my_section_my_array;
 	size_t my_section_my_arr_len;
-	int _read_status_;
 };
 
-static int array_part_handler (char *part, size_t part_len, size_t idx, IniFormat format, void *v_array) {
+static int my_init (IniStatistics * statistics, void * v_store) {
 
-	ini_string_parse(part, format);
-	((char **) v_array)[idx] = part;
+	*((struct ini_store *) v_store) = (struct ini_store) { NULL, -1, false, false, NULL, 0 };
+
 	return 0;
 
 }
  
 static char ** make_array (size_t * arrlen, const char * src, const size_t buffsize, IniFormat ini_format) {
  
-	char ** dest;
 	*arrlen = ini_array_get_length(src, MY_ARRAY_DELIMITER, ini_format);
-	dest = (char **) malloc(*arrlen * sizeof(char *) + buffsize);
+
+	char ** const dest = *arrlen ? (char **) malloc(*arrlen * sizeof(char *) + buffsize) : NULL;
+
+	if (!dest) { return NULL; }
+
 	memcpy(dest + *arrlen, src, buffsize);
-	ini_array_split((char *) (dest + *arrlen), MY_ARRAY_DELIMITER, ini_format, array_part_handler, dest);
- 
+
+	char * iter = (char *) (dest + *arrlen);
+
+	for (size_t idx = 0; idx < *arrlen; idx++) {
+
+		dest[idx] = ini_array_release(&iter, MY_ARRAY_DELIMITER, ini_format);
+		ini_string_parse(dest[idx], ini_format);
+
+	}
+
 	return dest;
- 
+
 }
 
-static int my_ini_listener (IniDispatch *this, void *v_store) {
+static int my_handler (IniDispatch * this, void * v_store) {
 
-	struct ini_store *store = (struct ini_store *) v_store;
+	struct ini_store * store = (struct ini_store *) v_store;
 
-	switch (this->type) {
+	if (this->type == INI_KEY && ini_string_match_si("my_section", this->append_to, this->format)) {
 
-		case INI_SECTION:
+		if (ini_string_match_si("my_string", this->data, this->format)) {
 
-			store->_read_status_ = ini_string_match_si("my_section", this->data, this->format) ? 1 : store->_read_status_ | 2;
-			break;
+			this->v_len = ini_string_parse(this->value, this->format);
 
-		case INI_KEY:
+			/*  Allocate a new string  */
+			if (store->my_section_my_string) { free(store->my_section_my_string); }
+			store->my_section_my_string = strndup(this->value, this->v_len);
+			if (!store->my_section_my_string) { return 1; }
 
-			if (store->_read_status_ == 1) {
+		} else if (ini_string_match_si("my_number", this->data, this->format)) {
 
-				if (ini_string_match_si("my_string", this->data, this->format)) {
+			store->my_section_my_number = ini_get_int(this->value);
 
-					this->v_len = ini_string_parse(this->value, this->format);
+		} else if (ini_string_match_si("my_boolean", this->data, this->format)) {
 
-					/* Allocate a new string */
-					if (store->my_section_my_string) { free(store->my_section_my_string); }
-					store->my_section_my_string = strndup(this->value, this->v_len);
+			store->my_section_my_boolean = ini_get_bool(this->value, 1);
 
-				} else if (ini_string_match_si("my_number", this->data, this->format)) {
+		} else if (ini_string_match_si("my_implicit_boolean", this->data, this->format)) {
 
-					store->my_section_my_number = ini_get_int(this->value);
+			store->my_section_my_implicit_boolean = ini_get_bool(this->value, 1);
 
-				} else if (ini_string_match_si("my_boolean", this->data, this->format)) {
+		} else if (ini_string_match_si("my_array", this->data, this->format)) {
 
-					store->my_section_my_boolean = ini_get_bool(this->value, 1);
+			/*  Save memory (not strictly needed)  */
+			this->v_len = ini_array_collapse(this->value, MY_ARRAY_DELIMITER, this->format);
 
-				} else if (ini_string_match_si("my_implicit_boolean", this->data, this->format)) {
+			/*  Allocate a new array of strings  */
+			if (store->my_section_my_array) { free(store->my_section_my_array); }
+			store->my_section_my_array = make_array(&store->my_section_my_arr_len, this->value, this->v_len + 1, this->format);
+			if (!store->my_section_my_array) { return 1; }
 
-					store->my_section_my_implicit_boolean = ini_get_bool(this->value, 1);
-
-				} else if (ini_string_match_si("my_array", this->data, this->format)) {
-
-					this->v_len = ini_array_collapse(this->value, MY_ARRAY_DELIMITER, this->format); /* Save memory (not strictly needed) */
-
-					/* Allocate a new array of strings */
-					if (store->my_section_my_array) { free(store->my_section_my_array); }
-					store->my_section_my_array = make_array(&store->my_section_my_arr_len, this->value, this->v_len + 1, this->format);
-
-				}
-
-			}
-
-			break;
+		}
 
 	}
 
@@ -150,28 +147,21 @@ int main () {
 
 	IniFormat my_format;
 
-	struct ini_store my_store = { NULL, -1, FALSE, FALSE, NULL, 0, 0 };
+	struct ini_store my_store;
 
 	ini_global_set_implicit_value("YES", 0);
 	my_format = INI_DEFAULT_FORMAT;
 	my_format.semicolon_marker = my_format.hash_marker = INI_IGNORE;
-	my_format.implicit_is_not_empty = TRUE;
+	my_format.implicit_is_not_empty = true;
 
-	if (load_ini_path("ini_files/typed_ini.conf", my_format, NULL, my_ini_listener, &my_store)) {
+	if (load_ini_path("ini_files/typed_ini.conf", my_format, my_init, my_handler, &my_store)) {
 
 		fprintf(stderr, "Sorry, something went wrong :-(\n");
 		return 1;
 
 	}
 
-	my_store._read_status_ &= 1;
 	print_stored_data(&my_store);
-
-	if (!my_store._read_status_) {
-
-		printf("\nSection `[my_section]` has not been found.\n");
-
-	}
 
 	if (my_store.my_section_my_string) {
 

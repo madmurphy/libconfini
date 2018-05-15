@@ -1,11 +1,11 @@
-/* examples/topics/ini_string_match_si.c */
+/*  examples/topics/ini_string_match_si.c  */
 
 #include <stdio.h>
 #include <confini.h>
 
-static int passfinder (IniDispatch *disp, void *v_membid) {
+static int passfinder (IniDispatch * disp, void * v_membid) {
 
-	/* Search for `password = "hello world"` in the INI file */
+	/*  Search for `password = "hello world"` in the INI file  */
 	if (
 		ini_string_match_si("password", disp->data, disp->format)
 		&& ini_string_match_si("hello world", disp->value, disp->format)
@@ -24,7 +24,7 @@ int main () {
 
 	size_t membid;
 
-	/* Load INI file */
+	/*  Load INI file  */
 	int retval = load_ini_path(
 		"ini_files/example.conf",
 		INI_DEFAULT_FORMAT,
@@ -33,7 +33,7 @@ int main () {
 		&membid
 	);
 
-	/* Check for errors */
+	/*  Check for errors  */
 	if (retval & CONFINI_ERROR) {
 
 		fprintf(stderr, "Sorry, something went wrong :-(\n");
@@ -41,7 +41,7 @@ int main () {
 
 	}
 
-	/* Check if `load_ini_path()` has been interrupted by `passfinder()` */
+	/*  Check if `load_ini_path()` has been interrupted by `passfinder()`  */
 	retval	==	CONFINI_FEINTR ?
 				printf("We found it! It's the INI element number #%d!\n", membid)
 			:
@@ -50,3 +50,4 @@ int main () {
 	return 0;
 
 }
+

@@ -54,11 +54,15 @@
                                                                             /-*/
 
 
+/** @brief	Checks whether a format does not support escape sequences **/
+#define INIFORMAT_HAS_NO_ESC(FMT) (FMT.multiline_nodes == INI_NO_MULTILINE && FMT.no_double_quotes && FMT.no_single_quotes)
+
+
 
 /* PUBLIC TYPEDEFS */
 
 
-/** @brief	24-bit bitfield representing a unique format of an INI file (INI dialect) -- `sizeof(IniFormat)` should be `3` **/
+/** @brief	24-bit bitfield representing the format of an INI file (INI dialect) **/
 typedef _LIBCONFINI_INIFORMAT_STRUCT_ IniFormat;
 
 /** @brief	Global statistics about an INI file **/
@@ -71,17 +75,17 @@ typedef struct IniStatistics {
 /** @brief	Dispatch of a single INI node **/
 typedef struct IniDispatch {
 	const IniFormat format;
-	unsigned short int type;
-	char *data;
-	char *value;
-	char *append_to;
+	uint8_t type;
+	char * data;
+	char * value;
+	const char * append_to;
 	size_t d_len;
 	size_t v_len;
 	size_t at_len;
 	size_t dispatch_id;
 } IniDispatch;
 
-/** @brief	24-bit bitmask representing the format of an INI file **/
+/** @brief	The unique ID number of an INI format (24-bit maximum) **/
 typedef uint32_t IniFormatNum;
 
 
@@ -93,45 +97,28 @@ extern int load_ini_file (
 	FILE * const ini_file,
 	const IniFormat format,
 	int (* const f_init) (
-		IniStatistics *statistics,
-		void *init_other
+		IniStatistics * statistics,
+		void * init_other
 	),
 	int (* const f_foreach) (
-		IniDispatch *dispatch,
-		void *foreach_other
+		IniDispatch * dispatch,
+		void * foreach_other
 	),
-	void *user_data
+	void * const user_data
 );
 
 extern int load_ini_path (
 	const char * const path,
 	const IniFormat format,
 	int (* const f_init) (
-		IniStatistics *statistics,
-		void *init_other
+		IniStatistics * statistics,
+		void * init_other
 	),
 	int (* const f_foreach) (
-		IniDispatch *dispatch,
-		void *foreach_other
+		IniDispatch * dispatch,
+		void * foreach_other
 	),
-	void *user_data
-);
-
-extern void ini_global_set_lowercase_mode (
-	_Bool lowercase
-);
-
-extern void ini_global_set_implicit_value (
-	char * const implicit_value,
-	const size_t implicit_v_len
-);
-
-extern IniFormatNum ini_fton (
-	const IniFormat format
-);
-
-extern IniFormat ini_ntof (
-	IniFormatNum format_id
+	void * const user_data
 );
 
 extern _Bool ini_string_match_ss (
@@ -168,25 +155,43 @@ extern size_t ini_array_get_length (
 	const IniFormat format
 );
 
+extern int ini_array_foreach (
+	const char * const ini_string,
+	const char delimiter,
+	const IniFormat format,
+	int (* const f_foreach) (
+		const char * fullstring,
+		size_t memb_offset,
+		size_t memb_length,
+		size_t memb_num,
+		IniFormat format,
+		void * foreach_other
+	),
+	void * const user_data
+);
+
+extern size_t ini_array_shift (
+	const char ** const ini_strptr,
+	const char delimiter,
+	const IniFormat format
+);
+
 extern size_t ini_array_collapse (
 	char * const ini_string,
 	const char delimiter,
 	const IniFormat format
 );
 
-extern int ini_array_foreach (
-	const char * const ini_string,
+extern char * ini_array_break (
+	char * const ini_string,
 	const char delimiter,
-	const IniFormat format,
-	int (* const f_foreach) (
-		const char *fullstring,
-		size_t memb_offset,
-		size_t memb_length,
-		size_t memb_num,
-		IniFormat format,
-		void *foreach_other
-	),
-	void *user_data
+	const IniFormat format
+);
+
+extern char * ini_array_release (
+	char ** ini_strptr,
+	const char delimiter,
+	const IniFormat format
 );
 
 extern int ini_array_split (
@@ -194,21 +199,33 @@ extern int ini_array_split (
 	const char delimiter,
 	const IniFormat format,
 	int (* const f_foreach) (
-		char *member,
+		char * member,
 		size_t memb_length,
 		size_t memb_num,
 		IniFormat format,
-		void *foreach_other
+		void * foreach_other
 	),
-	void *user_data
+	void * const user_data
+);
+
+extern void ini_global_set_lowercase_mode (
+	_Bool lowercase
+);
+
+extern void ini_global_set_implicit_value (
+	char * const implicit_value,
+	const size_t implicit_v_len
+);
+
+extern IniFormatNum ini_fton (
+	const IniFormat format
+);
+
+extern IniFormat ini_ntof (
+	IniFormatNum format_id
 );
 
 extern signed int ini_get_bool (
-	const char * const ini_string,
-	const signed int return_value
-);
-
-extern signed int ini_get_lazy_bool (
 	const char * const ini_string,
 	const signed int return_value
 );
@@ -219,19 +236,19 @@ extern signed int ini_get_lazy_bool (
 
 
 extern int (* const ini_get_int) (
-	const char *ini_string
+	const char * ini_string
 );
 
 extern long int (* const ini_get_lint) (
-	const char *ini_string
+	const char * ini_string
 );
 
 extern long long int (* const ini_get_llint) (
-	const char *ini_string
+	const char * ini_string
 );
 
 extern double (* const ini_get_float) (
-	const char *ini_string
+	const char * ini_string
 );
 
 
@@ -249,12 +266,12 @@ enum ConfiniInterruptNo {
 	CONFINI_ENOENT = 4,	/**< File inaccessible **/
 	CONFINI_ENOMEM = 5,	/**< Error allocating memory **/
 	CONFINI_EIO = 6,	/**< Error reading the file **/
-	CONFINI_EFEOOR = 7	/**< The loop is longer than expected (out of range) **/
+	CONFINI_EFEOOR = 7	/**< The dispatches are more than expected (out of range) **/
 };
 
 /** @brief	INI nodes types **/
 enum IniNodeType {
-	INI_UNKNOWN = 0,	/**< Node impossible to parse **/
+	INI_UNKNOWN = 0,
 	INI_VALUE = 1,		/**< Not used here (values are dispatched together with keys), but available for user's implementations **/
 	INI_KEY = 2,
 	INI_SECTION = 3,
@@ -284,7 +301,7 @@ enum IniSectionPaths {
 	INI_ABSOLUTE_AND_RELATIVE = 0,	/**< Section paths starting with a dot express nesting to the current parent, to root otherwise **/
 	INI_ABSOLUTE_ONLY = 1,		/**< Section paths starting with a dot will be simply cleaned of their leading dot and appended to root **/
 	INI_ONE_LEVEL_ONLY = 2,		/**< The format supports sections, but the dot does not express nesting and is not a meta-character **/
-	INI_NO_SECTIONS = 3		/**< The format does *not* support sections -- `/\[[^\]]*\]/g` will be treated as keys! **/
+	INI_NO_SECTIONS = 3		/**< The format does *not* support sections -- `/\[[^\]]*\]/g`, if any, will be treated as keys! **/
 };
 
 /** @brief	Possible values of IniFormat::multiline_nodes **/
@@ -292,19 +309,19 @@ enum IniMultiline {
 	INI_MULTILINE_EVERYWHERE = 0,		/**< Comments, section paths and keys -- disabled or not -- are allowed to be multi-line. **/
 	INI_BUT_COMMENTS = 1,			/**< Only section paths and keys -- disabled or not -- are allowed to be multi-line. **/
 	INI_BUT_DISABLED_AND_COMMENTS = 2,	/**< Only *active* section paths and *active* keys are allowed to be multi-line. **/
-	INI_NO_MULTILINE = 3			/**< The multi-line escaping sequence is disabled. **/
+	INI_NO_MULTILINE = 3			/**< The multi-line escape sequence is disabled. **/
 };
 
 /** @brief	A model format **/
 static const IniFormat INI_DEFAULT_FORMAT = _LIBCONFINI_DEFAULT_FORMAT_;
 
-/** @brief	If set to `TRUE` key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: `FALSE`) **/
+/** @brief	If set to `TRUE`, key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: `FALSE`) **/
 extern _Bool INI_GLOBAL_LOWERCASE_MODE;
 
-/** @brief	Value to be dispatched in case of implicit keys (default value: `NULL`) **/
-extern char *INI_GLOBAL_IMPLICIT_VALUE;
+/** @brief	Value to be assigned to implicit keys (default value: `NULL`) **/
+extern char * INI_GLOBAL_IMPLICIT_VALUE;
 
-/** @brief	Length of the value dispatched in case of implicit keys -- it can be set to any unsigned number, independently of the real length of `#INI_GLOBAL_IMPLICIT_VALUE` (default value: `0`) **/
+/** @brief	Length of the value assigned to implicit keys -- this may be any unsigned number, independently of the real length of `#INI_GLOBAL_IMPLICIT_VALUE` (default value: `0`) **/
 extern size_t INI_GLOBAL_IMPLICIT_V_LEN;
 
 

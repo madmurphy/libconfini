@@ -1,9 +1,9 @@
-/* examples/topics/ini_string_parse.c */
+/*  examples/topics/ini_string_parse.c  */
 
 #include <stdio.h>
 #include <confini.h>
 
-int ini_listener (IniDispatch *dispatch, void *v_null) {
+static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
 	if (dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY) {
 
@@ -12,7 +12,7 @@ int ini_listener (IniDispatch *dispatch, void *v_null) {
 
 	}
 
-	printf("DATA: %s\nVALUE: %s\n", dispatch->data, dispatch->value);
+	printf("DATA: %s\nVALUE: %s\n\n", dispatch->data, dispatch->value);
 
 	return 0;
 
@@ -30,3 +30,4 @@ int main () {
 	return 0;
 
 }
+

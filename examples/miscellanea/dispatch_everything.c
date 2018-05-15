@@ -1,4 +1,4 @@
-/* examples/miscellanea/dispatch_everything.c */
+/*  examples/miscellanea/dispatch_everything.c  */
 
 #include <stdio.h>
 #include <confini.h>
@@ -8,14 +8,14 @@
 
 struct my_struct {
 
-	char *my_date;
-	char *my_ini_file;
+	char * my_date;
+	char * my_ini_file;
 
 };
 
-static int print_ini_stats (IniStatistics *statistics, void *user_data) {
+static int print_ini_stats (IniStatistics * statistics, void * user_data) {
 
-	struct my_struct *my_other = (struct my_struct *) user_data;
+	struct my_struct * my_other = (struct my_struct *) user_data;
 
 	printf(
 
@@ -33,7 +33,7 @@ static int print_ini_stats (IniStatistics *statistics, void *user_data) {
 
 }
 
-static int my_ini_listener (IniDispatch *dispatch, void *user_data) {
+static int my_ini_listener (IniDispatch * dispatch, void * user_data) {
 
 	printf(
 
@@ -58,7 +58,7 @@ static int my_ini_listener (IniDispatch *dispatch, void *user_data) {
 
 	);
 
-	/* Check if this is an implicit key */
+	/*  Check if this is an implicit key  */
 
 	if (dispatch->value == INI_GLOBAL_IMPLICIT_VALUE) {
 
@@ -72,25 +72,25 @@ static int my_ini_listener (IniDispatch *dispatch, void *user_data) {
 
 int main () {
 
-	/* The format of the INI file */
+	/*  The format of the INI file  */
 	IniFormat my_format;
 
-	/* User data */
+	/*  User data  */
 	struct my_struct my_other;
 
-	/* Define the value to be shown in case of implicit keys, and its length */
+	/*  Define the value to be shown in case of implicit keys, and its length  */
 	ini_global_set_implicit_value("YES", 0);
 
 	my_other.my_date = "Thursday September 22th, 2016";
 	my_other.my_ini_file = "example.conf";
 
-	/* Use the default format as model for the new format */
+	/*  Use the default format as model for the new format  */
 	my_format = INI_DEFAULT_FORMAT;
 
-	/* Enable implicit keys for this format */
+	/*  Enable implicit keys for this format  */
 	my_format.implicit_is_not_empty = TRUE;
 
-	/* Load INI file */
+	/*  Load INI file  */
 	if (load_ini_path("ini_files/example.conf", my_format, print_ini_stats, my_ini_listener, &my_other)) {
 
 		fprintf(stderr, "Sorry, something went wrong :-(\n");

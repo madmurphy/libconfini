@@ -1,4 +1,4 @@
-.TH "IniDispatch" 3 "Sat May 12 2018" "libconfini" \" -*- nroff -*-
+.TH "IniDispatch" 3 "Tue May 15 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -16,7 +16,7 @@ IniDispatch \- Dispatch of a single INI node\&.
 .RI "const \fBIniFormat\fP \fBformat\fP"
 .br
 .ti -1c
-.RI "unsigned short int \fBtype\fP"
+.RI "uint8_t \fBtype\fP"
 .br
 .ti -1c
 .RI "char * \fBdata\fP"
@@ -25,7 +25,7 @@ IniDispatch \- Dispatch of a single INI node\&.
 .RI "char * \fBvalue\fP"
 .br
 .ti -1c
-.RI "char * \fBappend_to\fP"
+.RI "const char * \fBappend_to\fP"
 .br
 .ti -1c
 .RI "size_t \fBd_len\fP"
@@ -58,11 +58,11 @@ The dispatch id
 .SS "IniDispatch::format"
 The format of the INI file (see struct \fC\fBIniFormat\fP\fP) 
 .SS "IniDispatch::type"
-The dispatch type (see enum \fC\fBIniNodeType\fP\fP) 
+The dispatch type (see \fCenum\fP \fC\fBIniNodeType\fP\fP) 
 .SS "IniDispatch::v_len"
 The length of the string \fC\fBIniDispatch::value\fP\fP 
 .SS "IniDispatch::value"
-It can be the value of a key element or an empty string 
+It can be the value of a key element, an empty string or it can point to the address pointed by the global variable \fC\fBINI_GLOBAL_IMPLICIT_VALUE\fP\fP 
 
 .SH "Author"
 .PP 

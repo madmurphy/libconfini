@@ -67,19 +67,35 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Record of notable changes</p>
-<h2>1.5.2 &ndash; 2018-05-12</h2>
+<h2>1.6.0 &ndash; 2018-05-15</h2>
 <p>Changes:</p>
 <ul>
-<li>Added <code><a class="el" href="structIniFormat.html#a3168fd8d019de9a2f648a1805718b310">IniFormat::section_paths</a></code> option to the <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) – sizeof(IniFormat) should...">IniFormat</a></code> bitfield</li>
+<li>Functions <code><a class="el" href="confini_8c.html#a6ca567ad863caef4609f8def7de0401a" title="Shifts the location pointed by ini_strptr to the next member of the INI array (without modifying the ...">ini_array_shift()</a></code>, <code><a class="el" href="confini_8c.html#a75809c0e952d9f9e14333e085ba6b910" title="Replaces the first delimiter found (together with the spaces that surround it) with \0 ...">ini_array_break()</a></code>, <code><a class="el" href="confini_8c.html#a2b34dc032fc37dda829dadf80bf34d26" title="Replaces the first delimiter found (together with the spaces that surround it) with \0...">ini_array_release()</a></code> have been created</li>
+<li>Made sure that escapable characters cannot be used as delimiters in formats that support escape sequences</li>
+<li>Boolean pair <code>OFF</code>/<code>ON</code> has been added to the list of supported INI booleans</li>
+<li>Boolean pair <code>0</code>/<code>1</code> has been removed from the list of supported INI booleans</li>
+<li>Public macro <code>INIFORMAT_HAS_NO_ESC</code> has been created</li>
+<li>Redundant function † <code>ini_get_lazy_bool()</code> has been removed</li>
+<li>The buffer pointed by <code><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></code> is now passed as <code>const</code></li>
+<li>Code review (<code><a class="el" href="confini_8c.html#af9784469081947db46d173de14fa2a2f" title="Compares two simple strings and checks if they match. ">ini_string_match_ss()</a></code>, <code><a class="el" href="confini_8c.html#ad04ddad7ba1f627379ac714e656a693a" title="Compares a simple string an INI string and and checks if they match. ">ini_string_match_si()</a></code>, <code><a class="el" href="confini_8c.html#a24a43707c6c2f056615ae02b67f6d3cc" title="Compares two INI strings and checks if they match. ">ini_string_match_ii()</a></code>, <code><a class="el" href="confini_8c.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescapes \\, \&#39; and \&quot; and removes all unescaped quotes (if single/double quotes are considered meta...">ini_string_parse()</a></code>, <code><a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array in number of members. ">ini_array_get_length()</a></code>, <code><a class="el" href="confini_8c.html#a94bc649f5b58d4e2ad481080d918c41e" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code>, <code><a class="el" href="confini_8c.html#a2cc490a4e05c48497340370f54fe3ba2" title="Splits a stringified INI array into NUL-separated members and calls a custom function for each member...">ini_array_split()</a></code>, private functions <code><a class="el" href="confini_8c.html#abb60f6ecb39dbd9a25d878283c5d37f0" title="Removes all comment initializers (# or ;) from the beginning of each line of a comment. ">uncomment()</a></code> and <code><a class="el" href="confini_8c.html#a8c28b5a6ee6e3632bd48823f82aa6949" title="Examines a (single-/multi- line) segment and checks whether it contains sub-segments. ">further_cuts()</a></code>)</li>
+<li>Private functions <code><a class="el" href="confini_8c.html#a93c4d8e9287f6ce56f22ce90241b77f4" title="Gets the position of the first occurence out of quotes of a given character. ">get_metachar_pos()</a></code> and <code><a class="el" href="confini_8c.html#a6dfd90309965c426ac9b072d79a08601" title="Out of quotes similar to ECMAScript string.replace(/^[\n\r]\s*|(\s)+/g, &quot; &quot;) ">collapse_empty_quotes()</a></code> have been created</li>
+<li>Private functions † <code>sanitize_key_name()</code> and † <code>get_delimiter_pos()</code> have been renamed to <code><a class="el" href="confini_8c.html#a4f8808c57ddfc07ba7b55370ff34f5cb" title="Out of quotes similar to ECMAScript string.replace(/&#39;&#39;|&quot;&quot;/g, &quot;&quot;).replace(/^[\n\r]\s*|(\s)+/g, &quot; &quot;) ">collapse_everything()</a></code> and <code><a class="el" href="confini_8c.html#ab34de4f3cd8ff30c45ac7652457f695e" title="Gets the position of the first occurence out of quotes of a given character, stopping after a given n...">getn_metachar_pos()</a></code> (the latter now requires one more argument)</li>
+<li>Documentation</li>
+<li>Examples</li>
+</ul>
+<h2>1.5.2 &ndash; 2018-05-06</h2>
+<p>Changes:</p>
+<ul>
+<li>Added <code><a class="el" href="structIniFormat.html#a3168fd8d019de9a2f648a1805718b310">IniFormat::section_paths</a></code> option to the <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect) ">IniFormat</a></code> bitfield</li>
 <li>Created <code>enum</code> <code>IniSectionPaths</code></li>
 <li>Made sure that implicit keys containing only empty quotes are ignored in formats that support quotes</li>
-<li>Private function <code>ultrim_h()</code> has been renamed to <code><a class="el" href="confini_8c.html#a43eebf8c2f153dcaaf7db2d590f1d8cd" title="Unparsed hard left trim (left trim of ‘/^(+|\[ ]|’&#39;|&quot;&quot;)+/`) – does change the buffer. ">qultrim_h()</a></code> and rewritten</li>
-<li>Code review (<code><a class="el" href="confini_8c.html#af0b43ef7d273359a9ccad47754b57d18" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code>, <code><a class="el" href="confini_8c.html#adb4525d732d5a08d87d9c64744f9f51e" title="Splits a stringified INI array into NUL-separated members and calls a custom function for each member...">ini_array_split()</a></code>, <code><a class="el" href="confini_8c.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescapes \\, \&#39; and \&quot; and removes all unescaped quotes (if single/double quotes are considered meta...">ini_string_parse()</a></code>, private functions <code><a class="el" href="confini_8c.html#a9217de2d9be4b2d6dcd75725a8d96478" title="Gets the position of the first delimiter out of quotes. ">get_delimiter_pos()</a></code> and <code><a class="el" href="confini_8c.html#aed03fec7ca2061877cd335451177b4fc" title="Tries to determine the type of a member &quot;as if it was active&quot;. ">get_type_as_active()</a></code>)</li>
+<li>Private function † <code>ultrim_h()</code> has been renamed to <code><a class="el" href="confini_8c.html#a43eebf8c2f153dcaaf7db2d590f1d8cd" title="Unparsed hard left trim (left trim of /^(\s+|\\[\n\r]|&#39;&#39;|&quot;&quot;)+/) – does change the buffer...">qultrim_h()</a></code> and rewritten</li>
+<li>Code review (<code><a class="el" href="confini_8c.html#a94bc649f5b58d4e2ad481080d918c41e" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code>, <code><a class="el" href="confini_8c.html#a2cc490a4e05c48497340370f54fe3ba2" title="Splits a stringified INI array into NUL-separated members and calls a custom function for each member...">ini_array_split()</a></code>, <code><a class="el" href="confini_8c.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescapes \\, \&#39; and \&quot; and removes all unescaped quotes (if single/double quotes are considered meta...">ini_string_parse()</a></code>, private functions † <code>get_delimiter_pos()</code> and <code><a class="el" href="confini_8c.html#aed03fec7ca2061877cd335451177b4fc" title="Tries to determine the type of a member &quot;as if it was active&quot;. ">get_type_as_active()</a></code>)</li>
 </ul>
 <h2>1.5.1 &ndash; 2018-04-30</h2>
 <p>Changes:</p>
 <ul>
-<li>Changed field order and size in the <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) – sizeof(IniFormat) should...">IniFormat</a></code> bitfield</li>
+<li>Changed field order and size in the <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect) ">IniFormat</a></code> bitfield</li>
 <li>Changed internal values of <code>INI_KEY</code>, <code>INI_SECTION</code>, <code>INI_DISABLED_KEY</code> and <code>INI_DISABLED_SECTION</code> (see <code>enum</code> <code>IniNodeType</code>)</li>
 <li>Moved example INI files to <code>examples/ini_files</code></li>
 <li>Documentation</li>
@@ -87,25 +103,25 @@ $(function() {
 <h2>1.5.0 &ndash; 2018-04-22</h2>
 <p>Changes:</p>
 <ul>
-<li>Added <code><a class="el" href="structIniFormat.html#ad224b6997bbb99d4715fba8a8bea4cd7">IniFormat::preserve_empty_quotes</a></code> option to the <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) – sizeof(IniFormat) should...">IniFormat</a></code> bitfield</li>
-<li><code>IniFormat::hash</code>, <code>IniFormat::semicolon</code> and <code>IniFormat::multiline_entries</code> have been renamed to <code><a class="el" href="structIniFormat.html#a4d9984334335612830eef223e0adc913">IniFormat::hash_marker</a></code>, <code><a class="el" href="structIniFormat.html#aab0c2bf1e89593bbbfc9ac5fc5f6f552">IniFormat::semicolon_marker</a></code> and <code><a class="el" href="structIniFormat.html#a8a4a1d116d66bad0c61d9876bf9f87ee">IniFormat::multiline_nodes</a></code></li>
+<li>Added <code><a class="el" href="structIniFormat.html#ad224b6997bbb99d4715fba8a8bea4cd7">IniFormat::preserve_empty_quotes</a></code> option to the <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect) ">IniFormat</a></code> bitfield</li>
+<li>† <code>IniFormat::hash</code>, † <code>IniFormat::semicolon</code> and † <code>IniFormat::multiline_entries</code> have been renamed to <code><a class="el" href="structIniFormat.html#a4d9984334335612830eef223e0adc913">IniFormat::hash_marker</a></code>, <code><a class="el" href="structIniFormat.html#aab0c2bf1e89593bbbfc9ac5fc5f6f552">IniFormat::semicolon_marker</a></code> and <code><a class="el" href="structIniFormat.html#a8a4a1d116d66bad0c61d9876bf9f87ee">IniFormat::multiline_nodes</a></code></li>
 <li>Function <code><a class="el" href="confini_8c.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescapes \\, \&#39; and \&quot; and removes all unescaped quotes (if single/double quotes are considered meta...">ini_string_parse()</a></code> has been created</li>
-<li>Function <code>ini_collapse_array()</code> has been renamed to <code><a class="el" href="confini_8c.html#aa0721fcae5f04e5a9edd485dc1ddd2fa" title="Compresses the distribution of the data of a stringified INI array, by removing all the white spaces ...">ini_array_collapse()</a></code></li>
-<li>Function <code>ini_split_array()</code> has been renamed to <code><a class="el" href="confini_8c.html#adb4525d732d5a08d87d9c64744f9f51e" title="Splits a stringified INI array into NUL-separated members and calls a custom function for each member...">ini_array_split()</a></code></li>
-<li>Function <code>ini_set_implicit_value()</code> has been renamed to <code><a class="el" href="confini_8c.html#a3a6eb3b79a88304864341075240ee412" title="Sets the value used for implicit keys. ">ini_global_set_implicit_value()</a></code></li>
-<li>Function <code>confini_global_set_lowercase_mode()</code> has been renamed to <code><a class="el" href="confini_8c.html#a7a940a6820371d950ec9428f8457a2a1" title="Sets the value of the global variable INI_GLOBAL_LOWERCASE_MODE ">ini_global_set_lowercase_mode()</a></code></li>
-<li>Global variable <code>INI_INSENSITIVE_LOWERCASE</code> has been renamed to <code>INI_GLOBAL_LOWERCASE_MODE</code></li>
+<li>Function † <code>ini_collapse_array()</code> has been renamed to <code><a class="el" href="confini_8c.html#aa0721fcae5f04e5a9edd485dc1ddd2fa" title="Compresses the distribution of the data of a stringified INI array by removing all the white spaces t...">ini_array_collapse()</a></code></li>
+<li>Function † <code>ini_split_array()</code> has been renamed to <code><a class="el" href="confini_8c.html#a2cc490a4e05c48497340370f54fe3ba2" title="Splits a stringified INI array into NUL-separated members and calls a custom function for each member...">ini_array_split()</a></code></li>
+<li>Function † <code>ini_set_implicit_value()</code> has been renamed to <code><a class="el" href="confini_8c.html#a3a6eb3b79a88304864341075240ee412" title="Sets the value to be to be assigned to implicit keys. ">ini_global_set_implicit_value()</a></code></li>
+<li>Function † <code>confini_global_set_lowercase_mode()</code> has been renamed to <code><a class="el" href="confini_8c.html#a7a940a6820371d950ec9428f8457a2a1" title="Sets the value of the global variable INI_GLOBAL_LOWERCASE_MODE ">ini_global_set_lowercase_mode()</a></code></li>
+<li>Global variable † <code>INI_INSENSITIVE_LOWERCASE</code> has been renamed to <code>INI_GLOBAL_LOWERCASE_MODE</code></li>
 <li>Default value of <code>INI_GLOBAL_LOWERCASE_MODE</code> has been set to <code>FALSE</code></li>
-<li>Data type <code>IniFormatId</code> has been renamed to <code>IniFormatNum</code></li>
-<li><code>ini_format_get_id()</code> has been renamed to <code><a class="el" href="confini_8c.html#a02bf5a1299ffb85fbd2f087cffbc1db8" title="Converts an IniFormat into an IniFormatNum ">ini_fton()</a></code></li>
-<li><code>ini_format_set_to_id()</code> has been renamed to <code><a class="el" href="confini_8c.html#a6126371aef71be174ee8e1262a231ef5" title="Constructs an IniFormat from an IniFormatNum ">ini_ntof()</a></code> &ndash; now accepts only one argument and has a return value</li>
-<li>Constants <code>INI_PARSE_COMMENT</code>, <code>INI_SHOW_COMMENT</code>, <code>INI_FORGET_COMMENT</code> and <code>INI_NORMAL_CHARACTER</code> have been renamed to <code>INI_DISABLED_OR_COMMENT</code>, <code>INI_ONLY_COMMENT</code>, <code>INI_IGNORE</code> and <code>INI_IS_NOT_A_MARKER</code></li>
-<li>Constants <code>INI_EVERYTHING_MULTILINE</code>, <code>INI_ACTIVE_AND_DISABLED_MULTILINE</code> and <code>INI_ACTIVE_MULTILINE</code> have been renamed to <code>INI_MULTILINE_EVERYWHERE</code>, <code>INI_BUT_COMMENTS</code>, and <code>INI_BUT_DISABLED_AND_COMMENTS</code></li>
-<li>Constants <code>CONFINI_EIINTR</code> and <code>CONFINI_EFEINTR</code> have been renamed to <code>CONFINI_IINTR</code> and <code>CONFINI_FEINTR</code></li>
-<li><code>enum</code> tags <code>ConfiniErrorNo</code> and <code>IniComments</code> have been renamed to <code>ConfiniInterruptNo</code> and <code>IniCommentMarker</code></li>
-<li>Private function <code>sanitize_section_name()</code> has been renamed to <code><a class="el" href="confini_8c.html#aa17889754780149f18e417607e5ffb24" title="Sanitizes a section path. ">sanitize_section_path()</a></code></li>
-<li>Created private function <code><a class="el" href="confini_8c.html#abf29e5b2933a67e2a2a720f426dd381e" title="Out of quotes similar to ECMAScript string.replace(/&#39;&#39;|&quot;&quot;/g, &quot;&quot;).replace(/^[\n\r]\s*|(\s)+/g, &quot; &quot;) ">sanitize_key_name()</a></code></li>
-<li>Code review (<code><a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array. ">ini_array_get_length()</a></code>, <code><a class="el" href="confini_8c.html#ad04ddad7ba1f627379ac714e656a693a" title="Compares an INI string with a simple string and checks if they match according to a format...">ini_string_match_si()</a></code>, <code><a class="el" href="confini_8c.html#a24a43707c6c2f056615ae02b67f6d3cc" title="Compares two INI strings and checks if they match according to a format. ">ini_string_match_ii()</a></code>, private functions <code><a class="el" href="confini_8c.html#aa17889754780149f18e417607e5ffb24" title="Sanitizes a section path. ">sanitize_section_path()</a></code> and <code><a class="el" href="confini_8c.html#ab63671eba263728ddc8ad7dda7568172" title="Out of quotes similar to ECMAScript string.replace(/^[\n\r]\s*|(\s)+/g, &quot; &quot;) ">collapse_spaces()</a></code>)</li>
+<li>Data type † <code>IniFormatId</code> has been renamed to <code>IniFormatNum</code></li>
+<li>† <code>ini_format_get_id()</code> has been renamed to <code><a class="el" href="confini_8c.html#a02bf5a1299ffb85fbd2f087cffbc1db8" title="Calculates the IniFormatNum of an IniFormat ">ini_fton()</a></code></li>
+<li>† <code>ini_format_set_to_id()</code> has been renamed to <code><a class="el" href="confini_8c.html#a6126371aef71be174ee8e1262a231ef5" title="Constructs a new IniFormat according to an IniFormatNum ">ini_ntof()</a></code> &ndash; now accepts only one argument and has a return value</li>
+<li>Constants † <code>INI_PARSE_COMMENT</code>, † <code>INI_SHOW_COMMENT</code>, † <code>INI_FORGET_COMMENT</code> and † <code>INI_NORMAL_CHARACTER</code> have been renamed to <code>INI_DISABLED_OR_COMMENT</code>, <code>INI_ONLY_COMMENT</code>, <code>INI_IGNORE</code> and <code>INI_IS_NOT_A_MARKER</code></li>
+<li>Constants † <code>INI_EVERYTHING_MULTILINE</code>, † <code>INI_ACTIVE_AND_DISABLED_MULTILINE</code> and † <code>INI_ACTIVE_MULTILINE</code> have been renamed to <code>INI_MULTILINE_EVERYWHERE</code>, <code>INI_BUT_COMMENTS</code>, and <code>INI_BUT_DISABLED_AND_COMMENTS</code></li>
+<li>Constants † <code>CONFINI_EIINTR</code> and † <code>CONFINI_EFEINTR</code> have been renamed to <code>CONFINI_IINTR</code> and <code>CONFINI_FEINTR</code></li>
+<li><code>enum</code> tags † <code>ConfiniErrorNo</code> and † <code>IniComments</code> have been renamed to <code>ConfiniInterruptNo</code> and <code>IniCommentMarker</code></li>
+<li>Private function † <code>sanitize_section_name()</code> has been renamed to <code><a class="el" href="confini_8c.html#aa17889754780149f18e417607e5ffb24" title="Sanitizes a section path. ">sanitize_section_path()</a></code></li>
+<li>Created private function † <code>sanitize_key_name()</code></li>
+<li>Code review (<code><a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array in number of members. ">ini_array_get_length()</a></code>, <code><a class="el" href="confini_8c.html#ad04ddad7ba1f627379ac714e656a693a" title="Compares a simple string an INI string and and checks if they match. ">ini_string_match_si()</a></code>, <code><a class="el" href="confini_8c.html#a24a43707c6c2f056615ae02b67f6d3cc" title="Compares two INI strings and checks if they match. ">ini_string_match_ii()</a></code>, private functions <code><a class="el" href="confini_8c.html#aa17889754780149f18e417607e5ffb24" title="Sanitizes a section path. ">sanitize_section_path()</a></code> and <code><a class="el" href="confini_8c.html#ab63671eba263728ddc8ad7dda7568172" title="Out of quotes similar to ECMAScript string.replace(/^[\n\r]\s*|(\s)+/g, &quot; &quot;) ">collapse_spaces()</a></code>)</li>
 <li>Made sure that sections appended to root as pseudo-subsections will be dispatched always without the leading dot</li>
 <li>Made sure that key and section names will always be cleaned of empty quotes in formats that support quotes (relevant for space collapsing)</li>
 <li>Removed unused internationalization support from autotools</li>
@@ -134,15 +150,15 @@ $(function() {
 </pre><h2>1.4.2 &ndash; 2017-10-05</h2>
 <p>Changes:</p>
 <ul>
-<li>Code review and bug fix in private function <code>sanitize_section_name()</code></li>
+<li>Code review and bug fix in private function † <code>sanitize_section_name()</code></li>
 </ul>
 <h2>1.4.1 &ndash; 2017-10-02</h2>
 <p>Changes:</p>
 <ul>
 <li>Created global preprocessor constant <code>CONFINI_ERROR</code></li>
-<li>Created global variable <code>INI_INSENSITIVE_LOWERCASE</code></li>
-<li>Created functions <code>confini_global_set_lowercase_mode()</code>, <code><a class="el" href="confini_8c.html#af9784469081947db46d173de14fa2a2f" title="Compares two simple strings and checks if they match. ">ini_string_match_ss()</a></code>, <code><a class="el" href="confini_8c.html#ad04ddad7ba1f627379ac714e656a693a" title="Compares an INI string with a simple string and checks if they match according to a format...">ini_string_match_si()</a></code> and <code><a class="el" href="confini_8c.html#a24a43707c6c2f056615ae02b67f6d3cc" title="Compares two INI strings and checks if they match according to a format. ">ini_string_match_ii()</a></code></li>
-<li>Code review (data types, <code>enum</code> <code>ConfiniErrorNo</code>, <code><a class="el" href="confini_8c.html#a5109b2e8c8a76b8376931a12d4bcbd79" title="Parses an INI file and dispatches its content. ">load_ini_file()</a></code>, <code><a class="el" href="confini_8c.html#ac55f3fab95f697ac5058533df100fc11" title="Unescapes \\, \&#39; and \&quot; and removes all unescaped quotes (if single/double quotes are considered meta...">ini_unquote()</a></code>)</li>
+<li>Created global variable † <code>INI_INSENSITIVE_LOWERCASE</code></li>
+<li>Created functions † <code>confini_global_set_lowercase_mode()</code>, <code><a class="el" href="confini_8c.html#af9784469081947db46d173de14fa2a2f" title="Compares two simple strings and checks if they match. ">ini_string_match_ss()</a></code>, <code><a class="el" href="confini_8c.html#ad04ddad7ba1f627379ac714e656a693a" title="Compares a simple string an INI string and and checks if they match. ">ini_string_match_si()</a></code> and <code><a class="el" href="confini_8c.html#a24a43707c6c2f056615ae02b67f6d3cc" title="Compares two INI strings and checks if they match. ">ini_string_match_ii()</a></code></li>
+<li>Code review (data types, <code>enum</code> † <code>ConfiniErrorNo</code>, <code><a class="el" href="confini_8c.html#a326e804687b2b46f0a295ae724d84628" title="Parses an INI file and dispatches its content using a FILE structure as argument. ...">load_ini_file()</a></code>, <code><a class="el" href="confini_8c.html#ac55f3fab95f697ac5058533df100fc11" title="Unescapes \\, \&#39; and \&quot; and removes all unescaped quotes (if single/double quotes are considered meta...">ini_unquote()</a></code>)</li>
 <li>Moved <code>#include &lt;stdint.h&gt;</code> from <code><a class="el" href="confini_8c.html" title="libconfini functions ">confini.c</a></code> to <code><a class="el" href="confini_8h.html" title="libconfini header ">confini.h</a></code></li>
 <li>Moved back <code>#include &lt;stdio.h&gt;</code> from <code><a class="el" href="confini_8h.html" title="libconfini header ">confini.h</a></code> to <code><a class="el" href="confini_8c.html" title="libconfini functions ">confini.c</a></code></li>
 <li>Fixed UTF-8 BOM bug</li>
@@ -152,12 +168,12 @@ $(function() {
 <h2>1.4.0 &ndash; 2017-09-07</h2>
 <p>Changes:</p>
 <ul>
-<li>Function <code><a class="el" href="confini_8c.html#a5109b2e8c8a76b8376931a12d4bcbd79" title="Parses an INI file and dispatches its content. ">load_ini_file()</a></code> now uses a <code>FILE</code> structure instead of a path &ndash; in order to use a path (a string), the shortcut <code><a class="el" href="confini_8c.html#ae4b70cf57595a191a7b8c075f9b00780" title="Parses an INI file and dispatches its content. ">load_ini_path()</a></code> has been created</li>
+<li>Function <code><a class="el" href="confini_8c.html#a326e804687b2b46f0a295ae724d84628" title="Parses an INI file and dispatches its content using a FILE structure as argument. ...">load_ini_file()</a></code> now uses a <code>FILE</code> structure instead of a path &ndash; in order to use a path (a string), the shortcut <code><a class="el" href="confini_8c.html#a307e84bd8a6775c4e8d9c00736e201ab" title="Parses an INI file and dispatches its content using a path as argument. ">load_ini_path()</a></code> has been created</li>
 <li>Added <code>#include &lt;stdint.h&gt;</code> to <code><a class="el" href="confini_8c.html" title="libconfini functions ">confini.c</a></code></li>
 <li>Moved <code>#include &lt;stdio.h&gt;</code> from <code><a class="el" href="confini_8c.html" title="libconfini functions ">confini.c</a></code> to <code><a class="el" href="confini_8h.html" title="libconfini header ">confini.h</a></code></li>
 <li><code>nul</code> characters found in INI files will be skipped</li>
-<li><code>unsigned long int</code> replaced with <code>size_t</code> in return values of <code><a class="el" href="confini_8c.html#ac55f3fab95f697ac5058533df100fc11" title="Unescapes \\, \&#39; and \&quot; and removes all unescaped quotes (if single/double quotes are considered meta...">ini_unquote()</a></code>, <code><a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array. ">ini_array_get_length()</a></code> and <code>ini_collapse_array()</code></li>
-<li><code>unsigned int</code> replaced with <code>int</code> in return values of <code><a class="el" href="confini_8c.html#a5109b2e8c8a76b8376931a12d4bcbd79" title="Parses an INI file and dispatches its content. ">load_ini_file()</a></code>, <code><a class="el" href="confini_8c.html#af0b43ef7d273359a9ccad47754b57d18" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> and <code>ini_split_array()</code></li>
+<li><code>unsigned long int</code> replaced with <code>size_t</code> in return values of <code><a class="el" href="confini_8c.html#ac55f3fab95f697ac5058533df100fc11" title="Unescapes \\, \&#39; and \&quot; and removes all unescaped quotes (if single/double quotes are considered meta...">ini_unquote()</a></code>, <code><a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array in number of members. ">ini_array_get_length()</a></code> and † <code>ini_collapse_array()</code></li>
+<li><code>unsigned int</code> replaced with <code>int</code> in return values of <code><a class="el" href="confini_8c.html#a326e804687b2b46f0a295ae724d84628" title="Parses an INI file and dispatches its content using a FILE structure as argument. ...">load_ini_file()</a></code>, <code><a class="el" href="confini_8c.html#a94bc649f5b58d4e2ad481080d918c41e" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> and † <code>ini_split_array()</code></li>
 <li>UTF-8 BOM recognized and skipped</li>
 <li>Version numbering standardized (<code>${major}.${minor}.${revision}</code> instead of <code>${major}.${minor}-${release}</code>)</li>
 <li>Documentation</li>
@@ -189,9 +205,9 @@ $(function() {
 <h2>1.3-1 &ndash; 2016-10-24</h2>
 <p>Changes:</p>
 <ul>
-<li><code>ini_collapse_array()</code> has been created</li>
-<li><code>index</code> and <code>format</code> parameters have been added to callback function in <code><a class="el" href="confini_8c.html#af0b43ef7d273359a9ccad47754b57d18" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> and <code>ini_split_array()</code></li>
-<li><code>INI_ERASE_COMMENT</code> has been renamed to <code>INI_FORGET_COMMENT</code></li>
+<li>† <code>ini_collapse_array()</code> has been created</li>
+<li><code>index</code> and <code>format</code> parameters have been added to callback function in <code><a class="el" href="confini_8c.html#a94bc649f5b58d4e2ad481080d918c41e" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> and † <code>ini_split_array()</code></li>
+<li>† <code>INI_ERASE_COMMENT</code> has been renamed to † <code>INI_FORGET_COMMENT</code></li>
 <li>Added new documentation and examples</li>
 </ul>
 <h2>1.2-2 &ndash; 2016-10-21</h2>
@@ -203,19 +219,19 @@ $(function() {
 <h2>1.2-1 &ndash; 2016-10-20</h2>
 <p>Changes:</p>
 <ul>
-<li>Order of the <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing a unique format of an INI file (INI dialect) – sizeof(IniFormat) should...">IniFormat</a></code> bitfield has been changed</li>
-<li><code>IniFormat::implicit_is_special</code> has been renamed to <code><a class="el" href="structIniFormat.html#ae5722efd535f1d27c624a927eea622c3">IniFormat::implicit_is_not_empty</a></code></li>
-<li><code>IniFormat::no_collapsed_values</code> has been renamed to <code><a class="el" href="structIniFormat.html#af411935de86436fb9555ee57ba04960e">IniFormat::do_not_collapse_values</a></code></li>
-<li><code>IniDispatch::d_length</code> has been renamed to <code><a class="el" href="structIniDispatch.html#a34937218fa772fa66ceaa38923437791">IniDispatch::d_len</a></code></li>
-<li><code>IniDispatch::v_length</code> has been renamed to <code><a class="el" href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">IniDispatch::v_len</a></code></li>
+<li>Order of the <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect) ">IniFormat</a></code> bitfield has been changed</li>
+<li>† <code>IniFormat::implicit_is_special</code> has been renamed to <code><a class="el" href="structIniFormat.html#ae5722efd535f1d27c624a927eea622c3">IniFormat::implicit_is_not_empty</a></code></li>
+<li>† <code>IniFormat::no_collapsed_values</code> has been renamed to <code><a class="el" href="structIniFormat.html#af411935de86436fb9555ee57ba04960e">IniFormat::do_not_collapse_values</a></code></li>
+<li>† <code>IniDispatch::d_length</code> has been renamed to <code><a class="el" href="structIniDispatch.html#a34937218fa772fa66ceaa38923437791">IniDispatch::d_len</a></code></li>
+<li>† <code>IniDispatch::v_length</code> has been renamed to <code><a class="el" href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">IniDispatch::v_len</a></code></li>
 <li><code><a class="el" href="structIniDispatch.html#a12438a7f6cc343ad3202ffad82de671f">IniDispatch::at_len</a></code> (length of <code><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></code>) has been created</li>
 </ul>
 <h2>1.1-2 &ndash; 2016-10-15</h2>
 <p>Changes:</p>
 <ul>
-<li><code>IniFormatMask</code> has been renamed to <code>IniFormatId</code></li>
-<li><code>ini_format_set_from_mask()</code> has been renamed to <code>ini_format_set_to_id()</code></li>
-<li><code>ini_format_calculate_mask()</code> has been renamed to <code>ini_format_get_id()</code></li>
+<li>† <code>IniFormatMask</code> has been renamed to <code>IniFormatId</code></li>
+<li>† <code>ini_format_set_from_mask()</code> has been renamed to † <code>ini_format_set_to_id()</code></li>
+<li>† <code>ini_format_calculate_mask()</code> has been renamed to † <code>ini_format_get_id()</code></li>
 <li><code><a class="el" href="structIniFormat.html#a491e94bda3f8545471a86f0845c92474">IniFormat::no_spaces_in_names</a></code>: small bug fixed</li>
 <li>General code review</li>
 </ul>
@@ -224,21 +240,21 @@ $(function() {
 <ul>
 <li>Fixed quotes nesting bug</li>
 <li>enum <code>IniDelimiters</code> has been created</li>
-<li>Added support for <code>INI_ANY_SPACE</code> (<code>0</code>) as delimiter in <code><a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array. ">ini_array_get_length()</a></code>, <code><a class="el" href="confini_8c.html#af0b43ef7d273359a9ccad47754b57d18" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> and <code>ini_split_array()</code></li>
+<li>Added support for <code>INI_ANY_SPACE</code> (<code>0</code>) as delimiter in <code><a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array in number of members. ">ini_array_get_length()</a></code>, <code><a class="el" href="confini_8c.html#a94bc649f5b58d4e2ad481080d918c41e" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> and † <code>ini_split_array()</code></li>
 <li><code><a class="el" href="structIniFormat.html#a491e94bda3f8545471a86f0845c92474">IniFormat::no_spaces_in_names</a></code> has been created</li>
-<li><code>IniFormat::no_disabled_after_spaces</code> has been renamed to <code><a class="el" href="structIniFormat.html#a40a08a472ae9053fbaf4e7042967503d">IniFormat::no_disabled_after_space</a></code></li>
-<li><code>IniFormat::preserve_spaces_in_values</code> has been renamed to <code>IniFormat::no_collapsed_values</code></li>
+<li>† <code>IniFormat::no_disabled_after_spaces</code> has been renamed to <code><a class="el" href="structIniFormat.html#a40a08a472ae9053fbaf4e7042967503d">IniFormat::no_disabled_after_space</a></code></li>
+<li>† <code>IniFormat::preserve_spaces_in_values</code> has been renamed to † <code>IniFormat::no_collapsed_values</code></li>
 </ul>
 <h2>1.0-1 &ndash; 2016-10-10</h2>
 <p>Changes:</p>
 <ul>
-<li><code>ini_array_getlength()</code> has been renamed to <code><a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array. ">ini_array_get_length()</a></code></li>
-<li><code>ini_getbool()</code> has been renamed to <code><a class="el" href="confini_8c.html#a2a8dcc3d8ff26554486691423cce4ea0" title="Checks whether a string matches exactly one of the booleans listed in the private constant INI_BOOLEA...">ini_get_bool()</a></code></li>
-<li><code>ini_getlazybool()</code> has been renamed to <code><a class="el" href="confini_8c.html#ad95262d09842c25e8bb610bf95c42cd3" title="Checks whether the first letter of a string matches the first letter of one of the booleans listed in...">ini_get_lazy_bool()</a></code></li>
-<li><code>ini_getfloat()</code> has been renamed to <code><a class="el" href="confini_8c.html#a26dd8ef0bfb57aaedbeac8007fd1a03a" title="Link to atof() ">ini_get_float()</a></code></li>
-<li><code>ini_getllint()</code> has been renamed to <code><a class="el" href="confini_8c.html#a9562da3c55b51795bbcbb2b19d608907" title="Link to atoll() ">ini_get_llint()</a></code></li>
-<li><code>get_ini_format_mask()</code> has been renamed to <code>ini_format_calculate_mask()</code></li>
-<li><code>read_ini_format_mask()</code> has been renamed to <code>ini_format_set_from_mask()</code></li>
+<li>† <code>ini_array_getlength()</code> has been renamed to <code><a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array in number of members. ">ini_array_get_length()</a></code></li>
+<li>† <code>ini_getbool()</code> has been renamed to <code><a class="el" href="confini_8c.html#a2a8dcc3d8ff26554486691423cce4ea0" title="Checks whether a string matches one of the booleans listed in the private constant INI_BOOLEANS (case...">ini_get_bool()</a></code></li>
+<li>† <code>ini_getlazybool()</code> has been renamed to <code>ini_get_lazy_bool()</code></li>
+<li>† <code>ini_getfloat()</code> has been renamed to <code><a class="el" href="confini_8c.html#a26dd8ef0bfb57aaedbeac8007fd1a03a" title="Link to atof() ">ini_get_float()</a></code></li>
+<li>† <code>ini_getllint()</code> has been renamed to <code><a class="el" href="confini_8c.html#a9562da3c55b51795bbcbb2b19d608907" title="Link to atoll() ">ini_get_llint()</a></code></li>
+<li>† <code>get_ini_format_mask()</code> has been renamed to † <code>ini_format_calculate_mask()</code></li>
+<li>† <code>read_ini_format_mask()</code> has been renamed to † <code>ini_format_set_from_mask()</code></li>
 </ul>
 <h2>0.9-4 &ndash; 2016-10-07</h2>
 <p>Changes:</p>

@@ -65,6 +65,12 @@ $(function() {
 <div class="textblock">Here is a list of all functions, variables, defines, enums, and typedefs with links to the files they belong to:</div>
 
 <h3><a id="index_c"></a>- c -</h3><ul>
+<li>collapse_empty_quotes()
+: <a class="el" href="confini_8c.html#a6dfd90309965c426ac9b072d79a08601">confini.c</a>
+</li>
+<li>collapse_everything()
+: <a class="el" href="confini_8c.html#a4f8808c57ddfc07ba7b55370ff34f5cb">confini.c</a>
+</li>
 <li>collapse_spaces()
 : <a class="el" href="confini_8c.html#ab63671eba263728ddc8ad7dda7568172">confini.c</a>
 </li>
@@ -103,11 +109,14 @@ $(function() {
 
 
 <h3><a id="index_g"></a>- g -</h3><ul>
-<li>get_delimiter_pos()
-: <a class="el" href="confini_8c.html#a9217de2d9be4b2d6dcd75725a8d96478">confini.c</a>
+<li>get_metachar_pos()
+: <a class="el" href="confini_8c.html#a93c4d8e9287f6ce56f22ce90241b77f4">confini.c</a>
 </li>
 <li>get_type_as_active()
 : <a class="el" href="confini_8c.html#aed03fec7ca2061877cd335451177b4fc">confini.c</a>
+</li>
+<li>getn_metachar_pos()
+: <a class="el" href="confini_8c.html#ab34de4f3cd8ff30c45ac7652457f695e">confini.c</a>
 </li>
 </ul>
 
@@ -122,21 +131,33 @@ $(function() {
 <li>INI_ANY_SPACE
 : <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd">confini.h</a>
 </li>
+<li>ini_array_break()
+: <a class="el" href="confini_8c.html#a75809c0e952d9f9e14333e085ba6b910">confini.c</a>
+, <a class="el" href="confini_8h.html#a75809c0e952d9f9e14333e085ba6b910">confini.h</a>
+</li>
 <li>ini_array_collapse()
 : <a class="el" href="confini_8c.html#aa0721fcae5f04e5a9edd485dc1ddd2fa">confini.c</a>
 , <a class="el" href="confini_8h.html#aa0721fcae5f04e5a9edd485dc1ddd2fa">confini.h</a>
 </li>
 <li>ini_array_foreach()
-: <a class="el" href="confini_8c.html#af0b43ef7d273359a9ccad47754b57d18">confini.c</a>
-, <a class="el" href="confini_8h.html#af0b43ef7d273359a9ccad47754b57d18">confini.h</a>
+: <a class="el" href="confini_8c.html#a94bc649f5b58d4e2ad481080d918c41e">confini.c</a>
+, <a class="el" href="confini_8h.html#a94bc649f5b58d4e2ad481080d918c41e">confini.h</a>
 </li>
 <li>ini_array_get_length()
 : <a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865">confini.c</a>
 , <a class="el" href="confini_8h.html#a312803fa24be2d7f164f3041fbfa6865">confini.h</a>
 </li>
+<li>ini_array_release()
+: <a class="el" href="confini_8c.html#a2b34dc032fc37dda829dadf80bf34d26">confini.c</a>
+, <a class="el" href="confini_8h.html#a406f874cede6c6f7af8b14e54110d890">confini.h</a>
+</li>
+<li>ini_array_shift()
+: <a class="el" href="confini_8c.html#a6ca567ad863caef4609f8def7de0401a">confini.c</a>
+, <a class="el" href="confini_8h.html#a6ca567ad863caef4609f8def7de0401a">confini.h</a>
+</li>
 <li>ini_array_split()
-: <a class="el" href="confini_8c.html#adb4525d732d5a08d87d9c64744f9f51e">confini.c</a>
-, <a class="el" href="confini_8h.html#adb4525d732d5a08d87d9c64744f9f51e">confini.h</a>
+: <a class="el" href="confini_8c.html#a2cc490a4e05c48497340370f54fe3ba2">confini.c</a>
+, <a class="el" href="confini_8h.html#a2cc490a4e05c48497340370f54fe3ba2">confini.h</a>
 </li>
 <li>INI_BOOLEANS
 : <a class="el" href="confini_8c.html#afdb9fd02d693536253da07f0f468aaef">confini.c</a>
@@ -184,10 +205,6 @@ $(function() {
 : <a class="el" href="confini_8c.html#adba0d5ee273d05ed845c66f01a621119">confini.c</a>
 , <a class="el" href="confini_8h.html#a5b6bebfc01f8b23f69a2a2e602e91521">confini.h</a>
 </li>
-<li>ini_get_lazy_bool()
-: <a class="el" href="confini_8c.html#ad95262d09842c25e8bb610bf95c42cd3">confini.c</a>
-, <a class="el" href="confini_8h.html#ad95262d09842c25e8bb610bf95c42cd3">confini.h</a>
-</li>
 <li>ini_get_lint
 : <a class="el" href="confini_8c.html#ae334387b2202eca25e16fb92694d56ca">confini.c</a>
 , <a class="el" href="confini_8h.html#a05042d2551ab1c9402ab7223547c0777">confini.h</a>
@@ -209,8 +226,8 @@ $(function() {
 , <a class="el" href="confini_8h.html#af55e2631f0e3f941175a9b406b66ab06">confini.h</a>
 </li>
 <li>ini_global_set_implicit_value()
-: <a class="el" href="confini_8c.html#a3a6eb3b79a88304864341075240ee412">confini.c</a>
-, <a class="el" href="confini_8h.html#a3a6eb3b79a88304864341075240ee412">confini.h</a>
+: <a class="el" href="confini_8h.html#a3a6eb3b79a88304864341075240ee412">confini.h</a>
+, <a class="el" href="confini_8c.html#a3a6eb3b79a88304864341075240ee412">confini.c</a>
 </li>
 <li>ini_global_set_lowercase_mode()
 : <a class="el" href="confini_8c.html#a7a940a6820371d950ec9428f8457a2a1">confini.c</a>
@@ -251,20 +268,20 @@ $(function() {
 : <a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba596f391d896636da6f004a7d010edb50">confini.h</a>
 </li>
 <li>ini_string_match_ii()
-: <a class="el" href="confini_8h.html#a24a43707c6c2f056615ae02b67f6d3cc">confini.h</a>
-, <a class="el" href="confini_8c.html#a24a43707c6c2f056615ae02b67f6d3cc">confini.c</a>
+: <a class="el" href="confini_8c.html#a24a43707c6c2f056615ae02b67f6d3cc">confini.c</a>
+, <a class="el" href="confini_8h.html#a24a43707c6c2f056615ae02b67f6d3cc">confini.h</a>
 </li>
 <li>ini_string_match_si()
-: <a class="el" href="confini_8h.html#ad04ddad7ba1f627379ac714e656a693a">confini.h</a>
-, <a class="el" href="confini_8c.html#ad04ddad7ba1f627379ac714e656a693a">confini.c</a>
+: <a class="el" href="confini_8c.html#ad04ddad7ba1f627379ac714e656a693a">confini.c</a>
+, <a class="el" href="confini_8h.html#ad04ddad7ba1f627379ac714e656a693a">confini.h</a>
 </li>
 <li>ini_string_match_ss()
-: <a class="el" href="confini_8c.html#af9784469081947db46d173de14fa2a2f">confini.c</a>
-, <a class="el" href="confini_8h.html#af9784469081947db46d173de14fa2a2f">confini.h</a>
+: <a class="el" href="confini_8h.html#af9784469081947db46d173de14fa2a2f">confini.h</a>
+, <a class="el" href="confini_8c.html#af9784469081947db46d173de14fa2a2f">confini.c</a>
 </li>
 <li>ini_string_parse()
-: <a class="el" href="confini_8c.html#ab4e3d48f0eb0438ba0c84fc77e362aa3">confini.c</a>
-, <a class="el" href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3">confini.h</a>
+: <a class="el" href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3">confini.h</a>
+, <a class="el" href="confini_8c.html#ab4e3d48f0eb0438ba0c84fc77e362aa3">confini.c</a>
 </li>
 <li>INI_UNKNOWN
 : <a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461baffa9e27deb46c0e436bc75329cc5f7a6">confini.h</a>
@@ -288,6 +305,9 @@ $(function() {
 <li>IniFormat
 : <a class="el" href="confini_8h.html#accd16964233945de96b91facd9e20545">confini.h</a>
 </li>
+<li>INIFORMAT_HAS_NO_ESC
+: <a class="el" href="confini_8h.html#a3b5912b45e4def482018fa44ad99ffb0">confini.h</a>
+</li>
 <li>IniFormatNum
 : <a class="el" href="confini_8h.html#a8dfc7ebbb087a23d4076c1d688572b1c">confini.h</a>
 </li>
@@ -303,15 +323,6 @@ $(function() {
 <li>IniStatistics
 : <a class="el" href="confini_8h.html#af59b765f17d37553506a0ff5c8c41aa6">confini.h</a>
 </li>
-<li>is_comment_char()
-: <a class="el" href="confini_8c.html#a8a269b22d9dd6e6fe9d604f87e443604">confini.c</a>
-</li>
-<li>is_forget_char()
-: <a class="el" href="confini_8c.html#a0dd382a417b6c868b92bce236a065051">confini.c</a>
-</li>
-<li>is_parsable_char()
-: <a class="el" href="confini_8c.html#a9dc35acd5c3fc09baeb13cafd5188a4f">confini.c</a>
-</li>
 <li>is_some_space()
 : <a class="el" href="confini_8c.html#a9ddb62401d28f769968bbbc07481bba7">confini.c</a>
 </li>
@@ -320,15 +331,18 @@ $(function() {
 
 <h3><a id="index_l"></a>- l -</h3><ul>
 <li>load_ini_file()
-: <a class="el" href="confini_8c.html#a5109b2e8c8a76b8376931a12d4bcbd79">confini.c</a>
-, <a class="el" href="confini_8h.html#a5109b2e8c8a76b8376931a12d4bcbd79">confini.h</a>
+: <a class="el" href="confini_8c.html#a326e804687b2b46f0a295ae724d84628">confini.c</a>
+, <a class="el" href="confini_8h.html#a326e804687b2b46f0a295ae724d84628">confini.h</a>
 </li>
 <li>load_ini_path()
-: <a class="el" href="confini_8h.html#ae4b70cf57595a191a7b8c075f9b00780">confini.h</a>
-, <a class="el" href="confini_8c.html#ae4b70cf57595a191a7b8c075f9b00780">confini.c</a>
+: <a class="el" href="confini_8h.html#a307e84bd8a6775c4e8d9c00736e201ab">confini.h</a>
+, <a class="el" href="confini_8c.html#a307e84bd8a6775c4e8d9c00736e201ab">confini.c</a>
 </li>
 <li>ltrim_h()
 : <a class="el" href="confini_8c.html#a650bc67f1b3a687315da0819f6c0d4e8">confini.c</a>
+</li>
+<li>ltrim_hh()
+: <a class="el" href="confini_8c.html#a1ff7eb44c763366d9c1c0e7ef435ad3a">confini.c</a>
 </li>
 <li>ltrim_s()
 : <a class="el" href="confini_8c.html#a84cb708a44e66d0c178f096a582f40f9">confini.c</a>
@@ -354,9 +368,6 @@ $(function() {
 
 
 <h3><a id="index_s"></a>- s -</h3><ul>
-<li>sanitize_key_name()
-: <a class="el" href="confini_8c.html#abf29e5b2933a67e2a2a720f426dd381e">confini.c</a>
-</li>
 <li>sanitize_section_path()
 : <a class="el" href="confini_8c.html#aa17889754780149f18e417607e5ffb24">confini.c</a>
 </li>

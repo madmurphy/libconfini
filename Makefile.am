@@ -41,8 +41,11 @@ examplesother_DATA = \
 
 examplestopicsdir = $(examplesdir)/topics
 examplestopics_DATA = \
-	examples/topics/ini_global_set_implicit_value.c \
+	examples/topics/ini_array_break.c \
 	examples/topics/ini_array_collapse.c \
+	examples/topics/ini_array_release.c \
+	examples/topics/ini_array_shift.c \
+	examples/topics/ini_global_set_implicit_value.c \
 	examples/topics/ini_string_match_si.c \
 	examples/topics/ini_string_parse.c \
 	examples/topics/load_ini_file.c \

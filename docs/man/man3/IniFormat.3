@@ -1,8 +1,8 @@
-.TH "IniFormat" 3 "Sat May 12 2018" "libconfini" \" -*- nroff -*-
+.TH "IniFormat" 3 "Tue May 15 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
-IniFormat \- 24-bit bitfield representing a unique format of an INI file (INI dialect) – \fCsizeof(IniFormat)\fP should be \fC3\fP  
+IniFormat \- 24-bit bitfield representing the format of an INI file (INI dialect)  
 
 .SH SYNOPSIS
 .br
@@ -57,7 +57,7 @@ IniFormat \- 24-bit bitfield representing a unique format of an INI file (INI di
 .in -1c
 .SH "Detailed Description"
 .PP 
-24-bit bitfield representing a unique format of an INI file (INI dialect) – \fCsizeof(IniFormat)\fP should be \fC3\fP 
+24-bit bitfield representing the format of an INI file (INI dialect) 
 
 Structure of the bitfield:
 .PP
@@ -72,33 +72,33 @@ Bits 23-24: Human syntax (disabled entries)
 .SH "Field Documentation"
 .PP 
 .SS "IniFormat::case_sensitive"
-If set to \fC1\fP, string comparisons will always be performed case-sensitive 
+If set to \fC1\fP, string comparisons will always be performed case-sensitive\&. 
 .SS "IniFormat::delimiter_symbol"
-The symbol to be used as delimiter (only ASCII allowed); if set to \fC0\fP, any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
+The symbol to be used as delimiter (only ASCII allowed); if set to \fC0\fP, any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP); if, within the format given, this matches a meta-character (\fC'\\\\'\fP, \fC'\\''\fP, \fC'\\"'\fP), its role as meta-character will have higher priority than its role as delimiter symbol (i\&.e\&., the format will have no delimiter symbol); you may use \fCenum\fP \fC\fBIniDelimiters\fP\fP for this\&. 
 .SS "IniFormat::disabled_can_be_implicit"
-If set to \fC1\fP, comments non containing a delimiter symbol will not be parsed as disabled implicit keys, but as simple comments 
+If set to \fC1\fP, comments that do not contain a delimiter symbol will never be parsed as disabled keys, but always as simple comments\&. 
 .SS "IniFormat::do_not_collapse_values"
-If set to \fC1\fP, sequences of more than one space in values (\fC/\\s{2,}/\fP) will not be collapsed 
+If set to \fC1\fP, sequences of one or more spaces in values (\fC/\\s+/\fP) will be dispatched verbatim\&. 
 .SS "IniFormat::hash_marker"
-The rule of the hash character (use enum \fC\fBIniCommentMarker\fP\fP for this) 
+The rule of the hash character (use \fCenum\fP \fC\fBIniCommentMarker\fP\fP for this)\&. 
 .SS "IniFormat::implicit_is_not_empty"
-If set to \fC1\fP, implicit keys (see \fBLibrary Functions Manual\fP) will always be dispatched using the values of the global variables \fC\fBINI_GLOBAL_IMPLICIT_VALUE\fP\fP and \fC\fBINI_GLOBAL_IMPLICIT_V_LEN\fP\fP for the fields \fC\fBIniDispatch::value\fP\fP and to \fC\fBIniDispatch::v_len\fP\fP respectively; if set to \fC0\fP, implicit keys will be considered to be empty keys 
+If set to \fC1\fP, implicit keys (see \fBLibrary Functions Manual\fP) will always be dispatched using the values given by the global variables \fC\fBINI_GLOBAL_IMPLICIT_VALUE\fP\fP and \fC\fBINI_GLOBAL_IMPLICIT_V_LEN\fP\fP for the fields \fC\fBIniDispatch::value\fP\fP and to \fC\fBIniDispatch::v_len\fP\fP respectively; if set to \fC0\fP, implicit keys will be considered to be empty keys\&. 
 .SS "IniFormat::multiline_nodes"
-Defines which class of entries are allowed to be multi-line (use enum \fC\fBIniMultiline\fP\fP for this) 
+Defines which class of entries are allowed to be multi-line (use \fCenum\fP \fC\fBIniMultiline\fP\fP for this)\&. 
 .SS "IniFormat::no_disabled_after_space"
-If set to \fC1\fP, prevents that what follows \fC/(?:^|\\s+)[#;]\\s/\fP be parsed as a disabled entry 
+If set to \fC1\fP, prevents what follows \fC/[#;]\\s/\fP to be parsed as a disabled entry\&. 
 .SS "IniFormat::no_double_quotes"
-If set to \fC1\fP, the double-quote character (\fC"\fP) will be considered as a normal character 
+If set to \fC1\fP, the double-quote character (\fC"\fP) will be considered as a normal character\&. 
 .SS "IniFormat::no_single_quotes"
-If set to \fC1\fP, the single-quote character (\fC'\fP) will be considered as a normal character 
+If set to \fC1\fP, the single-quote character (\fC'\fP) will be considered as a normal character\&. 
 .SS "IniFormat::no_spaces_in_names"
 If set to \fC1\fP, key and section names containing spaces (even within quotes) will be rendered as \fC\fBINI_UNKNOWN\fP\fP\&. Note that setting \fC\fBIniFormat::delimiter_symbol\fP\fP to \fCINI_ANY_SPACE\fP will not automatically set this option to \fC1\fP (spaces will still be allowed in section names)\&. 
 .SS "IniFormat::preserve_empty_quotes"
-If set to \fC1\fP and if single/double quotes are metacharacters ensures that, within values, empty strings enclosed between quotes (\fC''\fP or \fC''\fP) will not be collapsed together with the spaces that surround them\&. This option is useful for values containing space-delimited arrays in order to preserve their empty members – as in, for instance: \fCcoordinates = '' ''\fP\&. Note that, in section and key names, empty strings enclosed between quotes are \fIalways\fP collapsed together with their surrounding spaces\&. 
+If set to \fC1\fP, and if single/double quotes are metacharacters, ensures that, within values, empty strings enclosed between quotes (\fC''\fP or \fC''\fP) will not be collapsed together with the spaces that surround them\&. This option is useful for values containing space-delimited arrays, in order to preserve their empty members – as in, for instance: \fCcoordinates = '' ''\fP\&. Note that, in section and key names, empty strings enclosed between quotes are \fIalways\fP collapsed together with their surrounding spaces\&. 
 .SS "IniFormat::section_paths"
-Defines whether and how the format supports sections (use enum \fC\fBIniSectionPaths\fP\fP for this) 
+Defines whether and how the format supports sections (use \fCenum\fP \fC\fBIniSectionPaths\fP\fP for this)\&. 
 .SS "IniFormat::semicolon_marker"
-The rule of the semicolon character (use enum \fC\fBIniCommentMarker\fP\fP for this) 
+The rule of the semicolon character (use \fCenum\fP \fC\fBIniCommentMarker\fP\fP for this)\&. 
 
 .SH "Author"
 .PP 
