@@ -22,7 +22,7 @@ With this in mind I wrote down the first algorithms for doing the job. As I
 said, it was the project of an INI editor for GNOME... But I love the free
 software paradise, and as soon as I had a set of functions able to do one
 single job (i.e., parsing INI files), I thought that it would be nice to
-release it as an indipendent library.
+release it as an independent library.
 
 Here is where **libconfini** comes.
 
