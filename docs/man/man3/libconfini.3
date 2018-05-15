@@ -910,7 +910,7 @@ The three functions \fBini_string_match_ss()\fR, \fBini_string_match_si()\fR, \f
 Note that, within INI strings, empty quotes and spaces out of quotes are always collapsed during comparisons\. Furthermore, remember that the multi\-line escape sequence (\fB/\e\e(?:\en\er?|\er\en?)/\fR) is \fInot\fR considered as such in INI strings, since this is the only escape sequence automatically unescaped by \fBlibconfini\fR \fIbefore\fR each dispatch\.
 .
 .SH "FORMATTING THE VALUES"
-Once your listener starts to receive the parsed data you may want to parse and better format the \fBvalue\fR part of key elements\. The following functions may be useful for this purpose:
+Once your listener starts to receive the parsed data you may want to format and better parse the \fBvalue\fR part of key elements\. The following functions may be useful for this purpose:
 .
 .IP "\(bu" 4
 \fBini_string_parse()\fR

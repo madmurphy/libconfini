@@ -669,7 +669,7 @@ Note that, within INI strings, empty quotes and spaces out of quotes are always 
 
 ## FORMATTING THE VALUES
 
-Once your listener starts to receive the parsed data you may want to parse and better format the `value` part of key elements. The following functions may be useful for this purpose:
+Once your listener starts to receive the parsed data you may want to format and better parse the `value` part of key elements. The following functions may be useful for this purpose:
 
 * `ini_string_parse()`
 * `ini_array_get_length()`
