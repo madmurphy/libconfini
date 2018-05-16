@@ -2454,6 +2454,8 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 
 		for (nbacksl_a[side]++; *(++chrptr_a[side]) == _LIBCONFINI_BACKSLASH_; nbacksl_a[side]++);
 
+		abcd_a[side] = nbacksl_a[side] & 1 ? (abcd_a[side] & 31) | 16 : abcd_a[side] & 15;
+
 		if (
 			(
 				(abcd_a[side] & 9) || *chrptr_a[side] != _LIBCONFINI_SINGLE_QUOTES_
@@ -2466,8 +2468,6 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 
 		}
 
-		abcd_a[side] = (abcd_a[side] & 31) | 16;
-
 	} else {
 
 		abcd_a[side]	=	!(abcd_a[side] & 25) && *chrptr_a[side] == _LIBCONFINI_SINGLE_QUOTES_ ?
@@ -2476,10 +2476,11 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 								((abcd_a[side] & 111) | 64) ^ 8
 							: !(abcd_a[side] & 12) && is_some_space(*chrptr_a[side], _LIBCONFINI_WITH_EOL_) ?
 								(abcd_a[side] & 111) | 96
-							: !(abcd_a[side] & 12) && *chrptr_a[side] ?
+							: *chrptr_a[side] ?
 								abcd_a[side] & 47
 							:
 								abcd_a[side] & 15;
+
 
 		if (abcd_a[side] & 64) {
 
@@ -2499,7 +2500,7 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 
 	turn_allowed = _LIBCONFINI_TRUE_;
 
-	if ((*abcd_a | abcd_a[1]) & 16) {
+	if (*nbacksl_a || nbacksl_a[1]) {
 
 		if (*nbacksl_a >> 1 != nbacksl_a[1] >> 1) {
 
@@ -3051,7 +3052,7 @@ int ini_array_foreach (
 
 		idx = abcd & 216 ? idx + 1 : offs;
 
-	} while (((abcd & 220) || ini_string[idx]) && !(abcd & 128));
+	} while (((abcd & 92) || ini_string[idx]) && !(abcd & 128));
 
 	return _LIBCONFINI_SUCCESS_;
 
@@ -3586,7 +3587,7 @@ int ini_array_split (
 
 		idx = abcd & 216 ? idx + 1 : offs;
 
-	} while (((abcd & 220) || ini_string[idx]) && !(abcd & 128));
+	} while (((abcd & 92) || ini_string[idx]) && !(abcd & 128));
 
 	return _LIBCONFINI_SUCCESS_;
 
