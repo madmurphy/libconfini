@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Tue May 15 2018" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Thu May 17 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -70,9 +70,9 @@ src/confini.h \- libconfini header
 .br
 .RI "INI nodes types\&. "
 .ti -1c
-.RI "enum \fBIniDelimiters\fP { \fBINI_ANY_SPACE\fP = 0, \fBINI_EQUALS\fP = '=', \fBINI_COLON\fP = ':' }"
+.RI "enum \fBIniDelimiters\fP { \fBINI_ANY_SPACE\fP = 0, \fBINI_EQUALS\fP = '=', \fBINI_COLON\fP = ':', \fBINI_DOT\fP = '\&.', \fBINI_COMMA\fP = ',' }"
 .br
-.RI "Most used delimiters (but a delimiter can also be any other ASCII character) "
+.RI "Most used key-value and array delimiters (but a delimiter may also be any other ASCII character) "
 .ti -1c
 .RI "enum \fBIniCommentMarker\fP { \fBINI_DISABLED_OR_COMMENT\fP = 0, \fBINI_ONLY_COMMENT\fP = 1, \fBINI_IGNORE\fP = 2, \fBINI_IS_NOT_A_MARKER\fP = 3 }"
 .br
@@ -109,6 +109,10 @@ src/confini.h \- libconfini header
 .RI "_Bool \fBini_string_match_ii\fP (const char *const ini_string_a, const char *const ini_string_b, const \fBIniFormat\fP format)"
 .br
 .RI "Compares two INI strings and checks if they match\&. "
+.ti -1c
+.RI "_Bool \fBini_array_match\fP (const char *const ini_string_a, const char *const ini_string_b, const char delimiter, const \fBIniFormat\fP format)"
+.br
+.RI "Compares two INI arrays and checks if they match\&. "
 .ti -1c
 .RI "size_t \fBini_unquote\fP (char *const ini_string, const \fBIniFormat\fP format)"
 .br
@@ -306,7 +310,7 @@ This is a normal character
 .SS "enum \fBIniDelimiters\fP"
 
 .PP
-Most used delimiters (but a delimiter can also be any other ASCII character) 
+Most used key-value and array delimiters (but a delimiter may also be any other ASCII character) 
 .PP
 \fBEnumerator\fP
 .in +1c
@@ -319,6 +323,12 @@ In multi-line INIs: \fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP, in non-mu
 .TP
 \fB\fIINI_COLON \fP\fP
 \fC:\fP 
+.TP
+\fB\fIINI_DOT \fP\fP
+\fC\&.\fP 
+.TP
+\fB\fIINI_COMMA \fP\fP
+\fC,\fP 
 .SS "enum \fBIniMultiline\fP"
 
 .PP
@@ -486,9 +496,9 @@ This function can be useful before invoking \fCmemcpy()\fP using \fCini_string\f
 The \fCformat\fP argument is used for the following fields:
 .PP
 .IP "\(bu" 2
-\fCformat\&.no_double_quotes\fP
-.IP "\(bu" 2
 \fCformat\&.no_single_quotes\fP
+.IP "\(bu" 2
+\fCformat\&.no_double_quotes\fP
 .IP "\(bu" 2
 \fCformat\&.do_not_collapse_values\fP
 .IP "\(bu" 2
@@ -663,6 +673,47 @@ Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other st
 .RS 4
 If \fCdelimiter\fP matches a meta-character within the given format (\fC'\\\\'\fP, \fC'\\''\fP or \fC'\\"'\fP), its role as meta-character will have higher priority than its role as delimiter (i\&.e\&., the array will have no delimiters and will contain only one member)\&. 
 .RE
+.PP
+
+.SS "_Bool ini_array_match (const char *const ini_string_a, const char *const ini_string_b, const char delimiter, const \fBIniFormat\fP format)"
+
+.PP
+Compares two INI arrays and checks if they match\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIini_string_a\fP The first INI array 
+.br
+\fIini_string_b\fP The second INI array 
+.br
+\fIdelimiter\fP The delimiter between the array members – if zero (see \fC\fBINI_ANY_SPACE\fP\fP), any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP) 
+.br
+\fIformat\fP The format of the INI file 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+A boolean: \fCTRUE\fP if the two arrays match, \fCFALSE\fP otherwise
+.RE
+.PP
+INI strings are the strings typically dispatched by \fC\fBload_ini_file()\fP\fP and \fC\fBload_ini_path()\fP\fP, which may contain quotes and the three escape sequences \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP\&.
+.PP
+In order to be suitable for both names and values, \fBthis function always considers sequences of one or more spaces out of quotes in both strings as collapsed\fP, \fIeven when \fCformat\&.do_not_collapse_values\fP is set to \fCTRUE\fP\fP\&.
+.PP
+This function can be used, with \fC'\&.'\fP as delimiter, to compare section paths\&.
+.PP
+This function grants that the result of the comparison between two INI arrays will always match the the \fIliteral\fP comparison between the individual members of both arrays after these have been parsed, one by one, by \fC\fBini_string_parse()\fP\fP (with \fCformat\&.do_not_collapse_values\fP set to \fCFALSE\fP)\&.
+.PP
+The \fCformat\fP argument is used for the following fields:
+.PP
+.IP "\(bu" 2
+\fCformat\&.case_sensitive\fP
+.IP "\(bu" 2
+\fCformat\&.no_double_quotes\fP
+.IP "\(bu" 2
+\fCformat\&.no_single_quotes\fP
+.IP "\(bu" 2
+\fCformat\&.multiline_nodes\fP 
 .PP
 
 .SS "char* ini_array_release (char **const ini_strptr, const char delimiter, const \fBIniFormat\fP format)"
@@ -932,7 +983,7 @@ static int my_init (IniStatistics * statistics, void * v_store) {
 
 }
  
-static char ** make_array (size_t * arrlen, const char * src, const size_t buffsize, IniFormat ini_format) {
+static char ** make_charray (size_t * arrlen, const char * src, const size_t buffsize, IniFormat ini_format) {
  
     *arrlen = ini_array_get_length(src, MY_ARRAY_DELIMITER, ini_format);
 
@@ -989,7 +1040,7 @@ static int my_handler (IniDispatch * this, void * v_store) {
 
             /*  Allocate a new array of strings  */
             if (store->my_section_my_array) { free(store->my_section_my_array); }
-            store->my_section_my_array = make_array(&store->my_section_my_arr_len, this->value, this->v_len + 1, this->format);
+            store->my_section_my_array = make_charray(&store->my_section_my_arr_len, this->value, this->v_len + 1, this->format);
             if (!store->my_section_my_array) { return 1; }
 
         }
@@ -1100,18 +1151,18 @@ This function change the value of one or more global variables\&. In order to be
 #define NO 0
 #define YES 1
 
-int ini_listener (IniDispatch * dispatch, void * v_null) {
+int ini_listener (IniDispatch * disp, void * v_null) {
 
-    if (dispatch->value == INI_GLOBAL_IMPLICIT_VALUE) {
+    if (disp->value == INI_GLOBAL_IMPLICIT_VALUE) {
 
         printf(
             "\nDATA: %s\nVALUE: %s\n(This is an implicit key element)\n",
-            dispatch->data, dispatch->value
+            disp->data, disp->value
         );
 
     } else {
 
-        printf("\nDATA: %s\nVALUE: %s\n", dispatch->data, dispatch->value);
+        printf("\nDATA: %s\nVALUE: %s\n", disp->data, disp->value);
 
     }
 
@@ -1242,13 +1293,13 @@ printf("%s\n",
 The \fCformat\fP argument is used for the following fields:
 .PP
 .IP "\(bu" 2
+\fCformat\&.case_sensitive\fP
+.IP "\(bu" 2
 \fCformat\&.no_double_quotes\fP
 .IP "\(bu" 2
 \fCformat\&.no_single_quotes\fP
 .IP "\(bu" 2
-\fCformat\&.multiline_nodes\fP
-.IP "\(bu" 2
-\fCformat\&.case_sensitive\fP 
+\fCformat\&.multiline_nodes\fP 
 .PP
 
 .SS "_Bool ini_string_match_si (const char *const simple_string, const char *const ini_string, const \fBIniFormat\fP format)"
@@ -1307,13 +1358,13 @@ printf(
 The \fCformat\fP argument is used for the following fields:
 .PP
 .IP "\(bu" 2
+\fCformat\&.case_sensitive\fP
+.IP "\(bu" 2
 \fCformat\&.no_double_quotes\fP
 .IP "\(bu" 2
 \fCformat\&.no_single_quotes\fP
 .IP "\(bu" 2
 \fCformat\&.multiline_nodes\fP
-.IP "\(bu" 2
-\fCformat\&.case_sensitive\fP
 .PP
 .PP
 .PP
@@ -1327,8 +1378,8 @@ static int passfinder (IniDispatch * disp, void * v_membid) {
 
     /*  Search for `password = "hello world"` in the INI file  */
     if (
-        ini_string_match_si("password", disp->data, disp->format)
-        && ini_string_match_si("hello world", disp->value, disp->format)
+        ini_string_match_si("password", disp->data, disp->format) &&
+        ini_string_match_si("hello world", disp->value, disp->format)
     ) {
 
         *((size_t *) v_membid) = disp->dispatch_id;
@@ -1361,7 +1412,7 @@ int main () {
 
     }
 
-    /*  Check if `load_ini_path()` has been interrupted by `passfinder()`  */
+    /*  Check if parsing has been interrupted by `passfinder()`  */
     retval  ==  CONFINI_FEINTR ?
                 printf("We found it! It's the INI element number #%d!\n", membid)
             :
@@ -1370,7 +1421,6 @@ int main () {
     return 0;
 
 }
-
 .fi
 .PP
  
@@ -1423,11 +1473,11 @@ Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other st
 The \fCformat\fP argument is used for the following fields:
 .PP
 .IP "\(bu" 2
-\fCformat\&.multiline_nodes\fP
-.IP "\(bu" 2
 \fCformat\&.no_single_quotes\fP
 .IP "\(bu" 2
 \fCformat\&.no_double_quotes\fP
+.IP "\(bu" 2
+\fCformat\&.multiline_nodes\fP
 .IP "\(bu" 2
 \fCformat\&.do_not_collapse_values\fP
 .PP
@@ -1444,16 +1494,16 @@ The \fCformat\fP argument is used for the following fields:
 #include <stdio\&.h>
 #include <confini\&.h>
 
-static int ini_listener (IniDispatch * dispatch, void * v_null) {
+static int ini_listener (IniDispatch * disp, void * v_null) {
 
-    if (dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY) {
+    if (disp->type == INI_KEY || disp->type == INI_DISABLED_KEY) {
 
-        ini_unquote(dispatch->data, dispatch->format);
-        ini_string_parse(dispatch->value, dispatch->format);
+        ini_unquote(disp->data, disp->format);
+        ini_string_parse(disp->value, disp->format);
 
     }
 
-    printf("DATA: %s\nVALUE: %s\n\n", dispatch->data, dispatch->value);
+    printf("DATA: %s\nVALUE: %s\n\n", disp->data, disp->value);
 
     return 0;
 
@@ -1501,11 +1551,11 @@ Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other st
 The \fCformat\fP argument is used for the following fields:
 .PP
 .IP "\(bu" 2
-\fCformat\&.multiline_nodes\fP
-.IP "\(bu" 2
 \fCformat\&.no_single_quotes\fP
 .IP "\(bu" 2
 \fCformat\&.no_double_quotes\fP
+.IP "\(bu" 2
+\fCformat\&.multiline_nodes\fP
 .PP
 .PP
 .PP
@@ -1515,16 +1565,16 @@ The \fCformat\fP argument is used for the following fields:
 #include <stdio\&.h>
 #include <confini\&.h>
 
-static int ini_listener (IniDispatch * dispatch, void * v_null) {
+static int ini_listener (IniDispatch * disp, void * v_null) {
 
-    if (dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY) {
+    if (disp->type == INI_KEY || disp->type == INI_DISABLED_KEY) {
 
-        ini_unquote(dispatch->data, dispatch->format);
-        ini_string_parse(dispatch->value, dispatch->format);
+        ini_unquote(disp->data, disp->format);
+        ini_string_parse(disp->value, disp->format);
 
     }
 
-    printf("DATA: %s\nVALUE: %s\n\n", dispatch->data, dispatch->value);
+    printf("DATA: %s\nVALUE: %s\n\n", disp->data, disp->value);
 
     return 0;
 

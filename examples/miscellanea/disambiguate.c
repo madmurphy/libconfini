@@ -6,7 +6,7 @@
 static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
 	printf(
-		"NODE #%d - TYPE: %d, DATA: \"%s\", VALUE: \"%s\"\n",
+		"#%d - TYPE: %d, DATA: \"%s\", VALUE: \"%s\"\n",
 		dispatch->dispatch_id, dispatch->type, dispatch->data, dispatch->value
 	);
 

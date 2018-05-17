@@ -7,8 +7,8 @@ static int passfinder (IniDispatch * disp, void * v_membid) {
 
 	/*  Search for `password = "hello world"` in the INI file  */
 	if (
-		ini_string_match_si("password", disp->data, disp->format)
-		&& ini_string_match_si("hello world", disp->value, disp->format)
+		ini_string_match_si("password", disp->data, disp->format) &&
+		ini_string_match_si("hello world", disp->value, disp->format)
 	) {
 
 		*((size_t *) v_membid) = disp->dispatch_id;
@@ -41,7 +41,7 @@ int main () {
 
 	}
 
-	/*  Check if `load_ini_path()` has been interrupted by `passfinder()`  */
+	/*  Check if parsing has been interrupted by `passfinder()`  */
 	retval	==	CONFINI_FEINTR ?
 				printf("We found it! It's the INI element number #%d!\n", membid)
 			:
@@ -50,4 +50,3 @@ int main () {
 	return 0;
 
 }
-

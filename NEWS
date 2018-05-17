@@ -2,6 +2,11 @@ NEWS
 ====
 
 
+## 1.6.1
+
+* Function `ini_array_match()` has been created
+
+
 ## 1.6.0
 
 * Functions `ini_array_shift()`, `ini_array_break()`, `ini_array_release()` have

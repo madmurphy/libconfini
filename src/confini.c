@@ -2212,10 +2212,10 @@ _Bool ini_string_match_ss (const char * const simple_string_a, const char * cons
 
 	@brief			Compares a simple string an INI string and and checks if they
 					match
-	@param			ini_string			The INI string escaped according to
-										@p format
-	@param			simple_string		The simple string
-	@param			format				The format of the INI file
+	@param			ini_string		The INI string escaped according to
+									@p format
+	@param			simple_string	The simple string
+	@param			format			The format of the INI file
 	@return			A boolean: `TRUE` if the two strings match, `FALSE` otherwise
 
 	INI strings are the strings typically dispatched by `load_ini_file()` and
@@ -2258,10 +2258,10 @@ _Bool ini_string_match_ss (const char * const simple_string_a, const char * cons
 
 	The @p format argument is used for the following fields:
 
+	- `format.case_sensitive`
 	- `format.no_double_quotes`
 	- `format.no_single_quotes`
 	- `format.multiline_nodes`
-	- `format.case_sensitive`
 
 	@include topics/ini_string_match_si.c
 
@@ -2366,11 +2366,11 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 /**
 
 	@brief			Compares two INI strings and checks if they match
-	@param			ini_string_a		The first INI string unescaped according to
-										@p format
-	@param			ini_string_b		The second INI string unescaped according to
-										@p format
-	@param			format				The format of the INI file
+	@param			ini_string_a	The first INI string unescaped according to
+									@p format
+	@param			ini_string_b	The second INI string unescaped according to
+									@p format
+	@param			format			The format of the INI file
 	@return			A boolean: `TRUE` if the two strings match, `FALSE` otherwise
 
 	INI strings are the strings typically dispatched by `load_ini_file()` and
@@ -2411,10 +2411,10 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 
 	The @p format argument is used for the following fields:
 
+	- `format.case_sensitive`
 	- `format.no_double_quotes`
 	- `format.no_single_quotes`
 	- `format.multiline_nodes`
-	- `format.case_sensitive`
 
 **/
 _Bool ini_string_match_ii (const char * const ini_string_a, const char * const ini_string_b, const IniFormat format) {
@@ -2434,7 +2434,8 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 		FLAG_2		Double quotes are not metacharacters (const)
 		FLAG_4		Unescaped single quotes are odd right now
 		FLAG_8		Unescaped double quotes are odd right now
-		FLAG_16		This is a backslash and format supports escape sequences
+		FLAG_16		We are in an odd sequence of backslashes and format supports
+					escape sequences
 		FLAG_32		This is a space
 		FLAG_64		Skip this character
 
@@ -2571,6 +2572,226 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 }
 
 
+											/** @utility{ini_array_match} **/
+/**
+
+	@brief			Compares two INI arrays and checks if they match
+	@param			ini_string_a	The first INI array
+	@param			ini_string_b	The second INI array
+	@param			delimiter		The delimiter between the array members -- if
+									zero (see `#INI_ANY_SPACE`), any space is
+									delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
+	@param			format			The format of the INI file
+	@return			A boolean: `TRUE` if the two arrays match, `FALSE` otherwise
+
+	INI strings are the strings typically dispatched by `load_ini_file()` and
+	`load_ini_path()`, which may contain quotes and the three escape sequences `\\`,
+	`\'` and `\"`.
+
+	In order to be suitable for both names and values, **this function always
+	considers sequences of one or more spaces out of quotes in both strings as
+	collapsed**, _even when `format.do_not_collapse_values` is set to `TRUE`_.
+
+	This function can be used, with `'.'` as delimiter, to compare section paths.
+
+	This function grants that the result of the comparison between two INI arrays
+	will always match the the _literal_ comparison between the individual members
+	of both arrays after these have been parsed, one by one, by `ini_string_parse()`
+	(with `format.do_not_collapse_values` set to `FALSE`).
+
+	The @p format argument is used for the following fields:
+
+	- `format.case_sensitive`
+	- `format.no_double_quotes`
+	- `format.no_single_quotes`
+	- `format.multiline_nodes`
+
+**/
+_Bool ini_array_match (const char * const ini_string_a, const char * const ini_string_b, const char delimiter, const IniFormat format) {
+
+	if (_LIBCONFINI_IS_ESC_CHAR_(delimiter, format)) {
+
+		return ini_string_match_ii(ini_string_a, ini_string_b, format);
+
+	}
+
+	const _LIBCONFINI_BOOL_ has_escape = !INIFORMAT_HAS_NO_ESC(format);
+	register uint8_t side = 1;
+	register _LIBCONFINI_BOOL_ turn_allowed = _LIBCONFINI_TRUE_;
+	uint8_t abcd_a[2];
+	size_t nbacksl_a[2];
+	const char * chrptr_a[2] = {
+		ini_string_a + ltrim_s(ini_string_a, 0, _LIBCONFINI_WITH_EOL_),
+		ini_string_b + ltrim_s(ini_string_b, 0, _LIBCONFINI_WITH_EOL_)
+	};
+
+	/*
+
+	Masks `abcd_a[0]` and  `abcd_a[1]` (8 bits used):
+
+		FLAG_1		Single quotes are not metacharacters (const)
+		FLAG_2		Double quotes are not metacharacters (const)
+		FLAG_4		Unescaped single quotes are odd right now
+		FLAG_8		Unescaped double quotes are odd right now
+		FLAG_16		We are in an odd sequence of backslashes and format supports
+					escape sequences
+		FLAG_32		This is a space
+		FLAG_64		This is a delimiter
+		FLAG_128	Skip this character
+
+	*/
+
+	abcd_a[1] = *abcd_a = 32 | (format.no_double_quotes << 1) | format.no_single_quotes;
+
+
+    /* \                                /\
+    \ */     delimited_match:          /* \
+     \/     ______________________     \ */
+
+
+	nbacksl_a[side] = 0;
+
+	if (has_escape && *chrptr_a[side] == _LIBCONFINI_BACKSLASH_) {
+
+		for (nbacksl_a[side]++; *(++chrptr_a[side]) == _LIBCONFINI_BACKSLASH_; nbacksl_a[side]++);
+
+		abcd_a[side] = nbacksl_a[side] & 1 ? (abcd_a[side] & 31) | 16 : abcd_a[side] & 15;
+
+		if (
+			(
+				(abcd_a[side] & 9) || *chrptr_a[side] != _LIBCONFINI_SINGLE_QUOTES_
+			) && (
+				(abcd_a[side] & 6) || *chrptr_a[side] != _LIBCONFINI_DOUBLE_QUOTES_
+			)
+		) {
+
+			nbacksl_a[side]++;
+
+		}
+
+	} else {
+
+		abcd_a[side]	=	!(abcd_a[side] & 12) && is_some_space(*chrptr_a[side], _LIBCONFINI_WITH_EOL_) ?
+								(
+									delimiter || (abcd_a[side] & 64) ?
+										(abcd_a[side] & 239) | 160
+									:
+										(abcd_a[side] & 111) | 96
+								)
+							: delimiter && !(abcd_a[side] & 12) && *chrptr_a[side] == delimiter ?
+								(abcd_a[side] & 111) | 96
+							: !(abcd_a[side] & 25) && *chrptr_a[side] == _LIBCONFINI_SINGLE_QUOTES_ ?
+								((abcd_a[side] & 175) | 128) ^ 4
+							: !(abcd_a[side] & 22) && *chrptr_a[side] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+								((abcd_a[side] & 175) | 128) ^ 8
+							: *chrptr_a[side] ?
+								abcd_a[side] & 47
+							: delimiter ?
+								abcd_a[side] & 15
+							:
+								(abcd_a[side] & 79) ^ 64;
+
+
+		if (abcd_a[side] & 128) {
+
+			chrptr_a[side]++;
+			goto delimited_match;
+
+		}
+
+	}
+
+	if (side && turn_allowed) {
+
+		side ^= 1;
+		goto delimited_match;
+
+	}
+
+	turn_allowed = _LIBCONFINI_TRUE_;
+
+	if (*nbacksl_a || nbacksl_a[1]) {
+
+		if (*nbacksl_a >> 1 != nbacksl_a[1] >> 1) {
+
+			return _LIBCONFINI_FALSE_;
+
+		}
+
+		side = 1;
+		goto delimited_match;
+
+	}
+
+	if ((*abcd_a ^ abcd_a[1]) & 64) {
+
+		return _LIBCONFINI_FALSE_;
+
+	}
+
+	if (
+		!(
+			abcd_a[side ^ 1] & 32 ?
+				abcd_a[side] & 96
+			:
+				(abcd_a[(side ^= 1) ^ 1] & 96) ^ 32
+		) && *chrptr_a[side]
+	) {
+
+		if (*chrptr_a[side]++ != _LIBCONFINI_COLLAPSED_) {
+
+			return _LIBCONFINI_FALSE_;
+
+		}
+
+		abcd_a[side ^ 1] &= 223;
+		turn_allowed = _LIBCONFINI_FALSE_;
+		goto delimited_match;
+
+	}
+
+	if (!(*abcd_a & 64)) {
+
+		if (
+			format.case_sensitive ?
+				**chrptr_a != *chrptr_a[1]
+			:
+				_LIBCONFINI_CHR_CASEFOLD_(**chrptr_a) != _LIBCONFINI_CHR_CASEFOLD_(*chrptr_a[1])
+		) {
+
+			return _LIBCONFINI_FALSE_;
+
+		}
+
+		*abcd_a &= 223;
+		abcd_a[1] &= 223;
+
+	}
+
+	if (**chrptr_a) {
+
+		(*chrptr_a)++;
+
+	}
+
+	if (*chrptr_a[1]) {
+
+		chrptr_a[1]++;
+
+	}
+
+	if (**chrptr_a || *chrptr_a[1]) {
+
+		side = 1;
+		goto delimited_match;
+
+	}
+
+	return _LIBCONFINI_TRUE_;
+
+}
+
+
 													/** @utility{ini_unquote} **/
 /**
 
@@ -2600,9 +2821,9 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 
 	The @p format argument is used for the following fields:
 
-	- `format.multiline_nodes`
 	- `format.no_single_quotes`
 	- `format.no_double_quotes`
+	- `format.multiline_nodes`
 
 	@include topics/ini_string_parse.c
 
@@ -2716,9 +2937,9 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 
 	The @p format argument is used for the following fields:
 
-	- `format.multiline_nodes`
 	- `format.no_single_quotes`
 	- `format.no_double_quotes`
+	- `format.multiline_nodes`
 	- `format.do_not_collapse_values`
 
 	@note	`format.multiline_nodes` is used only to figure out whether there are
@@ -3052,7 +3273,7 @@ int ini_array_foreach (
 
 		idx = abcd & 216 ? idx + 1 : offs;
 
-	} while (((abcd & 92) || ini_string[idx]) && !(abcd & 128));
+	} while (!(abcd & 128) && ((abcd & 92) || ini_string[idx]));
 
 	return _LIBCONFINI_SUCCESS_;
 
@@ -3148,8 +3369,8 @@ size_t ini_array_shift (const char ** const ini_strptr, const char delimiter, co
 
 	The @p format argument is used for the following fields:
 
-	- `format.no_double_quotes`
 	- `format.no_single_quotes`
+	- `format.no_double_quotes`
 	- `format.do_not_collapse_values`
 	- `format.preserve_empty_quotes`
 
@@ -3587,7 +3808,7 @@ int ini_array_split (
 
 		idx = abcd & 216 ? idx + 1 : offs;
 
-	} while (((abcd & 92) || ini_string[idx]) && !(abcd & 128));
+	} while (!(abcd & 128) && ((abcd & 92) || ini_string[idx]));
 
 	return _LIBCONFINI_SUCCESS_;
 
@@ -3739,11 +3960,13 @@ signed int ini_get_bool (const char * const ini_string, const signed int return_
 
 		for (bool_idx = 0; bool_idx < 2; bool_idx++) {
 
-			for (chr_idx = 0; _LIBCONFINI_CHR_CASEFOLD_(ini_string[chr_idx]) == INI_BOOLEANS[pair_idx][bool_idx][chr_idx]; chr_idx++) {
+			chr_idx = 0;
 
-				if (!ini_string[chr_idx]) {
+			while (_LIBCONFINI_CHR_CASEFOLD_(ini_string[chr_idx]) == INI_BOOLEANS[pair_idx][bool_idx][chr_idx]) {
 
-					return bool_idx;
+				if (!ini_string[chr_idx++]) {
+
+					return (signed int) bool_idx;
 
 				}
 

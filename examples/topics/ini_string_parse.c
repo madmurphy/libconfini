@@ -3,16 +3,16 @@
 #include <stdio.h>
 #include <confini.h>
 
-static int ini_listener (IniDispatch * dispatch, void * v_null) {
+static int ini_listener (IniDispatch * disp, void * v_null) {
 
-	if (dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY) {
+	if (disp->type == INI_KEY || disp->type == INI_DISABLED_KEY) {
 
-		ini_unquote(dispatch->data, dispatch->format);
-		ini_string_parse(dispatch->value, dispatch->format);
+		ini_unquote(disp->data, disp->format);
+		ini_string_parse(disp->value, disp->format);
 
 	}
 
-	printf("DATA: %s\nVALUE: %s\n\n", dispatch->data, dispatch->value);
+	printf("DATA: %s\nVALUE: %s\n\n", disp->data, disp->value);
 
 	return 0;
 

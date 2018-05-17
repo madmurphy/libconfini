@@ -2,6 +2,15 @@ Change Log {#changelog}
 =======================
 
 
+## 1.6.1 -- 2018-05-17
+
+Changes:
+
+* Function `ini_array_match()` has been created
+* Documentation
+* Examples
+
+
 ## 1.6.0 -- 2018-05-15
 
 Changes:

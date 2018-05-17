@@ -6,18 +6,18 @@
 #define NO 0
 #define YES 1
 
-int ini_listener (IniDispatch * dispatch, void * v_null) {
+int ini_listener (IniDispatch * disp, void * v_null) {
 
-	if (dispatch->value == INI_GLOBAL_IMPLICIT_VALUE) {
+	if (disp->value == INI_GLOBAL_IMPLICIT_VALUE) {
 
 		printf(
 			"\nDATA: %s\nVALUE: %s\n(This is an implicit key element)\n",
-			dispatch->data, dispatch->value
+			disp->data, disp->value
 		);
 
 	} else {
 
-		printf("\nDATA: %s\nVALUE: %s\n", dispatch->data, dispatch->value);
+		printf("\nDATA: %s\nVALUE: %s\n", disp->data, disp->value);
 
 	}
 

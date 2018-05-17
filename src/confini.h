@@ -139,6 +139,13 @@ extern _Bool ini_string_match_ii (
 	const IniFormat format
 );
 
+extern _Bool ini_array_match (
+	const char * const ini_string_a,
+	const char * const ini_string_b,
+	const char delimiter,
+	const IniFormat format
+);
+
 extern size_t ini_unquote (
 	char * const ini_string,
 	const IniFormat format
@@ -281,11 +288,13 @@ enum IniNodeType {
 	INI_DISABLED_SECTION = 7
 };
 
-/** @brief	Most used delimiters (but a delimiter can also be any other ASCII character) **/
+/** @brief	Most used key-value and array delimiters (but a delimiter may also be any other ASCII character) **/
 enum IniDelimiters {
 	INI_ANY_SPACE = 0,	/**< In multi-line INIs: `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`, in non-multi-line INIs: `/[\t \v\f])+/` **/
 	INI_EQUALS = '=',	/**< `=` **/
-	INI_COLON = ':'		/**< `:` **/
+	INI_COLON = ':',	/**< `:` **/
+	INI_DOT = '.',		/**< `.` **/
+	INI_COMMA = ','		/**< `,` **/
 };
 
 /** @brief	Possible values of `IniFormat::semicolon_marker` and `IniFormat::hash_marker` (i.e., meaning of `/\s+[#;]/` in respect to a format) **/

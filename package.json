@@ -1,6 +1,6 @@
 {
 	"name": "libconfini",
-	"version": "1.6.0",
+	"version": "1.6.1",
 	"description": "Yet another INI parser",
 	"homepage": "https://madmurphy.github.io/libconfini/",
 	"author": "madmurphy333@gmail.com",
@@ -32,7 +32,7 @@
 		"conf-file",
 		"conf-library",
 		"config",
-		"configparser",
+		"config-parser",
 		"configuration",
 		"configuration-file",
 		"configuration-management",
