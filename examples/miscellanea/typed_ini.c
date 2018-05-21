@@ -46,7 +46,7 @@ static int my_init (IniStatistics * statistics, void * v_store) {
 
 }
  
-static char ** make_charray (size_t * arrlen, const char * src, const size_t buffsize, IniFormat ini_format) {
+static char ** make_strarray (size_t * arrlen, const char * src, const size_t buffsize, IniFormat ini_format) {
  
 	*arrlen = ini_array_get_length(src, MY_ARRAY_DELIMITER, ini_format);
 
@@ -103,7 +103,7 @@ static int my_handler (IniDispatch * this, void * v_store) {
 
 			/*  Allocate a new array of strings  */
 			if (store->my_section_my_array) { free(store->my_section_my_array); }
-			store->my_section_my_array = make_charray(&store->my_section_my_arr_len, this->value, this->v_len + 1, this->format);
+			store->my_section_my_array = make_strarray(&store->my_section_my_arr_len, this->value, this->v_len + 1, this->format);
 			if (!store->my_section_my_array) { return 1; }
 
 		}

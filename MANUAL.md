@@ -592,7 +592,7 @@ printf(
 );  // "They match"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Or, for instance, in the following example the first two arrays are considered equal, while the third one does is considered different.
+Or, for instance, in the following example the first two arrays are considered equal, while the third one is considered different.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 #include <stdio.h>
@@ -649,7 +649,7 @@ if (disp->type == INI_KEY) {
     (ini_array_match(SECTION, disp->append_to, '.', disp->format) &&\
     ini_string_match_ii(KEY, disp->data, disp->format))
 
-  if (IS_KEY("europe.london", "my_string_1")) {
+  if (IS_KEY("europe.madrid", "my_string_1")) {
 
     // Do something
 
@@ -737,7 +737,7 @@ After having set the value to be assigned to implicit key elements, and having e
 #define NO 0
 #define YES 1
 
-int ini_listener (IniDispatch * disp, void * v_null) {
+static int ini_listener (IniDispatch * disp, void * v_null) {
 
   if (disp->value == INI_GLOBAL_IMPLICIT_VALUE) {
 

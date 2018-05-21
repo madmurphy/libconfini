@@ -2,6 +2,17 @@ Change Log {#changelog}
 =======================
 
 
+## 1.6.2 -- 2018-05-21
+
+Changes:
+
+* Code review (private functions `ltrim_hh()`, `unescape_cr_lf()`,
+  `sanitize_section_path()`, `collapse_everything()`, `collapse_spaces()` and
+  `uncomment()`)
+* Documentation
+* Examples
+
+
 ## 1.6.1 -- 2018-05-17
 
 Changes:

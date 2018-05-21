@@ -6,7 +6,7 @@
 #define NO 0
 #define YES 1
 
-int ini_listener (IniDispatch * disp, void * v_null) {
+static int ini_listener (IniDispatch * disp, void * v_null) {
 
 	if (disp->value == INI_GLOBAL_IMPLICIT_VALUE) {
 
@@ -31,7 +31,7 @@ int main () {
 
 	ini_global_set_implicit_value("[implicit default value]", 0);
 
-	/*  Without setting this, implicit keys will be considered empty:  */
+	/*  Without setting this implicit keys will be considered empty  */
 	my_format.implicit_is_not_empty = YES;
 
 	if (load_ini_path("ini_files/typed_ini.conf", my_format, NULL, ini_listener, NULL)) {

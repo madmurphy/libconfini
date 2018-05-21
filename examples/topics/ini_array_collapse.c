@@ -5,7 +5,7 @@
 #include <string.h>
 #include <confini.h>
 
-static int populate_array (char * part, size_t part_len, size_t idx, IniFormat format, void * v_array) {
+static int populate_strarray (char * part, size_t part_len, size_t idx, IniFormat format, void * v_array) {
 
 	ini_string_parse(part, format);
 	((char **) v_array)[idx] = part;
@@ -38,7 +38,7 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 			(char *) (my_array + my_array_length),
 			DELIMITER,
 			dispatch->format,
-			populate_array,
+			populate_strarray,
 			my_array
 		);
 

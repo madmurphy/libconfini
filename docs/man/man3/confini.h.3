@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Thu May 17 2018" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Mon May 21 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -539,7 +539,7 @@ If \fCdelimiter\fP matches a meta-character within the given format (\fC'\\\\'\f
 #include <string\&.h>
 #include <confini\&.h>
 
-static int populate_array (char * part, size_t part_len, size_t idx, IniFormat format, void * v_array) {
+static int populate_strarray (char * part, size_t part_len, size_t idx, IniFormat format, void * v_array) {
 
     ini_string_parse(part, format);
     ((char **) v_array)[idx] = part;
@@ -572,7 +572,7 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
             (char *) (my_array + my_array_length),
             DELIMITER,
             dispatch->format,
-            populate_array,
+            populate_strarray,
             my_array
         );
 
@@ -983,7 +983,7 @@ static int my_init (IniStatistics * statistics, void * v_store) {
 
 }
  
-static char ** make_charray (size_t * arrlen, const char * src, const size_t buffsize, IniFormat ini_format) {
+static char ** make_strarray (size_t * arrlen, const char * src, const size_t buffsize, IniFormat ini_format) {
  
     *arrlen = ini_array_get_length(src, MY_ARRAY_DELIMITER, ini_format);
 
@@ -1040,7 +1040,7 @@ static int my_handler (IniDispatch * this, void * v_store) {
 
             /*  Allocate a new array of strings  */
             if (store->my_section_my_array) { free(store->my_section_my_array); }
-            store->my_section_my_array = make_charray(&store->my_section_my_arr_len, this->value, this->v_len + 1, this->format);
+            store->my_section_my_array = make_strarray(&store->my_section_my_arr_len, this->value, this->v_len + 1, this->format);
             if (!store->my_section_my_array) { return 1; }
 
         }
@@ -1151,7 +1151,7 @@ This function change the value of one or more global variables\&. In order to be
 #define NO 0
 #define YES 1
 
-int ini_listener (IniDispatch * disp, void * v_null) {
+static int ini_listener (IniDispatch * disp, void * v_null) {
 
     if (disp->value == INI_GLOBAL_IMPLICIT_VALUE) {
 
@@ -1176,7 +1176,7 @@ int main () {
 
     ini_global_set_implicit_value("[implicit default value]", 0);
 
-    /*  Without setting this, implicit keys will be considered empty:  */
+    /*  Without setting this implicit keys will be considered empty  */
     my_format\&.implicit_is_not_empty = YES;
 
     if (load_ini_path("ini_files/typed_ini\&.conf", my_format, NULL, ini_listener, NULL)) {

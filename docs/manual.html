@@ -638,7 +638,7 @@ printf(
 );  // "They match"
 </code></pre>
 
-<p>Or, for instance, in the following example the first two arrays are considered equal, while the third one does is considered different.</p>
+<p>Or, for instance, in the following example the first two arrays are considered equal, while the third one is considered different.</p>
 
 <pre><code class="{.c}">#include &lt;stdio.h&gt;
 #include &lt;confini.h&gt;
@@ -692,7 +692,7 @@ int main () {
     (ini_array_match(SECTION, disp-&gt;append_to, '.', disp-&gt;format) &amp;&amp;\
     ini_string_match_ii(KEY, disp-&gt;data, disp-&gt;format))
 
-  if (IS_KEY("europe.london", "my_string_1")) {
+  if (IS_KEY("europe.madrid", "my_string_1")) {
 
     // Do something
 
@@ -779,7 +779,7 @@ size_t INI_GLOBAL_IMPLICIT_V_LEN = 3;
 #define NO 0
 #define YES 1
 
-int ini_listener (IniDispatch * disp, void * v_null) {
+static int ini_listener (IniDispatch * disp, void * v_null) {
 
   if (disp-&gt;value == INI_GLOBAL_IMPLICIT_VALUE) {
 

@@ -1,5 +1,5 @@
-/*	-*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*-	*/
-/*  Please make sure that the TAB width in your editor is set to 4 spaces!  */
+/*  -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*-  */
+/*  Please make sure that the TAB width in your editor is set to 4 spaces  */
 
 /**
 
@@ -360,15 +360,15 @@ static inline size_t ltrim_h (char * const ltstr, const size_t start_from, const
 
 **/
 static inline size_t ltrim_hh (char * const ltstr, const size_t start_from, const uint8_t depth) {
-	register size_t lshift, idx = start_from;
-	while (is_some_space(ltstr[idx++], depth));
-	if (--idx - start_from) {
-		for (lshift = idx - start_from; ltstr[idx]; idx++) { ltstr[idx - lshift] = ltstr[idx]; }
-		for (idx -= lshift; ltstr[idx]; ltstr[idx++] = '\0');
-		return idx - lshift;
+	register size_t idx_d = start_from, idx_s = start_from;
+	while (is_some_space(ltstr[idx_s++], depth));
+	if (--idx_s - idx_d) {
+		while ((ltstr[idx_d++] = ltstr[idx_s++]));
+		for (idx_s = idx_d; ltstr[idx_s]; ltstr[idx_s++] = '\0');
+		return idx_d - 1;
 	}
-	while (ltstr[idx++]);
-	return idx - 1;
+	while (ltstr[idx_s++]);
+	return idx_s - 1;
 }
 
 
@@ -649,43 +649,39 @@ static inline size_t get_metachar_pos (const char * const str, const char chr, c
 
 	@brief			Replaces `/\\(\n\r?|\r\n?)s*[#;]/` or `/\\(\n\r?|\r\n?)/` with
 					`"$1"`
-	@param			str					Target string
-	@param			len					Length of the string
-	@param			is_disabled			The string represents a disabled entry
-	@param			format				The format of the INI file
+	@param			str				The target string
+	@param			len				Length of the string
+	@param			is_disabled		The string represents a disabled entry
+	@param			format			The format of the INI file
 	@return			The new length of the string
 
 **/
 static size_t unescape_cr_lf (char * const str, const size_t len, const _LIBCONFINI_BOOL_ is_disabled, const IniFormat format) {
 
-	size_t iter, idx = 0, lshift = 0;
+	register size_t idx_s = 0, idx_d = 0;
+	register uint8_t cr_or_lf = _LIBCONFINI_EOL_IDX_;
+	register _LIBCONFINI_BOOL_ is_escaped = _LIBCONFINI_FALSE_;
+	size_t probe;
 
-	for (_LIBCONFINI_BOOL_ is_escaped = _LIBCONFINI_FALSE_, cr_or_lf = _LIBCONFINI_EOL_IDX_; idx < len; idx++) {
+	while (idx_s < len) {
 
-		if (is_escaped && (str[idx] == _LIBCONFINI_SPACES_[cr_or_lf] || str[idx] == _LIBCONFINI_SPACES_[cr_or_lf ^= 1])) {
+		if (is_escaped && (str[idx_s] == _LIBCONFINI_SPACES_[cr_or_lf] || str[idx_s] == _LIBCONFINI_SPACES_[cr_or_lf ^= 1])) {
 
-			for (
+			str[idx_d - 1] = str[idx_s++];
 
-				iter = idx,
-				idx += str[idx + 1] == _LIBCONFINI_SPACES_[cr_or_lf ^ 1];
+			if (str[idx_s] == _LIBCONFINI_SPACES_[cr_or_lf ^ 1]) {
 
-					iter < idx + 1;
+				str[idx_d++] = str[idx_s++];
 
-				str[iter - lshift - 1] = str[iter],
-				iter++
-
-			);
-
-			lshift++;
+			}
 
 			if (is_disabled) {
 
-				iter = ltrim_s(str, iter, _LIBCONFINI_NO_EOL_);
+				probe = ltrim_s(str, idx_s, _LIBCONFINI_NO_EOL_);
 
-				if (_LIBCONFINI_IS_DIS_MARKER_(str[iter], format)) {
+				if (_LIBCONFINI_IS_DIS_MARKER_(str[probe], format)) {
 
-					lshift += iter - idx;
-					idx = iter;
+					idx_s = probe + 1;
 
 				}
 
@@ -695,21 +691,16 @@ static size_t unescape_cr_lf (char * const str, const size_t len, const _LIBCONF
 
 		} else {
 
-			is_escaped = str[idx] == _LIBCONFINI_BACKSLASH_ ? !is_escaped : _LIBCONFINI_FALSE_;
-
-			if (lshift) {
-
-				str[idx - lshift] = str[idx];
-
-			}
+			is_escaped = str[idx_s] == _LIBCONFINI_BACKSLASH_ ? !is_escaped : _LIBCONFINI_FALSE_;
+			str[idx_d++] = str[idx_s++];
 
 		} 
 
 	}
 
-	for (idx = len - lshift; idx < len; str[idx++] = '\0');
+	for (idx_s = idx_d; idx_s < len; str[idx_s++] = '\0');
 
-	return len - lshift;
+	return idx_d;
 
 }
 
@@ -717,8 +708,8 @@ static size_t unescape_cr_lf (char * const str, const size_t len, const _LIBCONF
 /**
 
 	@brief			Sanitizes a section path
-	@param			secpath		The section path
-	@param			format		The format of the INI file
+	@param			secpath			The section path
+	@param			format			The format of the INI file
 	@return			The new length of the string
 
 	Out of quotes, similar to ECMAScript
@@ -731,8 +722,6 @@ static size_t unescape_cr_lf (char * const str, const size_t len, const _LIBCONF
 **/
 static size_t sanitize_section_path (char * const secpath, const IniFormat format) {
 
-	size_t lshift = 0, idx = 0;
-
 	/*
 
 	Mask `abcd` (12 bits used):
@@ -742,83 +731,88 @@ static size_t sanitize_section_path (char * const secpath, const IniFormat forma
 		FLAG_4		Unescaped single quotes are odd right now
 		FLAG_8		Unescaped double quotes are odd right now
 		FLAG_16		We are in an odd sequence of backslashes
-		FLAG_32		The string begins with spaces
+		FLAG_32		These are initial spaces
 		FLAG_64		This is a space out of quotes
 		FLAG_128	This is a dot out of quotes
 		FLAG_256	This is anything *but* an opening single/double quote
-		FLAG_512	The quoted fragment is empty: remove it
-		FLAG_1024	Increase the shift
-		FLAG_2048	Path does not contain meaningful parts
+		FLAG_512	Don't ignore the last two characters
+		FLAG_1024	Don't overwrite the previous character
+		FLAG_2048	Path contains at least one name
 
 	*/
 
-	register uint16_t abcd = (format.no_double_quotes ? 290 : 288) | format.no_single_quotes;
+	register uint16_t abcd = (format.no_double_quotes ? 1826 : 1824) | format.no_single_quotes;
+	register size_t idx_s = 0, idx_d = 0;
 
-	for (; secpath[idx]; idx++) {
+	for (; secpath[idx_s]; idx_s++) {
 
 		/*  Revision #2  */
 
-		abcd	=	!(abcd & 12) && is_some_space(secpath[idx], _LIBCONFINI_WITH_EOL_) ?
+		abcd	=	!(abcd & 12) && is_some_space(secpath[idx_s], _LIBCONFINI_WITH_EOL_) ?
 						(
 							abcd & 224 ?
-								(abcd & 3567) | 1344
+								(abcd & 3055) | 832
 							:
-								(abcd & 2543) | 320
+								(abcd & 4079) | 1856
 						)
-					: !(abcd & 12) && secpath[idx] == _LIBCONFINI_SUBSECTION_ ?
+					: !(abcd & 12) && secpath[idx_s] == _LIBCONFINI_SUBSECTION_ ?
 						(
 							abcd & (abcd & 32 ? 128 : 192) ?
-								(abcd & 3471) | 1408
+								(abcd & 2959) | 896
 							:
-								(abcd & 2447) | 384
+								(abcd & 3983) | 1920
 						)
-					: !(abcd & 25) && secpath[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
+					: !(abcd & 25) && secpath[idx_s] == _LIBCONFINI_SINGLE_QUOTES_ ?
 						(
 							!(abcd & 4) ?
-								(abcd & 2303) | 4
+								(abcd & 3839) | 1540
 							: abcd & 256 ?
-								(abcd & 2331) | 2304
+								(abcd & 3867) | 3840
 							:
-								(abcd & 3067) | 768
+								(abcd & 3579) | 1280
 						)
-					: !(abcd & 22) && secpath[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+					: !(abcd & 22) && secpath[idx_s] == _LIBCONFINI_DOUBLE_QUOTES_ ?
 						(
 							!(abcd & 8) ?
-								(abcd & 2303) | 8
+								(abcd & 3839) | 1544
 							: abcd & 256 ?
-								(abcd & 2327) | 2304
+								(abcd & 3863) | 3840
 							:
-								(abcd & 3063) | 768
+								(abcd & 3575) | 1280
 						)
-					: secpath[idx] == _LIBCONFINI_BACKSLASH_ ?
-						((abcd & 2335) | 2304) ^ 16
+					: secpath[idx_s] == _LIBCONFINI_BACKSLASH_ ?
+						((abcd & 3871) | 3840) ^ 16
 					:
-						(abcd & 2319) | 2304;
+						(abcd & 3855) | 3840;
 
 
-		if (abcd & 1536) {
+		if (abcd & 512) {
 
-			lshift++;
+			secpath[
+				abcd & 1024 ?
+					idx_d++
+				: idx_d ?
+					idx_d - 1
+				:
+					idx_d
+			]						=	!(~abcd & 384) ?
+											_LIBCONFINI_SUBSECTION_
+										: !(~abcd & 320) ?
+											_LIBCONFINI_COLLAPSED_
+										:
+											secpath[idx_s];
+
+		} else if (idx_d) {
+
+			idx_d--;
 
 		}
 
-		secpath[
-			abcd & 512 ?
-				idx - lshift++
-			:
-				idx - lshift
-		]						=	!(~abcd & 384) ?
-										_LIBCONFINI_SUBSECTION_
-									: !(~abcd & 320) ?
-										_LIBCONFINI_COLLAPSED_
-									:
-										secpath[idx];
-
 	}
 
-	for (idx -= lshift < idx && (abcd & 2048) && (abcd & 192) ? ++lshift : lshift; secpath[idx]; secpath[idx++] = '\0');
+	for (idx_s = idx_d && (abcd & 2048) && (abcd & 192) ? --idx_d : idx_d; secpath[idx_s]; secpath[idx_s++] = '\0');
 
-	return idx - lshift;
+	return idx_d;
 
 }
 
@@ -843,70 +837,70 @@ static size_t collapse_everything (char * const keystr, const IniFormat format) 
 		FLAG_4		Unescaped single quotes are odd right now
 		FLAG_8		Unescaped double quotes are odd right now
 		FLAG_16		We are in an odd sequence of backslashes
-		FLAG_32		More than one space is here
+		FLAG_32		This is *not* a space out of quotes
 		FLAG_64		This is an opening single/double quote
-		FLAG_128	Jump this character
-		FLAG_256	Jump this character and the one before this as well
+		FLAG_128	Don't ignore this character
+		FLAG_256	Jump this character and the one before this
 
 	*/
 
-	register uint16_t abcd	=	(is_some_space(*keystr, _LIBCONFINI_WITH_EOL_) ? 0 : 32) |
+	register uint16_t abcd	=	(is_some_space(*keystr, _LIBCONFINI_WITH_EOL_) ? 128 : 160) |
 								(format.no_double_quotes << 1) |
 								format.no_single_quotes;
 
 
-	size_t idx = 0, lshift = 0;
+	register size_t idx_s = 0, idx_d = 0;
 
-	for (; keystr[idx]; idx++) {
+	for (; keystr[idx_s]; idx_s++) {
 
-		/*  Revision #1  */
+		/*  Revision #2  */
 
-		abcd	=	!(abcd & 12) && is_some_space(keystr[idx], _LIBCONFINI_WITH_EOL_) ?
+		abcd	=	!(abcd & 12) && is_some_space(keystr[idx_s], _LIBCONFINI_WITH_EOL_) ?
 						(
 							abcd & 32 ?
-								abcd & 15
+								(abcd & 143) | 128
 							:
-								(abcd & 175) | 128
+								abcd & 47
 						)
-					: !(abcd & 25) && keystr[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
+					: !(abcd & 25) && keystr[idx_s] == _LIBCONFINI_SINGLE_QUOTES_ ?
 						(
 							!(abcd & 4) ?
-								(abcd & 111) | 68
+								(abcd & 239) | 196
 							: abcd & 64 ?
-								(abcd & 427) | 384
+								(abcd & 299) | 256
 							:
-								(abcd & 43) | 32
+								(abcd & 171) | 160
 						)
-					: !(abcd & 22) && keystr[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+					: !(abcd & 22) && keystr[idx_s] == _LIBCONFINI_DOUBLE_QUOTES_ ?
 						(
 							!(abcd & 8) ?
-								(abcd & 111) | 72
+								(abcd & 239) | 200
 							: abcd & 64 ?
-								(abcd & 423) | 384
+								(abcd & 295) | 256
 							:
-								(abcd & 39) | 32
+								(abcd & 167) | 160
 						)
-					: keystr[idx] == _LIBCONFINI_BACKSLASH_ ?
-						((abcd & 63) | 32) ^ 16
+					: keystr[idx_s] == _LIBCONFINI_BACKSLASH_ ?
+						((abcd & 191) | 160) ^ 16
 					:
-						(abcd & 47) | 32;
+						(abcd & 175) | 160;
 
 
-		if (abcd & 384) {
+		if (abcd & 256) {
 
-				lshift += abcd & 256 ? 2 : 1;
+			idx_d--;
 
-		} else {
+		} else if (abcd & 128) {
 
-				keystr[idx - lshift] = abcd & 44 ? keystr[idx] : _LIBCONFINI_COLLAPSED_;
+			keystr[idx_d++] = abcd & 44 ? keystr[idx_s] : _LIBCONFINI_COLLAPSED_;
 
 		}
 
 	}
 
-	for (idx -= abcd & 32 ? lshift : ++lshift; keystr[idx]; keystr[idx++] = '\0');
+	for (idx_s = !(abcd & 32) && idx_d ? --idx_d : idx_d; keystr[idx_s]; keystr[idx_s++] = '\0');
 
-	return idx - lshift;
+	return idx_d;
 
 }
 
@@ -915,8 +909,8 @@ static size_t collapse_everything (char * const keystr, const IniFormat format) 
 
 	@brief			Out of quotes similar to ECMAScript
 					`string.replace(/^[\n\r]\s*|(\s)+/g, " ")`
-	@param			str			The string to collapse
-	@param			format		The format of the INI file
+	@param			str				The string to collapse
+	@param			format			The format of the INI file
 	@return			The new length of the string
 
 **/
@@ -931,45 +925,42 @@ static size_t collapse_spaces (char * const str, const IniFormat format) {
 		FLAG_4		Unescaped single quotes are odd right now
 		FLAG_8		Unescaped double quotes are odd right now
 		FLAG_16		We are in an odd sequence of backslashes
-		FLAG_32		More than one space is here
+		FLAG_32		This is a space out of quotes
 		FLAG_64		Jump this character
 
 	*/
 
 	register uint8_t abcd = (format.no_double_quotes ? 34 : 32) | format.no_single_quotes;
-	size_t idx = 0, lshift = 0;
+	register size_t idx_s = 0;
+	size_t idx_d = 0;
 
-	for (; str[idx]; idx++) {
+	for (; str[idx_s]; idx_s++) {
 
 		/*  Revision #1  */
 
-		abcd	=	!(abcd & 12) && is_some_space(str[idx], _LIBCONFINI_WITH_EOL_) ?
+		abcd	=	!(abcd & 12) && is_some_space(str[idx_s], _LIBCONFINI_WITH_EOL_) ?
 						(abcd & 32 ? (abcd & 111) | 64 : (abcd & 47) | 32)
-					: !(abcd & 25) && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
+					: !(abcd & 25) && str[idx_s] == _LIBCONFINI_SINGLE_QUOTES_ ?
 						(abcd & 15) ^ 4
-					: !(abcd & 22) && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+					: !(abcd & 22) && str[idx_s] == _LIBCONFINI_DOUBLE_QUOTES_ ?
 						(abcd & 15) ^ 8
-					: str[idx] == _LIBCONFINI_BACKSLASH_ ?
+					: str[idx_s] == _LIBCONFINI_BACKSLASH_ ?
 						(abcd & 31) ^ 16
 					:
 						abcd & 15;
 
 
-		if (abcd & 64) {
+		if (~abcd & 64) {
 
-				lshift++;
-
-		} else {
-
-				str[idx - lshift] = abcd & 32 ? _LIBCONFINI_COLLAPSED_ : str[idx];
+			str[idx_d++] = abcd & 32 ? _LIBCONFINI_COLLAPSED_ : str[idx_s];
 
 		}
 
 	}
 
-	for (idx -= abcd & 32 ? ++lshift : lshift; str[idx]; str[idx++] = '\0');
+	for (idx_s = (abcd & 32) && idx_d ? --idx_d : idx_d; str[idx_s]; str[idx_s++] = '\0');
 
-	return idx - lshift;
+	return idx_d;
 
 }
 
@@ -978,8 +969,8 @@ static size_t collapse_spaces (char * const str, const IniFormat format) {
 
 	@brief			Out of quotes similar to ECMAScript
 					`string.replace(/^[\n\r]\s*|(\s)+/g, " ")`
-	@param			str			The string to collapse
-	@param			format		The format of the INI file
+	@param			str				The string to collapse
+	@param			format			The format of the INI file
 	@return			The new length of the string
 
 **/
@@ -1000,9 +991,9 @@ static size_t collapse_empty_quotes (char * const str, const IniFormat format) {
 	*/
 
 	register uint8_t abcd = (format.no_double_quotes << 1) | format.no_single_quotes;
-	size_t idx, lshift = ltrim_s(str, 0, _LIBCONFINI_WITH_EOL_);
+	register size_t lshift = ltrim_s(str, 0, _LIBCONFINI_WITH_EOL_), idx = lshift;
 
-	for (idx = lshift; str[idx]; idx++) {
+	for (; str[idx]; idx++) {
 
 		/*  Revision #1  */
 
@@ -1048,13 +1039,11 @@ static size_t collapse_empty_quotes (char * const str, const IniFormat format) {
 **/
 static size_t uncomment (char * const commstr, size_t len, const IniFormat format) {
 
-	size_t lshift, idx;
+	register size_t idx_s, idx_d = 0;
 
 	if (format.multiline_nodes == INI_MULTILINE_EVERYWHERE) {
 
 		/*  The comment can be multi-line  */
-
-		register uint8_t abcd;
 
 		/*
 
@@ -1070,29 +1059,29 @@ static size_t uncomment (char * const commstr, size_t len, const IniFormat forma
 
 		*/
 
-		for (abcd = 11, lshift = 0, idx = 0; idx < len; idx++) {
+		idx_s = 0;
 
-			abcd	=	commstr[idx] == _LIBCONFINI_BACKSLASH_ ?
+		for (register uint8_t abcd = 0; idx_s < len; idx_s++) {
+
+			abcd	=	commstr[idx_s] == _LIBCONFINI_BACKSLASH_ ?
 							((abcd & 35) | 32) ^ 2
-						: commstr[idx] == _LIBCONFINI_LF_ || commstr[idx] == _LIBCONFINI_CR_ ?
+						: commstr[idx_s] == _LIBCONFINI_LF_ || commstr[idx_s] == _LIBCONFINI_CR_ ?
 							(abcd << 1) & 4
-						: !(abcd & 32) && _LIBCONFINI_IS_ANY_MARKER_(commstr[idx], format) ?
+						: !(abcd & 32) && _LIBCONFINI_IS_ANY_MARKER_(commstr[idx_s], format) ?
 							(abcd & 40) | 8
-						: !(abcd & 40) && is_some_space(commstr[idx], _LIBCONFINI_NO_EOL_) ?
+						: !(abcd & 40) && is_some_space(commstr[idx_s], _LIBCONFINI_NO_EOL_) ?
 							(abcd & 57) | 16
 						:
 							(abcd & 33) | 32;
 
 
-			if (abcd & 28) {
-
-				lshift++;
-
-			}
-
 			if (!(abcd & 25)) {
 
-				commstr[idx - lshift] = commstr[idx];
+				commstr[abcd & 4 ? idx_d - 1 : idx_d++] = commstr[idx_s];
+
+			} else if (!(abcd & 28)) {
+
+				idx_d++;
 
 			}
 
@@ -1102,21 +1091,29 @@ static size_t uncomment (char * const commstr, size_t len, const IniFormat forma
 
 		/*  The comment cannot be multi-line  */
 
-		for (lshift = 0; lshift < len && _LIBCONFINI_IS_ANY_MARKER_(commstr[lshift], format); lshift++);
+		for (
 
-		if (!lshift) {
+			idx_s = ltrim_s(commstr, 0, _LIBCONFINI_WITH_EOL_);
+
+				idx_s < len && _LIBCONFINI_IS_ANY_MARKER_(commstr[idx_s], format);
+
+			idx_s++
+
+		);
+
+		if (!idx_s) {
 
 			return len;
 
 		}
 
-		for (idx = lshift; idx < len; commstr[idx - lshift] = commstr[idx], idx++);
+		for (; idx_s < len; commstr[idx_d++] = commstr[idx_s++]);
 
 	}
 
-	for (idx -= lshift; idx < len; commstr[idx++] = '\0');
+	for (idx_s = idx_d; idx_s < len; commstr[idx_s++] = '\0');
 
-	return idx - lshift;
+	return idx_d;
 
 }
 
@@ -1306,8 +1303,8 @@ static uint8_t get_type_as_active (
 
 	@brief			Examines a (single-/multi- line) segment and checks whether
 					it contains sub-segments
-	@param			segment		Segment to examine
-	@param			format		The format of the INI file
+	@param			segment			Segment to examine
+	@param			format			The format of the INI file
 	@return			Number of segments found
 
 **/
@@ -2611,6 +2608,8 @@ _Bool ini_array_match (const char * const ini_string_a, const char * const ini_s
 
 	if (_LIBCONFINI_IS_ESC_CHAR_(delimiter, format)) {
 
+		/*  We have no delimiters (array has only one member)  */
+
 		return ini_string_match_ii(ini_string_a, ini_string_b, format);
 
 	}
@@ -3000,7 +2999,7 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 				}
 
-				for (idx -= (abcd & 64) && idx - lshift ? ++lshift : lshift; ini_string[idx]; ini_string[idx++] = '\0');
+				for (idx -= (abcd & 64) && lshift < idx ? ++lshift : lshift; ini_string[idx]; ini_string[idx++] = '\0');
 
 				return idx - lshift;
 
@@ -3062,7 +3061,7 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 	lshift += nbacksl >> 1;
 
-	for (idx -= (abcd & 64) && idx - lshift ? ++lshift : lshift; ini_string[idx]; ini_string[idx++] = '\0');
+	for (idx -= (abcd & 64) && lshift < idx ? ++lshift : lshift; ini_string[idx]; ini_string[idx++] = '\0');
 
 	return (abcd & 28) ^ 4 ? idx - lshift : rtrim_h(ini_string, idx - lshift, _LIBCONFINI_WITH_EOL_);
 
@@ -3895,7 +3894,7 @@ IniFormatNum ini_fton (const IniFormat source) {
 /**
 
 	@brief			Constructs a new `IniFormat` according to an `::IniFormatNum`
-	@param			format_id			The `#IniFormatNum` to be used
+	@param			format_id		The `#IniFormatNum` to be used
 	@return			The new `IniFormat` constructed
 
 	@note	If @p format_id `>` `16777215` it will be truncated to 24 bits.
