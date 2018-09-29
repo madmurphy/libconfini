@@ -1,48 +1,120 @@
 libconfini {#readme}
 ====================
 
-The motivation behind this library comes from the observation that many
-system applications in GNU/Linux rely on _INI-like_ files (systemd, pacman,
-networkmanager, etc.), and for many users who approach GNU/Linux for the
-first time it can be frustrating not to have a GUI for configuring their
-system. So, I thought, a general .conf/.ini editor for GNOME _in dconf-style_
-had to be done.
+**libconfini** is the ultimate and most consistent INI file parser library
+written in C. It focuses on standardization and parsing exactness and is at ease
+with almost every type of file containing key/value pairs.
 
-One obstacle to a GUI editor is that configuration files often contain commented
-suggestions on how to write key/values pairs, what the default values are, etc.;
-and these suggestions can make a clear sense when editing a plain text, but
-normally disappear when the text is parsed by some application. So, eventually,
-an editor would have to be able to not loose the comments, and also to recognize
-among comments a disabled (commented) key or an entire disabled section, and
-being flexible enough to support the numerous INI dialects (multiline INI files,
-support for single/double quotes, different delimiter symbols, nesting sections,
-etc.).
+The library is fast and suitable for embedded systems. Its algorithms are
+written from scratch and do not depend on any external library, except for the C
+standard headers **stdio.h**, **stdlib.h** and **stdint.h**.
 
-With this in mind I wrote down the first algorithms for doing the job. As I
-said, it was the project of an INI editor for GNOME... But I love the free
-software paradise, and as soon as I had a set of functions able to do one
-single job (i.e., parsing INI files), I thought that it would be nice to
-release it as an independent library.
+Rather than storing the parsed data, **libconfini** gives the developer the
+freedom to choose what to do with them through a custom callback invoked for
+each INI node read. The API has been designed to be powerful, flexible and
+simple to use.
 
-Here is where **libconfini** comes.
 
-It can be synthetized as a smart parser able to allow a complete lossless
-analysis and parsing of many different types of INI files, but _K.I.S.S._
-enough to not store any parsed data, but rather dispatch it (well formatted)
-to a custom listener. It was born for a GUI editor (which per se needs to read
-_every_ information out of an INI file), but is usable by any other application
-that needs to read INI files but does not need to read commented INI lines.
+Features
+--------
 
-Despite highly configurable and flexible, **libconfini** is still a small
-piece of work. I really don't know if it will be useful to the community. For
-sure it does the right job for my editor.
+* Typed data support (each value can be parsed as a boolean, a number, a string,
+  an array)
+* Single/double quotes support in _Bash single quotes style_
+* Multi-line support
+* Comment support
+* Disabled entry support
+* INI sectioning support (single-level sectioning, as in `[foo]`; absolute
+  nesting, as in `[foo.bar]`; relative nesting, as in `[.bar]`)
+* Automatic sanitization of values, key names and section paths
+* Comparison functions designed just for INI source code (capable, for example,
+  to recognize the equality between <code>"Hello world"</code> and
+  <code>"He"l'lo' world</code>, or between <code>foo bar</code> and
+  <code>foo&nbsp;&nbsp;&nbsp;&nbsp;bar</code>)
+* Callback pattern
+* Thread-safety (each parsing process is fully reentrant)
+* Highly optimized code (single memory allocation for each parsing, heuristic
+  programming, optimization flags)
+* Function modularity (each public function is independent from all other public
+  functions)
+* K.I.S.S. (no public functions are automatically invoked during the parsing --
+  for example, not even single/double quotes are automatically removed from
+  values unless the developer explicitly decides to use the formatting functions
+  provided by the API)
+
+
+Sample usage
+------------
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+#include <confini.h>
+
+static int callback (IniDispatch * dispatch, void * v_other) {
+
+  printf(
+    "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
+    dispatch->data, dispatch->value, dispatch->type
+  );
+
+  return 0;
+
+}
+
+int main () {
+
+  if (load_ini_path(
+    "example.ini",
+    INI_DEFAULT_FORMAT,
+    NULL,
+    callback,
+    NULL
+  )) {
+
+    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    return 1;
+
+  }
+
+  return 0;
+
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For more details, please read the [Library Functions Manual][1]
 (`man libconfini` -- a standalone HTML version is available [here][2]) and the
 manual of the header file (`man confini.h`). The code is available on
 [GitHub][3] under [madmurphy/libconfini][4]).
 
+
+Installation
+------------
+
+Despite the small footprint (34 kB of compiled binary using GCC), **libconfini**
+has been conceived as a shared library (but it may be used as a static library
+as well).
+
+On most Unix-like systems, it is possible to install **libconfini** using the
+following common steps:
+
+~~~~~~~~~~~~
+./configure
+make
+make install
+~~~~~~~~~~~~
+
+An unofficial port of **libconfini** for Cygwin [is also available][5].
+
+
+Free software
+-------------
+
+This library is free software. You can redistribute it and/or modify it under
+the terms of the GPL3 license. See [COPYING][6] for details.
+
+
 [1]: https://madmurphy.github.io/libconfini/html/libconfini.html
 [2]: https://madmurphy.github.io/libconfini/manual.html
 [3]: https://github.com/
 [4]: https://github.com/madmurphy/libconfini
+[5]: https://github.com/fd00/yacp/tree/master/libconfini
+[6]: https://github.com/madmurphy/libconfini/blob/master/COPYING

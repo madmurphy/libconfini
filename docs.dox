@@ -10,15 +10,23 @@
 
 
 
-\page		readme		README
+\page		rationale	Rationale
 
 \brief		Why **libconfini**?
 
 
 
-\page		fnoverview	Functions overview
+\page		readme		README
+
+\brief		Yet another INI parser
+
+
+
+\page		fnoverview	Functions Overview
 
 \brief		Complete list of functions
+
+What follows is the list of public functions available with **libconfini**. Each public function is independent, hence if you are compiling this library you may decide to remove any of them from the code, with the only exceptions of `ini_string_match_ii()`, required by `ini_array_match()`, and `load_ini_file()`, required by `load_ini_path()`.
 
 
 
@@ -35,21 +43,27 @@ documentation not available in the code.
 
 
 
+\file		RATIONALE.md
+
+This file provides the markdown source code for the \ref rationale.
+
+
+
 \file		README.md
 
-This file provides the markdown source code for the @ref readme.
+This file provides the markdown source code for the \ref readme.
 
 
 
 \file		MANUAL.md
 
-This file provides the markdown source code for the @ref libconfini.
+This file provides the markdown source code for the \ref libconfini.
 
 
 
 \file		ChangeLog.md
 
-This file provides the markdown source code for the @ref changelog.
+This file provides the markdown source code for the \ref changelog.
 
 
 
@@ -57,17 +71,17 @@ This file provides the markdown source code for the @ref changelog.
 
 Welcome to the documentation of **libconfini**!
 
-You can get started by reading the
-[motivations behind this library](@ref readme) and
-[the manual](@ref libconfini). Further useful resources include:
+You can get started by seeing the [README](\ref readme) and
+[the manual](\ref libconfini). Further useful resources include:
 
 - [**Source Code**](https://github.com/madmurphy/libconfini)
 - [**Releases**](https://github.com/madmurphy/libconfini/releases)
-- **@ref fnoverview**
-- [confini.h File Reference](@ref confini.h)
+- \ref fnoverview
+- [confini.h File Reference](\ref confini.h)
 - `IniFormat`
 - `IniStatistics`
 - `IniDispatch`
+- \ref rationale
 
 
 

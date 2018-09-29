@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Mon May 21 2018" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Sat Sep 29 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -62,13 +62,13 @@ src/confini.h \- libconfini header
 
 .in +1c
 .ti -1c
-.RI "enum \fBConfiniInterruptNo\fP { \fBCONFINI_IINTR\fP = 1, \fBCONFINI_FEINTR\fP = 2, \fBCONFINI_ENOENT\fP = 4, \fBCONFINI_ENOMEM\fP = 5, \fBCONFINI_EIO\fP = 6, \fBCONFINI_EFEOOR\fP = 7 }"
+.RI "enum \fBConfiniInterruptNo\fP { \fBCONFINI_SUCCESS\fP = 0, \fBCONFINI_IINTR\fP = 1, \fBCONFINI_FEINTR\fP = 2, \fBCONFINI_ENOENT\fP = 4, \fBCONFINI_ENOMEM\fP = 5, \fBCONFINI_EIO\fP = 6, \fBCONFINI_EOOR\fP = 7 }"
 .br
-.RI "Error codes – the actual values of each constant should be considered opaque\&. "
+.RI "Error codes – the actual value of each constant should be considered opaque\&. "
 .ti -1c
 .RI "enum \fBIniNodeType\fP { \fBINI_UNKNOWN\fP = 0, \fBINI_VALUE\fP = 1, \fBINI_KEY\fP = 2, \fBINI_SECTION\fP = 3, \fBINI_COMMENT\fP = 4, \fBINI_INLINE_COMMENT\fP = 5, \fBINI_DISABLED_KEY\fP = 6, \fBINI_DISABLED_SECTION\fP = 7 }"
 .br
-.RI "INI nodes types\&. "
+.RI "INI node types\&. "
 .ti -1c
 .RI "enum \fBIniDelimiters\fP { \fBINI_ANY_SPACE\fP = 0, \fBINI_EQUALS\fP = '=', \fBINI_COLON\fP = ':', \fBINI_DOT\fP = '\&.', \fBINI_COMMA\fP = ',' }"
 .br
@@ -104,7 +104,7 @@ src/confini.h \- libconfini header
 .ti -1c
 .RI "_Bool \fBini_string_match_si\fP (const char *const simple_string, const char *const ini_string, const \fBIniFormat\fP format)"
 .br
-.RI "Compares a simple string an INI string and and checks if they match\&. "
+.RI "Compares a simple string and an INI string and and checks if they match\&. "
 .ti -1c
 .RI "_Bool \fBini_string_match_ii\fP (const char *const ini_string_a, const char *const ini_string_b, const \fBIniFormat\fP format)"
 .br
@@ -266,10 +266,13 @@ Global statistics about an INI file\&.
 .SS "enum \fBConfiniInterruptNo\fP"
 
 .PP
-Error codes – the actual values of each constant should be considered opaque\&. 
+Error codes – the actual value of each constant should be considered opaque\&. 
 .PP
 \fBEnumerator\fP
 .in +1c
+.TP
+\fB\fICONFINI_SUCCESS \fP\fP
+No interruptions, everything went well 
 .TP
 \fB\fICONFINI_IINTR \fP\fP
 Interrupted by the user during \fCf_init()\fP 
@@ -286,8 +289,8 @@ Error allocating memory
 \fB\fICONFINI_EIO \fP\fP
 Error reading the file 
 .TP
-\fB\fICONFINI_EFEOOR \fP\fP
-The dispatches are more than expected (out of range) 
+\fB\fICONFINI_EOOR \fP\fP
+Callbacks are more than expected (out of range) 
 .SS "enum \fBIniCommentMarker\fP"
 
 .PP
@@ -306,7 +309,7 @@ This marker opens a comment
 This marker opens a comment that must be ignored 
 .TP
 \fB\fIINI_IS_NOT_A_MARKER \fP\fP
-This is a normal character 
+This is not a marker, but a normal character instead 
 .SS "enum \fBIniDelimiters\fP"
 
 .PP
@@ -347,11 +350,11 @@ Only section paths and keys – disabled or not – are allowed to be multi-line
 Only \fIactive\fP section paths and \fIactive\fP keys are allowed to be multi-line\&. 
 .TP
 \fB\fIINI_NO_MULTILINE \fP\fP
-The multi-line escape sequence is disabled\&. 
+Multi-line escape sequences are disabled\&. 
 .SS "enum \fBIniNodeType\fP"
 
 .PP
-INI nodes types\&. 
+INI node types\&. 
 .PP
 \fBEnumerator\fP
 .in +1c
@@ -359,7 +362,7 @@ INI nodes types\&.
 \fB\fIINI_UNKNOWN \fP\fP
 .TP
 \fB\fIINI_VALUE \fP\fP
-Not used here (values are dispatched together with keys), but available for user's implementations 
+Not used here (values are dispatched together with keys) – but available for user's implementations 
 .TP
 \fB\fIINI_KEY \fP\fP
 .TP
@@ -491,7 +494,7 @@ Out of quotes similar to ECMAScript \fCini_string\&.replace(new RegExp('^\\\\s+|
 .PP
 Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other string may be used as well)\&.
 .PP
-This function can be useful before invoking \fCmemcpy()\fP using \fCini_string\fP as source when saving memory is a priority\&.
+This function can be useful before invoking \fCmemcpy()\fP using \fCini_string\fP as source, when saving memory is a priority\&.
 .PP
 The \fCformat\fP argument is used for the following fields:
 .PP
@@ -611,7 +614,7 @@ int main () {
 .PP
 \fBNote:\fP
 .RS 4
-The actual space occupied by the array might get further reduced after each member is parsed by \fC\fBini_string_parse()\fP\fP (or by \fC\fBini_unquote()\fP\fP if \fCini_string\fP is a section path)\&. 
+The actual space occupied by the array might get reduced further after each member is parsed by \fC\fBini_string_parse()\fP\fP (or \fC\fBini_unquote()\fP\fP if \fCini_string\fP is a section path)\&. 
 .RE
 .PP
 
@@ -1138,7 +1141,7 @@ Nothing
 .PP
 \fBWarning:\fP
 .RS 4
-This function change the value of one or more global variables\&. In order to be thread-safe this function should be used only once at beginning of execution or otherwise a mutex logic must be introduced\&.
+This function changes the value of one or more global variables\&. In order to be thread-safe this function should be used only once at beginning of execution or otherwise a mutex logic must be introduced\&.
 .RE
 .PP
 .PP
@@ -1212,7 +1215,7 @@ If \fClowercase\fP is \fCTRUE\fP, key and section names in case-insensitive INI 
 .PP
 \fBWarning:\fP
 .RS 4
-This function change the value of one or more global variables\&. In order to be thread-safe this function should be used only once at beginning of execution or otherwise a mutex logic must be introduced\&. 
+This function changes the value of one or more global variables\&. In order to be thread-safe this function should be used only once at beginning of execution or otherwise a mutex logic must be introduced\&. 
 .RE
 .PP
 
@@ -1305,7 +1308,7 @@ The \fCformat\fP argument is used for the following fields:
 .SS "_Bool ini_string_match_si (const char *const simple_string, const char *const ini_string, const \fBIniFormat\fP format)"
 
 .PP
-Compares a simple string an INI string and and checks if they match\&. 
+Compares a simple string and an INI string and and checks if they match\&. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -1434,6 +1437,8 @@ Compares two simple strings and checks if they match\&.
 \fIsimple_string_a\fP The first simple string 
 .br
 \fIsimple_string_b\fP The second simple string 
+.br
+\fIformat\fP The format of the INI file 
 .RE
 .PP
 \fBReturns:\fP
@@ -1484,7 +1489,7 @@ The \fCformat\fP argument is used for the following fields:
 .PP
 \fBNote:\fP
 .RS 4
-\fCformat\&.multiline_nodes\fP is used only to figure out whether there are escape sequences or not\&. For all other purposes new line characters will be considered to be equal to any other space character, even if the format is not multi-line – new line characters in non-multi-line formats should never appear\&.
+\fCformat\&.multiline_nodes\fP is used only to figure out whether there are escape sequences or not\&. For all other purposes new line characters will be considered to be equal to any other space character, even if the format is not multi-line – in fact new line characters should never appear in non-multi-line formats \&.
 .RE
 .PP
 .PP

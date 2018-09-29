@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['functions_20overview',['Functions overview',['../fnoverview.html',1,'']]]
+  ['functions_20overview',['Functions Overview',['../fnoverview.html',1,'']]]
 ];

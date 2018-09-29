@@ -266,20 +266,21 @@ extern double (* const ini_get_float) (
 /** @brief	Error mask (flags not present in user-generated interruptions) -- its value should be considered opaque **/
 #define CONFINI_ERROR 252
 
-/** @brief	Error codes -- the actual values of each constant should be considered opaque **/
+/** @brief	Error codes -- the actual value of each constant should be considered opaque **/
 enum ConfiniInterruptNo {
+	CONFINI_SUCCESS = 0,	/**< No interruptions, everything went well **/
 	CONFINI_IINTR = 1,	/**< Interrupted by the user during `f_init()` **/
 	CONFINI_FEINTR = 2,	/**< Interrupted by the user during `f_foreach()` **/
 	CONFINI_ENOENT = 4,	/**< File inaccessible **/
 	CONFINI_ENOMEM = 5,	/**< Error allocating memory **/
 	CONFINI_EIO = 6,	/**< Error reading the file **/
-	CONFINI_EFEOOR = 7	/**< The dispatches are more than expected (out of range) **/
+	CONFINI_EOOR = 7	/**< Callbacks are more than expected (out of range) **/
 };
 
-/** @brief	INI nodes types **/
+/** @brief	INI node types **/
 enum IniNodeType {
 	INI_UNKNOWN = 0,
-	INI_VALUE = 1,		/**< Not used here (values are dispatched together with keys), but available for user's implementations **/
+	INI_VALUE = 1,		/**< Not used here (values are dispatched together with keys) -- but available for user's implementations **/
 	INI_KEY = 2,
 	INI_SECTION = 3,
 	INI_COMMENT = 4,
@@ -302,7 +303,7 @@ enum IniCommentMarker {
 	INI_DISABLED_OR_COMMENT = 0,	/**< This marker opens a comment or a disabled entry **/
 	INI_ONLY_COMMENT = 1,		/**< This marker opens a comment **/
 	INI_IGNORE = 2,			/**< This marker opens a comment that must be ignored **/
-	INI_IS_NOT_A_MARKER = 3		/**< This is a normal character **/
+	INI_IS_NOT_A_MARKER = 3		/**< This is not a marker, but a normal character instead **/
 };
 
 /** @brief	Possible values of `IniFormat::section_paths` **/
@@ -318,7 +319,7 @@ enum IniMultiline {
 	INI_MULTILINE_EVERYWHERE = 0,		/**< Comments, section paths and keys -- disabled or not -- are allowed to be multi-line. **/
 	INI_BUT_COMMENTS = 1,			/**< Only section paths and keys -- disabled or not -- are allowed to be multi-line. **/
 	INI_BUT_DISABLED_AND_COMMENTS = 2,	/**< Only *active* section paths and *active* keys are allowed to be multi-line. **/
-	INI_NO_MULTILINE = 3			/**< The multi-line escape sequence is disabled. **/
+	INI_NO_MULTILINE = 3			/**< Multi-line escape sequences are disabled. **/
 };
 
 /** @brief	A model format **/

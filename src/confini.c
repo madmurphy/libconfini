@@ -158,7 +158,6 @@
 
 #define _LIBCONFINI_FALSE_ 0
 #define _LIBCONFINI_TRUE_ 1
-#define _LIBCONFINI_SUCCESS_ 0
 #define _LIBCONFINI_BOOL_ unsigned char
 #define _LIBCONFINI_SIMPLE_SPACE_ 32
 #define _LIBCONFINI_HT_ '\t'
@@ -468,7 +467,7 @@ static inline size_t urtrim_s (const char * const urtstr, const size_t length) {
 /**
 
 	@brief			Converts an ASCII string to lower case
-	@param			string		The target string
+	@param			str			The target string
 	@return			Nothing
 
 **/
@@ -489,6 +488,7 @@ static inline void string_tolower (char * const str) {
 					`/^(\s+|\\[\n\r]|''|"")+/`) -- **does** change the buffer
 	@param			qultstr			The target string
 	@param			start_from		The offset where to start the left trim
+	@param			format			The format of the INI file
 	@return			The offset of the first non-space character
 
 **/
@@ -647,8 +647,8 @@ static inline size_t get_metachar_pos (const char * const str, const char chr, c
 
 /**
 
-	@brief			Replaces `/\\(\n\r?|\r\n?)s*[#;]/` or `/\\(\n\r?|\r\n?)/` with
-					`"$1"`
+	@brief			Replaces `/\\(\n\r?|\r\n?)[\t \v\f]*[#;]/` or `/\\(\n\r?|\r\n?)/`
+					with `"$1"`
 	@param			str				The target string
 	@param			len				Length of the string
 	@param			is_disabled		The string represents a disabled entry
@@ -939,7 +939,12 @@ static size_t collapse_spaces (char * const str, const IniFormat format) {
 		/*  Revision #1  */
 
 		abcd	=	!(abcd & 12) && is_some_space(str[idx_s], _LIBCONFINI_WITH_EOL_) ?
-						(abcd & 32 ? (abcd & 111) | 64 : (abcd & 47) | 32)
+						(
+							abcd & 32 ?
+								(abcd & 111) | 64
+							:
+								(abcd & 47) | 32
+						)
 					: !(abcd & 25) && str[idx_s] == _LIBCONFINI_SINGLE_QUOTES_ ?
 						(abcd & 15) ^ 4
 					: !(abcd & 22) && str[idx_s] == _LIBCONFINI_DOUBLE_QUOTES_ ?
@@ -1000,9 +1005,19 @@ static size_t collapse_empty_quotes (char * const str, const IniFormat format) {
 		abcd	=	str[idx] == _LIBCONFINI_BACKSLASH_ ?
 						(abcd & 31) ^ 16
 					: !(abcd & 22) && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
-						(~abcd & 40 ? ((abcd & 47) | 32) ^ 8 : (abcd & 71) | 64)
+						(
+							~abcd & 40 ?
+								((abcd & 47) | 32) ^ 8
+							:
+								(abcd & 71) | 64
+						)
 					: !(abcd & 25) && str[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
-						(~abcd & 36 ? ((abcd & 47) | 32) ^ 4 : (abcd & 75) | 64)
+						(
+							~abcd & 36 ?
+								((abcd & 47) | 32) ^ 4
+							:
+								(abcd & 75) | 64
+						)
 					:
 						abcd & 15;
 
@@ -1026,8 +1041,8 @@ static size_t collapse_empty_quotes (char * const str, const IniFormat format) {
 
 /**
 
-	@brief			Removes all comment initializers (`#` or `;`) from the beginning
-					of each line of a comment
+	@brief			Removes all comment initializers (`#` and/or `;`) from the
+					beginning of each line of a comment
 	@param			commstr			The comment to parse
 	@param			len				The length of commstr
 	@param			format			The format of the INI file
@@ -1641,7 +1656,7 @@ int load_ini_file (
 
 	}
 
-	int return_value = _LIBCONFINI_SUCCESS_;
+	int return_value = CONFINI_SUCCESS;
 
 	rewind(ini_file);
 
@@ -1803,7 +1818,7 @@ int load_ini_file (
 
 		if (this_disp.dispatch_id >= this_doc.members) {
 
-			return_value = CONFINI_EFEOOR;
+			return_value = CONFINI_EOOR;
 			goto free_and_exit;
 
 		}
@@ -2161,6 +2176,7 @@ int load_ini_path (
 	@brief			Compares two simple strings and checks if they match
 	@param			simple_string_a		The first simple string
 	@param			simple_string_b		The second simple string
+	@param			format				The format of the INI file
 	@return			A boolean: `TRUE` if the two strings match, `FALSE` otherwise
 
 	Simple strings are user-given strings or the result of `ini_string_parse()`. The
@@ -2207,8 +2223,8 @@ _Bool ini_string_match_ss (const char * const simple_string_a, const char * cons
 											/** @utility{ini_string_match_si} **/
 /**
 
-	@brief			Compares a simple string an INI string and and checks if they
-					match
+	@brief			Compares a simple string and an INI string and and checks if
+					they match
 	@param			ini_string		The INI string escaped according to
 									@p format
 	@param			simple_string	The simple string
@@ -2299,9 +2315,19 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 	}
 
 	abcd	=	!(abcd & 10) && ini_string[idx_i] == _LIBCONFINI_DOUBLE_QUOTES_ ?
-					(nbacksl & 1 ? (abcd & 63) | 32 : ((abcd & 223) | 128) ^ 16)
+					(
+						nbacksl & 1 ?
+							(abcd & 63) | 32
+						:
+							((abcd & 223) | 128) ^ 16
+					)
 				: !(abcd & 17) && ini_string[idx_i] == _LIBCONFINI_SINGLE_QUOTES_ ?
-					(nbacksl & 1 ? (abcd & 63) | 32 : ((abcd & 223) | 128) ^ 8)
+					(
+						nbacksl & 1 ?
+							(abcd & 63) | 32
+						:
+							((abcd & 223) | 128) ^ 8
+					)
 				: (abcd & 24) || !is_some_space(ini_string[idx_i], _LIBCONFINI_WITH_EOL_) ?
 					abcd & 31
 				: abcd & 64 ?
@@ -2944,8 +2970,8 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 	@note	`format.multiline_nodes` is used only to figure out whether there are
 			escape sequences or not. For all other purposes new line characters will
 			be considered to be equal to any other space character, even if the
-			format is not multi-line -- new line characters in non-multi-line
-			formats should never appear.
+			format is not multi-line -- in fact new line characters should never
+			appear in non-multi-line formats .
 
 	@include topics/ini_string_parse.c
 
@@ -3020,9 +3046,19 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 	for (idx = lshift = 0; ini_string[idx]; idx++) {
 
 		abcd	=	!(abcd & 10) && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
-						(nbacksl & 1 ? (abcd & 63) | 32 : ((abcd & 223) | 128) ^ 16)
+						(
+							nbacksl & 1 ?
+								(abcd & 63) | 32
+							:
+								((abcd & 223) | 128) ^ 16
+						)
 					: !(abcd & 17) && ini_string[idx] == _LIBCONFINI_SINGLE_QUOTES_ ?
-						(nbacksl & 1 ? (abcd & 63) | 32 : ((abcd & 223) | 128) ^ 8)
+						(
+							nbacksl & 1 ?
+								(abcd & 63) | 32
+							:
+								((abcd & 223) | 128) ^ 8
+						)
 					: (abcd & 28) || !is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_) ?
 						abcd & 31
 					: abcd & 64 ?
@@ -3133,7 +3169,12 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 		abcd	=	!(abcd & 28) && ini_string[idx] == delimiter ?
 						(abcd & 159) | 128
 					: !(abcd & 24) && is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_) ?
-						((abcd & 68) ^ 4 ? (abcd & 95) | 64 : (abcd & 223) | 192)
+						(
+							(abcd & 68) ^ 4 ?
+								(abcd & 95) | 64
+							:
+								(abcd & 223) | 192
+						)
 					: ini_string[idx] == _LIBCONFINI_BACKSLASH_ ?
 						(abcd & 63) ^ 32
 					: !(abcd & 42) && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
@@ -3274,7 +3315,7 @@ int ini_array_foreach (
 
 	} while (!(abcd & 128) && ((abcd & 92) || ini_string[idx]));
 
-	return _LIBCONFINI_SUCCESS_;
+	return CONFINI_SUCCESS;
 
 }
 
@@ -3364,7 +3405,7 @@ size_t ini_array_shift (const char ** const ini_strptr, const char delimiter, co
 	used as well).
 
 	This function can be useful before invoking `memcpy()` using @p ini_string as
-	source when saving memory is a priority.
+	source, when saving memory is a priority.
 
 	The @p format argument is used for the following fields:
 
@@ -3391,8 +3432,8 @@ size_t ini_array_shift (const char ** const ini_strptr, const char delimiter, co
 
 	@include topics/ini_array_collapse.c
 
-	@note	The actual space occupied by the array might get further reduced after
-			each member is parsed by `ini_string_parse()` (or by `ini_unquote()` if
+	@note	The actual space occupied by the array might get reduced further after
+			each member is parsed by `ini_string_parse()` (or `ini_unquote()` if
 			@p ini_string is a section path).
 
 **/
@@ -3809,7 +3850,7 @@ int ini_array_split (
 
 	} while (!(abcd & 128) && ((abcd & 92) || ini_string[idx]));
 
-	return _LIBCONFINI_SUCCESS_;
+	return CONFINI_SUCCESS;
 
 }
 
@@ -3825,7 +3866,7 @@ int ini_array_split (
 	If @p lowercase is `TRUE`, key and section names in case-insensitive INI formats
 	will be dispatched lowercase, verbatim otherwise (default value: `TRUE`).
 
-	@warning	This function change the value of one or more global variables. In
+	@warning	This function changes the value of one or more global variables. In
 				order to be thread-safe this function should be used only once at
 				beginning of execution or otherwise a mutex logic must be
 				introduced.
@@ -3848,7 +3889,7 @@ void ini_global_set_lowercase_mode (_Bool lowercase) {
 										`0`, independently of its real length)
 	@return			Nothing
 
-	@warning	This function change the value of one or more global variables. In
+	@warning	This function changes the value of one or more global variables. In
 				order to be thread-safe this function should be used only once at
 				beginning of execution or otherwise a mutex logic must be
 				introduced.
@@ -3878,7 +3919,7 @@ IniFormatNum ini_fton (const IniFormat source) {
 	IniFormatNum mask = 0;
 
 	#define __CALC_FORMAT_ID__(SIZE, PROPERTY, IGNORE_ME) \
-		mask |= source.PROPERTY << bitpos;\
+		mask |= source.PROPERTY << bitpos; \
 		bitpos += SIZE;
 
 	_LIBCONFINI_INIFORMAT_AS_(__CALC_FORMAT_ID__)
@@ -3913,7 +3954,7 @@ IniFormat ini_ntof (IniFormatNum format_id) {
 	#define __MAX_7_BITS__ 127
 	#define __MAX_8_BITS__ 255
 	#define __READ_FORMAT_ID__(SIZE, PROPERTY, IGNORE_ME) \
-		dest_format.PROPERTY = format_id & __MAX_##SIZE##_BITS__;\
+		dest_format.PROPERTY = format_id & __MAX_##SIZE##_BITS__; \
 		format_id >>= SIZE;
 
 	_LIBCONFINI_INIFORMAT_AS_(__READ_FORMAT_ID__)

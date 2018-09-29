@@ -2,6 +2,15 @@ Change Log {#changelog}
 =======================
 
 
+## 1.6.3 -- 2018-09-29
+
+Changes:
+
+* Constant † `CONFINI_EFEOOR` has been renamed to `CONFINI_EOOR`
+* Code review
+* Documentation
+
+
 ## 1.6.2 -- 2018-05-21
 
 Changes:

@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "LIBCONFINI" "3" "May 2018" "Stefano Gioffré" "Library Functions Manual"
+.TH "LIBCONFINI" "3" "September 2018" "Stefano Gioffré" "Library Functions Manual"
 .
 .SH "NAME"
 \fBlibconfini\fR
@@ -44,7 +44,7 @@ email = mario\.rossi@example\.com
 .IP "" 0
 .
 .SH "SUPPORTED SYNTAXES"
-During the years, several interpretations of INI files appeared\. In some implementations the colon character (\fB:\fR) has been adopted as delimiter between keys and values instead of the classic equals sign (a typical example under GNU/Linux is \fB/etc/nsswitch\.conf\fR), in other implementations the space (\fB/[ \et\ev\ef]+/\fR or \fB/(?:\e\e(?:\en\er?|\er\en?)|[\et \ev\ef])+/\fR) has been used instead (see for example \fB/etc/host\.conf\fR), and so on\.
+During the years, several interpretations of INI files appeared\. In some implementations the colon character (\fB:\fR) has been adopted as delimiter between keys and values instead of the classic equals sign (a typical example under GNU/Linux is \fB/etc/nsswitch\.conf\fR); in other implementations the space (\fB/[ \et\ev\ef]+/\fR or \fB/(?:\e\e(?:\en\er?|\er\en?)|[\et \ev\ef])+/\fR) has been used instead (see for example \fB/etc/host\.conf\fR)\.
 .
 .P
 Equals sign used as delimiter between keys and values:
@@ -272,7 +272,7 @@ foo = bar       # this is an inline comment
 .IP "" 0
 .
 .P
-Comments may in theory be multi\-line, following the same syntax of multi\-line disabled entries (see below)\. This is usually of little utility, except for inline comments that you want to make sure will refer to the previous entry:
+Comments may in theory be multi\-line, following the same syntax of multi\-line disabled entries (see below)\. This is usually of little utility, except for inline comments you want to make sure will refer to the previous entry:
 .
 .IP "" 4
 .
@@ -319,7 +319,7 @@ A disabled entry is either a section or a key that has been nested inside a comm
 In order to maximize the flexibility of the data, only four escape sequences are supported by \fBlibconfini\fR: \fB\e\'\fR, \fB\e"\fR, \fB\e\e\fR and the multi\-line escape sequence (\fB/\e\e(?:\en\er?|\er\en?)/\fR)\.
 .
 .P
-The first three escape sequences are left untouched by all functions except \fBini_string_parse()\fR and \fBini_unquote()\fR\. Nevertheless, the characters \fB\'\fR, \fB"\fR and \fB\e\fR can determine different behaviors during the parsing depending on whether they are escaped or unescaped\. For instance, the string \fBjohnsmith !"\fR in the following example will not be parsed as a comment:
+The first three escape sequences are left untouched by all functions except \fBini_string_parse()\fR and \fBini_unquote()\fR (see below)\. Nevertheless, the characters \fB\'\fR, \fB"\fR and \fB\e\fR can determine different behaviors during the parsing depending on whether they are escaped or unescaped\. For instance, the string \fBjohnsmith !"\fR in the following example will not be parsed as a comment:
 .
 .IP "" 4
 .
@@ -567,7 +567,7 @@ Because of this mechanism \fIit is very important that all the dispatched data b
 Within a dispatching cycle, the structure containing each dispatch (\fBIniDispatch * dispatch\fR) is always the same \fBstruct\fR that gets constantly updated with new information\.
 .
 .SH "THE `IniFormat` BITFIELD"
-For a correct use of this library it is fundamental to understand the \fBIniFormat\fR bitfield\. \fBlibconfini\fR has been born as a general INI parser, with the main purpose of \fIbeing able to understand INI files written by other programs\fR (see \fBREADME\fR), therefore some flexibility was required\.
+For a correct use of this library it is fundamental to understand the \fBIniFormat\fR bitfield\. \fBlibconfini\fR has been born as a general INI parser, with the main purpose of \fIbeing able to understand INI files written by other programs\fR (see \fBRationale\fR), therefore some flexibility was required\.
 .
 .P
 When an INI file is parsed it is parsed according to a format\. The \fBIniFormat\fR bitfield is a description of such format\.
@@ -705,10 +705,10 @@ The strings dispatched, as already said, must not be freed\. \fINevertheless, be
 Be sure that your edit remains within the buffer lengths given (see: \fBIniDispatch::d_len\fR and \fBIniDispatch::v_len\fR)\.
 .
 .IP "2." 4
-If you want to edit the content of \fBIniDispatch::data\fR and this contains a section path, the \fBIniDispatch::append_to\fR properties of its children \fImay\fR share this buffer\. In this case, if you edit it, you can no more rely on its children\'s \fBIniDispatch::append_to\fR properties (you will not make any damage, the loop will continue just fine: so if you think you are going to never use the property \fBIniDispatch::append_to\fR just do it); alternatively, use \fBstrdup()\fR\. If, instead, \fBIniDispatch::data\fR contains a key name or a comment, it is granted that no other dispatch will share this buffer, so feel free to edit it before it gets lost\.
+If you want to edit the content of \fBIniDispatch::data\fR and this contains a section path, the \fBIniDispatch::append_to\fR properties of its children \fImay\fR share this buffer\. In this case, if you edit its content, you can no more rely on the \fBIniDispatch::append_to\fR properties of this node\'s children (you will not make any damage, the loop will continue just fine: so if you think you are going to never use the property \fBIniDispatch::append_to\fR just do it); alternatively, use \fBstrdup()\fR\. If, instead, \fBIniDispatch::data\fR contains a key name or a comment, it is granted that no other dispatch will share this buffer, so feel free to edit it before it gets lost\.
 .
 .IP "3." 4
-Regarding \fBIniDispatch::value\fR, the buffer is never shared between dispatches, so feel free to edit it\.
+Regarding \fBIniDispatch::value\fR, this buffer is never shared between dispatches, so feel free to edit it\.
 .
 .IP "4." 4
 Regarding \fBIniDispatch::append_to\fR, this buffer is likely to be shared with other dispatches\. Again, you would not destroy the world nor generate errors, but you would make the next \fBIniDispatch::append_to\fRs useless\. For this reason \fBthe buffer pointed by \fBIniDispatch::append_to\fR is passed as constant\fR\. To unquote the path parts listed in this field please use \fBstrdup()\fR\.
@@ -862,7 +862,7 @@ In formats that support quotes, the function \fBini_array_match()\fR is also the
 
 if (
   ini_array_match("foo\.bar", this\->append_to, \'\.\', this\->format) &&
-  ini_string_match_si("my_string", this\->data, this\->format)
+  ini_string_match_si("username", this\->data, this\->format)
 ) {
 
   // Do something
@@ -886,11 +886,11 @@ if (disp\->type == INI_KEY) {
     (ini_array_match(SECTION, disp\->append_to, \'\.\', disp\->format) &&\e
     ini_string_match_ii(KEY, disp\->data, disp\->format))
 
-  if (IS_KEY("europe\.madrid", "my_string_1")) {
+  if (IS_KEY("europe\.madrid", "have_visited")) {
 
     // Do something
 
-  } else if (IS_KEY("europe\.london", "my_string_2")) {
+  } else if (IS_KEY("europe\.london", "date")) {
 
     // Do something
 
@@ -962,10 +962,7 @@ Together with the functions listed above the following links are available, in c
 .IP "" 0
 .
 .SS "FORMATTING THE KEY NAMES"
-The function \fBini_unquote()\fR might be useful for key names enclosed within quotes\. This function is very similar to \fBini_string_parse()\fR, except that does not bother collapsing the sequences of more than one space that might result from removing empty quotes – this is never necessary since empty quotes surrounded by spaces in key and section names are always collapsed before being dispatched\.
-.
-.P
-You could use \fBini_string_parse()\fR as well to parse key and section names, but you would obtain the same result with a slightly bigger effort from the CPU\.
+The function \fBini_unquote()\fR might be useful for key names enclosed within quotes\. This function is very similar to \fBini_string_parse()\fR, except that does not bother collapsing the sequences of more than one space that might result from removing empty quotes – this is never necessary since empty quotes surrounded by spaces in key and section names are always collapsed before being dispatched (you could use \fBini_string_parse()\fR as well to parse key and section names, but you would obtain the same result with a slightly bigger effort from the CPU)\.
 .
 .SS "FORMATTING THE SECTION PATHS"
 In order to retrieve the parts of a section path, the functions \fBini_array_get_length()\fR, \fBini_array_foreach()\fR, \fBini_array_break()\fR, \fBini_array_release()\fR, \fBini_array_shift()\fR and \fBini_array_split()\fR can be used with \fB\'\.\'\fR as delimiter\. Note that section paths dispatched by \fBlibconfini\fR are \fIalways\fR collapsed arrays, therefore calling the function \fBini_array_collapse()\fR on them will have no effects\.
@@ -1198,7 +1195,13 @@ Condition: \fBformat\.no_single_quotes && format\.no_double_quotes && format\.mu
 .IP "" 0
 .
 .SS "SIZE OF THE DISPATCHED DATA"
-Within an INI file it is granted that if one sums together all the \fB(dispatch\->d_len + 1)\fR and all the \fB(dispatch\->v_len > 0 ? dispatch\->v_len + 1 : 0)\fR received, the result will always be less\-than or equal\-to \fB(statistics\->bytes + 1)\fR (where \fB+ 1\fR represents the NUL terminators)\. \fBIf one adds to this also all the \fBdispatch\->at_len\fR properties, or if the \fBdispatch\->v_len\fR properties of implicit keys are non\-zero, the sum may exceed it\.\fR This can be relevant or irrelevant depending on your code\.
+.
+.TP
+Within an INI file it is granted that if one sums together all the
+.
+.TP
+\fB(dispatch\->d_len + 1)\fR and all the `(dispatch\->v_len > 0 ? dispatch\->v_len + 1
+0)\fBreceived, the result will always be less\-than or equal\-to\fR(statistics\->bytes + 1)\fB(where\fR+ 1\fBrepresents the NUL terminators)\. **If one adds to this also all the\fRdispatch\->at_len\fBproperties, or if the\fRdispatch\->v_len` properties of implicit keys are non\-zero, the sum may exceed it\.** This can be relevant or irrelevant depending on your code\.
 .
 .IP "" 4
 .
@@ -1312,7 +1315,7 @@ Depending on the format of the INI file, \fBlibconfini\fR may use up to three gl
 Apart from the three variables above, each parsing allocates and frees its own memory and every function is fully reentrant, therefore the library must be considered thread\-safe\.
 .
 .SS "ERROR EXCEPTIONS"
-The philosophy of \fBlibconfini\fR is to parse as much as possible without generating error exceptions\. No parsing errors are returned once an INI file has been correctly allocated into the stack, with the exception of the \fIout\-of\-range\fR error \fBCONFINI_EFEOOR\fR (see \fBenum\fR \fBConfiniInterruptNo\fR), whose meaning is that the loop is for unknown reasons longer than expected – this error is possibly generated by the presence of bugs in the library\'s code and should never be returned (please contact me \fIhttps://github\.com/madmurphy/libconfini/issues\fR if this happens)\.
+The philosophy of \fBlibconfini\fR is to parse as much as possible without generating error exceptions\. No parsing errors are returned once an INI file has been correctly allocated into the stack, with the exception of the \fIout\-of\-range\fR error \fBCONFINI_EOOR\fR (see \fBenum\fR \fBConfiniInterruptNo\fR), whose meaning is that the loop is for unknown reasons longer than expected – this error is possibly generated by the presence of bugs in the library\'s code and should never be returned (please contact me \fIhttps://github\.com/madmurphy/libconfini/issues\fR if this happens)\.
 .
 .P
 When an INI node is wrongly written in respect to the format given, it is dispatched verbatim as an \fBINI_UNKNOWN\fR node – see \fBenum\fR \fBIniNodeType\fR\. Empty lines, or lines containing only spaces and empty quotes (if the latter are supported) will be skipped\.
@@ -1501,7 +1504,7 @@ we would obtain the following result:
 .IP "" 0
 .
 .P
-As you can see, all comments but \fBnow=Sunday April 3rd, 2016\fR would be parsed as disabled entries – which is not what the author intended\. Therefore, if you want to ensure that such INI file is parsed properly, you can follow two possible approaches\.
+As we can see, all comments but \fBnow=Sunday April 3rd, 2016\fR would be parsed as disabled entries – which is not what the author intended\. Therefore, if we want to ensure that such INI file is parsed properly, we can follow two possible approaches\.
 .
 .P
 \fB1\. Intervene on the INI file\.\fR The reason why \fBnow=Sunday April 3rd, 2016\fR has been properly parsed as a comment – despite it really looks like a disabled entry – is because it has been nested in a comment block opened by more than one leading comment marker (in this case the two \fB#\fR)\. As a general rule, \fI\fBlibconfini\fR never parses a comment beginning with more than one leading comment marker as a disabled entry\fR, therefore this is the surest way to ensure that proper comments are always considered as such\.
@@ -1547,13 +1550,13 @@ we obtain the wanted result:
 .IP "" 0
 .
 .P
-\fB2\. Intervene on the format\.\fR There are cases where the INI file is automatically generated by machines (comments included), or distributed as such, and human intervention would be required on each machine\-generated realease of the INI file\. In these cases – and if you are sure about the expected content of the INI file – you can restrict the format chosen in order to parse comments and disabled entries properly\. In particular, the following fields of the \fBIniFormat\fR bitfield may have an impact on the disambiguation between comments and disabled entries\.
+\fB2\. Intervene on the format\.\fR There are cases where the INI file is automatically generated by machines (comments included), or distributed as such, and human intervention would be required on each machine\-generated realease of the INI file\. In these cases – and if we are sure about the expected content of the INI file – we can restrict the format chosen in order to parse comments and disabled entries properly\. In particular, the following fields of the \fBIniFormat\fR bitfield may have an impact on the disambiguation between comments and disabled entries\.
 .
 .P
 Reliable general patterns:
 .
 .IP "\(bu" 4
-\fBIniFormat::semicolon_marker\fR and \fBIniFormat::hash_marker\fR – The imaginary author of our INI file, if one observes the latter closer, chose the semicolon symbol as the marker of disabled entries and the hash symbol as the marker of comments\. You may exploit this difference and set your \fBmy_format\.semicolon_marker\fR to \fBINI_DISABLED_OR_COMMENT\fR and your \fBmy_format\.hash_marker\fR to \fBINI_ONLY_COMMENT\fR to obtain the correct disambiguation\. If you believe that this solution is too artificial, think that \fB/etc/samba/smb\.conf\fR and \fB/etc/pulse/daemon\.conf\fR are systematically distributed using this pattern\.
+\fBIniFormat::semicolon_marker\fR and \fBIniFormat::hash_marker\fR – The imaginary author of our INI file, if we observe the latter closer, chose the semicolon symbol as the marker of disabled entries and the hash symbol as the marker of comments\. We may exploit this difference and set our \fBmy_format\.semicolon_marker\fR to \fBINI_DISABLED_OR_COMMENT\fR and our \fBmy_format\.hash_marker\fR to \fBINI_ONLY_COMMENT\fR to obtain the correct disambiguation\. If you believe that this solution is too artificial, think that \fB/etc/samba/smb\.conf\fR and \fB/etc/pulse/daemon\.conf\fR are systematically distributed using this pattern\.
 .
 .IP "\(bu" 4
 \fBIniFormat::no_disabled_after_space\fR – Setting this property to \fBTRUE\fR, due to the initial space that follows the comment marker (\fB# INI\.\.\.\fR), forces \fB# INI key/value delimiter: = (everywhere)\fR to be considered as a comment\. Some authors use this syntax to distinguish between comments and disabled entries (examples are \fB/etc/pacman\.conf\fR and \fB/etc/bluetooth/main\.conf\fR)
@@ -1564,7 +1567,7 @@ Reliable general patterns:
 Temporary workarounds:
 .
 .IP "\(bu" 4
-\fBIniFormat::no_spaces_in_names\fR – If your INI file has only comments containing more than one word and you are sure that key and section names cannot contain internal white spaces, you can set this property to \fBTRUE\fR to enhance the disambiguation\.
+\fBIniFormat::no_spaces_in_names\fR – If our INI file has only comments containing more than one word and we are sure that key and section names cannot contain internal white spaces, we can set this property to \fBTRUE\fR to enhance the disambiguation\.
 .
 .IP "\(bu" 4
 \fBIniFormat::disabled_can_be_implicit\fR – This property, if set to \fBFALSE\fR, forces all comments that do not contain a key\-value delimiter to be never considered as disabled entries\. Despite not having an impact on our example, it has a big impact on the disambiguation algorithms used by \fBlibconfini\fR\. Its value in \fBINI_DEFAULT_FORMAT\fR is set to \fBFALSE\fR\.
@@ -1572,4 +1575,4 @@ Temporary workarounds:
 .IP "" 0
 .
 .P
-As a general rule \fBlibconfini\fR will always try to parse as a disabled entry whatever comment is allowed (by the format) to contain one\. Only if this fails, the block will be dispatched as a normal comment\.
+As a general rule \fBlibconfini\fR will always try to parse as a disabled entry whatever comment is allowed (by the format) to contain one\. Only if this attempt fails, the block will be dispatched as a normal comment\.
