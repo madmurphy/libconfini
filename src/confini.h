@@ -14,6 +14,7 @@
 #ifndef _LIBCONFINI_HEADER_
 #define _LIBCONFINI_HEADER_
 
+#include <stdio.h>
 #include <stdint.h>
 
 
@@ -49,7 +50,7 @@
     ______(    1,      implicit_is_not_empty,     0                         )   \
     ______(    1,      do_not_collapse_values,    0                         )   \
     ______(    1,      preserve_empty_quotes,     0                         )   \
-    ______(    1,      no_disabled_after_space,   0                         )   \
+    ______(    1,      disabled_after_space,      0                         )   \
     ______(    1,      disabled_can_be_implicit,  0                         )/*-/
                                                                             /-*/
 
@@ -268,7 +269,7 @@ extern double (* const ini_get_float) (
 
 /** @brief	Error codes -- the actual value of each constant should be considered opaque **/
 enum ConfiniInterruptNo {
-	CONFINI_SUCCESS = 0,	/**< No interruptions, everything went well **/
+	CONFINI_SUCCESS = 0,	/**< There have been no interruptions, everything went well **/
 	CONFINI_IINTR = 1,	/**< Interrupted by the user during `f_init()` **/
 	CONFINI_FEINTR = 2,	/**< Interrupted by the user during `f_foreach()` **/
 	CONFINI_ENOENT = 4,	/**< File inaccessible **/
@@ -302,8 +303,8 @@ enum IniDelimiters {
 enum IniCommentMarker {
 	INI_DISABLED_OR_COMMENT = 0,	/**< This marker opens a comment or a disabled entry **/
 	INI_ONLY_COMMENT = 1,		/**< This marker opens a comment **/
-	INI_IGNORE = 2,			/**< This marker opens a comment that must be ignored **/
-	INI_IS_NOT_A_MARKER = 3		/**< This is not a marker, but a normal character instead **/
+	INI_IGNORE = 2,			/**< This marker opens a comment that must not be dispatched or counted **/
+	INI_IS_NOT_A_MARKER = 3		/**< This is not a marker at all, but a normal character instead **/
 };
 
 /** @brief	Possible values of `IniFormat::section_paths` **/
@@ -322,8 +323,11 @@ enum IniMultiline {
 	INI_NO_MULTILINE = 3			/**< Multi-line escape sequences are disabled. **/
 };
 
-/** @brief	A model format **/
+/** @brief	A model format for standard INI files **/
 static const IniFormat INI_DEFAULT_FORMAT = _LIBCONFINI_DEFAULT_FORMAT_;
+
+/** @brief	A model format for Unix-like CONF files (space characters are delimiters between keys and values) **/
+static const IniFormat INI_UNIXLIKE_FORMAT = (const IniFormat) { 0 };	/* All properties are set to `0` here. */
 
 /** @brief	If set to `TRUE`, key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: `FALSE`) **/
 extern _Bool INI_GLOBAL_LOWERCASE_MODE;

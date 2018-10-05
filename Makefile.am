@@ -29,7 +29,8 @@ examplesinifiles_DATA = \
 	examples/ini_files/bad_ini.conf \
 	examples/ini_files/example.conf \
 	examples/ini_files/hash_table.conf \
-	examples/ini_files/typed_ini.conf
+	examples/ini_files/typed_ini.conf \
+	examples/ini_files/unix-like.conf
 
 examplesotherdir = $(examplesdir)/miscellanea
 examplesother_DATA = \

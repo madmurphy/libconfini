@@ -12,7 +12,7 @@ static int ini_listener (IniDispatch * disp, void * v_null) {
 
 	}
 
-	printf("DATA: %s\nVALUE: %s\n\n", disp->data, disp->value);
+	printf("DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n", disp->data, disp->value, disp->type);
 
 	return 0;
 

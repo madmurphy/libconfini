@@ -2,6 +2,19 @@ Change Log {#changelog}
 =======================
 
 
+## 1.7.0 -- 2018-10-06
+
+Changes:
+
+* Default format `INI_UNIXLIKE_FORMAT` has been created
+* † `IniFormat::no_disabled_after_space` has been renamed to
+  `IniFormat::disabled_after_space` (the field has opposite meaning now, please
+  invert your booleans accordingly)
+* Moved `#include <stdio.h>` from `confini.c` to `confini.h`
+* Documentation
+* Examples
+
+
 ## 1.6.3 -- 2018-09-29
 
 Changes:
@@ -284,7 +297,7 @@ Changes:
   `ini_array_get_length()`, `ini_array_foreach()` and † `ini_split_array()`
 * `IniFormat::no_spaces_in_names` has been created
 * † `IniFormat::no_disabled_after_spaces` has been renamed to
-  `IniFormat::no_disabled_after_space`
+  † `IniFormat::no_disabled_after_space`
 * † `IniFormat::preserve_spaces_in_values` has been renamed to
   † `IniFormat::no_collapsed_values`
 

@@ -50,9 +50,10 @@ email = mario.rossi@example.com
 During the years, several interpretations of INI files appeared. In some
 implementations the colon character (`:`) has been adopted as delimiter between
 keys and values instead of the classic equals sign (a typical example under
-GNU/Linux is `/etc/nsswitch.conf`); in other implementations the space
-(`/[ \t\v\f]+/` or `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`) has been used instead
-(see for example `/etc/host.conf`).
+GNU/Linux is `/etc/nsswitch.conf`); in other implementations, under the
+influence of Unix standard configuration files, the space (`/[ \t\v\f]+/` or
+`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`) has been used instead (see for example
+`/etc/host.conf`).
 
 Equals sign used as delimiter between keys and values:
 
@@ -85,8 +86,8 @@ This library has been born as a general INI parser for GNU, so the support of
 most part of INI dialects has been implemented within it.
 
 Especially in Microsoft Windows a more radical syntax variation has been
-implemented: the use of the semicolon, instead of new lines, as delimiter
-between nodes, as in the following example:
+implemented: the use of semicolon, instead of new lines, as delimiter between
+nodes, as in the following example:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 # delivery.conf
@@ -471,8 +472,8 @@ that requires a path instead of a `FILE` struct.
 
 The function `load_ini_file()` dynamically allocates at once the whole INI file
 into the heap, and the two structures `IniStatistics` and `IniDispatch` into the
-stack. All the members of the INI file are then dispatched to the custom
-listener `f_foreach()`. Finally the allocated memory gets automatically freed.
+stack. All members of the INI file are then dispatched to the custom listener
+`f_foreach()`. Finally the allocated memory gets automatically freed.
 
 Because of this mechanism _it is very important that all the dispatched data be
 **immediately** copied by the user (when needed), and no pointers to the passed
@@ -495,9 +496,9 @@ When an INI file is parsed it is parsed according to a format. The `IniFormat`
 bitfield is a description of such format.
 
 
-### THE MODEL FORMAT
+### THE MODEL FORMATS
 
-A model format named `#INI_DEFAULT_FORMAT` is available.
+A default format named `#INI_DEFAULT_FORMAT` is available.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 IniFormat my_format;
@@ -525,9 +526,19 @@ my_format.no_spaces_in_names = NO;
 my_format.implicit_is_not_empty = NO;
 my_format.do_not_collapse_values = NO;
 my_format.preserve_empty_quotes = NO;
-my_format.no_disabled_after_space = NO;
+my_format.disabled_after_space = NO;
 my_format.disabled_can_be_implicit = NO,
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Since version 1.7.0 a format named `#INI_UNIXLIKE_FORMAT` is available as well.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+IniFormat my_format = INI_UNIXLIKE_FORMAT;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This format is a clone of `#INI_DEFAULT_FORMAT`, with the only
+exception of the `IniFormat::delimiter_symbol` field, whose value is set to
+`#INI_ANY_SPACE` instead of `#INI_EQUALS`.
 
 
 ### THE `#IniFormatNum` DATA TYPE
@@ -548,15 +559,15 @@ IniFormat my_format = {
   .case_sensitive = NO,
   .semicolon_marker = INI_IGNORE,
   .hash_marker = INI_IS_NOT_A_MARKER,
-  .multiline_nodes = INI_NO_MULTILINE,
   .section_paths = INI_ABSOLUTE_ONLY,
+  .multiline_nodes = INI_NO_MULTILINE,
   .no_single_quotes = NO,
   .no_double_quotes = NO,
   .no_spaces_in_names = NO,
   .implicit_is_not_empty = NO,
   .do_not_collapse_values = NO,
   .preserve_empty_quotes = NO,
-  .no_disabled_after_space = NO,
+  .disabled_after_space = NO,
   .disabled_can_be_implicit = NO
 };
 
@@ -565,9 +576,9 @@ IniFormatNum my_format_num = ini_fton(my_format);
 printf("Format No. %d\n", my_format_num); // "Format No. 56893"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The function `ini_fton()` tells us that this format is univocally the format No.
-56893. The function `ini_ntof()` gives us then a shortcut to construct the very
-same format using its format number. Hence, the code above corresponds to:
+The function `ini_fton()` tells us that this format is univocally the format
+No. 56893. The function `ini_ntof()` gives us then a shortcut to construct the
+very same format using its format number. Hence, the code above corresponds to:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 IniFormat my_format = ini_ntof(56893);
@@ -592,7 +603,7 @@ structure, while the information passed to `f_foreach()` is passed through an
 ## RENDERING
 
 The output strings dispatched by **libconfini** will follow some formatting
-rules depending on their role within the INI file. First, the multi-line
+rules depending on their role within the INI file. First, multi-line escape
 sequences will be unescaped, then
 
 * **Key names** will be rendered according to ECMAScript
@@ -602,12 +613,12 @@ sequences will be unescaped, then
   ECMAScript
   `section_name.replace(/\.*\s*$|(?:\s*(\.))+\s*|^\s+/g, "$1").replace(/\s+/g,
   " ")` -- within single or double quotes, if active, the text will be rendered
-  verbatim -- otherwise, will be rendered through the same algorithm used for
-  key names.
+  verbatim -- otherwise, will be rendered according to the same algorithm used
+  for key names.
 * **Values**, if `format.do_not_collapse_values` is active, will only be cleaned
-  of spaces at the beginning and at the end; otherwise will be rendered through
-  the same algorithm used for key names (with the difference that, if
-  `format.preserve_empty_quotes` is set to `1`, empty quotes surrounded by
+  of spaces at the beginning and at the end; otherwise will be rendered
+  according to the same algorithm used for key names (with the difference that,
+  if `format.preserve_empty_quotes` is set to `1`, empty quotes surrounded by
   spaces will be preserved).
 * **Comments**, in multi-line formats, will be rendered according to ECMAScript
   `comment_string.replace(/(^|\n\r?|\r\n?)[ \t\v\f]*[#;]+/g, "$1")`; elsewhere,
@@ -628,8 +639,9 @@ before being copied or analyzed they can be edited, **with some precautions**_:
    alternatively, use `strdup()`. If, instead, `IniDispatch::data` contains a
    key name or a comment, it is granted that no other dispatch will share this
    buffer, so feel free to edit it before it gets lost.
-3. Regarding `IniDispatch::value`, this buffer is never shared between
-   dispatches, so feel free to edit it.
+3. Regarding `IniDispatch::value`, if it does not represent an implicit value
+   (see below), this buffer is never shared between dispatches, so feel free to
+   edit it.
 4. Regarding `IniDispatch::append_to`, this buffer is likely to be shared with
    other dispatches. Again, you would not destroy the world nor generate errors,
    but you would make the next `IniDispatch::append_to`s useless. For this
@@ -786,7 +798,7 @@ In case of multiple comparisons you might want to use a macro:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 if (disp->type == INI_KEY) {
 
-  #define IS_KEY(SECTION,KEY) \
+  #define IS_KEY(SECTION,KEY)\
     (ini_array_match(SECTION, disp->append_to, '.', disp->format) &&\
     ini_string_match_ii(KEY, disp->data, disp->format))
 
@@ -1081,13 +1093,14 @@ The behavior of these functions depends on the format used. In particular, using
 ### SIZE OF THE DISPATCHED DATA
 
 Within an INI file it is granted that if one sums together all the
-`(dispatch->d_len + 1)` and all the `(dispatch->v_len > 0 ? dispatch->v_len + 1
-: 0)` received, the result will
-always be less-than or equal-to `(statistics->bytes + 1)` (where `+ 1`
-represents the NUL terminators). **If one adds to this also all the
-`dispatch->at_len` properties, or if the `dispatch->v_len` properties of
-implicit keys are non-zero, the sum may exceed it.** This can be relevant or
-irrelevant depending on your code.
+`(disp->d_len + 1)` and all the `(disp->v_len > 0 ? disp->v_len + 1 : 0)`
+received, the result will always be less-than or equal-to `(stats->bytes + 1)`
+(where `+ 1` represents the NUL terminators and `disp` and `stats` are
+respectively the `IniDispatch` and `IniStatistics` structures passed as
+arguments to the callback functions). **If one adds to this also all the
+`disp->at_len` properties, or if the `disp->v_len` properties of implicit keys
+are non-zero, the sum may exceed it.** This might be relevant or irrelevant
+depending on your code.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 #include <stdio.h>
@@ -1205,7 +1218,7 @@ modifier functions `ini_global_set_implicit_value()` and
 introduced.
 
 Apart from the three variables above, each parsing allocates and frees its own
-memory and every function is fully reentrant, therefore the library must be
+memory and every function is fully reentrant, therefore the library can be
 considered thread-safe.
 
 
@@ -1243,8 +1256,8 @@ foo = "bar"
 
 The algorithms used by **libconfini** stand in a delicate equilibrium between
 flexibility, speed and code readability, with flexibility as primary target.
-Performance can vary with the format used to parse an INI file, but in most of
-the cases is not a concern.
+Performance can vary with the format used to parse an INI file, but in most
+cases is not a concern.
 
 One can measure the performance of the library by doing something like:
 
@@ -1256,20 +1269,27 @@ One can measure the performance of the library by doing something like:
 #include <time.h>
 
 static int get_ini_size (IniStatistics * stats, void * v_bytes) {
+
   *((size_t *) v_bytes) = stats->bytes;
+
   return 0;
+
 }
 
 static int empty_listener (IniDispatch * dispatch, void * v_bytes) {
+
   return 0;
+
 }
 
 int main () {
+
   size_t bytes;
   double seconds;
   clock_t start, end;
   IniFormat my_format = INI_DEFAULT_FORMAT;
   start = clock();
+
   if (load_ini_path(
     "big_file.ini",
     my_format,
@@ -1277,16 +1297,22 @@ int main () {
     empty_listener,
     &bytes
   )) {
+
     return 1;
+
   }
+
   end = clock();
   seconds = (double) (end - start) / CLOCKS_PER_SEC;
+
   printf(
     "%d bytes parsed in %f seconds.\n"
     "Number of bytes parsed per second: %f\n",
     bytes, seconds, bytes / seconds
   );
+
   return 0;
+
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1333,23 +1359,47 @@ And imagine that for unknown reasons the author of the INI file wanted only
 `;foo = bar` to be considered as a disabled entry, and the first and last line
 as normal comments.
 
-If we tried to parse it using the model format `#INI_DEFAULT_FORMAT`
+If we tried to parse it according to the format used below
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 #include <stdio.h>
 #include <confini.h>
 
 static int ini_listener (IniDispatch * disp, void * v_null) {
+
   printf(
     "#%d - TYPE: %d, DATA: '%s', VALUE: '%s'\n",
     disp->dispatch_id, disp->type, disp->data, disp->value
   );
+
   return 0;
+
 }
 
 int main () {
-  IniFormat my_format = INI_DEFAULT_FORMAT;
+
+  #define NO 0
+  #define YES 1
+
+  IniFormat my_format = {
+    .delimiter_symbol = INI_EQUALS,
+    .case_sensitive = NO,
+    .semicolon_marker = INI_IGNORE,
+    .hash_marker = INI_IS_NOT_A_MARKER,
+    .multiline_nodes = INI_NO_MULTILINE,
+    .section_paths = INI_ABSOLUTE_ONLY,
+    .no_single_quotes = NO,
+    .no_double_quotes = NO,
+    .no_spaces_in_names = NO,
+    .implicit_is_not_empty = YES,
+    .do_not_collapse_values = NO,
+    .preserve_empty_quotes = NO,
+    .disabled_after_space = YES,
+    .disabled_can_be_implicit = YES
+  };
+
   printf(":: Content of 'ambiguous.conf' ::\n\n");
+
   if (load_ini_path(
     "ini_files/ambiguous.conf",
     my_format,
@@ -1357,10 +1407,14 @@ int main () {
     ini_listener,
     NULL
   )) {
+
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;
+
   }
+
   return 0;
+
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1377,17 +1431,16 @@ we would obtain the following result:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As we can see, all comments but `now=Sunday April 3rd, 2016` would be parsed as
-disabled entries -- which is not what the author intended. Therefore, if we want
-to ensure that such INI file is parsed properly, we can follow two possible
-approaches.
+disabled entries -- which is not what the author intended. Therefore, to ensure
+that such INI file is parsed properly, we can follow two possible approaches.
 
 **1. Intervene on the INI file.** The reason why `now=Sunday April 3rd, 2016`
 has been properly parsed as a comment -- despite it really looks like a disabled
 entry -- is because it has been nested in a comment block opened by more than
 one leading comment marker (in this case the two `##`). As a general rule,
 _**libconfini** never parses a comment beginning with more than one leading
-comment marker as a disabled entry_, therefore this is the surest way to ensure
-that proper comments are always considered as such.
+marker as a disabled entry_, therefore this is the surest way to ensure that
+proper comments are always considered as such.
 
 Hence, by adding one more number sign to the first comment
 
@@ -1421,7 +1474,7 @@ and human intervention would be required on each machine-generated realease of
 the INI file. In these cases -- and if we are sure about the expected content of
 the INI file -- we can restrict the format chosen in order to parse comments and
 disabled entries properly. In particular, the following fields of the
-`IniFormat` bitfield may have an impact on the disambiguation between comments
+`IniFormat` bitfield can have an impact on the disambiguation between comments
 and disabled entries.
 
 Reliable general patterns:
@@ -1435,8 +1488,8 @@ Reliable general patterns:
   disambiguation. If you believe that this solution is too artificial, think
   that `/etc/samba/smb.conf` and `/etc/pulse/daemon.conf` are systematically
   distributed using this pattern.
-* `IniFormat::no_disabled_after_space` -- Setting this property to `TRUE`, due
-  to the initial space that follows the comment marker (`# INI...`), forces
+* `IniFormat::disabled_after_space` -- Setting this property to `FALSE`, due to
+  the initial space that follows the comment marker (`# INI...`), forces
   `# INI key/value delimiter: = (everywhere)` to be considered as a comment.
   Some authors use this syntax to distinguish between comments and disabled
   entries (examples are `/etc/pacman.conf` and `/etc/bluetooth/main.conf`)
@@ -1446,7 +1499,7 @@ Temporary workarounds:
 * `IniFormat::no_spaces_in_names` -- If our INI file has only comments
   containing more than one word and we are sure that key and section names
   cannot contain internal white spaces, we can set this property to `TRUE` to
-  enhance the disambiguation.
+  enhance disambiguation.
 * `IniFormat::disabled_can_be_implicit` -- This property, if set to `FALSE`,
   forces all comments that do not contain a key-value delimiter to be never
   considered as disabled entries. Despite not having an impact on our example,

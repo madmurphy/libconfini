@@ -67,6 +67,15 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Record of notable changes</p>
+<h2>1.7.0 &ndash; 2018-10-06</h2>
+<p>Changes:</p>
+<ul>
+<li>Default format <code>INI_UNIXLIKE_FORMAT</code> has been created</li>
+<li>† <code>IniFormat::no_disabled_after_space</code> has been renamed to <code><a class="el" href="structIniFormat.html#a6ad00ea76bbe5ed109f4192f89859656">IniFormat::disabled_after_space</a></code> (the field has opposite meaning now, please invert your booleans accordingly)</li>
+<li>Moved <code>#include &lt;stdio.h&gt;</code> from <code><a class="el" href="confini_8c.html" title="libconfini functions ">confini.c</a></code> to <code><a class="el" href="confini_8h.html" title="libconfini header ">confini.h</a></code></li>
+<li>Documentation</li>
+<li>Examples</li>
+</ul>
 <h2>1.6.3 &ndash; 2018-09-29</h2>
 <p>Changes:</p>
 <ul>
@@ -263,7 +272,7 @@ $(function() {
 <li>enum <code>IniDelimiters</code> has been created</li>
 <li>Added support for <code>INI_ANY_SPACE</code> (<code>0</code>) as delimiter in <code><a class="el" href="confini_8c.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array in number of members. ">ini_array_get_length()</a></code>, <code><a class="el" href="confini_8c.html#a94bc649f5b58d4e2ad481080d918c41e" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> and † <code>ini_split_array()</code></li>
 <li><code><a class="el" href="structIniFormat.html#a491e94bda3f8545471a86f0845c92474">IniFormat::no_spaces_in_names</a></code> has been created</li>
-<li>† <code>IniFormat::no_disabled_after_spaces</code> has been renamed to <code><a class="el" href="structIniFormat.html#a40a08a472ae9053fbaf4e7042967503d">IniFormat::no_disabled_after_space</a></code></li>
+<li>† <code>IniFormat::no_disabled_after_spaces</code> has been renamed to † <code>IniFormat::no_disabled_after_space</code></li>
 <li>† <code>IniFormat::preserve_spaces_in_values</code> has been renamed to † <code>IniFormat::no_collapsed_values</code></li>
 </ul>
 <h2>1.0-1 &ndash; 2016-10-10</h2>

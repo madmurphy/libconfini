@@ -100,8 +100,8 @@ Data Fields</h2></td></tr>
 <tr class="separator:af411935de86436fb9555ee57ba04960e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad224b6997bbb99d4715fba8a8bea4cd7"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#ad224b6997bbb99d4715fba8a8bea4cd7">preserve_empty_quotes</a>: 1</td></tr>
 <tr class="separator:ad224b6997bbb99d4715fba8a8bea4cd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a40a08a472ae9053fbaf4e7042967503d"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#a40a08a472ae9053fbaf4e7042967503d">no_disabled_after_space</a>: 1</td></tr>
-<tr class="separator:a40a08a472ae9053fbaf4e7042967503d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ad00ea76bbe5ed109f4192f89859656"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#a6ad00ea76bbe5ed109f4192f89859656">disabled_after_space</a>: 1</td></tr>
+<tr class="separator:a6ad00ea76bbe5ed109f4192f89859656"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab5937aaf72b0ce5b62aece8d23ad7b82"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIniFormat.html#ab5937aaf72b0ce5b62aece8d23ad7b82">disabled_can_be_implicit</a>: 1</td></tr>
 <tr class="separator:ab5937aaf72b0ce5b62aece8d23ad7b82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -141,6 +141,21 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>The symbol to be used as delimiter (only ASCII allowed); if set to <code>0</code>, any space is delimiter (<code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code>); if, within the format given, this matches a meta-character (<code>'\\'</code>, <code>'\''</code>, <code>'\&quot;'</code>), its role as meta-character will have higher priority than its role as delimiter symbol (i.e., the format will have no delimiter symbol); you may use <code>enum</code> <code><a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8" title="Most used key-value and array delimiters (but a delimiter may also be any other ASCII character) ...">IniDelimiters</a></code> for this. </p>
+
+</div>
+</div>
+<a id="a6ad00ea76bbe5ed109f4192f89859656"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ad00ea76bbe5ed109f4192f89859656">&#9670;&nbsp;</a></span>disabled_after_space</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IniFormat::disabled_after_space</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>If set to <code>1</code>, allows what follows <code>/[#;]\s/</code> to be parsed as a disabled entry. </p>
 
 </div>
 </div>
@@ -216,21 +231,6 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Defines which class of entries are allowed to be multi-line (use <code>enum</code> <code><a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55f" title="Possible values of IniFormat::multiline_nodes. ">IniMultiline</a></code> for this). </p>
-
-</div>
-</div>
-<a id="a40a08a472ae9053fbaf4e7042967503d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a40a08a472ae9053fbaf4e7042967503d">&#9670;&nbsp;</a></span>no_disabled_after_space</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">IniFormat::no_disabled_after_space</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>If set to <code>1</code>, prevents what follows <code>/[#;]\s/</code> to be parsed as a disabled entry. </p>
 
 </div>
 </div>

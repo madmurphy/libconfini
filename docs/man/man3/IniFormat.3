@@ -1,4 +1,4 @@
-.TH "IniFormat" 3 "Sat Sep 29 2018" "libconfini" \" -*- nroff -*-
+.TH "IniFormat" 3 "Sat Oct 6 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -49,7 +49,7 @@ IniFormat \- 24-bit bitfield representing the format of an INI file (INI dialect
 .RI "unsigned char \fBpreserve_empty_quotes\fP: 1"
 .br
 .ti -1c
-.RI "unsigned char \fBno_disabled_after_space\fP: 1"
+.RI "unsigned char \fBdisabled_after_space\fP: 1"
 .br
 .ti -1c
 .RI "unsigned char \fBdisabled_can_be_implicit\fP: 1"
@@ -75,6 +75,8 @@ Bits 23-24: Human syntax (disabled entries)
 If set to \fC1\fP, string comparisons will always be performed case-sensitive\&. 
 .SS "IniFormat::delimiter_symbol"
 The symbol to be used as delimiter (only ASCII allowed); if set to \fC0\fP, any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP); if, within the format given, this matches a meta-character (\fC'\\\\'\fP, \fC'\\''\fP, \fC'\\"'\fP), its role as meta-character will have higher priority than its role as delimiter symbol (i\&.e\&., the format will have no delimiter symbol); you may use \fCenum\fP \fC\fBIniDelimiters\fP\fP for this\&. 
+.SS "IniFormat::disabled_after_space"
+If set to \fC1\fP, allows what follows \fC/[#;]\\s/\fP to be parsed as a disabled entry\&. 
 .SS "IniFormat::disabled_can_be_implicit"
 If set to \fC1\fP, comments that do not contain a delimiter symbol will never be parsed as disabled keys, but always as simple comments\&. 
 .SS "IniFormat::do_not_collapse_values"
@@ -85,8 +87,6 @@ The rule of the hash character (use \fCenum\fP \fC\fBIniCommentMarker\fP\fP for 
 If set to \fC1\fP, implicit keys (see \fBLibrary Functions Manual\fP) will always be dispatched using the values given by the global variables \fC\fBINI_GLOBAL_IMPLICIT_VALUE\fP\fP and \fC\fBINI_GLOBAL_IMPLICIT_V_LEN\fP\fP for the fields \fC\fBIniDispatch::value\fP\fP and to \fC\fBIniDispatch::v_len\fP\fP respectively; if set to \fC0\fP, implicit keys will be considered to be empty keys\&. 
 .SS "IniFormat::multiline_nodes"
 Defines which class of entries are allowed to be multi-line (use \fCenum\fP \fC\fBIniMultiline\fP\fP for this)\&. 
-.SS "IniFormat::no_disabled_after_space"
-If set to \fC1\fP, prevents what follows \fC/[#;]\\s/\fP to be parsed as a disabled entry\&. 
 .SS "IniFormat::no_double_quotes"
 If set to \fC1\fP, the double-quote character (\fC"\fP) will be considered as a normal character\&. 
 .SS "IniFormat::no_single_quotes"

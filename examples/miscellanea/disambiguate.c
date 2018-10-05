@@ -32,7 +32,7 @@ int main () {
 		.implicit_is_not_empty = YES,
 		.do_not_collapse_values = NO,
 		.preserve_empty_quotes = NO,
-		.no_disabled_after_space = YES,
+		.disabled_after_space = NO,
 		.disabled_can_be_implicit = YES
 	};
 

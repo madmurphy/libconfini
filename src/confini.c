@@ -24,7 +24,6 @@
 
 
 
-#include <stdio.h>
 #include <stdlib.h>
 #include "confini.h"
 
@@ -95,8 +94,8 @@
 					Note that, in section and key names, empty strings enclosed
 					between quotes are _always_ collapsed together with their
 					surrounding spaces.
-	@property	IniFormat::no_disabled_after_space
-					If set to `1`, prevents what follows `/[#;]\s/` to be parsed as
+	@property	IniFormat::disabled_after_space
+					If set to `1`, allows what follows `/[#;]\s/` to be parsed as
 					a disabled entry.
 	@property	IniFormat::disabled_can_be_implicit
 					If set to `1`, comments that do not contain a delimiter symbol
@@ -1350,8 +1349,8 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 
 	}
 
-	abcd	=	_LIBCONFINI_IS_DIS_MARKER_(segment[search_at], format) && !(
-					format.no_disabled_after_space && is_some_space(segment[search_at + 1], _LIBCONFINI_NO_EOL_)
+	abcd	=	_LIBCONFINI_IS_DIS_MARKER_(segment[search_at], format) && (
+					format.disabled_after_space || !is_some_space(segment[search_at + 1], _LIBCONFINI_NO_EOL_)
 				) ?
 					(abcd & 3) | 64
 				: format.multiline_nodes == INI_MULTILINE_EVERYWHERE && (
@@ -1433,8 +1432,8 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 					:
 						_LIBCONFINI_IS_IGN_MARKER_(segment[idx], format) || !(
 							(
-								format.multiline_nodes < 2 && _LIBCONFINI_IS_DIS_MARKER_(segment[idx], format) && !(
-									format.no_disabled_after_space && (abcd & 64) && is_some_space(segment[idx + 1], _LIBCONFINI_NO_EOL_)
+								format.multiline_nodes < 2 && _LIBCONFINI_IS_DIS_MARKER_(segment[idx], format) && (
+									format.disabled_after_space || !(abcd & 64) || !is_some_space(segment[idx + 1], _LIBCONFINI_NO_EOL_)
 								)
 							) || (
 								format.multiline_nodes == INI_MULTILINE_EVERYWHERE && _LIBCONFINI_IS_ANY_MARKER_(segment[idx], format) && !(
@@ -1857,7 +1856,7 @@ int load_ini_file (
 
 			*/
 
-			abcd	=	(format.no_disabled_after_space ? 512 : 516) |
+			abcd	=	(format.disabled_after_space ? 516 : 512) |
 						(format.no_double_quotes << 1) |
 						format.no_single_quotes;
 
