@@ -1,23 +1,35 @@
 ## Process this file with automake to produce Makefile.in
 
 ACLOCAL_AMFLAGS = -I m4
-
 SUBDIRS = src
 
+
+
 dist_doc_DATA = \
-	COPYING \
 	AUTHORS \
+	COPYING
+
+
+
+if ENABLE_DOC
+
+dist_doc_DATA += docs/manual.html \
 	ChangeLog \
 	INSTALL \
 	NEWS \
-	README \
-	docs/manual.html
+	README
 
 man_MANS = docs/man/man3/confini.h.3 \
 	docs/man/man3/IniDispatch.3 \
 	docs/man/man3/IniFormat.3 \
 	docs/man/man3/IniStatistics.3 \
 	docs/man/man3/libconfini.3
+
+endif
+
+
+
+if ENABLE_EXAMPLES
 
 examplesdir = $(docdir)/examples
 examples_DATA = \
@@ -52,9 +64,13 @@ examplestopics_DATA = \
 	examples/topics/load_ini_file.c \
 	examples/topics/load_ini_path.c
 
-# Make doc script executable
+# Make examples script executable
 install-data-hook:
 	chmod +x $(DESTDIR)$(examplesdir)/run_example.sh
+
+endif
+
+
 
 # Remove doc directory on uninstall
 uninstall-local:

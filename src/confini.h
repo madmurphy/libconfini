@@ -327,7 +327,7 @@ enum IniMultiline {
 static const IniFormat INI_DEFAULT_FORMAT = _LIBCONFINI_DEFAULT_FORMAT_;
 
 /** @brief	A model format for Unix-like CONF files (space characters are delimiters between keys and values) **/
-static const IniFormat INI_UNIXLIKE_FORMAT = (const IniFormat) { 0 };	/* All properties are set to `0` here. */
+static const IniFormat INI_UNIXLIKE_FORMAT = { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 };	/* All properties are set to `0` here. */
 
 /** @brief	If set to `TRUE`, key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: `FALSE`) **/
 extern _Bool INI_GLOBAL_LOWERCASE_MODE;

@@ -6,11 +6,27 @@ AC_CONFIG_HEADERS([config.h])
 
 AC_CONFIG_MACRO_DIR([m4])
 
+AC_ARG_ENABLE([doc],
+	[AS_HELP_STRING([--enable-doc], [Create package with documentation @<:@default=yes@:>@])],
+	[:],
+	[enable_doc=yes]
+)
+
+AC_ARG_ENABLE([examples],
+	[AS_HELP_STRING([--enable-examples], [Create package with examples @<:@default=yes@:>@])],
+	[:],
+	[enable_examples=yes]
+)
+
 AM_INIT_AUTOMAKE([1.11])
 
 AM_SILENT_RULES([yes])
 
 AC_PROG_CC
+
+AM_CONDITIONAL([ENABLE_DOC], [test "$enable_doc" != "no"])
+
+AM_CONDITIONAL([ENABLE_EXAMPLES], [test "$enable_examples" != "no"])
 
 
 dnl ***************************************************************************
@@ -32,11 +48,16 @@ case $host_os in
     native_win32=no
     ;;
 esac
+
 AM_CONDITIONAL(PLATFORM_WIN32, test x"$platform_win32" = "xyes")
+
 AM_CONDITIONAL(NATIVE_WIN32, test x"$native_win32" = "xyes")
 
-
 LT_INIT([win32-dll])
+
+dnl ***************************************************************************
+dnl End check for Windows
+dnl ***************************************************************************
 
 
 AC_OUTPUT([

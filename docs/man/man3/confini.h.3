@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Sat Oct 6 2018" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Mon Oct 8 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -196,7 +196,7 @@ src/confini.h \- libconfini header
 .br
 .RI "A model format for standard INI files\&. "
 .ti -1c
-.RI "static const \fBIniFormat\fP \fBINI_UNIXLIKE_FORMAT\fP = (const \fBIniFormat\fP) { 0 }"
+.RI "static const \fBIniFormat\fP \fBINI_UNIXLIKE_FORMAT\fP = { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 }"
 .br
 .RI "A model format for Unix-like CONF files (space characters are delimiters between keys and values) "
 .ti -1c
@@ -1770,7 +1770,7 @@ Value to be assigned to implicit keys (default value: \fCNULL\fP)
 
 .PP
 If set to \fCTRUE\fP, key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: \fCFALSE\fP) 
-.SS "const \fBIniFormat\fP INI_UNIXLIKE_FORMAT = (const \fBIniFormat\fP) { 0 }\fC [static]\fP"
+.SS "const \fBIniFormat\fP INI_UNIXLIKE_FORMAT = { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 }\fC [static]\fP"
 
 .PP
 A model format for Unix-like CONF files (space characters are delimiters between keys and values) 
