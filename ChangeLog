@@ -2,6 +2,18 @@ Change Log {#changelog}
 =======================
 
 
+## 1.7.2 -- 2018-10-12
+
+Changes:
+
+* Code review (`load_ini_path()` -- see issue
+  [#6](https://github.com/madmurphy/libconfini/issues/6) concerning file
+  access under Microsoft Windows)
+* Documentation -- see issues
+  [#5](https://github.com/madmurphy/libconfini/issues/5) and
+  [#6](https://github.com/madmurphy/libconfini/issues/6)
+
+
 ## 1.7.1 -- 2018-10-08
 
 Changes:

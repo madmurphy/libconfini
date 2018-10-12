@@ -15,7 +15,6 @@ if ENABLE_DOC
 
 dist_doc_DATA += docs/manual.html \
 	ChangeLog \
-	INSTALL \
 	NEWS \
 	README
 

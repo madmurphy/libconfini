@@ -137,6 +137,12 @@ make
 make install
 ~~~~~~~~~~~~
 
+If the `configure` script is missing from your package you need to generate it
+by running the `autogen.sh` script. By default `autogen.sh` will also run the
+`configure` script immediately after having generated it, so you may directly
+type the `make` command directly after `autogen.sh`. To list different options
+use `autogen.sh --help`.
+
 An unofficial port of **libconfini** for Cygwin [is also available][5].
 
 

@@ -7,13 +7,13 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_ARG_ENABLE([doc],
-	[AS_HELP_STRING([--enable-doc], [Create package with documentation @<:@default=yes@:>@])],
+	[AS_HELP_STRING([--disable-doc], [Create package without documentation @<:@default=no@:>@])],
 	[:],
 	[enable_doc=yes]
 )
 
 AC_ARG_ENABLE([examples],
-	[AS_HELP_STRING([--enable-examples], [Create package with examples @<:@default=yes@:>@])],
+	[AS_HELP_STRING([--disable-examples], [Create package without examples @<:@default=no@:>@])],
 	[:],
 	[enable_examples=yes]
 )

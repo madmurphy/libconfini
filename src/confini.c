@@ -1615,6 +1615,15 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 	@return			Zero for success, otherwise an error code (see `enum`
 					`#ConfiniInterruptNo`)
 
+	The @p ini_file parameter must be a `FILE` handle with read privileges. In some
+	platforms, such as Microsoft Windows, it might be needed to add the binary
+	specifier to the mode string (`"b"`) in order to prevent discrepancies between
+	the physical size of the file and its computed size:
+
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+	FILE * my_file = fopen("example.conf", "rb");
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 	The function @p f_init will be invoked with two arguments: `statistics` (a
 	pointer to an `IniStatistics` object containing some properties about the file
 	read) and `init_other` (the custom argument @p user_data previously passed). If
@@ -2148,7 +2157,7 @@ int load_ini_path (
 	void * const user_data
 ) {
 
-	FILE * const ini_file = fopen(path, "r");
+	FILE * const ini_file = fopen(path, "rb");
 
 	if (ini_file == NULL) {
 

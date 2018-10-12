@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Mon Oct 8 2018" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Fri Oct 12 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -1628,6 +1628,14 @@ Parses an INI file and dispatches its content using a \fCFILE\fP structure as ar
 Zero for success, otherwise an error code (see \fCenum\fP \fC\fBConfiniInterruptNo\fP\fP)
 .RE
 .PP
+The \fCini_file\fP parameter must be a \fCFILE\fP handle with read privileges\&. In some platforms, such as Microsoft Windows, it might be needed to add the binary specifier to the mode string (\fC'b'\fP) in order to prevent discrepancies between the physical size of the file and its computed size:
+.PP
+.PP
+.nf
+FILE * my_file = fopen("example\&.conf", "rb");
+.fi
+.PP
+.PP
 The function \fCf_init\fP will be invoked with two arguments: \fCstatistics\fP (a pointer to an \fC\fBIniStatistics\fP\fP object containing some properties about the file read) and \fCinit_other\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_init\fP returns a non-zero value the caller function will be interrupted\&.
 .PP
 The function \fCf_foreach\fP will be invoked with two arguments: \fCdispatch\fP (a pointer to an \fC\fBIniDispatch\fP\fP object containing the parsed member of the INI file) and \fCforeach_other\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the caller function will be interrupted\&.
@@ -1652,7 +1660,7 @@ static int callback (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-    FILE * const ini_file = fopen("ini_files/example\&.conf", "r");
+    FILE * const ini_file = fopen("ini_files/example\&.conf", "rb");
 
     if (ini_file == NULL) {
 

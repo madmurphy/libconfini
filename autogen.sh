@@ -4,8 +4,8 @@
 DIE=0
 CONFIGURE_ARGS=()
 
-for AG_ARG; do
-	case "${AG_ARG}" in
+for __AG_ARG__; do
+	case "${__AG_ARG__}" in
 		-h|--help)
 			echo "Usage: ${0} [option]"
 			echo
@@ -13,15 +13,15 @@ for AG_ARG; do
 			echo "        -h|--help               Show this help message"
 			echo "        -n|--noconfigure        Skip the configure process"
 			echo
-			echo 'If this script is invoked without the `--noconfigure'\'' option all unrecognized'
-			echo 'arguments will be passed to `configure'\''.'
+			echo 'If this script is invoked without the `--noconfigure` option all unrecognized'
+			echo 'arguments will be passed to `configure`.'
 			exit 0
 			;;
 		-n|--noconfigure)
 			NOCONFIGURE='YES'
 			;;
 		*)
-			CONFIGURE_ARGS+=("${AG_ARG}")
+			CONFIGURE_ARGS+=("${__AG_ARG__}")
 			;;
 	esac
 done
@@ -56,14 +56,14 @@ if [ -n "${GNOME2_DIR}" ]; then
 fi
 
 (test -f "${srcdir}/configure.ac") || {
-	echo -n "**Error**: Directory \`${srcdir}' does not look like the"
+	echo -n "**Error**: Directory \`${srcdir}\` does not look like the"
 	echo " top-level package directory"
 	exit 1
 }
 
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
 	echo
-	echo "**Error**: You must have \`autoconf' installed."
+	echo "**Error**: You must have \`autoconf\` installed."
 	echo "Download the appropriate package for your distribution,"
 	echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
 	DIE=1
@@ -71,8 +71,8 @@ fi
 
 (grep "^IT_PROG_INTLTOOL" "${srcdir}/configure.ac" >/dev/null) && {
 	(intltoolize --version) < /dev/null > /dev/null 2>&1 || {
-		echo 
-		echo "**Error**: You must have \`intltool' installed."
+		echo
+		echo "**Error**: You must have \`intltool\` installed."
 		echo "You can get it from:"
 		echo "  ftp://ftp.gnome.org/pub/GNOME/"
 		DIE=1
@@ -82,7 +82,7 @@ fi
 (grep "^AM_PROG_XML_I18N_TOOLS" "${srcdir}/configure.ac" >/dev/null) && {
 	(xml-i18n-toolize --version) < /dev/null > /dev/null 2>&1 || {
 		echo
-		echo "**Error**: You must have \`xml-i18n-toolize' installed."
+		echo "**Error**: You must have \`xml-i18n-toolize\` installed."
 		echo "You can get it from:"
 		echo "  ftp://ftp.gnome.org/pub/GNOME/"
 		DIE=1
@@ -92,7 +92,7 @@ fi
 (grep "^LT_INIT" "${srcdir}/configure.ac" >/dev/null) && {
 	("${LIBTOOL}" --version) < /dev/null > /dev/null 2>&1 || {
 		echo
-		echo "**Error**: You must have \`libtool' installed."
+		echo "**Error**: You must have \`libtool\` installed."
 		echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/"
 		DIE=1
 	}
@@ -102,7 +102,7 @@ fi
 	(grep "sed.*POTFILES" "${srcdir}/configure.ac") > /dev/null || \
 	(glib-gettextize --version) < /dev/null > /dev/null 2>&1 || {
 		echo
-		echo "**Error**: You must have \`glib' installed."
+		echo "**Error**: You must have \`glib\` installed."
 		echo "You can get it from: ftp://ftp.gtk.org/pub/gtk"
 		DIE=1
 	}
@@ -110,7 +110,7 @@ fi
 
 (automake --version) < /dev/null > /dev/null 2>&1 || {
 	echo
-	echo "**Error**: You must have \`automake' installed."
+	echo "**Error**: You must have \`automake\` installed."
 	echo "You can get it from: ftp://ftp.gnu.org/pub/gnu/"
 	DIE=1
 	NO_AUTOMAKE=yes
@@ -120,7 +120,7 @@ fi
 # if no automake, don't bother testing for aclocal
 test -n "${NO_AUTOMAKE}" || (aclocal --version) < /dev/null > /dev/null 2>&1 || {
 	echo
-	echo "**Error**: Missing \`aclocal'.  The version of \`automake'"
+	echo "**Error**: Missing \`aclocal\`.  The version of \`automake\`"
 	echo "installed doesn't appear recent enough."
 	echo "You can get automake from ftp://ftp.gnu.org/pub/gnu/"
 	DIE=1
@@ -131,16 +131,26 @@ if test "${DIE}" -eq 1; then
 fi
 
 if test "x${NOCONFIGURE}" = x; then
-	echo "I am going to prepare the build system and then run the \`configure' script."
+	echo 'I am going to prepare the build system and then run the `configure` script. If'
+	echo 'you wish differently, please specify the `--noconfigure` argument on the'
+	echo "\`${0}\` command line."
 	if test -z "$*"; then
 		echo
-		echo "**Warning**: I am going to run \`configure' with no arguments."
-		echo "If you wish to pass any to it, please specify them on the"
-		echo "\`${0}' command line."
+		echo '**Warning**: I am going to run `configure` with no arguments.'
+		echo 'If you wish to pass any to it, please specify them on the'
+		echo "\`${0}\` command line."
 		echo
 	fi
 else
-	echo "I am going to prepare the build system without running the \`configure' script."
+	echo 'I am going to prepare the build system without running the `configure` script.'
+	if test ${#CONFIGURE_ARGS[@]} -gt 0; then
+		echo
+		echo '**Warning**: The following arguments will be ignored:'
+		for __IDX__ in ${!CONFIGURE_ARGS[@]}; do
+			echo " $((__IDX__ + 1)). \`${CONFIGURE_ARGS[$__IDX__]}\`"
+		done
+		echo
+	fi
 fi
 
 echo 'Preparing the build system... please wait'
@@ -151,8 +161,7 @@ case "${CC}" in
 		;;
 esac
 
-for coin in `find "${srcdir}" -path "${srcdir}/CVS" -prune -o -name configure.ac -print`
-do 
+for coin in `find "${srcdir}" -path "${srcdir}/CVS" -prune -o -name configure.ac -print`; do
 	dr=`dirname "${coin}"`
 	if test -f "${dr}/NO-AUTO-GEN"; then
 		echo "skipping ${dr} -- flagged as no auto-gen"
@@ -179,7 +188,7 @@ do
 				xml-i18n-toolize --copy --force --automake
 			fi
 			if grep "^LT_INIT" configure.ac >/dev/null; then
-				if test -z "${NO_LIBTOOLIZE}" ; then 
+				if test -z "${NO_LIBTOOLIZE}" ; then
 					echo "Running libtoolize..."
 					"${LIBTOOLIZE}" --force --copy
 				fi
@@ -200,14 +209,14 @@ done
 
 if test "x${NOCONFIGURE}" = x; then
 	echo -n "Running ${srcdir}/configure"
-	for CF_ARG in "${CONFIGURE_ARGS[@]}"; do
-		echo -n " [${CF_ARG}]"
+	for __CF_ARG__ in "${CONFIGURE_ARGS[@]}"; do
+		echo -n " [${__CF_ARG__}]"
 	done
 	echo " ..."
 	"${srcdir}/configure" "${CONFIGURE_ARGS[@]}" \
-	&& echo 'Now type `make'\'' to compile.' || exit 1
+	&& echo 'Now type `make` to compile.' || exit 1
 else
-	echo 'Skipping configure process. Type `configure --help'\'' to list the configure'
+	echo 'Skipping configure process. Type `configure --help` to list the configure'
 	echo 'options.'
 fi
 
