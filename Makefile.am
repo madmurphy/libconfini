@@ -46,8 +46,8 @@ examplesinifiles_DATA = \
 examplesotherdir = $(examplesdir)/miscellanea
 examplesother_DATA = \
 	examples/miscellanea/disambiguate.c \
-        examples/miscellanea/dispatch_everything.c \
-        examples/miscellanea/glib_hash_table.c \
+	examples/miscellanea/dispatch_everything.c \
+	examples/miscellanea/glib_hash_table.c \
 	examples/miscellanea/print_format.c \
 	examples/miscellanea/typed_ini.c
 

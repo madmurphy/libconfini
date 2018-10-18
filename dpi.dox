@@ -1,10 +1,17 @@
+/*
+
+	Doxygen Pages Index
+	===================
+
+*/
+
 /**
 
 
 
 \page		libconfini	Library Functions Manual
 
-\brief		Yet another INI parser
+\brief		User Guide for **libconfini**
 
 \copyright	GNU Public License v3
 
@@ -26,9 +33,9 @@
 
 \brief		Complete list of functions
 
-What follows is the list of public functions available with **libconfini**. Each
-public function is independent, hence if you are compiling this library you may
-decide to remove any of them from the code, with the only exceptions of
+What follows is the list of public functions available with **libconfini**.
+Almost each of them is independent, hence if you are compiling this library you
+may decide to remove any of them from the code, with the only exceptions of
 `ini_string_match_ii()`, required by `ini_array_match()`, and `load_ini_file()`,
 required by `load_ini_path()`.
 
@@ -40,7 +47,7 @@ required by `load_ini_path()`.
 
 
 
-\file		docs.dox
+\file		dpi.dox
 
 This file is used by Doxygen to indicize the pages and provide further
 documentation not available in the code.

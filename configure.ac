@@ -35,18 +35,18 @@ dnl ***************************************************************************
 AC_CANONICAL_HOST
 
 case $host_os in
-  *mingw*)
-    platform_win32=yes
-    native_win32=yes
-    ;;
-  pw32* | *cygwin*)
-    platform_win32=yes
-    native_win32=no
-    ;;
-  *)
-    platform_win32=no
-    native_win32=no
-    ;;
+	*mingw*)
+		platform_win32=yes
+		native_win32=yes
+		;;
+	pw32* | *cygwin*)
+		platform_win32=yes
+		native_win32=no
+		;;
+	*)
+		platform_win32=no
+		native_win32=no
+		;;
 esac
 
 AM_CONDITIONAL(PLATFORM_WIN32, test x"$platform_win32" = "xyes")

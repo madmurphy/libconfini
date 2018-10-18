@@ -124,9 +124,8 @@ manual of the header file (`man confini.h`). The code is available on
 Installation
 ------------
 
-Despite the small footprint (34 kB of compiled binary using GCC), **libconfini**
-has been conceived as a shared library (but it may be used as a static library
-as well).
+Despite the small footprint, **libconfini** has been conceived as a shared
+library (but it may be used as a static library as well).
 
 On most Unix-like systems, it is possible to install **libconfini** using the
 following common steps:
@@ -137,11 +136,14 @@ make
 make install
 ~~~~~~~~~~~~
 
+For a minimum installation without man pages and examples, use `./configure
+--disable-man --disable-examples`.
+
 If the `configure` script is missing from your package you need to generate it
-by running the `autogen.sh` script. By default `autogen.sh` will also run the
-`configure` script immediately after having generated it, so you may directly
-type the `make` command directly after `autogen.sh`. To list different options
-use `autogen.sh --help`.
+by running the `autogen.sh` script. By default, `autogen.sh` will also run the
+`configure` script immediately after having generated it, so you may type the
+`make` command directly after `autogen.sh`. To list different options use
+`autogen.sh --help`.
 
 An unofficial port of **libconfini** for Cygwin [is also available][5].
 

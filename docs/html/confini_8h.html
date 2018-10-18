@@ -100,10 +100,10 @@ Data Structures</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a3b5912b45e4def482018fa44ad99ffb0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a3b5912b45e4def482018fa44ad99ffb0">INIFORMAT_HAS_NO_ESC</a>(FMT)&#160;&#160;&#160;(FMT.multiline_nodes == <a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa287fd13b8c6d991694f9e5fb2c3a334a">INI_NO_MULTILINE</a> &amp;&amp; FMT.no_double_quotes &amp;&amp; FMT.no_single_quotes)</td></tr>
-<tr class="memdesc:a3b5912b45e4def482018fa44ad99ffb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a format does not support escape sequences.  <a href="#a3b5912b45e4def482018fa44ad99ffb0">More...</a><br /></td></tr>
+<tr class="memdesc:a3b5912b45e4def482018fa44ad99ffb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a format does <em>not</em> support escape sequences.  <a href="#a3b5912b45e4def482018fa44ad99ffb0">More...</a><br /></td></tr>
 <tr class="separator:a3b5912b45e4def482018fa44ad99ffb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b9dcb5c0711475ea78b065b0322bde1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a0b9dcb5c0711475ea78b065b0322bde1">CONFINI_ERROR</a>&#160;&#160;&#160;252</td></tr>
-<tr class="memdesc:a0b9dcb5c0711475ea78b065b0322bde1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error mask (flags not present in user-generated interruptions) &ndash; its value should be considered opaque.  <a href="#a0b9dcb5c0711475ea78b065b0322bde1">More...</a><br /></td></tr>
+<tr class="memdesc:a0b9dcb5c0711475ea78b065b0322bde1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error mask (flags not present in user-generated interruptions)  <a href="#a0b9dcb5c0711475ea78b065b0322bde1">More...</a><br /></td></tr>
 <tr class="separator:a0b9dcb5c0711475ea78b065b0322bde1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
@@ -134,7 +134,7 @@ Enumerations</h2></td></tr>
 <a class="el" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a82e26058d2b7bb2203fe321d0320d98a">CONFINI_EOOR</a> = 7
 <br />
  }</td></tr>
-<tr class="memdesc:a4b42cb63e48154fb799599eccd25ce29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error codes &ndash; the actual value of each constant should be considered opaque.  <a href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29">More...</a><br /></td></tr>
+<tr class="memdesc:a4b42cb63e48154fb799599eccd25ce29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error codes.  <a href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29">More...</a><br /></td></tr>
 <tr class="separator:a4b42cb63e48154fb799599eccd25ce29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e394db479f56eaa830ade09c907461b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461b">IniNodeType</a> { <br />
 &#160;&#160;<a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461baffa9e27deb46c0e436bc75329cc5f7a6">INI_UNKNOWN</a> = 0, 
@@ -295,7 +295,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Error mask (flags not present in user-generated interruptions) &ndash; its value should be considered opaque. </p>
+<p>Error mask (flags not present in user-generated interruptions) </p>
 
 </div>
 </div>
@@ -315,7 +315,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Checks whether a format does not support escape sequences. </p>
+<p>Checks whether a format does <em>not</em> support escape sequences. </p>
 
 </div>
 </div>
@@ -397,21 +397,21 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Error codes &ndash; the actual value of each constant should be considered opaque. </p>
+<p>Error codes. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a4b42cb63e48154fb799599eccd25ce29ab6180fd6db09408e11eb1c27fb7028e7"></a>CONFINI_SUCCESS&#160;</td><td class="fielddoc"><p>There have been no interruptions, everything went well </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a4b42cb63e48154fb799599eccd25ce29ab6180fd6db09408e11eb1c27fb7028e7"></a>CONFINI_SUCCESS&#160;</td><td class="fielddoc"><p>There have been no interruptions, everything went well [value=0] </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a4b42cb63e48154fb799599eccd25ce29a1435b36fb0e428e18c5f6a32408eb3ea"></a>CONFINI_IINTR&#160;</td><td class="fielddoc"><p>Interrupted by the user during <code>f_init()</code> </p>
+<tr><td class="fieldname"><a id="a4b42cb63e48154fb799599eccd25ce29a1435b36fb0e428e18c5f6a32408eb3ea"></a>CONFINI_IINTR&#160;</td><td class="fielddoc"><p>Interrupted by the user during <code>f_init()</code> [value=1] </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a4b42cb63e48154fb799599eccd25ce29a133a335ff201d93015a27bd581e6b399"></a>CONFINI_FEINTR&#160;</td><td class="fielddoc"><p>Interrupted by the user during <code>f_foreach()</code> </p>
+<tr><td class="fieldname"><a id="a4b42cb63e48154fb799599eccd25ce29a133a335ff201d93015a27bd581e6b399"></a>CONFINI_FEINTR&#160;</td><td class="fielddoc"><p>Interrupted by the user during <code>f_foreach()</code> [value=2] </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a4b42cb63e48154fb799599eccd25ce29aca147c275760856386fdb9e778525676"></a>CONFINI_ENOENT&#160;</td><td class="fielddoc"><p>File inaccessible </p>
+<tr><td class="fieldname"><a id="a4b42cb63e48154fb799599eccd25ce29aca147c275760856386fdb9e778525676"></a>CONFINI_ENOENT&#160;</td><td class="fielddoc"><p>File inaccessible [value=4] </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a4b42cb63e48154fb799599eccd25ce29a0e8e1cee80bc4b7839838764f5d661f5"></a>CONFINI_ENOMEM&#160;</td><td class="fielddoc"><p>Error allocating memory </p>
+<tr><td class="fieldname"><a id="a4b42cb63e48154fb799599eccd25ce29a0e8e1cee80bc4b7839838764f5d661f5"></a>CONFINI_ENOMEM&#160;</td><td class="fielddoc"><p>Error allocating memory [value=5] </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a4b42cb63e48154fb799599eccd25ce29a8b9b6ea5c455bfad3976fd394c36a91d"></a>CONFINI_EIO&#160;</td><td class="fielddoc"><p>Error reading the file </p>
+<tr><td class="fieldname"><a id="a4b42cb63e48154fb799599eccd25ce29a8b9b6ea5c455bfad3976fd394c36a91d"></a>CONFINI_EIO&#160;</td><td class="fielddoc"><p>Error reading the file [value=6] </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a4b42cb63e48154fb799599eccd25ce29a82e26058d2b7bb2203fe321d0320d98a"></a>CONFINI_EOOR&#160;</td><td class="fielddoc"><p>Callbacks are more than expected (out of range) </p>
+<tr><td class="fieldname"><a id="a4b42cb63e48154fb799599eccd25ce29a82e26058d2b7bb2203fe321d0320d98a"></a>CONFINI_EOOR&#160;</td><td class="fielddoc"><p>Out-of-range error: callbacks are more than expected [value=7] </p>
 </td></tr>
 </table>
 
@@ -724,7 +724,7 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Zero for success, otherwise an error code (see <code>enum</code> <code><a class="el" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29" title="Error codes – the actual value of each constant should be considered opaque. ">ConfiniInterruptNo</a></code>)</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Zero for success, otherwise an error code (see <code>enum</code> <code><a class="el" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29" title="Error codes. ">ConfiniInterruptNo</a></code>)</dd></dl>
 <p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI node. ">IniDispatch</a></code> (but any other string may be used as well).</p>
 <p>The function <code>f_foreach</code> will be invoked with six arguments: <code>fullstring</code> (a pointer to <code>ini_string</code>), <code>memb_offset</code> (the offset of the member in bytes), <code>memb_length</code> (the length of the member in bytes), <code>memb_num</code> (the offset of the member in number of members), <code>format</code> (the format of the INI file), <code>foreach_other</code> (the custom argument <code>user_data</code> previously passed). If <code>f_foreach</code> returns a non-zero value the function <code><a class="el" href="confini_8c.html#a94bc649f5b58d4e2ad481080d918c41e" title="Calls a custom function for each member of a stringified INI array without modifying the content of t...">ini_array_foreach()</a></code> will be interrupted.</p>
 <dl class="section note"><dt>Note</dt><dd>If <code>delimiter</code> matches a meta-character within the given format (<code>'\\'</code>, <code>'\''</code> or <code>'\&quot;'</code>), its role as meta-character will have higher priority than its role as delimiter (i.e., the array will have no delimiters and will contain only one member).</dd></dl>
@@ -992,7 +992,7 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Zero for success, otherwise an error code (see <code>enum</code> <code><a class="el" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29" title="Error codes – the actual value of each constant should be considered opaque. ">ConfiniInterruptNo</a></code>)</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Zero for success, otherwise an error code (see <code>enum</code> <code><a class="el" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29" title="Error codes. ">ConfiniInterruptNo</a></code>)</dd></dl>
 <p>Usually <code>ini_string</code> comes from an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI node. ">IniDispatch</a></code> (but any other string may be used as well).</p>
 <p>The function <code>f_foreach</code> will be invoked with five arguments: <code>member</code> (a pointer to <code>ini_string</code>), <code>memb_length</code> (the length of the member in bytes), <code>memb_num</code> (the offset of the member in number of members), <code>format</code> (the format of the INI file), <code>foreach_other</code> (the custom argument <code>user_data</code> previously passed). If <code>f_foreach</code> returns a non-zero value the function <code><a class="el" href="confini_8c.html#a2cc490a4e05c48497340370f54fe3ba2" title="Splits a stringified INI array into NUL-separated members and calls a custom function for each member...">ini_array_split()</a></code> will be interrupted.</p>
 <p>Similarly to <code>strtok_r()</code> this function can be used only once for a given string.</p>
@@ -1475,9 +1475,10 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Zero for success, otherwise an error code (see <code>enum</code> <code><a class="el" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29" title="Error codes – the actual value of each constant should be considered opaque. ">ConfiniInterruptNo</a></code>)</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Zero for success, otherwise an error code (see <code>enum</code> <code><a class="el" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29" title="Error codes. ">ConfiniInterruptNo</a></code>)</dd></dl>
 <p>The <code>ini_file</code> parameter must be a <code>FILE</code> handle with read privileges. In some platforms, such as Microsoft Windows, it might be needed to add the binary specifier to the mode string (<code>"b"</code>) in order to prevent discrepancies between the physical size of the file and its computed size:</p>
-<div class="fragment"><div class="line">FILE * my_file = fopen(<span class="stringliteral">&quot;example.conf&quot;</span>, <span class="stringliteral">&quot;rb&quot;</span>);</div></div><!-- fragment --><p>The function <code>f_init</code> will be invoked with two arguments: <code>statistics</code> (a pointer to an <code><a class="el" href="structIniStatistics.html" title="Global statistics about an INI file. ">IniStatistics</a></code> object containing some properties about the file read) and <code>init_other</code> (the custom argument <code>user_data</code> previously passed). If <code>f_init</code> returns a non-zero value the caller function will be interrupted.</p>
+<div class="fragment"><div class="line">FILE * my_file = fopen(<span class="stringliteral">&quot;example.conf&quot;</span>, <span class="stringliteral">&quot;rb&quot;</span>);</div></div><!-- fragment --><p>The parsing algorithms used by <b>libconfini</b> are able to parse any type of file encoded in 8-bit code units (such as ASCII, UTF-8, ISO-8859-1), independently of platform-specific conventions.</p>
+<p>The function <code>f_init</code> will be invoked with two arguments: <code>statistics</code> (a pointer to an <code><a class="el" href="structIniStatistics.html" title="Global statistics about an INI file. ">IniStatistics</a></code> object containing some properties about the file read) and <code>init_other</code> (the custom argument <code>user_data</code> previously passed). If <code>f_init</code> returns a non-zero value the caller function will be interrupted.</p>
 <p>The function <code>f_foreach</code> will be invoked with two arguments: <code>dispatch</code> (a pointer to an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI node. ">IniDispatch</a></code> object containing the parsed member of the INI file) and <code>foreach_other</code> (the custom argument <code>user_data</code> previously passed). If <code>f_foreach</code> returns a non-zero value the caller function will be interrupted.</p>
 <div class="fragment"><div class="line"><span class="comment">/*  examples/topics/load_ini_file.c  */</span></div><div class="line"></div><div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> callback (<a class="code" href="structIniDispatch.html">IniDispatch</a> * dispatch, <span class="keywordtype">void</span> * v_null) {</div><div class="line"></div><div class="line">    printf(</div><div class="line">        <span class="stringliteral">&quot;DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n&quot;</span>,</div><div class="line">        dispatch-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a></div><div class="line">    );</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">int</span> main () {</div><div class="line"></div><div class="line">    FILE * <span class="keyword">const</span> ini_file = fopen(<span class="stringliteral">&quot;ini_files/example.conf&quot;</span>, <span class="stringliteral">&quot;rb&quot;</span>);</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (ini_file == NULL) {</div><div class="line"></div><div class="line">        fprintf(stderr, <span class="stringliteral">&quot;File doesn&#39;t exist :-(\n&quot;</span>);</div><div class="line">        <span class="keywordflow">return</span> 1;</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="confini_8c.html#a326e804687b2b46f0a295ae724d84628">load_ini_file</a>(ini_file, <a class="code" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a>, NULL, callback, NULL)) {</div><div class="line"></div><div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Sorry, something went wrong :-(\n&quot;</span>);</div><div class="line">        <span class="keywordflow">return</span> 1;</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    fclose(ini_file);</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --> 
 </div>
@@ -1537,7 +1538,7 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Zero for success, otherwise an error code (see <code>enum</code> <code><a class="el" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29" title="Error codes – the actual value of each constant should be considered opaque. ">ConfiniInterruptNo</a></code>)</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Zero for success, otherwise an error code (see <code>enum</code> <code><a class="el" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29" title="Error codes. ">ConfiniInterruptNo</a></code>)</dd></dl>
 <p>For the two parameters <code>f_init</code> and <code>f_foreach</code> see function <code><a class="el" href="confini_8c.html#a326e804687b2b46f0a295ae724d84628" title="Parses an INI file and dispatches its content using a FILE structure as argument. ...">load_ini_file()</a></code>.</p>
 <div class="fragment"><div class="line"><span class="comment">/*  examples/topics/load_ini_path.c  */</span></div><div class="line"></div><div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> callback (<a class="code" href="structIniDispatch.html">IniDispatch</a> * dispatch, <span class="keywordtype">void</span> * v_null) {</div><div class="line"></div><div class="line">    printf(</div><div class="line">        <span class="stringliteral">&quot;DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n&quot;</span>,</div><div class="line">        dispatch-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a></div><div class="line">    );</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">int</span> main () {</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="confini_8c.html#a307e84bd8a6775c4e8d9c00736e201ab">load_ini_path</a>(<span class="stringliteral">&quot;ini_files/example.conf&quot;</span>, <a class="code" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a>, NULL, callback, NULL)) {</div><div class="line"></div><div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Sorry, something went wrong :-(\n&quot;</span>);</div><div class="line">        <span class="keywordflow">return</span> 1;</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --> 
 </div>

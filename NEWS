@@ -2,6 +2,11 @@ NEWS
 ====
 
 
+## 1.7.0
+
+* Default format `INI_UNIXLIKE_FORMAT` has been created
+
+
 ## 1.6.1
 
 * Function `ini_array_match()` has been created

@@ -1,0 +1,19 @@
+root = true
+
+[package.json]
+indent_style = tab
+indent_size = 2
+
+[{**.sh,configure.ac,**/Makefile.am}]
+indent_style = tab
+indent_size = 4
+
+[src/confini.c]
+charset = utf-8
+indent_style = tab
+indent_size = 4
+
+[src/confini.h]
+charset = utf-8
+indent_style = tab
+indent_size = 8

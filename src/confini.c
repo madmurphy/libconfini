@@ -1163,7 +1163,7 @@ static uint8_t get_type_as_active (
 	}
 
 	register uint16_t abcd;
-	size_t idx;
+	register size_t idx;
 
 	if (format.section_paths != INI_NO_SECTIONS && *nodestr == _LIBCONFINI_OPEN_SECTION_) {
 
@@ -1171,10 +1171,10 @@ static uint8_t get_type_as_active (
 
 			/*
 
-				Search of the CLOSE_SECTION character and possible spaces in
-				names -- i.e., ECMAScript `/[^\.\s]\s+[^\.\s]/g.test(nodestr)`.
-				The algorithm is made more complex by the fact that LF and CR
-				characters are still escaped at this stage.
+				Search for the CLOSE_SECTION character and possible spaces in names
+				-- i.e., ECMAScript `/[^\.\s]\s+[^\.\s]/g.test(nodestr)`. The
+				algorithm is made more complex by the fact that LF and CR characters
+				are still escaped at this stage.
 
 			*/
 
@@ -1189,22 +1189,27 @@ static uint8_t get_type_as_active (
 				FLAG_16		Unescaped double quotes are odd right now
 				FLAG_32		We are in an odd sequence of backslashes
 				FLAG_64		This is a space
-				FLAG_128	We are inside a section name
+				FLAG_128	What follows cannot contain spaces
 				FLAG_256	Continue the loop
-				FLAG_512	Section path is valid
+				FLAG_512	Section path is *not* valid
 
 			*/
 
 			for (
 
 				idx = 1,
-				abcd	=	(format.section_paths == INI_ONE_LEVEL_ONLY ? 260: 256) |
+
+				abcd	=	(format.section_paths == INI_ONE_LEVEL_ONLY ? 772: 768) |
 							(format.no_double_quotes << 1) |
 							format.no_single_quotes;
 
 					abcd & 256;
 
-				/*  Revision #1  */
+				idx++
+
+			) {
+
+				/*  Revision #2  */
 
 				abcd	=	idx >= len ?
 								abcd & 767
@@ -1216,48 +1221,113 @@ static uint8_t get_type_as_active (
 								(abcd & 991) | 64
 							: is_some_space(nodestr[idx], _LIBCONFINI_NO_EOL_) ?
 								(
-									abcd & 32 ?
-										(abcd & 767) | 64
-									:
+									!(abcd & 32) ?
 										abcd | 64
+									: ~abcd & 192 ?
+										(abcd & 991) | 192
+									:
+										(abcd & 767) | 128
 								)
 							: !(abcd & 28) && nodestr[idx] == _LIBCONFINI_SUBSECTION_ ?
 								(
 									~abcd & 224 ?
-										abcd & 831
+										abcd & 799
 									:
 										abcd & 767
 								)
 							: !(abcd & 24) && nodestr[idx] == _LIBCONFINI_CLOSE_SECTION_ ?
 								(
 									~abcd & 224 ?
-										(abcd & 671) | 512
+										abcd & 159
 									:
 										abcd & 767
 								)
-							: nodestr[idx] != _LIBCONFINI_BACKSLASH_ ?
+							: nodestr[idx] == _LIBCONFINI_BACKSLASH_ ?
 								(
-									~abcd & 192 ?
-										(abcd & 927) | 128
+									!(abcd & 32) ?
+										abcd | 32
+									: ~abcd & 192 ?
+										(abcd & 991) | 128
 									:
-										(abcd & 671) | 128
+										(abcd & 735)
 								)
-							: !(abcd & 32) ?
-								abcd | 32
-							: abcd & 64 ?
-								(abcd & 735) | 128
+							: ~abcd & 192 ?
+								(abcd & 927) | 128
 							:
-								(abcd & 991) | 128,
+								(abcd & 671) | 128;
 
-				idx++
+			}
 
-			);
+			if (abcd & 512) {
 
-			return abcd & 512 ? INI_SECTION : INI_UNKNOWN;
+				return INI_UNKNOWN;
+
+			}
+
+		} else if ((idx = getn_metachar_pos(nodestr, _LIBCONFINI_CLOSE_SECTION_, len, format) + 1) > len) {
+
+			return INI_UNKNOWN;
 
 		}
 
-		return getn_metachar_pos(nodestr, _LIBCONFINI_CLOSE_SECTION_, len, format) < len ? INI_SECTION : INI_UNKNOWN;
+		/*
+
+			Scan for possible non-space characters following the CLOSE_SECTION
+			character: if found the node cannot represent a section path (but it can
+			possibly represent a key).
+
+		*/
+
+		/*
+
+		Mask `abcd` (3 bits used):
+
+			FLAG_1		Last character was a backslash
+			FLAG_2		Throw `return INI_SECTION;`
+			FLAG_4		Continue the loop
+
+		*/
+
+		abcd = idx < len ? 4 : 2;
+
+
+		/* \                                /\
+		\ */     nonspace_check:           /* \
+		 \/     ______________________     \ */
+
+
+		if (abcd & 2) {
+
+			return INI_SECTION;
+
+		}
+
+		if (abcd & 4) {
+
+			switch (nodestr[idx++]) {
+
+				case _LIBCONFINI_VT_:
+				case _LIBCONFINI_FF_:
+				case _LIBCONFINI_HT_:
+				case _LIBCONFINI_SIMPLE_SPACE_:
+
+					abcd = abcd & 1 ? 0 : idx < len ? 4 : 2;
+					goto nonspace_check;
+
+				case _LIBCONFINI_LF_:
+				case _LIBCONFINI_CR_:
+
+					abcd = idx < len ? 4 : 2;
+					goto nonspace_check;
+
+				case _LIBCONFINI_BACKSLASH_:
+
+					abcd = abcd & 1 ? 1 : idx < len ? 5 : 1;
+					goto nonspace_check;
+
+			}
+
+		}
 
 	}
 
@@ -1624,6 +1694,10 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 	FILE * my_file = fopen("example.conf", "rb");
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+	The parsing algorithms used by **libconfini** are able to parse any type of file
+	encoded in 8-bit code units (such as ASCII, UTF-8, ISO-8859-1), independently of
+	platform-specific conventions.
+
 	The function @p f_init will be invoked with two arguments: `statistics` (a
 	pointer to an `IniStatistics` object containing some properties about the file
 	read) and `init_other` (the custom argument @p user_data previously passed). If
@@ -1653,9 +1727,10 @@ int load_ini_file (
 
 	fseek(ini_file, 0, SEEK_END);
 
-	#define __N_BYTES__ tmp_size_1
+	size_t tmp_uint_1 = ftell(ini_file);
 
-	size_t tmp_size_1 = ftell(ini_file);
+	#define __N_BYTES__ tmp_uint_1
+
 	char * const cache = (char *) malloc(__N_BYTES__ + 1);
 
 	if (cache == NULL) {
@@ -1678,17 +1753,17 @@ int load_ini_file (
 	cache[__N_BYTES__] = '\0';
 
 	const _LIBCONFINI_BOOL_ valid_delimiter = !_LIBCONFINI_IS_ESC_CHAR_(format.delimiter_symbol, format);
-
 	_LIBCONFINI_BOOL_ tmp_bool;
 	register uint16_t abcd;
-	size_t idx, node_at, tmp_size_2, tmp_size_3;
+	register size_t idx;
+	size_t tmp_uint_2, tmp_uint_3, node_at;
 
 	/*  PART ONE: Examine and isolate each segment  */
 
 	#define __ISNT_ESCAPED__ tmp_bool
 	#define __EOL_ID__ abcd
-	#define __N_MEMBERS__ tmp_size_2
-	#define __LSHIFT__ tmp_size_3
+	#define __N_MEMBERS__ tmp_uint_2
+	#define __LSHIFT__ tmp_uint_3
 
 	/*  UTF-8 BOM  */
 
@@ -1754,18 +1829,6 @@ int load_ini_file (
 
 	__N_MEMBERS__ += further_cuts(cache + qultrim_h(cache, node_at, format), format);
 
-	IniStatistics this_doc = {
-		.format = format,
-		.bytes = __N_BYTES__,
-		.members = __N_MEMBERS__
-	};
-
-	#undef __LSHIFT__
-	#undef __N_MEMBERS__
-	#undef __EOL_ID__
-	#undef __ISNT_ESCAPED__
-	#undef __N_BYTES__
-
 	/*  Debug  */
 
 	/*
@@ -1777,6 +1840,12 @@ int load_ini_file (
 
 	*/
 
+	IniStatistics this_doc = {
+		.format = format,
+		.bytes = __N_BYTES__,
+		.members = __N_MEMBERS__
+	};
+
 	if (f_init && f_init(&this_doc, user_data)) {
 
 		return_value = CONFINI_IINTR;
@@ -1784,18 +1853,24 @@ int load_ini_file (
 
 	}
 
+	#undef __LSHIFT__
+	#undef __N_MEMBERS__
+	#undef __EOL_ID__
+	#undef __ISNT_ESCAPED__
+	#undef __N_BYTES__
+
+	/*  PART TWO: Dispatch the parsed input  */
+
 	if (!f_foreach) {
 
 		goto free_and_exit;
 
 	}
 
-	/*  PART TWO: Dispatch the parsed input  */
-
 	#define __PARENT_IS_DISABLED__ tmp_bool
-	#define __REAL_PARENT_LEN__ tmp_size_1
-	#define __CURR_PARENT_LEN__ tmp_size_2
-	#define __ITER__ tmp_size_3
+	#define __REAL_PARENT_LEN__ tmp_uint_1
+	#define __CURR_PARENT_LEN__ tmp_uint_2
+	#define __ITER__ tmp_uint_3
 
 	__REAL_PARENT_LEN__ = 0, __CURR_PARENT_LEN__ = 0;
 
@@ -1842,8 +1917,8 @@ int load_ini_file (
 
 			/*
 
-				Search for inline comments left unmarked *inside* a parsable comment:
-				if found it means that the comment is not parsable.
+				Search for inline comments left unmarked *inside* a parsable
+				comment: if found it means that the comment is not parsable.
 
 			*/
 
@@ -1859,8 +1934,8 @@ int load_ini_file (
 				FLAG_32		We are in an odd sequence of backslashes
 				FLAG_64		We are in `\n[\t \v\f]*`
 				FLAG_128	Last was not `[\t \v\f]` OR `FLAG_64 == FALSE`
-				FLAG_256	Last was not `\s[;#]`, or was it but was semantic
-							rather than syntactic
+				FLAG_256	Last was not `\s[;#]`, or it was but was semantic rather
+							than syntactic
 				FLAG_512	Continue the loop
 
 			*/
@@ -2138,7 +2213,8 @@ int load_ini_file (
 	@return			Zero for success, otherwise an error code (see `enum`
 					`#ConfiniInterruptNo`)
 
-	For the two parameters @p f_init and @p f_foreach see function `load_ini_file()`.
+	For the two parameters @p f_init and @p f_foreach see function
+	`load_ini_file()`.
 
 	@include topics/load_ini_path.c
 

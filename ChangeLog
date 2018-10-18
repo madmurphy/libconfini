@@ -2,6 +2,16 @@ Change Log {#changelog}
 =======================
 
 
+## 1.7.3 -- 2018-10-19
+
+Changes:
+
+* Code review (`load_ini_file()`, private function `get_type_as_active()`)
+* Made sure that the `CLOSE_SECTION` character is never followed by anything
+  else than empty spaces
+* Documentation
+
+
 ## 1.7.2 -- 2018-10-12
 
 Changes:

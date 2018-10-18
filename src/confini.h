@@ -55,7 +55,7 @@
                                                                             /-*/
 
 
-/** @brief	Checks whether a format does not support escape sequences **/
+/** @brief	Checks whether a format does _not_ support escape sequences **/
 #define INIFORMAT_HAS_NO_ESC(FMT) (FMT.multiline_nodes == INI_NO_MULTILINE && FMT.no_double_quotes && FMT.no_single_quotes)
 
 
@@ -264,18 +264,18 @@ extern double (* const ini_get_float) (
 /* PUBLIC CONSTANTS AND VARIABLES */
 
 
-/** @brief	Error mask (flags not present in user-generated interruptions) -- its value should be considered opaque **/
+/** @brief	Error mask (flags not present in user-generated interruptions) **/
 #define CONFINI_ERROR 252
 
-/** @brief	Error codes -- the actual value of each constant should be considered opaque **/
+/** @brief	Error codes **/
 enum ConfiniInterruptNo {
-	CONFINI_SUCCESS = 0,	/**< There have been no interruptions, everything went well **/
-	CONFINI_IINTR = 1,	/**< Interrupted by the user during `f_init()` **/
-	CONFINI_FEINTR = 2,	/**< Interrupted by the user during `f_foreach()` **/
-	CONFINI_ENOENT = 4,	/**< File inaccessible **/
-	CONFINI_ENOMEM = 5,	/**< Error allocating memory **/
-	CONFINI_EIO = 6,	/**< Error reading the file **/
-	CONFINI_EOOR = 7	/**< Callbacks are more than expected (out of range) **/
+	CONFINI_SUCCESS = 0,	/**< There have been no interruptions, everything went well [value=0] **/
+	CONFINI_IINTR = 1,	/**< Interrupted by the user during `f_init()` [value=1] **/
+	CONFINI_FEINTR = 2,	/**< Interrupted by the user during `f_foreach()` [value=2] **/
+	CONFINI_ENOENT = 4,	/**< File inaccessible [value=4] **/
+	CONFINI_ENOMEM = 5,	/**< Error allocating memory [value=5] **/
+	CONFINI_EIO = 6,	/**< Error reading the file [value=6] **/
+	CONFINI_EOOR = 7	/**< Out-of-range error: callbacks are more than expected [value=7] **/
 };
 
 /** @brief	INI node types **/

@@ -229,9 +229,9 @@ my_array = Asia, Africa, 'North America', South America,\
 
 <p>A <strong>section</strong> might be imagined like a directory. A <strong>section path</strong> is
 identified as the string <code>"$1"</code> in the regular expression
-<code>/(?:^|\n)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\]/</code> globally applied to an
-INI file. A section path expresses nesting through the &ldquo;dot&rdquo; character, as in
-the following example:</p>
+<code>/(?:^|\n|\r)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\][ \t\v\f]*(?:\n|\r|$)/</code>
+globally applied to an INI file. A section path expresses nesting through the
+&ldquo;dot&rdquo; character, as in the following example:</p>
 
 <pre><code class="{.ini}">[section]
 
@@ -1349,12 +1349,12 @@ int main () {
 <p>By changing the properties of the variable <code>my_format</code> on the code above you may
 obtain different results.</p>
 
-<p>On my old laptop <strong>libconfini</strong> seems to parse around 20 MiB per second using
+<p>On my old laptop <strong>libconfini</strong> seems to parse around 23 MiB per second using
 the model format <code>INI_DEFAULT_FORMAT</code>. Whether this is enough for you or not,
 that depends on your needs.</p>
 
-<pre><code>54692353 bytes parsed in 2.575119 seconds.
-Number of bytes parsed per second: 21238767.218136
+<pre><code>54692353 bytes parsed in 2.221189 seconds.
+Number of bytes parsed per second: 24623007.317252
 </code></pre>
 
 <h2 id="INI-SYNTAX-CONSIDERATIONS">INI SYNTAX CONSIDERATIONS</h2>

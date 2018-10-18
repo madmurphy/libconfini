@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['docs_2edox',['docs.dox',['../docs_8dox.html',1,'']]]
+  ['dpi_2edox',['dpi.dox',['../dpi_8dox.html',1,'']]]
 ];

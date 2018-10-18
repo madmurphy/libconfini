@@ -166,9 +166,9 @@ my_array = Asia, Africa, 'North America', South America,\
 
 A **section** might be imagined like a directory. A **section path** is
 identified as the string `"$1"` in the regular expression
-`/(?:^|\n)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\]/` globally applied to an
-INI file. A section path expresses nesting through the “dot” character, as in
-the following example:
+`/(?:^|\n|\r)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\][ \t\v\f]*(?:\n|\r|$)/`
+globally applied to an INI file. A section path expresses nesting through the
+“dot” character, as in the following example:
 
 ~~~~~~~~~~~~~~~~~~~~{.ini}
 [section]
@@ -377,7 +377,7 @@ INI file has been completely parsed, non-zero otherwise.
 
 \#1:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 /*  examples/topics/load_ini_file.c  */
 
 #include <stdio.h>
@@ -423,7 +423,7 @@ int main () {
   return 0;
 
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 \#2:
 
@@ -1319,13 +1319,13 @@ int main () {
 By changing the properties of the variable `my_format` on the code above you may
 obtain different results.
 
-On my old laptop **libconfini** seems to parse around 20 MiB per second using
+On my old laptop **libconfini** seems to parse around 23 MiB per second using
 the model format `#INI_DEFAULT_FORMAT`. Whether this is enough for you or not,
 that depends on your needs.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-54692353 bytes parsed in 2.575119 seconds.
-Number of bytes parsed per second: 21238767.218136
+54692353 bytes parsed in 2.221189 seconds.
+Number of bytes parsed per second: 24623007.317252
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
