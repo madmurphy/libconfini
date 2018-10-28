@@ -3,32 +3,33 @@
 #include <stdio.h>
 #include <confini.h>
 
-#define NO 0
-#define YES 1
+#define __IF_AS_PFSTRING__(PROPERTY, OFFSET, SIZE, DEFVAL) "        ." #PROPERTY " = %d,\n"
+#define __IF_AS_PFARG__(PROPERTY, OFFSET, SIZE, DEFVAL) , FORMAT_TO_PRINT.PROPERTY
+#define X_PRINT_INI_FORMAT_SOURCE() \
+	printf("    my_format = {\n" INIFORMAT_TABLE_AS(__IF_AS_PFSTRING__) "    };\n" INIFORMAT_TABLE_AS(__IF_AS_PFARG__))
 
-static void print_my_format (IniFormat format) {
-
-	#define __AS_STRING__(SIZE, PROPERTY, DEFVAL) "        ." #PROPERTY " = %d,\n"
-	#define __AS_ARG__(SIZE, PROPERTY, DEFVAL) , format.PROPERTY
-	#define __C_SOURCE__ "    format = {\n" _LIBCONFINI_INIFORMAT_AS_(__AS_STRING__) "    };\n" _LIBCONFINI_INIFORMAT_AS_(__AS_ARG__)
-
-	printf(__C_SOURCE__);
-
-	#undef __C_SOURCE__
-	#undef __AS_ARG__
-	#undef __AS_STRING__
-
-}
 
 int main () {
 
 	#define MY_FORMAT_NUM 786490
 
+	IniFormat my_format = ini_ntof(MY_FORMAT_NUM);
+
 	printf("Format No. %d:\n\n", MY_FORMAT_NUM);
 
-	print_my_format(ini_ntof(MY_FORMAT_NUM));
+	/* Needed for the X macro `X_PRINT_INI_FORMAT_SOURCE()` */
+	#define FORMAT_TO_PRINT my_format
+
+	X_PRINT_INI_FORMAT_SOURCE();
+
+	#undef FORMAT_TO_PRINT
+	#undef MY_FORMAT_NUM
 
 	return 0;
 
 }
+
+#undef X_PRINT_INI_FORMAT_SOURCE
+#undef __IF_AS_PFARG__
+#undef __IF_AS_PFSTRING__
 

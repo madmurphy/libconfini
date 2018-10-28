@@ -1,5 +1,12 @@
-On most Unix-like systems, you should be able to install libconfini using the
-following common steps:
+INSTALL
+=======
+
+
+Unix
+----
+
+On most Unix-like systems, you should be able to install **libconfini** using
+the following common steps:
 
     ./configure
     make
@@ -16,4 +23,27 @@ If the `configure` script is missing from your package you need to create it by
 running the `autogen.sh` script. Use the `--noconfigure` parameter in order to
 prevent `autogen.sh` from running automatically `configure` immediately after
 having generated it.
+
+
+Microsoft Windows
+-----------------
+
+If you are using Microsoft Windows, a batch script for compiling **libconfini**
+under MinGW without Autotools is available (`mgwmake.bat`). If you want instead
+to compile the library manually, you can run:
+
+    windres.exe --codepage=65001 -i winres.rc -o winres.o
+    gcc.exe -std=c99 -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined \
+        -Wl,--subsystem,windows -o libconfini.dll confini.c winres.o
+
+If you want to compile only the library without the resource file, run:
+
+    gcc.exe -std=c99 -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined \
+        -Wl,--subsystem,windows -o libconfini.dll confini.c
+
+If you want to build (and install) **libconfini** via Autotools under Microsoft
+Windows, several options are available, such as MinGW + MSYS, Cygwin
+and GnuWin32.
+
+For any issue, drop a message at https://github.com/madmurphy/libconfini/issues.
 

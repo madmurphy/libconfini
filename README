@@ -145,20 +145,30 @@ by running the `autogen.sh` script. By default, `autogen.sh` will also run the
 `make` command directly after `autogen.sh`. To list different options use
 `autogen.sh --help`.
 
-An unofficial port of **libconfini** for Cygwin [is also available][5].
+If you are using Microsoft Windows, a batch script for compiling **libconfini**
+under [MinGW][5] without Autotools is available (`mgwmake.bat`). If you are
+interested in using Autotools for compiling **libconfini** under Microsoft
+Windows, you can integrate MinGW with [MSYS][6]. Alternatively, [an unofficial
+port][7] of **libconfini** for [Cygwin][8] is available as well.
+
+For further information, see [INSTALL][9].
 
 
 Free software
 -------------
 
 This library is free software. You can redistribute it and/or modify it under
-the terms of the GPL3 license. See [COPYING][6] for details.
+the terms of the GPL3 license. See [COPYING][10] for details.
 
 
 [1]: https://madmurphy.github.io/libconfini/html/libconfini.html
 [2]: https://madmurphy.github.io/libconfini/manual.html
 [3]: https://github.com/
 [4]: https://github.com/madmurphy/libconfini
-[5]: https://github.com/fd00/yacp/tree/master/libconfini
-[6]: https://github.com/madmurphy/libconfini/blob/master/COPYING
+[5]: http://www.mingw.org/
+[6]: http://www.mingw.org/wiki/MSYS
+[7]: https://github.com/fd00/yacp/tree/master/libconfini
+[8]: https://www.cygwin.com/
+[9]: https://github.com/madmurphy/libconfini/blob/master/INSTALL
+[10]: https://github.com/madmurphy/libconfini/blob/master/COPYING
 

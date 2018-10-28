@@ -358,34 +358,22 @@ value
 <p>#1 Using a pointer to a <code>FILE</code> structure:</p>
 
 <pre><code class="{.c}">int load_ini_file (
-  FILE * ini_file,
-  IniFormat format,
-  int (* f_init) (
-    IniStatistics * statistics,
+    FILE * ini_file,
+    IniFormat format,
+    IniStatsHandler f_init,
+    IniDispHandler f_foreach,
     void * user_data
-  ),
-  int (* f_foreach) (
-    IniDispatch * dispatch,
-    void * user_data
-  ),
-  void * user_data
 )
 </code></pre>
 
 <p>#2 Using a path:</p>
 
 <pre><code class="{.c}">int load_ini_path (
-  const char * path,
-  IniFormat format,
-  int (* f_init) (
-    IniStatistics * statistics,
+    const char * path,
+    IniFormat format,
+    IniStatsHandler f_init,
+    IniDispHandler f_foreach,
     void * user_data
-  ),
-  int (* f_foreach) (
-    IniDispatch * dispatch,
-    void * user_data
-  ),
-  void * user_data
 )
 </code></pre>
 
@@ -405,7 +393,8 @@ member of the INI file - it can be <code>NULL</code></li>
 </ul>
 
 
-<p>The function <code>f_init()</code> will be invoked with two arguments:</p>
+<p>The function <code>f_init()</code> will be invoked with two arguments (see
+<code>IniStatsHandler</code> data type):</p>
 
 <ul>
 <li><code>statistics</code> &ndash; a pointer to an <code>IniStatistics</code> object containing some
@@ -416,7 +405,8 @@ members)</li>
 </ul>
 
 
-<p>The function <code>f_foreach()</code> will be invoked with two arguments:</p>
+<p>The function <code>f_foreach()</code> will be invoked with two arguments (see
+<code>IniDispHandler</code> data type):</p>
 
 <ul>
 <li><code>dispatch</code> &ndash; a pointer to an <code>IniDispatch</code> object containing the parsed
@@ -438,7 +428,7 @@ INI file has been completely parsed, non-zero otherwise.</p>
 #include &lt;stdio.h&gt;
 #include &lt;confini.h&gt;
 
-static int callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (IniDispatch * dispatch, void * v_null) {
 
   printf(
     "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
@@ -464,7 +454,7 @@ int main () {
     ini_file,
     INI_DEFAULT_FORMAT,
     NULL,
-    callback,
+    my_callback,
     NULL
   )) {
 
@@ -487,7 +477,7 @@ int main () {
 #include &lt;stdio.h&gt;
 #include &lt;confini.h&gt;
 
-static int callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (IniDispatch * dispatch, void * v_null) {
 
   printf(
     "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
@@ -504,7 +494,7 @@ int main () {
     "ini_files/example.conf",
     INI_DEFAULT_FORMAT,
     NULL,
-    callback,
+    my_callback,
     NULL
   )) {
 

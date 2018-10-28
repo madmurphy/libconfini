@@ -2,6 +2,15 @@ NEWS
 ====
 
 
+## 1.8.0
+
+* Introduced libtool versioning system for the compiled binary (versioning
+  begins with current version 1.8.0, represented as `0:0:0`); note that
+  libtool versioning system does not affect the versioning of the project
+  currently in use, but constitutes only a means for the linker to keep track of
+  incompatibilities between different releases of the library
+
+
 ## 1.7.0
 
 * Default format `INI_UNIXLIKE_FORMAT` has been created
@@ -40,25 +49,25 @@ Due to the many renamings this release is largely incompatible with previous
 versions. However it is possible to reach full backward compatibility with
 version 1.4.2 by using the following aliases:
 
-	#define hash hash_marker
-	#define semicolon semicolon_marker
-	#define multiline_entries multiline_nodes
-	#define ini_collapse_array ini_array_collapse
-	#define ini_split_array ini_array_split
-	#define ini_set_implicit_value ini_global_set_implicit_value
-	#define INI_INSENSITIVE_LOWERCASE INI_GLOBAL_LOWERCASE_MODE
-	#define IniFormatId IniFormatNum
-	#define ini_format_get_id ini_fton
-	#define ini_format_set_to_id(DEST, SRC) (*(DEST) = ini_ntof(SRC))
-	#define INI_PARSE_COMMENT INI_DISABLED_OR_COMMENT
-	#define INI_SHOW_COMMENT INI_ONLY_COMMENT
-	#define INI_FORGET_COMMENT INI_IGNORE
-	#define INI_NORMAL_CHARACTER INI_IS_NOT_A_MARKER
-	#define INI_EVERYTHING_MULTILINE INI_MULTILINE_EVERYWHERE
-	#define INI_ACTIVE_AND_DISABLED_MULTILINE INI_BUT_COMMENTS
-	#define INI_ACTIVE_MULTILINE INI_BUT_COMMENTS
-	#define CONFINI_EIINTR CONFINI_IINTR
-	#define CONFINI_EFEINTR CONFINI_FEINTR
+    #define hash hash_marker
+    #define semicolon semicolon_marker
+    #define multiline_entries multiline_nodes
+    #define ini_collapse_array ini_array_collapse
+    #define ini_split_array ini_array_split
+    #define ini_set_implicit_value ini_global_set_implicit_value
+    #define INI_INSENSITIVE_LOWERCASE INI_GLOBAL_LOWERCASE_MODE
+    #define IniFormatId IniFormatNum
+    #define ini_format_get_id ini_fton
+    #define ini_format_set_to_id(DEST, SRC) (*(DEST) = ini_ntof(SRC))
+    #define INI_PARSE_COMMENT INI_DISABLED_OR_COMMENT
+    #define INI_SHOW_COMMENT INI_ONLY_COMMENT
+    #define INI_FORGET_COMMENT INI_IGNORE
+    #define INI_NORMAL_CHARACTER INI_IS_NOT_A_MARKER
+    #define INI_EVERYTHING_MULTILINE INI_MULTILINE_EVERYWHERE
+    #define INI_ACTIVE_AND_DISABLED_MULTILINE INI_BUT_COMMENTS
+    #define INI_ACTIVE_MULTILINE INI_BUT_COMMENTS
+    #define CONFINI_EIINTR CONFINI_IINTR
+    #define CONFINI_EFEINTR CONFINI_FEINTR
 
 
 ## 1.4.1

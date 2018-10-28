@@ -22,7 +22,7 @@ static int print_ini_stats (IniStatistics * statistics, void * user_data) {
 		"Hi there!\n\n"
 		"Today is %s.\n\n"
 		"We decided to parse the INI file \"%s\".\n\n"
-		"The file is %lu bytes large and contains %lu nodes.\n"
+		"The file is %lu bytes large and contains %lu members.\n"
 		"Please find below the output of each dispatch.\n",
 
 		my_other->my_date, my_other->my_ini_file, statistics->bytes, statistics->members
@@ -82,7 +82,7 @@ int main () {
 	ini_global_set_implicit_value("YES", 0);
 
 	my_other.my_date = "Thursday September 22th, 2016";
-	my_other.my_ini_file = "example.conf";
+	my_other.my_ini_file = "ini_files/example.conf";
 
 	/*  Use the default format as model for the new format  */
 	my_format = INI_DEFAULT_FORMAT;
@@ -90,8 +90,14 @@ int main () {
 	/*  Enable implicit keys for this format  */
 	my_format.implicit_is_not_empty = TRUE;
 
-	/*  Load INI file  */
-	if (load_ini_path("ini_files/example.conf", my_format, print_ini_stats, my_ini_listener, &my_other)) {
+	/*  Load the INI file  */
+	if (load_ini_path(
+		my_other.my_ini_file,
+		my_format,
+		print_ini_stats,
+		my_ini_listener,
+		&my_other
+	)) {
 
 		fprintf(stderr, "Sorry, something went wrong :-(\n");
 		return 1;

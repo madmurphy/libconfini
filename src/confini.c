@@ -8,7 +8,7 @@
 	@author		Stefano Gioffr&eacute;
 	@copyright	GNU Public License v3
 	@date		2016-2018
-	@see		Source code at https://github.com/madmurphy/libconfini/blob/master/src/confini.c?ts=4
+	@see		Source code at https://github.com/madmurphy/libconfini/blob/master/src/confini.c
 
 **/
 
@@ -29,6 +29,80 @@
 
 
 /**
+
+
+	@typedef	int (* IniStatsHandler) (
+					IniStatistics * statistics,
+					void * user_data
+				)
+
+	@param		statistics
+					A pointer to the `IniStatistics` to handle
+	@param		user_data
+					The custom argument previously passed to the caller function
+
+
+
+	@typedef	int (* IniDispHandler) (
+					IniDispatch *dispatch,
+					void * user_data
+				)
+
+	@param		dispatch
+					A pointer to the `IniDispatch` to handle
+	@param		user_data
+					The custom argument previously passed to the caller function
+
+
+
+	@typedef	int (* IniStrHandler) (
+					char * ini_string,
+					size_t string_length,
+					size_t string_num,
+					IniFormat format,
+					void * user_data
+				)
+
+	@param		ini_string
+					The INI string to handle
+	@param		string_length
+					The length of the INI string in bytes
+	@param		string_num
+					The unique number that identifies @p ini_string within a
+					sequence of INI strings; it equals zero if @p ini_string is the
+					first or the only member of the sequence
+	@param		format
+					The format of the INI file from which @p ini_string has been extracted
+	@param		user_data
+					The custom argument previously passed to the caller function
+
+
+
+	@typedef	int (* IniSubstrHandler) (
+					const char * ini_string,
+					size_t fragm_offset,
+					size_t fragm_length,
+					size_t fragm_num,
+					IniFormat format,
+					void * user_data
+				)
+
+	@param		ini_string
+					The INI string containing the fragment to handle
+	@param		fragm_offset
+					The offset of the selected fragment in bytes
+	@param		fragm_length
+					The length of the selected fragment in bytes
+	@param		fragm_num
+					The unique number that identifies the selected fragment within a
+					sequence of fragments of @p ini_string; it equals zero if the
+					fragment is the first or the only member of the sequence
+	@param		format
+					The format of the INI file from which @p ini_string has been
+					extracted
+	@param		user_data
+					The custom argument previously passed to the caller function
+
 
 
 	@struct		IniFormat
@@ -103,6 +177,7 @@
 					comments.
 
 
+
 	@struct		IniStatistics
 
 	@property	IniStatistics::format
@@ -112,6 +187,7 @@
 	@property	IniStatistics::members
 					The size of the parsed file in members (nodes) -- this number
 					equals the number of dispatches
+
 
 
 	@struct		IniDispatch
@@ -139,8 +215,6 @@
 
 
 **/
-
-/** @startfnlist **/
 
 
 
@@ -279,7 +353,7 @@ static const char _LIBCONFINI_SPACES_[_LIBCONFINI_SPALEN_] = {
 	1. Signifier of `FALSE`
 	2. Signifier of `TRUE`.
 
-	@note Everything **must** be lowercase in this list.
+	@note	Everything **must** be lowercase in this list.
 
 **/
 static const char * const INI_BOOLEANS[][2] = {
@@ -1656,6 +1730,8 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 
 }
 
+/**  @startfnlist  **/
+
 
 
 		/*\
@@ -1669,7 +1745,7 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 		/*  LIBRARY'S MAIN FUNCTIONS  */
 
 
-													/** @utility{load_ini_file} **/
+												/**  @utility{load_ini_file}  **/
 /**
 
 	@brief			Parses an INI file and dispatches its content using a `FILE`
@@ -1678,10 +1754,10 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 									to parse
 	@param			format			The format of the INI file
 	@param			f_init			The function that will be invoked before the
-									dispatch, or NULL
+									dispatch, or `NULL`
 	@param			f_foreach		The function that will be invoked for each
-									dispatch, or NULL
-	@param			user_data		A custom argument, or NULL
+									dispatch, or `NULL`
+	@param			user_data		A custom argument, or `NULL`
 	@return			Zero for success, otherwise an error code (see `enum`
 					`#ConfiniInterruptNo`)
 
@@ -1698,15 +1774,17 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 	encoded in 8-bit code units (such as ASCII, UTF-8, ISO-8859-1), independently of
 	platform-specific conventions.
 
-	The function @p f_init will be invoked with two arguments: `statistics` (a
-	pointer to an `IniStatistics` object containing some properties about the file
-	read) and `init_other` (the custom argument @p user_data previously passed). If
-	@p f_init returns a non-zero value the caller function will be interrupted.
+	The function @p f_init will be invoked with two arguments (see
+	`#IniStatsHandler` data type): `statistics` (a pointer to an `IniStatistics`
+	structure containing some properties about the file read) and `user_data` (the
+	custom argument @p user_data previously passed). If @p f_init returns a non-zero
+	value the caller function will be interrupted.
 
-	The function @p f_foreach will be invoked with two arguments: `dispatch` (a
-	pointer to an `IniDispatch` object containing the parsed member of the INI file)
-	and `foreach_other` (the custom argument @p user_data previously passed). If
-	@p f_foreach returns a non-zero value the caller function will be interrupted.
+	The function @p f_foreach will be invoked with two arguments (see
+	`#IniDispHandler` data type): `dispatch` (a pointer to an `IniDispatch`
+	structure containing the parsed member of the INI file) and `user_data` (the
+	custom argument @p user_data previously passed). If @p f_foreach returns a
+	non-zero value the caller function will be interrupted.
 
 	@include topics/load_ini_file.c
 
@@ -1714,14 +1792,8 @@ static size_t further_cuts (char * const segment, const IniFormat format) {
 int load_ini_file (
 	FILE * const ini_file,
 	const IniFormat format,
-	int (* const f_init) (
-		IniStatistics * statistics,
-		void * init_other
-	),
-	int (* const f_foreach) (
-		IniDispatch * dispatch,
-		void * foreach_other
-	),
+	const IniStatsHandler f_init,
+	const IniDispHandler f_foreach,
 	void * const user_data
 ) {
 
@@ -1733,7 +1805,7 @@ int load_ini_file (
 
 	char * const cache = (char *) malloc(__N_BYTES__ + 1);
 
-	if (cache == NULL) {
+	if (!cache) {
 
 		return CONFINI_ENOMEM;
 
@@ -2198,7 +2270,7 @@ int load_ini_file (
 }
 
 
-													/** @utility{load_ini_path} **/
+												/**  @utility{load_ini_path}  **/
 /**
 
 	@brief			Parses an INI file and dispatches its content using a path as
@@ -2222,20 +2294,14 @@ int load_ini_file (
 int load_ini_path (
 	const char * const path,
 	const IniFormat format,
-	int (* const f_init) (
-		IniStatistics * statistics,
-		void * init_other
-	),
-	int (* const f_foreach) (
-		IniDispatch * dispatch,
-		void * foreach_other
-	),
+	const IniStatsHandler f_init,
+	const IniDispHandler f_foreach,
 	void * const user_data
 ) {
 
 	FILE * const ini_file = fopen(path, "rb");
 
-	if (ini_file == NULL) {
+	if (!ini_file) {
 
 		return CONFINI_ENOENT;
 
@@ -2254,7 +2320,7 @@ int load_ini_path (
 		/*  OTHER UTILITIES (NOT USED BY LIBCONFINI'S MAIN FUNCTIONS)  */
 
 
-											/** @utility{ini_string_match_ss} **/
+											/**  @utility{ini_string_match_ss}  **/
 /**
 
 	@brief			Compares two simple strings and checks if they match
@@ -2304,7 +2370,7 @@ _Bool ini_string_match_ss (const char * const simple_string_a, const char * cons
 }
 
 
-											/** @utility{ini_string_match_si} **/
+											/**  @utility{ini_string_match_si}  **/
 /**
 
 	@brief			Compares a simple string and an INI string and and checks if
@@ -2469,7 +2535,7 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 }
 
 
-											/** @utility{ini_string_match_ii} **/
+											/**  @utility{ini_string_match_ii}  **/
 /**
 
 	@brief			Compares two INI strings and checks if they match
@@ -2679,7 +2745,7 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 }
 
 
-											/** @utility{ini_array_match} **/
+												/**  @utility{ini_array_match}  **/
 /**
 
 	@brief			Compares two INI arrays and checks if they match
@@ -2901,7 +2967,7 @@ _Bool ini_array_match (const char * const ini_string_a, const char * const ini_s
 }
 
 
-													/** @utility{ini_unquote} **/
+													/**  @utility{ini_unquote}  **/
 /**
 
 	@brief			Unescapes `\\`, `\'` and `\"` and removes all unescaped quotes
@@ -3020,7 +3086,7 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 }
 
 
-												/** @utility{ini_string_parse} **/
+												/**  @utility{ini_string_parse}  **/
 /**
 
 	@brief			Unescapes `\\`, `\'` and `\"` and removes all unescaped quotes
@@ -3188,7 +3254,7 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 }
 
 
-											/** @utility{ini_array_get_length} **/
+											/**  @utility{ini_array_get_length}  **/
 /**
 
 	@brief			Gets the length of a stringified INI array in number of members
@@ -3282,7 +3348,7 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 }
 
 
-												/** @utility{ini_array_foreach} **/
+											/**  @utility{ini_array_foreach}  **/
 /**
 
 	@brief			Calls a custom function for each member of a stringified INI
@@ -3295,41 +3361,34 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 	@param			format			The format of the INI file
 	@param			f_foreach		The function that will be invoked for each array
 									member
-	@param			user_data		A custom argument, or NULL
+	@param			user_data		A custom argument, or `NULL`
 	@return			Zero for success, otherwise an error code (see `enum`
 					`#ConfiniInterruptNo`)
 
 	Usually @p ini_string comes from an `IniDispatch` (but any other string may be
 	used as well).
 
-	The function @p f_foreach will be invoked with six arguments: `fullstring` (a
-	pointer to @p ini_string), `memb_offset` (the offset of the member in bytes),
-	`memb_length` (the length of the member in bytes), `memb_num` (the offset of the
-	member in number of members), `format` (the format of the INI file),
-	`foreach_other` (the custom argument @p user_data previously passed). If
-	@p f_foreach returns a non-zero value the function `ini_array_foreach()` will be
-	interrupted.
+	The function @p f_foreach will be invoked with six arguments (see
+	`#IniSubstrHandler` data type): `ini_string`, `memb_offset` (the offset of the
+	member in bytes), `memb_length` (the length of the member in bytes), `memb_num`
+	(the offset of the member in number of members), `format` (the format of the INI
+	file), `user_data` (the custom argument @p user_data previously passed). If
+	@p f_foreach returns a non-zero value the function `ini_array_foreach()` will
+	be interrupted.
 
 	@note	If @p delimiter matches a meta-character within the given format
 			(`'\\'`, `'\''` or `'\"'`), its role as meta-character will have higher
 			priority than its role as delimiter (i.e., the array will have no
 			delimiters and will contain only one member).
 
-	See `ini_array_foreach()` example in `examples/miscellanea/glib_hash_table.c`.
+	@include topics/ini_array_foreach.c.
 
 **/
 int ini_array_foreach (
 	const char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
-	int (* const f_foreach) (
-		const char * fullstring,
-		size_t memb_offset,
-		size_t memb_length,
-		size_t memb_num,
-		IniFormat format,
-		void * foreach_other
-	),
+	const IniSubstrHandler f_foreach,
 	void * const user_data
 ) {
 
@@ -3404,7 +3463,7 @@ int ini_array_foreach (
 }
 
 
-												/** @utility{ini_array_shift} **/
+												/**  @utility{ini_array_shift}  **/
 /**
 
 	@brief			Shifts the location pointed by @p ini_strptr to the next member
@@ -3466,7 +3525,7 @@ size_t ini_array_shift (const char ** const ini_strptr, const char delimiter, co
 }
 
 
-												/** @utility{ini_array_collapse} **/
+											/**  @utility{ini_array_collapse}  **/
 /**
 
 	@brief			Compresses the distribution of the data of a stringified INI
@@ -3686,7 +3745,7 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 }
 
 
-												/** @utility{ini_array_break} **/
+												/**  @utility{ini_array_break}  **/
 /**
 
 	@brief			Replaces the first delimiter found (together with the spaces
@@ -3756,7 +3815,7 @@ char * ini_array_break (char * const ini_string, const char delimiter, const Ini
 }
 
 
-												/** @utility{ini_array_release} **/
+											/**  @utility{ini_array_release}  **/
 /**
 
 	@brief			Replaces the first delimiter found (together with the spaces
@@ -3815,7 +3874,7 @@ char * ini_array_release (char ** const ini_strptr, const char delimiter, const 
 }
 
 
-												/** @utility{ini_array_split} **/
+												/**  @utility{ini_array_split}  **/
 /**
 
 	@brief			Splits a stringified INI array into NUL-separated members and
@@ -3827,19 +3886,19 @@ char * ini_array_release (char ** const ini_strptr, const char delimiter, const 
 	@param			format			The format of the INI file
 	@param			f_foreach		The function that will be invoked for each array
 									member
-	@param			user_data		A custom argument, or NULL
+	@param			user_data		A custom argument, or `NULL`
 	@return			Zero for success, otherwise an error code (see `enum`
 					`#ConfiniInterruptNo`)
 
 	Usually @p ini_string comes from an `IniDispatch` (but any other string may be
 	used as well).
 
-	The function @p f_foreach will be invoked with five arguments: `member` (a
-	pointer to @p ini_string), `memb_length` (the length of the member in bytes),
-	`memb_num` (the offset of the member in number of members), `format` (the format
-	of the INI file), `foreach_other` (the custom argument @p user_data previously
-	passed). If @p f_foreach returns a non-zero value the function
-	`ini_array_split()` will be interrupted.
+	The function @p f_foreach will be invoked with five arguments (see
+	`#IniStrHandler` data type): `member` (the member of the array), `memb_length`
+	(the length of the member in bytes), `memb_num` (the offset of the member in
+	number of members), `format` (the format of the INI file), `user_data` (the
+	custom argument @p user_data previously passed). If @p f_foreach returns a
+	non-zero value the function `ini_array_split()` will be interrupted.
 
 	Similarly to `strtok_r()` this function can be used only once for a given
 	string.
@@ -3849,20 +3908,14 @@ char * ini_array_release (char ** const ini_strptr, const char delimiter, const 
 			priority than its role as delimiter (i.e., the array will have no
 			delimiters and will contain only one member).
 
-	See example under `ini_array_collapse()`.
+	@include topics/ini_array_split.c.
 
 **/
 int ini_array_split (
 	char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
-	int (* const f_foreach) (
-		char * member,
-		size_t memb_length,
-		size_t memb_num,
-		IniFormat format,
-		void * foreach_other
-	),
+	const IniStrHandler f_foreach,
 	void * const user_data
 ) {
 
@@ -3939,7 +3992,7 @@ int ini_array_split (
 }
 
 
-									/** @utility{ini_global_set_lowercase_mode} **/
+								/**  @utility{ini_global_set_lowercase_mode}  **/
 /**
 
 	@brief			Sets the value of the global variable
@@ -3963,7 +4016,7 @@ void ini_global_set_lowercase_mode (_Bool lowercase) {
 }
 
 
-									/** @utility{ini_global_set_implicit_value} **/
+								/**  @utility{ini_global_set_implicit_value}  **/
 /**
 
 	@brief			Sets the value to be to be assigned to implicit keys
@@ -3989,7 +4042,7 @@ void ini_global_set_implicit_value (char * const implicit_value, const size_t im
 }
 
 
-														/** @utility{ini_fton} **/
+														/**  @utility{ini_fton}  **/
 /**
 
 	@brief			Calculates the `::IniFormatNum` of an `IniFormat`
@@ -3999,23 +4052,16 @@ void ini_global_set_implicit_value (char * const implicit_value, const size_t im
 **/
 IniFormatNum ini_fton (const IniFormat source) {
 
-	uint8_t bitpos = 0;
-	IniFormatNum mask = 0;
-
-	#define __CALC_FORMAT_ID__(SIZE, PROPERTY, IGNORE_ME) \
-		mask |= source.PROPERTY << bitpos; \
-		bitpos += SIZE;
-
-	_LIBCONFINI_INIFORMAT_AS_(__CALC_FORMAT_ID__)
+	#define __CALC_FORMAT_ID__(PROPERTY, OFFSET, SIZE, IGNORE_ME) (source.PROPERTY << OFFSET) |
+	
+	return INIFORMAT_TABLE_AS(__CALC_FORMAT_ID__) 0;
 
 	#undef __CALC_FORMAT_ID__
-
-	return mask;
 
 }
 
 
-														/** @utility{ini_ntof} **/
+														/**  @utility{ini_ntof}  **/
 /**
 
 	@brief			Constructs a new `IniFormat` according to an `::IniFormatNum`
@@ -4027,8 +4073,6 @@ IniFormatNum ini_fton (const IniFormat source) {
 **/
 IniFormat ini_ntof (IniFormatNum format_id) {
 
-	IniFormat dest_format;
-
 	#define __MAX_1_BITS__ 1
 	#define __MAX_2_BITS__ 3
 	#define __MAX_3_BITS__ 7
@@ -4037,11 +4081,10 @@ IniFormat ini_ntof (IniFormatNum format_id) {
 	#define __MAX_6_BITS__ 63
 	#define __MAX_7_BITS__ 127
 	#define __MAX_8_BITS__ 255
-	#define __READ_FORMAT_ID__(SIZE, PROPERTY, IGNORE_ME) \
-		dest_format.PROPERTY = format_id & __MAX_##SIZE##_BITS__; \
-		format_id >>= SIZE;
+	#define __READ_FORMAT_ID__(PROPERTY, OFFSET, SIZE, IGNORE_ME) \
+		(format_id >> OFFSET) & __MAX_##SIZE##_BITS__,
 
-	_LIBCONFINI_INIFORMAT_AS_(__READ_FORMAT_ID__)
+	return (IniFormat) { INIFORMAT_TABLE_AS(__READ_FORMAT_ID__) };
 
 	#undef __READ_FORMAT_ID__
 	#undef __MAX_8_BITS__
@@ -4053,12 +4096,10 @@ IniFormat ini_ntof (IniFormatNum format_id) {
 	#undef __MAX_2_BITS__
 	#undef __MAX_1_BITS__
 
-	return dest_format;
-
 }
 
 
-													/** @utility{ini_get_bool} **/
+													/**  @utility{ini_get_bool}  **/
 /**
 
 	@brief			Checks whether a string matches one of the booleans listed in
@@ -4143,7 +4184,7 @@ size_t INI_GLOBAL_IMPLICIT_V_LEN = 0;
 
 
 
-/** @endfnlist **/
+/**  @endfnlist  **/
 
 /*  EOF  */
 

@@ -361,17 +361,11 @@ The syntax of \fBlibconfini\fR\'s parsing functions is:
 .nf
 
 int load_ini_file (
-  FILE * ini_file,
-  IniFormat format,
-  int (* f_init) (
-    IniStatistics * statistics,
+    FILE * ini_file,
+    IniFormat format,
+    IniStatsHandler f_init,
+    IniDispHandler f_foreach,
     void * user_data
-  ),
-  int (* f_foreach) (
-    IniDispatch * dispatch,
-    void * user_data
-  ),
-  void * user_data
 )
 .
 .fi
@@ -386,17 +380,11 @@ int load_ini_file (
 .nf
 
 int load_ini_path (
-  const char * path,
-  IniFormat format,
-  int (* f_init) (
-    IniStatistics * statistics,
+    const char * path,
+    IniFormat format,
+    IniStatsHandler f_init,
+    IniDispHandler f_foreach,
     void * user_data
-  ),
-  int (* f_foreach) (
-    IniDispatch * dispatch,
-    void * user_data
-  ),
-  void * user_data
 )
 .
 .fi
@@ -427,7 +415,7 @@ where
 .IP "" 0
 .
 .P
-The function \fBf_init()\fR will be invoked with two arguments:
+The function \fBf_init()\fR will be invoked with two arguments (see \fBIniStatsHandler\fR data type):
 .
 .IP "\(bu" 4
 \fBstatistics\fR – a pointer to an \fBIniStatistics\fR object containing some properties about the file read (like its size in bytes and the number of its members)
@@ -438,7 +426,7 @@ The function \fBf_init()\fR will be invoked with two arguments:
 .IP "" 0
 .
 .P
-The function \fBf_foreach()\fR will be invoked with two arguments:
+The function \fBf_foreach()\fR will be invoked with two arguments (see \fBIniDispHandler\fR data type):
 .
 .IP "\(bu" 4
 \fBdispatch\fR – a pointer to an \fBIniDispatch\fR object containing the parsed member of the INI file
@@ -463,7 +451,7 @@ Both functions \fBload_ini_file()\fR and \fBload_ini_path()\fR will return zero 
 #include <stdio\.h>
 #include <confini\.h>
 
-static int callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (IniDispatch * dispatch, void * v_null) {
 
   printf(
     "DATA: %s\enVALUE: %s\enNODE TYPE: %d\en\en",
@@ -489,7 +477,7 @@ int main () {
     ini_file,
     INI_DEFAULT_FORMAT,
     NULL,
-    callback,
+    my_callback,
     NULL
   )) {
 
@@ -520,7 +508,7 @@ int main () {
 #include <stdio\.h>
 #include <confini\.h>
 
-static int callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (IniDispatch * dispatch, void * v_null) {
 
   printf(
     "DATA: %s\enVALUE: %s\enNODE TYPE: %d\en\en",
@@ -537,7 +525,7 @@ int main () {
     "ini_files/example\.conf",
     INI_DEFAULT_FORMAT,
     NULL,
-    callback,
+    my_callback,
     NULL
   )) {
 

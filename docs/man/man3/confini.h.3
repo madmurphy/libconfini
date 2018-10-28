@@ -1,4 +1,4 @@
-.TH "src/confini.h" 3 "Fri Oct 19 2018" "libconfini" \" -*- nroff -*-
+.TH "src/confini.h" 3 "Sun Oct 28 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -32,6 +32,10 @@ src/confini.h \- libconfini header
 
 .in +1c
 .ti -1c
+.RI "#define \fBINIFORMAT_TABLE_AS\fP(_____)"
+.br
+.RI "Calls a user-given macro for each row of the table\&. "
+.ti -1c
 .RI "#define \fBINIFORMAT_HAS_NO_ESC\fP(FMT)   (FMT\&.multiline_nodes == \fBINI_NO_MULTILINE\fP && FMT\&.no_double_quotes && FMT\&.no_single_quotes)"
 .br
 .RI "Checks whether a format does \fInot\fP support escape sequences\&. "
@@ -59,6 +63,22 @@ src/confini.h \- libconfini header
 .RI "typedef uint32_t \fBIniFormatNum\fP"
 .br
 .RI "The unique ID number of an INI format (24-bit maximum) "
+.ti -1c
+.RI "typedef int(* \fBIniStatsHandler\fP) (\fBIniStatistics\fP *statistics, void *user_data)"
+.br
+.RI "Callback function for handling an \fC\fBIniStatistics\fP\fP structure\&. "
+.ti -1c
+.RI "typedef int(* \fBIniDispHandler\fP) (\fBIniDispatch\fP *dispatch, void *user_data)"
+.br
+.RI "Callback function for handling an \fC\fBIniDispatch\fP\fP structure\&. "
+.ti -1c
+.RI "typedef int(* \fBIniStrHandler\fP) (char *ini_string, size_t string_length, size_t string_num, \fBIniFormat\fP format, void *user_data)"
+.br
+.RI "Callback function for handling an INI string\&. "
+.ti -1c
+.RI "typedef int(* \fBIniSubstrHandler\fP) (const char *ini_string, size_t fragm_offset, size_t fragm_length, size_t fragm_num, \fBIniFormat\fP format, void *user_data)"
+.br
+.RI "Callback function for handling a selected fragment of an INI string\&. "
 .in -1c
 .SS "Enumerations"
 
@@ -92,11 +112,11 @@ src/confini.h \- libconfini header
 
 .in +1c
 .ti -1c
-.RI "int \fBload_ini_file\fP (FILE *const ini_file, const \fBIniFormat\fP format, int(*const f_init)(\fBIniStatistics\fP *statistics, void *init_other), int(*const f_foreach)(\fBIniDispatch\fP *dispatch, void *foreach_other), void *const user_data)"
+.RI "int \fBload_ini_file\fP (FILE *const ini_file, const \fBIniFormat\fP format, const \fBIniStatsHandler\fP f_init, const \fBIniDispHandler\fP f_foreach, void *const user_data)"
 .br
 .RI "Parses an INI file and dispatches its content using a \fCFILE\fP structure as argument\&. "
 .ti -1c
-.RI "int \fBload_ini_path\fP (const char *const path, const \fBIniFormat\fP format, int(*const f_init)(\fBIniStatistics\fP *statistics, void *init_other), int(*const f_foreach)(\fBIniDispatch\fP *dispatch, void *foreach_other), void *const user_data)"
+.RI "int \fBload_ini_path\fP (const char *const path, const \fBIniFormat\fP format, const \fBIniStatsHandler\fP f_init, const \fBIniDispHandler\fP f_foreach, void *const user_data)"
 .br
 .RI "Parses an INI file and dispatches its content using a path as argument\&. "
 .ti -1c
@@ -128,7 +148,7 @@ src/confini.h \- libconfini header
 .br
 .RI "Gets the length of a stringified INI array in number of members\&. "
 .ti -1c
-.RI "int \fBini_array_foreach\fP (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(const char *fullstring, size_t memb_offset, size_t memb_length, size_t memb_num, \fBIniFormat\fP format, void *foreach_other), void *const user_data)"
+.RI "int \fBini_array_foreach\fP (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, const \fBIniSubstrHandler\fP f_foreach, void *const user_data)"
 .br
 .RI "Calls a custom function for each member of a stringified INI array without modifying the content of the buffer – useful for read-only (\fCconst\fP) stringified arrays\&. "
 .ti -1c
@@ -148,7 +168,7 @@ src/confini.h \- libconfini header
 .br
 .RI "Replaces the first delimiter found (together with the spaces that surround it) with \fC\\0\fP, then shifts the location pointed by \fCini_strptr\fP to the next member of the INI array, or to \fCNULL\fP if the INI array has no more members\&. "
 .ti -1c
-.RI "int \fBini_array_split\fP (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*const f_foreach)(char *member, size_t memb_length, size_t memb_num, \fBIniFormat\fP format, void *foreach_other), void *const user_data)"
+.RI "int \fBini_array_split\fP (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, const \fBIniStrHandler\fP f_foreach, void *const user_data)"
 .br
 .RI "Splits a stringified INI array into NUL-separated members and calls a custom function for each member\&. "
 .ti -1c
@@ -249,12 +269,52 @@ Error mask (flags not present in user-generated interruptions)
 
 .PP
 Checks whether a format does \fInot\fP support escape sequences\&. 
+.SS "#define INIFORMAT_TABLE_AS(_____)"
+\fBValue:\fP
+.PP
+.nf
+/*  `IniFormat` table  *\
+
+        NAME                       OFFSET  LENGTH  DEFAULT VALUE
+                                                                             */\
+ _____( delimiter_symbol,          0,      7,      INI_EQUALS                ) \
+ _____( case_sensitive,            7,      1,      0                         )/*
+                                                                             */\
+ _____( semicolon_marker,          8,      2,      INI_DISABLED_OR_COMMENT   ) \
+ _____( hash_marker,               10,     2,      INI_DISABLED_OR_COMMENT   ) \
+ _____( section_paths,             12,     2,      INI_ABSOLUTE_AND_RELATIVE ) \
+ _____( multiline_nodes,           14,     2,      INI_MULTILINE_EVERYWHERE  )/*
+                                                                             */\
+ _____( no_single_quotes,          16,     1,      0                         ) \
+ _____( no_double_quotes,          17,     1,      0                         ) \
+ _____( no_spaces_in_names,        18,     1,      0                         ) \
+ _____( implicit_is_not_empty,     19,     1,      0                         ) \
+ _____( do_not_collapse_values,    20,     1,      0                         ) \
+ _____( preserve_empty_quotes,     21,     1,      0                         ) \
+ _____( disabled_after_space,      22,     1,      0                         ) \
+ _____( disabled_can_be_implicit,  23,     1,      0                         )
+.fi
+.PP
+Calls a user-given macro for each row of the table\&. 
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct \fBIniDispatch\fP  \fBIniDispatch\fP"
 
 .PP
 Dispatch of a single INI node\&. 
+.SS "int(* IniDispHandler)(\fBIniDispatch\fP *dispatch, void *user_data)"
+
+.PP
+Callback function for handling an \fC\fBIniDispatch\fP\fP structure\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdispatch\fP A pointer to the \fC\fBIniDispatch\fP\fP to handle 
+.br
+\fIuser_data\fP The custom argument previously passed to the caller function 
+.RE
+.PP
+
 .SS "typedef struct \fBIniFormat\fP   \fBIniFormat\fP"
 
 .PP
@@ -267,6 +327,59 @@ The unique ID number of an INI format (24-bit maximum)
 
 .PP
 Global statistics about an INI file\&. 
+.SS "int(* IniStatsHandler)(\fBIniStatistics\fP *statistics, void *user_data)"
+
+.PP
+Callback function for handling an \fC\fBIniStatistics\fP\fP structure\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIstatistics\fP A pointer to the \fC\fBIniStatistics\fP\fP to handle 
+.br
+\fIuser_data\fP The custom argument previously passed to the caller function 
+.RE
+.PP
+
+.SS "int(* IniStrHandler)(char *ini_string, size_t string_length, size_t string_num, \fBIniFormat\fP format, void *user_data)"
+
+.PP
+Callback function for handling an INI string\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIini_string\fP The INI string to handle 
+.br
+\fIstring_length\fP The length of the INI string in bytes 
+.br
+\fIstring_num\fP The unique number that identifies \fCini_string\fP within a sequence of INI strings; it equals zero if \fCini_string\fP is the first or the only member of the sequence 
+.br
+\fIformat\fP The format of the INI file from which \fCini_string\fP has been extracted 
+.br
+\fIuser_data\fP The custom argument previously passed to the caller function 
+.RE
+.PP
+
+.SS "int(* IniSubstrHandler)(const char *ini_string, size_t fragm_offset, size_t fragm_length, size_t fragm_num, \fBIniFormat\fP format, void *user_data)"
+
+.PP
+Callback function for handling a selected fragment of an INI string\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIini_string\fP The INI string containing the fragment to handle 
+.br
+\fIfragm_offset\fP The offset of the selected fragment in bytes 
+.br
+\fIfragm_length\fP The length of the selected fragment in bytes 
+.br
+\fIfragm_num\fP The unique number that identifies the selected fragment within a sequence of fragments of \fCini_string\fP; it equals zero if the fragment is the first or the only member of the sequence 
+.br
+\fIformat\fP The format of the INI file from which \fCini_string\fP has been extracted 
+.br
+\fIuser_data\fP The custom argument previously passed to the caller function 
+.RE
+.PP
+
 .SH "Enumeration Type Documentation"
 .PP 
 .SS "enum \fBConfiniInterruptNo\fP"
@@ -624,7 +737,7 @@ The actual space occupied by the array might get reduced further after each memb
 .RE
 .PP
 
-.SS "int ini_array_foreach (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(const char *fullstring, size_t memb_offset, size_t memb_length, size_t memb_num, \fBIniFormat\fP format, void *foreach_other) f_foreach, void *const user_data)"
+.SS "int ini_array_foreach (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format, const \fBIniSubstrHandler\fP f_foreach, void *const user_data)"
 
 .PP
 Calls a custom function for each member of a stringified INI array without modifying the content of the buffer – useful for read-only (\fCconst\fP) stringified arrays\&. 
@@ -639,7 +752,7 @@ Calls a custom function for each member of a stringified INI array without modif
 .br
 \fIf_foreach\fP The function that will be invoked for each array member 
 .br
-\fIuser_data\fP A custom argument, or NULL 
+\fIuser_data\fP A custom argument, or \fCNULL\fP 
 .RE
 .PP
 \fBReturns:\fP
@@ -649,14 +762,52 @@ Zero for success, otherwise an error code (see \fCenum\fP \fC\fBConfiniInterrupt
 .PP
 Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other string may be used as well)\&.
 .PP
-The function \fCf_foreach\fP will be invoked with six arguments: \fCfullstring\fP (a pointer to \fCini_string\fP), \fCmemb_offset\fP (the offset of the member in bytes), \fCmemb_length\fP (the length of the member in bytes), \fCmemb_num\fP (the offset of the member in number of members), \fCformat\fP (the format of the INI file), \fCforeach_other\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the function \fC\fBini_array_foreach()\fP\fP will be interrupted\&.
+The function \fCf_foreach\fP will be invoked with six arguments (see \fC\fBIniSubstrHandler\fP\fP data type): \fCini_string\fP, \fCmemb_offset\fP (the offset of the member in bytes), \fCmemb_length\fP (the length of the member in bytes), \fCmemb_num\fP (the offset of the member in number of members), \fCformat\fP (the format of the INI file), \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the function \fC\fBini_array_foreach()\fP\fP will be interrupted\&.
 .PP
 \fBNote:\fP
 .RS 4
 If \fCdelimiter\fP matches a meta-character within the given format (\fC'\\\\'\fP, \fC'\\''\fP or \fC'\\"'\fP), its role as meta-character will have higher priority than its role as delimiter (i\&.e\&., the array will have no delimiters and will contain only one member)\&.
 .RE
 .PP
-See \fC\fBini_array_foreach()\fP\fP example in \fCexamples/miscellanea/glib_hash_table\&.c\fP\&. 
+.PP
+.nf
+/*  examples/topics/ini_array_foreach\&.c  */
+
+#include <stdio\&.h>
+#include <confini\&.h>
+
+static int my_array_fragm_handler (
+    const char * ini_array,
+    size_t fragm_offset,
+    size_t fragm_length,
+    size_t fragm_num,
+    IniFormat format,
+    void * user_data
+) {
+
+    printf("%\&.*s\n", fragm_length, ini_array + fragm_offset);
+
+    return 0;
+
+}
+
+int main () {
+
+    ini_array_foreach(
+        "first,  second,  third",
+        ',',
+        INI_DEFAULT_FORMAT,
+        my_array_fragm_handler,
+        NULL
+    );
+
+    return 0;
+
+}
+
+.fi
+.PP
+\&. 
 .SS "size_t ini_array_get_length (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 
 .PP
@@ -872,7 +1023,7 @@ int main () {
 .fi
 .PP
  
-.SS "int ini_array_split (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, int(*)(char *member, size_t memb_length, size_t memb_num, \fBIniFormat\fP format, void *foreach_other) f_foreach, void *const user_data)"
+.SS "int ini_array_split (char *const ini_string, const char delimiter, const \fBIniFormat\fP format, const \fBIniStrHandler\fP f_foreach, void *const user_data)"
 
 .PP
 Splits a stringified INI array into NUL-separated members and calls a custom function for each member\&. 
@@ -887,7 +1038,7 @@ Splits a stringified INI array into NUL-separated members and calls a custom fun
 .br
 \fIf_foreach\fP The function that will be invoked for each array member 
 .br
-\fIuser_data\fP A custom argument, or NULL 
+\fIuser_data\fP A custom argument, or \fCNULL\fP 
 .RE
 .PP
 \fBReturns:\fP
@@ -897,7 +1048,7 @@ Zero for success, otherwise an error code (see \fCenum\fP \fC\fBConfiniInterrupt
 .PP
 Usually \fCini_string\fP comes from an \fC\fBIniDispatch\fP\fP (but any other string may be used as well)\&.
 .PP
-The function \fCf_foreach\fP will be invoked with five arguments: \fCmember\fP (a pointer to \fCini_string\fP), \fCmemb_length\fP (the length of the member in bytes), \fCmemb_num\fP (the offset of the member in number of members), \fCformat\fP (the format of the INI file), \fCforeach_other\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the function \fC\fBini_array_split()\fP\fP will be interrupted\&.
+The function \fCf_foreach\fP will be invoked with five arguments (see \fC\fBIniStrHandler\fP\fP data type): \fCmember\fP (the member of the array), \fCmemb_length\fP (the length of the member in bytes), \fCmemb_num\fP (the offset of the member in number of members), \fCformat\fP (the format of the INI file), \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the function \fC\fBini_array_split()\fP\fP will be interrupted\&.
 .PP
 Similarly to \fCstrtok_r()\fP this function can be used only once for a given string\&.
 .PP
@@ -906,7 +1057,46 @@ Similarly to \fCstrtok_r()\fP this function can be used only once for a given st
 If \fCdelimiter\fP matches a meta-character within the given format (\fC'\\\\'\fP, \fC'\\''\fP or \fC'\\"'\fP), its role as meta-character will have higher priority than its role as delimiter (i\&.e\&., the array will have no delimiters and will contain only one member)\&.
 .RE
 .PP
-See example under \fC\fBini_array_collapse()\fP\fP\&. 
+.PP
+.nf
+/*  examples/topics/ini_array_split\&.c  */
+
+#include <stdio\&.h>
+#include <confini\&.h>
+
+static int my_array_memb_handler (
+    char * arr_member,
+    size_t memb_length,
+    size_t memb_num,
+    IniFormat format,
+    void * foreach_other
+) {
+
+    printf("%s\n", arr_member);
+
+    return 0;
+
+}
+
+int main () {
+
+    char my_ini_array[] = "first \&.   second   \&. third";
+
+    ini_array_split(
+        my_ini_array,
+        '\&.',
+        INI_DEFAULT_FORMAT,
+        my_array_memb_handler,
+        NULL
+    );
+
+    return 0;
+
+}
+
+.fi
+.PP
+\&. 
 .SS "\fBIniFormatNum\fP ini_fton (const \fBIniFormat\fP source)"
 
 .PP
@@ -1605,7 +1795,7 @@ int main () {
 .fi
 .PP
  
-.SS "int load_ini_file (FILE *const ini_file, const \fBIniFormat\fP format, int(*)(\fBIniStatistics\fP *statistics, void *init_other) f_init, int(*)(\fBIniDispatch\fP *dispatch, void *foreach_other) f_foreach, void *const user_data)"
+.SS "int load_ini_file (FILE *const ini_file, const \fBIniFormat\fP format, const \fBIniStatsHandler\fP f_init, const \fBIniDispHandler\fP f_foreach, void *const user_data)"
 
 .PP
 Parses an INI file and dispatches its content using a \fCFILE\fP structure as argument\&. 
@@ -1616,11 +1806,11 @@ Parses an INI file and dispatches its content using a \fCFILE\fP structure as ar
 .br
 \fIformat\fP The format of the INI file 
 .br
-\fIf_init\fP The function that will be invoked before the dispatch, or NULL 
+\fIf_init\fP The function that will be invoked before the dispatch, or \fCNULL\fP 
 .br
-\fIf_foreach\fP The function that will be invoked for each dispatch, or NULL 
+\fIf_foreach\fP The function that will be invoked for each dispatch, or \fCNULL\fP 
 .br
-\fIuser_data\fP A custom argument, or NULL 
+\fIuser_data\fP A custom argument, or \fCNULL\fP 
 .RE
 .PP
 \fBReturns:\fP
@@ -1638,9 +1828,9 @@ FILE * my_file = fopen("example\&.conf", "rb");
 .PP
 The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units (such as ASCII, UTF-8, ISO-8859-1), independently of platform-specific conventions\&.
 .PP
-The function \fCf_init\fP will be invoked with two arguments: \fCstatistics\fP (a pointer to an \fC\fBIniStatistics\fP\fP object containing some properties about the file read) and \fCinit_other\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_init\fP returns a non-zero value the caller function will be interrupted\&.
+The function \fCf_init\fP will be invoked with two arguments (see \fC\fBIniStatsHandler\fP\fP data type): \fCstatistics\fP (a pointer to an \fC\fBIniStatistics\fP\fP structure containing some properties about the file read) and \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_init\fP returns a non-zero value the caller function will be interrupted\&.
 .PP
-The function \fCf_foreach\fP will be invoked with two arguments: \fCdispatch\fP (a pointer to an \fC\fBIniDispatch\fP\fP object containing the parsed member of the INI file) and \fCforeach_other\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the caller function will be interrupted\&.
+The function \fCf_foreach\fP will be invoked with two arguments (see \fC\fBIniDispHandler\fP\fP data type): \fCdispatch\fP (a pointer to an \fC\fBIniDispatch\fP\fP structure containing the parsed member of the INI file) and \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the caller function will be interrupted\&.
 .PP
 .PP
 .nf
@@ -1649,7 +1839,7 @@ The function \fCf_foreach\fP will be invoked with two arguments: \fCdispatch\fP 
 #include <stdio\&.h>
 #include <confini\&.h>
 
-static int callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (IniDispatch * dispatch, void * v_null) {
 
     printf(
         "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
@@ -1671,7 +1861,7 @@ int main () {
 
     }
 
-    if (load_ini_file(ini_file, INI_DEFAULT_FORMAT, NULL, callback, NULL)) {
+    if (load_ini_file(ini_file, INI_DEFAULT_FORMAT, NULL, my_callback, NULL)) {
 
         fprintf(stderr, "Sorry, something went wrong :-(\n");
         return 1;
@@ -1687,7 +1877,7 @@ int main () {
 .fi
 .PP
  
-.SS "int load_ini_path (const char *const path, const \fBIniFormat\fP format, int(*)(\fBIniStatistics\fP *statistics, void *init_other) f_init, int(*)(\fBIniDispatch\fP *dispatch, void *foreach_other) f_foreach, void *const user_data)"
+.SS "int load_ini_path (const char *const path, const \fBIniFormat\fP format, const \fBIniStatsHandler\fP f_init, const \fBIniDispHandler\fP f_foreach, void *const user_data)"
 
 .PP
 Parses an INI file and dispatches its content using a path as argument\&. 
@@ -1719,7 +1909,7 @@ For the two parameters \fCf_init\fP and \fCf_foreach\fP see function \fC\fBload_
 #include <stdio\&.h>
 #include <confini\&.h>
 
-static int callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (IniDispatch * dispatch, void * v_null) {
 
     printf(
         "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
@@ -1732,7 +1922,7 @@ static int callback (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-    if (load_ini_path("ini_files/example\&.conf", INI_DEFAULT_FORMAT, NULL, callback, NULL)) {
+    if (load_ini_path("ini_files/example\&.conf", INI_DEFAULT_FORMAT, NULL, my_callback, NULL)) {
 
         fprintf(stderr, "Sorry, something went wrong :-(\n");
         return 1;

@@ -307,39 +307,27 @@ The syntax of **libconfini**'s parsing functions is:
 
 \#1 Using a pointer to a `FILE` structure:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 int load_ini_file (
-  FILE * ini_file,
-  IniFormat format,
-  int (* f_init) (
-    IniStatistics * statistics,
+    FILE * ini_file,
+    IniFormat format,
+    IniStatsHandler f_init,
+    IniDispHandler f_foreach,
     void * user_data
-  ),
-  int (* f_foreach) (
-    IniDispatch * dispatch,
-    void * user_data
-  ),
-  void * user_data
 )
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 \#2 Using a path:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 int load_ini_path (
-  const char * path,
-  IniFormat format,
-  int (* f_init) (
-    IniStatistics * statistics,
+    const char * path,
+    IniFormat format,
+    IniStatsHandler f_init,
+    IniDispHandler f_foreach,
     void * user_data
-  ),
-  int (* f_foreach) (
-    IniDispatch * dispatch,
-    void * user_data
-  ),
-  void * user_data
 )
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 where
 
@@ -354,7 +342,8 @@ where
   member of the INI file - it can be `NULL`
 * `user_data` is a pointer to a custom argument -- it can be `NULL`
 
-The function `f_init()` will be invoked with two arguments:
+The function `f_init()` will be invoked with two arguments (see
+`#IniStatsHandler` data type):
 
 * `statistics` -- a pointer to an `IniStatistics` object containing some
   properties about the file read (like its size in bytes and the number of its
@@ -362,7 +351,8 @@ The function `f_init()` will be invoked with two arguments:
 * `user_data` -- a pointer to the custom argument previously passed to the
   `load_ini_file()` / `load_ini_path()` functions
 
-The function `f_foreach()` will be invoked with two arguments:
+The function `f_foreach()` will be invoked with two arguments (see
+`#IniDispHandler` data type):
 
 * `dispatch` -- a pointer to an `IniDispatch` object containing the parsed
   member of the INI file
@@ -383,7 +373,7 @@ INI file has been completely parsed, non-zero otherwise.
 #include <stdio.h>
 #include <confini.h>
 
-static int callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (IniDispatch * dispatch, void * v_null) {
 
   printf(
     "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
@@ -409,7 +399,7 @@ int main () {
     ini_file,
     INI_DEFAULT_FORMAT,
     NULL,
-    callback,
+    my_callback,
     NULL
   )) {
 
@@ -433,7 +423,7 @@ int main () {
 #include <stdio.h>
 #include <confini.h>
 
-static int callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (IniDispatch * dispatch, void * v_null) {
 
   printf(
     "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
@@ -450,7 +440,7 @@ int main () {
     "ini_files/example.conf",
     INI_DEFAULT_FORMAT,
     NULL,
-    callback,
+    my_callback,
     NULL
   )) {
 

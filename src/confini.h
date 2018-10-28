@@ -22,37 +22,41 @@
 /* PRIVATE (HEADER-SCOPED) MACROS */
 
 
-#define _LIBCONFINI_INIFORMAT_DECLARATION_(SIZE, PROPERTY, DEFAULT) unsigned char PROPERTY:SIZE;
-#define _LIBCONFINI_INIFORMAT_ASSIGNEMENT_(SIZE, PROPERTY, DEFAULT) DEFAULT,
-#define _LIBCONFINI_INIFORMAT_STRUCT_ struct IniFormat { _LIBCONFINI_INIFORMAT_AS_(_LIBCONFINI_INIFORMAT_DECLARATION_) }
-#define _LIBCONFINI_DEFAULT_FORMAT_ { _LIBCONFINI_INIFORMAT_AS_(_LIBCONFINI_INIFORMAT_ASSIGNEMENT_) }
+#define _LIBCONFINI_INIFORMAT_DECLARATION_(PROPERTY, OFFSET, SIZE, DEFAULT) unsigned char PROPERTY:SIZE;
+#define _LIBCONFINI_INIFORMAT_ASSIGNEMENT_(PROPERTY, OFFSET, SIZE, DEFAULT) DEFAULT,
+#define _LIBCONFINI_INIFORMAT_STRUCT_ struct IniFormat { INIFORMAT_TABLE_AS(_LIBCONFINI_INIFORMAT_DECLARATION_) }
+#define _LIBCONFINI_DEFAULT_FORMAT_ { INIFORMAT_TABLE_AS(_LIBCONFINI_INIFORMAT_ASSIGNEMENT_) }
 
 
 
 /* PUBLIC MACROS */
 
 
-#define _LIBCONFINI_INIFORMAT_AS_(______)                                   /*-*\
+/** @brief	Calls a user-given macro for each row of the table **/
+/*
+	NOTE: The following table **defines** (and links together) both the
+	`IniFormat` and `IniFormatNum` data types declared in this header
+*/
+#define INIFORMAT_TABLE_AS(_____)                      /*  `IniFormat` table  *\
 
-    ______(    BITS    NAME                       DEFAULT VALUE             )/--/
-                                                                            /-*/\
-    ______(    7,      delimiter_symbol,          INI_EQUALS                )   \
-    ______(    1,      case_sensitive,            0                         )/*-/
-                                                                            /-*/\
-    ______(    2,      semicolon_marker,          INI_DISABLED_OR_COMMENT   )   \
-    ______(    2,      hash_marker,               INI_DISABLED_OR_COMMENT   )   \
-    ______(    2,      section_paths,             INI_ABSOLUTE_AND_RELATIVE )   \
-    ______(    2,      multiline_nodes,           INI_MULTILINE_EVERYWHERE  )/*-/
-                                                                            /-*/\
-    ______(    1,      no_single_quotes,          0                         )   \
-    ______(    1,      no_double_quotes,          0                         )   \
-    ______(    1,      no_spaces_in_names,        0                         )   \
-    ______(    1,      implicit_is_not_empty,     0                         )   \
-    ______(    1,      do_not_collapse_values,    0                         )   \
-    ______(    1,      preserve_empty_quotes,     0                         )   \
-    ______(    1,      disabled_after_space,      0                         )   \
-    ______(    1,      disabled_can_be_implicit,  0                         )/*-/
-                                                                            /-*/
+        NAME                       OFFSET  LENGTH  DEFAULT VALUE
+                                                                             */\
+ _____( delimiter_symbol,          0,      7,      INI_EQUALS                ) \
+ _____( case_sensitive,            7,      1,      0                         )/*
+                                                                             */\
+ _____( semicolon_marker,          8,      2,      INI_DISABLED_OR_COMMENT   ) \
+ _____( hash_marker,               10,     2,      INI_DISABLED_OR_COMMENT   ) \
+ _____( section_paths,             12,     2,      INI_ABSOLUTE_AND_RELATIVE ) \
+ _____( multiline_nodes,           14,     2,      INI_MULTILINE_EVERYWHERE  )/*
+                                                                             */\
+ _____( no_single_quotes,          16,     1,      0                         ) \
+ _____( no_double_quotes,          17,     1,      0                         ) \
+ _____( no_spaces_in_names,        18,     1,      0                         ) \
+ _____( implicit_is_not_empty,     19,     1,      0                         ) \
+ _____( do_not_collapse_values,    20,     1,      0                         ) \
+ _____( preserve_empty_quotes,     21,     1,      0                         ) \
+ _____( disabled_after_space,      22,     1,      0                         ) \
+ _____( disabled_can_be_implicit,  23,     1,      0                         )
 
 
 /** @brief	Checks whether a format does _not_ support escape sequences **/
@@ -89,6 +93,37 @@ typedef struct IniDispatch {
 /** @brief	The unique ID number of an INI format (24-bit maximum) **/
 typedef uint32_t IniFormatNum;
 
+/** @brief	Callback function for handling an `IniStatistics` structure **/
+typedef int (* IniStatsHandler) (
+	IniStatistics * statistics,
+	void * user_data
+);
+
+/** @brief	Callback function for handling an `IniDispatch` structure **/
+typedef int (* IniDispHandler) (
+	IniDispatch * dispatch,
+	void * user_data
+);
+
+/** @brief	Callback function for handling an INI string **/
+typedef int (* IniStrHandler) (
+	char * ini_string,
+	size_t string_length,
+	size_t string_num,
+	IniFormat format,
+	void * user_data
+);
+
+/** @brief	Callback function for handling a selected fragment of an INI string **/
+typedef int (* IniSubstrHandler) (
+	const char * ini_string,
+	size_t fragm_offset,
+	size_t fragm_length,
+	size_t fragm_num,
+	IniFormat format,
+	void * user_data
+);
+
 
 
 /* PUBLIC FUNCTIONS */
@@ -97,28 +132,16 @@ typedef uint32_t IniFormatNum;
 extern int load_ini_file (
 	FILE * const ini_file,
 	const IniFormat format,
-	int (* const f_init) (
-		IniStatistics * statistics,
-		void * init_other
-	),
-	int (* const f_foreach) (
-		IniDispatch * dispatch,
-		void * foreach_other
-	),
+	const IniStatsHandler f_init,
+	const IniDispHandler f_foreach,
 	void * const user_data
 );
 
 extern int load_ini_path (
 	const char * const path,
 	const IniFormat format,
-	int (* const f_init) (
-		IniStatistics * statistics,
-		void * init_other
-	),
-	int (* const f_foreach) (
-		IniDispatch * dispatch,
-		void * foreach_other
-	),
+	const IniStatsHandler f_init,
+	const IniDispHandler f_foreach,
 	void * const user_data
 );
 
@@ -167,14 +190,7 @@ extern int ini_array_foreach (
 	const char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
-	int (* const f_foreach) (
-		const char * fullstring,
-		size_t memb_offset,
-		size_t memb_length,
-		size_t memb_num,
-		IniFormat format,
-		void * foreach_other
-	),
+	const IniSubstrHandler f_foreach,
 	void * const user_data
 );
 
@@ -206,13 +222,7 @@ extern int ini_array_split (
 	char * const ini_string,
 	const char delimiter,
 	const IniFormat format,
-	int (* const f_foreach) (
-		char * member,
-		size_t memb_length,
-		size_t memb_num,
-		IniFormat format,
-		void * foreach_other
-	),
+	const IniStrHandler f_foreach,
 	void * const user_data
 );
 
@@ -327,7 +337,8 @@ enum IniMultiline {
 static const IniFormat INI_DEFAULT_FORMAT = _LIBCONFINI_DEFAULT_FORMAT_;
 
 /** @brief	A model format for Unix-like CONF files (space characters are delimiters between keys and values) **/
-static const IniFormat INI_UNIXLIKE_FORMAT = { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 };	/* All properties are set to `0` here. */
+/* All properties are set to `0` here. */
+static const IniFormat INI_UNIXLIKE_FORMAT = { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 };
 
 /** @brief	If set to `TRUE`, key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: `FALSE`) **/
 extern _Bool INI_GLOBAL_LOWERCASE_MODE;
@@ -343,10 +354,10 @@ extern size_t INI_GLOBAL_IMPLICIT_V_LEN;
 /* CLEAN THE PRIVATE ENVIRONMENT */
 
 
-#undef _LIBCONFINI_INIFORMAT_DECLARATION_
-#undef _LIBCONFINI_INIFORMAT_ASSIGNEMENT_
-#undef _LIBCONFINI_INIFORMAT_STRUCT_
 #undef _LIBCONFINI_DEFAULT_FORMAT_
+#undef _LIBCONFINI_INIFORMAT_STRUCT_
+#undef _LIBCONFINI_INIFORMAT_ASSIGNEMENT_
+#undef _LIBCONFINI_INIFORMAT_DECLARATION_
 
 
 

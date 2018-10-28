@@ -1,6 +1,6 @@
 {
 	"name": "libconfini",
-	"version": "1.7.3",
+	"version": "1.8.0",
 	"description": "Yet another INI parser",
 	"homepage": "https://madmurphy.github.io/libconfini/",
 	"author": "madmurphy333@gmail.com",

@@ -3,12 +3,9 @@
 ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src
 
-
-
 dist_doc_DATA = \
 	AUTHORS \
 	COPYING
-
 
 
 if ENABLE_DOC
@@ -25,7 +22,6 @@ man_MANS = docs/man/man3/confini.h.3 \
 	docs/man/man3/libconfini.3
 
 endif
-
 
 
 if ENABLE_EXAMPLES
@@ -49,14 +45,17 @@ examplesother_DATA = \
 	examples/miscellanea/dispatch_everything.c \
 	examples/miscellanea/glib_hash_table.c \
 	examples/miscellanea/print_format.c \
+	examples/miscellanea/stats_only.c \
 	examples/miscellanea/typed_ini.c
 
 examplestopicsdir = $(examplesdir)/topics
 examplestopics_DATA = \
 	examples/topics/ini_array_break.c \
 	examples/topics/ini_array_collapse.c \
+	examples/topics/ini_array_foreach.c \
 	examples/topics/ini_array_release.c \
 	examples/topics/ini_array_shift.c \
+	examples/topics/ini_array_split.c \
 	examples/topics/ini_global_set_implicit_value.c \
 	examples/topics/ini_string_match_si.c \
 	examples/topics/ini_string_parse.c \
@@ -68,7 +67,6 @@ install-data-hook:
 	chmod +x $(DESTDIR)$(examplesdir)/run_example.sh
 
 endif
-
 
 
 # Remove doc directory on uninstall

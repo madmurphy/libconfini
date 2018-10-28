@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <confini.h>
 
-static int callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (IniDispatch * dispatch, void * v_null) {
 
 	printf(
 		"DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
@@ -25,7 +25,7 @@ int main () {
 
 	}
 
-	if (load_ini_file(ini_file, INI_DEFAULT_FORMAT, NULL, callback, NULL)) {
+	if (load_ini_file(ini_file, INI_DEFAULT_FORMAT, NULL, my_callback, NULL)) {
 
 		fprintf(stderr, "Sorry, something went wrong :-(\n");
 		return 1;
