@@ -1,4 +1,4 @@
-/*	-*- Mode: C; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*-	*/
+/*  -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*-  */
 
 /**
 
@@ -22,10 +22,10 @@
 /* PRIVATE (HEADER-SCOPED) MACROS */
 
 
-#define _LIBCONFINI_INIFORMAT_DECLARATION_(PROPERTY, OFFSET, SIZE, DEFAULT) unsigned char PROPERTY:SIZE;
-#define _LIBCONFINI_INIFORMAT_ASSIGNEMENT_(PROPERTY, OFFSET, SIZE, DEFAULT) DEFAULT,
-#define _LIBCONFINI_INIFORMAT_STRUCT_ struct IniFormat { INIFORMAT_TABLE_AS(_LIBCONFINI_INIFORMAT_DECLARATION_) }
-#define _LIBCONFINI_DEFAULT_FORMAT_ { INIFORMAT_TABLE_AS(_LIBCONFINI_INIFORMAT_ASSIGNEMENT_) }
+#define _LIBCONFINI_INIFORMAT_DECLS_(NAME, OFFSET, SIZE, DEFVAL) unsigned char NAME:SIZE;
+#define _LIBCONFINI_DEF_FORMAT_FIELDS_(NAME, OFFSET, SIZE, DEFVAL) DEFVAL,
+#define _LIBCONFINI_INIFORMAT_STRUCT_ struct IniFormat { INIFORMAT_TABLE_AS(_LIBCONFINI_INIFORMAT_DECLS_) }
+#define _LIBCONFINI_DEFAULT_FORMAT_ { INIFORMAT_TABLE_AS(_LIBCONFINI_DEF_FORMAT_FIELDS_) }
 
 
 
@@ -35,32 +35,33 @@
 /** @brief	Calls a user-given macro for each row of the table **/
 /*
 	NOTE: The following table **defines** (and links together) both the
-	`IniFormat` and `IniFormatNum` data types declared in this header
+	#IniFormat and #IniFormatNum data types declared in this header
 */
-#define INIFORMAT_TABLE_AS(_____)                      /*  `IniFormat` table  *\
+#define INIFORMAT_TABLE_AS(_____)                 /*  IniFormat table  *\
 
-        NAME                       OFFSET  LENGTH  DEFAULT VALUE
-                                                                             */\
- _____( delimiter_symbol,          0,      7,      INI_EQUALS                ) \
- _____( case_sensitive,            7,      1,      0                         )/*
-                                                                             */\
- _____( semicolon_marker,          8,      2,      INI_DISABLED_OR_COMMENT   ) \
- _____( hash_marker,               10,     2,      INI_DISABLED_OR_COMMENT   ) \
- _____( section_paths,             12,     2,      INI_ABSOLUTE_AND_RELATIVE ) \
- _____( multiline_nodes,           14,     2,      INI_MULTILINE_EVERYWHERE  )/*
-                                                                             */\
- _____( no_single_quotes,          16,     1,      0                         ) \
- _____( no_double_quotes,          17,     1,      0                         ) \
- _____( no_spaces_in_names,        18,     1,      0                         ) \
- _____( implicit_is_not_empty,     19,     1,      0                         ) \
- _____( do_not_collapse_values,    20,     1,      0                         ) \
- _____( preserve_empty_quotes,     21,     1,      0                         ) \
- _____( disabled_after_space,      22,     1,      0                         ) \
- _____( disabled_can_be_implicit,  23,     1,      0                         )
+        NAME                      BIT  SIZE DEFAULT
+                                                                      */\
+ _____( delimiter_symbol,         0,   7,   INI_EQUALS                ) \
+ _____( case_sensitive,           7,   1,   0                         )/*
+                                                                      */\
+ _____( semicolon_marker,         8,   2,   INI_DISABLED_OR_COMMENT   ) \
+ _____( hash_marker,              10,  2,   INI_DISABLED_OR_COMMENT   )/*
+                                                                      */\
+ _____( section_paths,            12,  2,   INI_ABSOLUTE_AND_RELATIVE ) \
+ _____( multiline_nodes,          14,  2,   INI_MULTILINE_EVERYWHERE  )/*
+                                                                      */\
+ _____( no_single_quotes,         16,  1,   0                         ) \
+ _____( no_double_quotes,         17,  1,   0                         ) \
+ _____( no_spaces_in_names,       18,  1,   0                         ) \
+ _____( implicit_is_not_empty,    19,  1,   0                         ) \
+ _____( do_not_collapse_values,   20,  1,   0                         ) \
+ _____( preserve_empty_quotes,    21,  1,   0                         ) \
+ _____( disabled_after_space,     22,  1,   0                         ) \
+ _____( disabled_can_be_implicit, 23,  1,   0                         )
 
 
-/** @brief	Checks whether a format does _not_ support escape sequences **/
-#define INIFORMAT_HAS_NO_ESC(FMT) (FMT.multiline_nodes == INI_NO_MULTILINE && FMT.no_double_quotes && FMT.no_single_quotes)
+/** @brief	Checks whether a format does **not** support escape sequences **/
+#define INIFORMAT_HAS_NO_ESC(FORMAT) (FORMAT.multiline_nodes == INI_NO_MULTILINE && FORMAT.no_double_quotes && FORMAT.no_single_quotes)
 
 
 
@@ -93,13 +94,13 @@ typedef struct IniDispatch {
 /** @brief	The unique ID number of an INI format (24-bit maximum) **/
 typedef uint32_t IniFormatNum;
 
-/** @brief	Callback function for handling an `IniStatistics` structure **/
+/** @brief	Callback function for handling an #IniStatistics structure **/
 typedef int (* IniStatsHandler) (
 	IniStatistics * statistics,
 	void * user_data
 );
 
-/** @brief	Callback function for handling an `IniDispatch` structure **/
+/** @brief	Callback function for handling an #IniDispatch structure **/
 typedef int (* IniDispHandler) (
 	IniDispatch * dispatch,
 	void * user_data
@@ -290,26 +291,28 @@ enum ConfiniInterruptNo {
 
 /** @brief	INI node types **/
 enum IniNodeType {
-	INI_UNKNOWN = 0,
-	INI_VALUE = 1,		/**< Not used here (values are dispatched together with keys) -- but available for user's implementations **/
-	INI_KEY = 2,
-	INI_SECTION = 3,
-	INI_COMMENT = 4,
-	INI_INLINE_COMMENT = 5,
-	INI_DISABLED_KEY = 6,
-	INI_DISABLED_SECTION = 7
+	INI_UNKNOWN = 0,		/**< Node impossible to categorize [value=0] **/
+	INI_VALUE = 1,			/**< Not used here (values are dispatched together with keys)
+						-- but available for user's implementations [value=1] **/
+	INI_KEY = 2,			/**< Key [value=2] **/
+	INI_SECTION = 3,		/**< Section path [value=3] **/
+	INI_COMMENT = 4,		/**< Comment [value=4] **/
+	INI_INLINE_COMMENT = 5,		/**< Inline comment [value=5] **/
+	INI_DISABLED_KEY = 6,		/**< Disabled key [value=6] **/
+	INI_DISABLED_SECTION = 7	/**< Disabled section path [value=7] **/
 };
 
 /** @brief	Most used key-value and array delimiters (but a delimiter may also be any other ASCII character) **/
 enum IniDelimiters {
-	INI_ANY_SPACE = 0,	/**< In multi-line INIs: `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`, in non-multi-line INIs: `/[\t \v\f])+/` **/
-	INI_EQUALS = '=',	/**< `=` **/
-	INI_COLON = ':',	/**< `:` **/
-	INI_DOT = '.',		/**< `.` **/
-	INI_COMMA = ','		/**< `,` **/
+	INI_ANY_SPACE = 0,	/**< In multi-line INIs: `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`,
+					in non-multi-line INIs: `/[\t \v\f])+/` **/
+	INI_EQUALS = '=',	/**< Equals character (`=`) **/
+	INI_COLON = ':',	/**< Colon character (`:`) **/
+	INI_DOT = '.',		/**< Dot character (`.`) **/
+	INI_COMMA = ','		/**< Comma character (`,`) **/
 };
 
-/** @brief	Possible values of `IniFormat::semicolon_marker` and `IniFormat::hash_marker` (i.e., meaning of `/\s+[#;]/` in respect to a format) **/
+/** @brief	Possible values of #IniFormat::semicolon_marker and #IniFormat::hash_marker (i.e., meaning of `/\s+[#;]/` in respect to a format) **/
 enum IniCommentMarker {
 	INI_DISABLED_OR_COMMENT = 0,	/**< This marker opens a comment or a disabled entry **/
 	INI_ONLY_COMMENT = 1,		/**< This marker opens a comment **/
@@ -317,15 +320,15 @@ enum IniCommentMarker {
 	INI_IS_NOT_A_MARKER = 3		/**< This is not a marker at all, but a normal character instead **/
 };
 
-/** @brief	Possible values of `IniFormat::section_paths` **/
+/** @brief	Possible values of #IniFormat::section_paths **/
 enum IniSectionPaths {
 	INI_ABSOLUTE_AND_RELATIVE = 0,	/**< Section paths starting with a dot express nesting to the current parent, to root otherwise **/
-	INI_ABSOLUTE_ONLY = 1,		/**< Section paths starting with a dot will be simply cleaned of their leading dot and appended to root **/
-	INI_ONE_LEVEL_ONLY = 2,		/**< The format supports sections, but the dot does not express nesting and is not a meta-character **/
-	INI_NO_SECTIONS = 3		/**< The format does *not* support sections -- `/\[[^\]]*\]/g`, if any, will be treated as keys! **/
+	INI_ABSOLUTE_ONLY = 1,		/**< Section paths starting with a dot will be cleaned of their leading dot and appended to root **/
+	INI_ONE_LEVEL_ONLY = 2,		/**< Format supports sections, but the dot does not express nesting and is not a meta-character **/
+	INI_NO_SECTIONS = 3		/**< Format does *not* support sections -- `/\[[^\]]*\]/g`, if any, will be treated as keys! **/
 };
 
-/** @brief	Possible values of IniFormat::multiline_nodes **/
+/** @brief	Possible values of #IniFormat::multiline_nodes **/
 enum IniMultiline {
 	INI_MULTILINE_EVERYWHERE = 0,		/**< Comments, section paths and keys -- disabled or not -- are allowed to be multi-line. **/
 	INI_BUT_COMMENTS = 1,			/**< Only section paths and keys -- disabled or not -- are allowed to be multi-line. **/
@@ -346,7 +349,7 @@ extern _Bool INI_GLOBAL_LOWERCASE_MODE;
 /** @brief	Value to be assigned to implicit keys (default value: `NULL`) **/
 extern char * INI_GLOBAL_IMPLICIT_VALUE;
 
-/** @brief	Length of the value assigned to implicit keys -- this may be any unsigned number, independently of the real length of `#INI_GLOBAL_IMPLICIT_VALUE` (default value: `0`) **/
+/** @brief	Length of the value assigned to implicit keys -- this may be any unsigned number, independently of the real length of #INI_GLOBAL_IMPLICIT_VALUE (default value: `0`) **/
 extern size_t INI_GLOBAL_IMPLICIT_V_LEN;
 
 
@@ -356,8 +359,8 @@ extern size_t INI_GLOBAL_IMPLICIT_V_LEN;
 
 #undef _LIBCONFINI_DEFAULT_FORMAT_
 #undef _LIBCONFINI_INIFORMAT_STRUCT_
-#undef _LIBCONFINI_INIFORMAT_ASSIGNEMENT_
-#undef _LIBCONFINI_INIFORMAT_DECLARATION_
+#undef _LIBCONFINI_DEF_FORMAT_FIELDS_
+#undef _LIBCONFINI_INIFORMAT_DECLS_
 
 
 

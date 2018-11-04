@@ -19,9 +19,9 @@ support for single/double quotes, different delimiter symbols, nesting sections,
 etc.).
 
 With this in mind I wrote down the first algorithms for doing the job. As I
-said, it was the project of an INI editor for GNOME... But I love the free
-software paradise, and as soon as I had a set of functions able to do one
-single job (i.e., parsing INI files), I thought that it would be nice to
+said, it was the project of an INI editor for GNOME (now abandoned)... But I
+love the free software paradise, and as soon as I had a set of functions able to
+do one single job (i.e., parsing INI files), I thought that it would be nice to
 release it as an independent library.
 
 Here is where **libconfini** comes.
@@ -35,5 +35,5 @@ that needs to read INI files but does not need to read commented INI lines.
 
 Despite highly configurable and flexible, **libconfini** is still a small
 piece of work. I really don't know if it will be useful to the community. For
-sure it does the right job for my editor.
+sure it did the right job for my editor.
 

@@ -86,6 +86,7 @@ $(function() {
 <li>Highly optimized code (single memory allocation for each parsing, heuristic programming, optimization flags)</li>
 <li>Function modularity (each public function is independent from all other public functions)</li>
 <li>K.I.S.S. (no public functions are automatically invoked during the parsing &ndash; for example, not even single/double quotes are automatically removed from values unless the developer explicitly decides to use the formatting functions provided by the API)</li>
+<li>Robust file access (support of all code representations of new lines &ndash; i.e. Classic Mac OS' <code>CR</code>, Unix' <code>LF</code>, Windows' <code>CR</code>+<code>LF</code>, RISC OS Open's <code>LF</code>+<code>CR</code>; protection against null byte injection; UTF-8 support)</li>
 </ul>
 <h2>Sample usage </h2>
 <p>log.ini:</p>

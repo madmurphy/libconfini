@@ -139,6 +139,8 @@ if test "${DIE}" -eq 1; then
 	exit 1
 fi
 
+echo
+
 if test "x${NOCONFIGURE}" = x; then
 	echo 'I am going to prepare the build system and then run the `configure` script. If'
 	echo 'you wish differently, please specify the `--noconfigure` argument on the'

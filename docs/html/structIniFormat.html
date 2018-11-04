@@ -107,12 +107,6 @@ Data Fields</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>24-bit bitfield representing the format of an INI file (INI dialect) </p>
-<p>Structure of the bitfield:</p>
-<ul>
-<li>Bits 1-19: INI syntax</li>
-<li>Bits 20-22: INI semantics</li>
-<li>Bits 23-24: Human syntax (disabled entries) </li>
-</ul>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="a50f562eda0d26ed7e0d3c57afeb46d2d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a50f562eda0d26ed7e0d3c57afeb46d2d">&#9670;&nbsp;</a></span>case_sensitive</h2>
@@ -125,7 +119,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to <code>1</code>, string comparisons will always be performed case-sensitive. </p>
+<p>If set to <code>1</code>, string comparisons will be always performed case-sensitive. </p>
 
 </div>
 </div>
@@ -140,7 +134,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The symbol to be used as delimiter (only ASCII allowed); if set to <code>0</code>, any space is delimiter (<code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code>); if, within the format given, this matches a meta-character (<code>'\\'</code>, <code>'\''</code>, <code>'\&quot;'</code>), its role as meta-character will have higher priority than its role as delimiter symbol (i.e., the format will have no delimiter symbol); you may use <code>enum</code> <code><a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8" title="Most used key-value and array delimiters (but a delimiter may also be any other ASCII character) ...">IniDelimiters</a></code> for this. </p>
+<p>The symbol to be used as delimiter (only ASCII allowed); if set to <code>0</code>, any space is delimiter (<code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code>); if, within the format given, this matches a metacharacter (<code>'\\'</code>, <code>'\''</code>, <code>'\&quot;'</code>), its role as metacharacter will have higher priority than its role as delimiter symbol (i.e., the format will have no delimiter symbol); you may use <code>enum</code> <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8" title="Most used key-value and array delimiters (but a delimiter may also be any other ASCII character) ...">IniDelimiters</a> for this. </p>
 
 </div>
 </div>
@@ -200,7 +194,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The rule of the hash character (use <code>enum</code> <code><a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcd" title="Possible values of IniFormat::semicolon_marker and IniFormat::hash_marker (i.e., meaning of /\s+[#;]/...">IniCommentMarker</a></code> for this). </p>
+<p>The rule of the hash character (use <code>enum</code> <a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcd" title="Possible values of IniFormat::semicolon_marker and IniFormat::hash_marker (i.e., meaning of /\s+[#;]/...">IniCommentMarker</a> for this). </p>
 
 </div>
 </div>
@@ -215,7 +209,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to <code>1</code>, implicit keys (see <a class="el" href="libconfini.html">Library Functions Manual</a>) will always be dispatched using the values given by the global variables <code><a class="el" href="confini_8h.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL) ">INI_GLOBAL_IMPLICIT_VALUE</a></code> and <code><a class="el" href="confini_8h.html#acecf086ca074b27365e877f056af2192" title="Length of the value assigned to implicit keys – this may be any unsigned number, independently of th...">INI_GLOBAL_IMPLICIT_V_LEN</a></code> for the fields <code><a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></code> and to <code><a class="el" href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">IniDispatch::v_len</a></code> respectively; if set to <code>0</code>, implicit keys will be considered to be empty keys. </p>
+<p>If set to <code>1</code>, implicit keys (see <a class="el" href="libconfini.html">Library Functions Manual</a>) will always be dispatched using the values given by the global variables <a class="el" href="confini_8h.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL) ">INI_GLOBAL_IMPLICIT_VALUE</a> and <a class="el" href="confini_8h.html#acecf086ca074b27365e877f056af2192" title="Length of the value assigned to implicit keys – this may be any unsigned number, independently of th...">INI_GLOBAL_IMPLICIT_V_LEN</a> for the fields <a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a> and to <a class="el" href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">IniDispatch::v_len</a> respectively; if set to <code>0</code>, implicit keys will be considered to be empty keys. </p>
 
 </div>
 </div>
@@ -230,7 +224,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Defines which class of entries are allowed to be multi-line (use <code>enum</code> <code><a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55f" title="Possible values of IniFormat::multiline_nodes. ">IniMultiline</a></code> for this). </p>
+<p>Defines which class of entries are allowed to be multi-line (use <code>enum</code> <a class="el" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55f" title="Possible values of IniFormat::multiline_nodes. ">IniMultiline</a> for this). </p>
 
 </div>
 </div>
@@ -275,7 +269,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to <code>1</code>, key and section names containing spaces (even within quotes) will be rendered as <code><a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461baffa9e27deb46c0e436bc75329cc5f7a6">INI_UNKNOWN</a></code>. Note that setting <code><a class="el" href="structIniFormat.html#a6d9981301f5a16d73e2c38cb80f7f962">IniFormat::delimiter_symbol</a></code> to <code>INI_ANY_SPACE</code> will not automatically set this option to <code>1</code> (spaces will still be allowed in section names). </p>
+<p>If set to <code>1</code>, key and section names containing spaces (even within quotes) will be rendered as <a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461baffa9e27deb46c0e436bc75329cc5f7a6">INI_UNKNOWN</a>. Note that setting <a class="el" href="structIniFormat.html#a6d9981301f5a16d73e2c38cb80f7f962">IniFormat::delimiter_symbol</a> to <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd">INI_ANY_SPACE</a> will not automatically set this option to <code>1</code> (spaces will still be allowed in section names). </p>
 
 </div>
 </div>
@@ -305,7 +299,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Defines whether and how the format supports sections (use <code>enum</code> <code><a class="el" href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134" title="Possible values of IniFormat::section_paths ">IniSectionPaths</a></code> for this). </p>
+<p>Defines whether and how the format supports sections (use <code>enum</code> <a class="el" href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134" title="Possible values of IniFormat::section_paths. ">IniSectionPaths</a> for this). </p>
 
 </div>
 </div>
@@ -320,7 +314,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The rule of the semicolon character (use <code>enum</code> <code><a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcd" title="Possible values of IniFormat::semicolon_marker and IniFormat::hash_marker (i.e., meaning of /\s+[#;]/...">IniCommentMarker</a></code> for this). </p>
+<p>The rule of the semicolon character (use <code>enum</code> <a class="el" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcd" title="Possible values of IniFormat::semicolon_marker and IniFormat::hash_marker (i.e., meaning of /\s+[#;]/...">IniCommentMarker</a> for this). </p>
 
 </div>
 </div>

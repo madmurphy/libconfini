@@ -81,7 +81,7 @@ version 1.4.2 by using the following aliases:
 ## 1.4.0
 
 * `stdio.h` header has been included in `confini.h`
-* Function `load_ini_file()` now uses a `FILE` structure instead of a path -- in
+* Function `load_ini_file()` now uses a `FILE` handle instead of a path -- in
   order to use a path (a string), the shortcut `load_ini_path()` has been
   created
 

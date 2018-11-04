@@ -20,12 +20,12 @@ BEGIN
 		BEGIN
 			VALUE "CompanyName", "Stefano Gioffr\xC3\xA9"
 			VALUE "FileDescription", "Yet another INI parser"
-			VALUE "FileVersion", "1.8.0"
+			VALUE "FileVersion", "1.8.1"
 			VALUE "InternalName", "libconfini"
 			VALUE "LegalCopyright", "GPL3"
 			VALUE "OriginalFilename", "libconfini.dll"
 			VALUE "ProductName", "libconfini"
-			VALUE "ProductVersion", "1.8.0"
+			VALUE "ProductVersion", "1.8.1"
 		END
 	END
 	BLOCK "VarFileInfo"

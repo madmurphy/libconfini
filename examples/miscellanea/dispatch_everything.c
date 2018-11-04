@@ -1,4 +1,10 @@
 /*  examples/miscellanea/dispatch_everything.c  */
+/*
+
+The following code will try to print on screen every information dispatched by
+**libconfini** when this parses an INI file.
+
+*/
 
 #include <stdio.h>
 #include <confini.h>

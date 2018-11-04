@@ -18,5 +18,5 @@ var searchData=
   ['ini_5fstring_5fmatch_5fss',['ini_string_match_ss',['../confini_8c.html#af9784469081947db46d173de14fa2a2f',1,'ini_string_match_ss(const char *const simple_string_a, const char *const simple_string_b, const IniFormat format):&#160;confini.c'],['../confini_8h.html#af9784469081947db46d173de14fa2a2f',1,'ini_string_match_ss(const char *const simple_string_a, const char *const simple_string_b, const IniFormat format):&#160;confini.c']]],
   ['ini_5fstring_5fparse',['ini_string_parse',['../confini_8c.html#ab4e3d48f0eb0438ba0c84fc77e362aa3',1,'ini_string_parse(char *const ini_string, const IniFormat format):&#160;confini.c'],['../confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3',1,'ini_string_parse(char *const ini_string, const IniFormat format):&#160;confini.c']]],
   ['ini_5funquote',['ini_unquote',['../confini_8c.html#ac55f3fab95f697ac5058533df100fc11',1,'ini_unquote(char *const ini_string, const IniFormat format):&#160;confini.c'],['../confini_8h.html#ac55f3fab95f697ac5058533df100fc11',1,'ini_unquote(char *const ini_string, const IniFormat format):&#160;confini.c']]],
-  ['is_5fsome_5fspace',['is_some_space',['../confini_8c.html#a9ddb62401d28f769968bbbc07481bba7',1,'confini.c']]]
+  ['is_5fsome_5fspace',['is_some_space',['../confini_8c.html#a877abfcbc04cdd51f6156edbd6357f27',1,'confini.c']]]
 ];

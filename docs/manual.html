@@ -80,7 +80,7 @@
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
 
 <p><strong>libconfini</strong> is a simple INI parsing library with the ability to read disabled
-entries (i.e., valid entries nested in comments). <strong>libconfini</strong> does not store
+entries (i.e. valid entries nested in comments). <strong>libconfini</strong> does not store
 the data read from an INI file, but rather dispatches it, formatted, to a custom
 listener.</p>
 
@@ -119,13 +119,13 @@ email = mario.rossi@example.com
 
 <h2 id="SUPPORTED-SYNTAXES">SUPPORTED SYNTAXES</h2>
 
-<p>During the years, several interpretations of INI files appeared. In some
+<p>During the years several interpretations of INI files appeared. In some
 implementations the colon character (<code>:</code>) has been adopted as delimiter between
 keys and values instead of the classic equals sign (a typical example under
 GNU/Linux is <code>/etc/nsswitch.conf</code>); in other implementations, under the
-influence of Unix standard configuration files, the space (<code>/[ \t\v\f]+/</code> or
-<code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code>) has been used instead (see for example
-<code>/etc/host.conf</code>).</p>
+influence of Unix standard configuration files, a sequence of one or more spaces
+(<code>/[ \t\v\f]+/</code> or <code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code>) has been used instead
+(see for example <code>/etc/host.conf</code>).</p>
 
 <p>Equals sign used as delimiter between keys and values:</p>
 
@@ -151,8 +151,8 @@ home    Champ de Mars, 5 Avenue Anatole
 city    Paris
 </code></pre>
 
-<p>This library has been born as a general INI parser for GNU, so the support of
-most part of INI dialects has been implemented within it.</p>
+<p>This library has been born as a general INI parser for <a href="https://www.gnu.org/">GNU</a>, so the support
+of most part of INI dialects has been implemented within it.</p>
 
 <p>Especially in Microsoft Windows a more radical syntax variation has been
 implemented: the use of semicolon, instead of new lines, as delimiter between
@@ -197,7 +197,7 @@ therefore the <strong>value part</strong> as well), according to some formats th
 is considered to be an <em>implicit key</em> &ndash; typically representing the boolean
 <code>TRUE</code> (example: <code>foo</code>). For instance, in the following example from
 <code>/etc/pacman.conf</code>, <code>IgnorePkg</code> is an empty key, while <code>Color</code> is an implicit
-key (representing a <code>TRUE</code> boolean &ndash; i.e., <code>Color = YES</code>):</p>
+key (representing a <code>TRUE</code> boolean &ndash; i.e. <code>Color = YES</code>):</p>
 
 <pre><code class="{.ini}">HoldPkg = pacman glibc
 Architecture = auto
@@ -355,7 +355,7 @@ value
 
 <p>The syntax of <strong>libconfini</strong>'s parsing functions is:</p>
 
-<p>#1 Using a pointer to a <code>FILE</code> structure:</p>
+<p>#1 Using a pointer to a <code>FILE</code> handle:</p>
 
 <pre><code class="{.c}">int load_ini_file (
     FILE * ini_file,
@@ -380,11 +380,11 @@ value
 <p>where</p>
 
 <ul>
-<li><code>ini_file</code> in <code>load_ini_file()</code> is the <code>FILE</code> struct pointing to the INI file</li>
+<li><code>ini_file</code> in <code>load_ini_file()</code> is the <code>FILE</code> handle pointing to the INI file</li>
 <li><code>path</code> in <code>load_ini_path()</code> is the path where the INI file is located (pointer
 to a char array, a.k.a. a "C string")</li>
 <li><code>format</code> is a bitfield that defines the syntax of the INI file (see the
-<code>IniFormat</code> struct)</li>
+<code>IniFormat</code> <code>struct</code>)</li>
 <li><code>f_init</code> is the function that will be invoked <em>before</em> any dispatching begins
 &ndash; it can be <code>NULL</code></li>
 <li><code>f_foreach</code> is the callback function that will be repeatedly invoked for each
@@ -393,8 +393,8 @@ member of the INI file - it can be <code>NULL</code></li>
 </ul>
 
 
-<p>The function <code>f_init()</code> will be invoked with two arguments (see
-<code>IniStatsHandler</code> data type):</p>
+<p>The function <code>f_init()</code> (see <code>IniStatsHandler</code> data type) will be invoked with
+two arguments:</p>
 
 <ul>
 <li><code>statistics</code> &ndash; a pointer to an <code>IniStatistics</code> object containing some
@@ -405,8 +405,8 @@ members)</li>
 </ul>
 
 
-<p>The function <code>f_foreach()</code> will be invoked with two arguments (see
-<code>IniDispHandler</code> data type):</p>
+<p>The function <code>f_foreach()</code> (see <code>IniDispHandler</code> data type) will be invoked
+with two arguments:</p>
 
 <ul>
 <li><code>dispatch</code> &ndash; a pointer to an <code>IniDispatch</code> object containing the parsed
@@ -417,7 +417,7 @@ member of the INI file</li>
 
 
 <p>Both functions <code>load_ini_file()</code> and <code>load_ini_path()</code> will return zero if the
-INI file has been completely parsed, non-zero otherwise.</p>
+INI file has been completely dispatched, non-zero otherwise.</p>
 
 <h2 id="BASIC-EXAMPLES">BASIC EXAMPLES</h2>
 
@@ -511,7 +511,7 @@ int main () {
 <h2 id="HOW-IT-WORKS">HOW IT WORKS</h2>
 
 <p>The function <code>load_ini_path()</code> is a shortcut to the function <code>load_ini_file()</code>
-that requires a path instead of a <code>FILE</code> struct.</p>
+that requires a path instead of a <code>FILE</code> handle.</p>
 
 <p>The function <code>load_ini_file()</code> dynamically allocates at once the whole INI file
 into the heap, and the two structures <code>IniStatistics</code> and <code>IniDispatch</code> into the
@@ -698,16 +698,21 @@ string <code>INI_GLOBAL_IMPLICIT_VALUE</code>, if used (see below):</p>
 #include &lt;stdio.h&gt;
 #include &lt;confini.h&gt;
 
-static int ini_listener (IniDispatch * disp, void * v_null) {
+static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
-  if (disp-&gt;type == INI_KEY || disp-&gt;type == INI_DISABLED_KEY) {
+  if (dispatch-&gt;type == INI_KEY || dispatch-&gt;type == INI_DISABLED_KEY) {
 
-    ini_unquote(disp-&gt;data, disp-&gt;format);
-    ini_string_parse(disp-&gt;value, disp-&gt;format);
+    ini_unquote(dispatch-&gt;data, dispatch-&gt;format);
+    ini_string_parse(dispatch-&gt;value, dispatch-&gt;format);
 
   }
 
-  printf("DATA: %s\nVALUE: %s\n\n", disp-&gt;data, disp-&gt;value);
+  printf(
+    "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
+    dispatch-&gt;data,
+    dispatch-&gt;value,
+    dispatch-&gt;type
+  );
 
   return 0;
 
@@ -938,6 +943,11 @@ size_t INI_GLOBAL_IMPLICIT_V_LEN = 3;
 <p>If not defined elsewhere, these variables are respectively <code>NULL</code> and <code>0</code> by
 default.</p>
 
+<p>The two variables <code>INI_GLOBAL_IMPLICIT_VALUE</code> and <code>INI_GLOBAL_IMPLICIT_V_LEN</code>
+may be set to any arbitrary values. In fact these will not be parsed or analyzed
+anywhere by <strong>libconfini</strong> &ndash; they are only used as placeholders for custom
+information accessible solely by the user.</p>
+
 <p>After having set the value to be assigned to implicit key elements, and having
 enabled <code>IniFormat::implicit_is_not_empty</code> in the format, it is possible to test
 whether a dispatched key is implicit or not by comparing the address of its
@@ -951,18 +961,28 @@ whether a dispatched key is implicit or not by comparing the address of its
 #define NO 0
 #define YES 1
 
-static int ini_listener (IniDispatch * disp, void * v_null) {
+static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
-  if (disp-&gt;value == INI_GLOBAL_IMPLICIT_VALUE) {
+  if (dispatch-&gt;value == INI_GLOBAL_IMPLICIT_VALUE) {
 
     printf(
-      "\nDATA: %s\nVALUE: %s\n(This is an implicit key element)\n",
-      disp-&gt;data, disp-&gt;value
+      "\nDATA: %s\nVALUE: %s\nNODE TYPE: %d\n"
+      "(This is an implicit key element)\n",
+
+      dispatch-&gt;data,
+      dispatch-&gt;value,
+      dispatch-&gt;type
     );
 
   } else {
 
-    printf("\nDATA: %s\nVALUE: %s\n", disp-&gt;data, disp-&gt;value);
+    printf(
+      "\nDATA: %s\nVALUE: %s\nNODE TYPE: %d\n",
+
+      dispatch-&gt;data,
+      dispatch-&gt;value,
+      dispatch-&gt;type
+    );
 
   }
 
@@ -972,7 +992,7 @@ static int ini_listener (IniDispatch * disp, void * v_null) {
 
 int main () {
 
-  IniFormat my_format = INI_DEFAULT_FORMAT;
+  IniFormat my_format = INI_UNIXLIKE_FORMAT;
 
   ini_global_set_implicit_value("[implicit default value]", 0);
 
@@ -980,7 +1000,7 @@ int main () {
   my_format.implicit_is_not_empty = YES;
 
   if (load_ini_path(
-    "ini_files/typed_ini.conf",
+    "ini_files/unix-like.conf",
     my_format,
     NULL,
     ini_listener,
@@ -991,8 +1011,6 @@ int main () {
     return 1;
 
   }
-
-  return 0;
 
 }
 </code></pre>
@@ -1064,12 +1082,12 @@ int main () {
 
   /*  Check if parsing has been interrupted by `passfinder()`  */
   retval  ==  CONFINI_FEINTR ?
-        printf(
-          "We found it! It's the INI element number #%d!\n",
-          membid
-        )
-      :
-        printf("We didn't find it :-(\n");
+                printf(
+                  "We found it! It's the INI element number #%d!\n",
+                  membid
+                )
+              :
+                printf("We didn't find it :-(\n");
 
   return 0;
 
@@ -1118,6 +1136,41 @@ format.multiline_nodes == INI_NO_MULTILINE</code><br />
 the string will be removed, then the new length of the string will be returned.</li>
 </ol>
 
+
+<h3 id="STORING-THE-DISPATCHED-DATA">STORING THE DISPATCHED DATA</h3>
+
+<p>In order to be as flexible as possible, <strong>libconfini</strong> does not store the
+dispatched data, nor indicizes it. This gives the developer the power to deal
+with it in many different ways.</p>
+
+<p>For small INI files a normal <code>if</code>/<code>else</code> chain, using <code>ini_array_match()</code> for
+comparing section paths and <code>ini_string_match_si()</code>/<code>ini_string_match_ii()</code> for
+comparing key names, represents usually the most practical way to obtain the
+information required from an INI file.</p>
+
+<p>Sometimes however, especially in case of sizeable INI files, the most efficient
+solution would be to store the parsed data in a hash table before trying to
+access it.</p>
+
+<p>Some INI parsers are released with a hash table API included by default. This is
+often an unpractical solution, since fantastic free software libraries that
+focus solely on hash tables already exist, and providing a further API for
+managing a hash function together with an INI parser only complicates the code,
+makes it harder to maintain, and does not give the user the real freedom to
+choose what suits best to each single case.</p>
+
+<p>When a user needs it, the data parsed by <strong>libconfini</strong> can still be stored in
+a third-party hash table while it is still being dispatched. By doing so the
+resulting performance will equal that of an INI parser with a hash table
+included by default, since the only job of <strong>libconfini</strong> is that of scrolling
+the content of an INI file linearly from the beginning to the end &ndash; and there
+are not more efficient ways to parse and indicize the content of a serialized
+tree.</p>
+
+<p>If you are interested in combining <strong>libconfini</strong> with a hash table, I have left
+a general example of how to use <strong>GLib</strong>'s <code>GHashTable</code> together with
+<strong>libconfini</strong> under <code>examples/miscellanea/glib_hash_table.c</code>. By keeping this
+example as a model other solutions can be easily explored as well.</p>
 
 <h3 id="SIZE-OF-THE-DISPATCHED-DATA">SIZE OF THE DISPATCHED DATA</h3>
 
@@ -1531,7 +1584,7 @@ fails, the block will be dispatched as a normal comment.</p>
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'>Stefano Gioffr&eacute;</li>
-    <li class='tc'>October 2018</li>
+    <li class='tc'>November 2018</li>
     <li class='tr'>libconfini(3)</li>
   </ol>
 

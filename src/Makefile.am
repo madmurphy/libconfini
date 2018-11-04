@@ -5,11 +5,24 @@ AM_CPPFLAGS = \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
 	-DPACKAGE_DATA_DIR=\""$(pkgdatadir)"\"
 
+AM_CFLAGS = \
+	-Wall \
+	-std=c99 \
+	-g \
+	-O3
+	
+## Use Microsoft UTF-8 code page (`65001`) when compiling Windows resource files
+AM_RCFLAGS = \
+	--codepage=65001
 
-AM_CFLAGS = -Wall -std=c99 -g -O3
 lib_LTLIBRARIES = libconfini.la
-libconfini_la_SOURCES = confini.c
-libconfini_la_LDFLAGS = -version-info 0:0:0
+
+libconfini_la_SOURCES = \
+	confini.c
+
+libconfini_la_LDFLAGS = \
+	-version-info "$(INTERFACE_NUMBER):$(IMPLEMENTATION_NUMBER):$(INTERFACE_COMPATIBILITY)"
+
 libconfini_la_LIBADD = 
 
 
@@ -22,17 +35,19 @@ libconfini_la_LDFLAGS += \
 
 if NATIVE_MSWIN
 
-libconfini_la_LDFLAGS += -export-dynamic
+libconfini_la_LDFLAGS += \
+	-export-dynamic
 
 endif
 
 
-if HAVE_WINDRES
+if HAVE_RC
 
-libconfini_la_SOURCES += winres.rc
+libconfini_la_SOURCES += \
+	winres.rc
 
 .rc.lo:
-	$(LIBTOOL) --mode=compile windres --codepage=65001 $< -o $@
+	$(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --tag=RC --mode=compile $(RC) $(AM_RCFLAGS) $(RCFLAGS) $< -o $@
 
 endif
 
@@ -46,6 +61,6 @@ include_HEADERS = \
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libconfini-$(PACKAGE_VERSION).pc
 
-EXTRA_DIST = \
-	libconfini-$(PACKAGE_VERSION).pc.in
+EXTRA_DIST = libconfini-$(PACKAGE_VERSION).pc.in
 
+## EOF

@@ -1,4 +1,9 @@
 /*  examples/miscellanea/disambiguate.c  */
+/*
+
+See: Manual > Ini Syntax Considerations
+
+*/
 
 #include <stdio.h>
 #include <confini.h>

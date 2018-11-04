@@ -59,7 +59,7 @@ var searchData=
   ['inidispatch',['IniDispatch',['../structIniDispatch.html',1,'IniDispatch'],['../confini_8h.html#a48a2d1eb3a8f1cfd41efb34c615d496d',1,'IniDispatch():&#160;confini.h']]],
   ['inidisphandler',['IniDispHandler',['../confini_8h.html#a0eff1cb87db5b73071e87f8cc9c4b445',1,'confini.h']]],
   ['iniformat',['IniFormat',['../structIniFormat.html',1,'IniFormat'],['../confini_8h.html#accd16964233945de96b91facd9e20545',1,'IniFormat():&#160;confini.h']]],
-  ['iniformat_5fhas_5fno_5fesc',['INIFORMAT_HAS_NO_ESC',['../confini_8h.html#a3b5912b45e4def482018fa44ad99ffb0',1,'confini.h']]],
+  ['iniformat_5fhas_5fno_5fesc',['INIFORMAT_HAS_NO_ESC',['../confini_8h.html#ae74cb0104512ee3dfe2865abe689e3f5',1,'confini.h']]],
   ['iniformat_5ftable_5fas',['INIFORMAT_TABLE_AS',['../confini_8h.html#ab2c2bb06f2e04cde2b010c360c431a12',1,'confini.h']]],
   ['iniformatnum',['IniFormatNum',['../confini_8h.html#a8dfc7ebbb087a23d4076c1d688572b1c',1,'confini.h']]],
   ['inimultiline',['IniMultiline',['../confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55f',1,'confini.h']]],
@@ -69,5 +69,5 @@ var searchData=
   ['inistatshandler',['IniStatsHandler',['../confini_8h.html#a3330e1083693c66b63b18c0d8883f9a8',1,'confini.h']]],
   ['inistrhandler',['IniStrHandler',['../confini_8h.html#aecbba63912eba3f61427599e719ffd7b',1,'confini.h']]],
   ['inisubstrhandler',['IniSubstrHandler',['../confini_8h.html#a9cb562c563beb848850cc429a0a022ac',1,'confini.h']]],
-  ['is_5fsome_5fspace',['is_some_space',['../confini_8c.html#a9ddb62401d28f769968bbbc07481bba7',1,'confini.c']]]
+  ['is_5fsome_5fspace',['is_some_space',['../confini_8c.html#a877abfcbc04cdd51f6156edbd6357f27',1,'confini.c']]]
 ];

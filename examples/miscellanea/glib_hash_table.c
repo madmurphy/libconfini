@@ -1,13 +1,13 @@
 /*  examples/miscellanea/glib_hash_table.c  */
 /*
 
-The following code will try to use glib's `GHashTable` object to store
+The following code will try to use GLib's `GHashTable` object to store
 the entire content of an INI file. Each key will be accessible through its full
 path -- e.g.: `[section.[subsection.[subsubsection.]]]key`. Comments and
 disabled entries will be ignored.
 
-Moreover, after the content has been stored, the `main()` function will attempt
-to read the value of the key `my_section.my_subsection.find_me`.
+Furthermore, after the content has been stored, the `main()` function will
+attempt to read the value of the key `my_section.my_subsection.find_me`.
 
 */
 
@@ -16,10 +16,12 @@ to read the value of the key `my_section.my_subsection.find_me`.
 #include <glib.h>
 
 /*
+
 In this implementation the dot is a metacharacter and is used as delimiter
 between path parts. Therefore all dots appearing in key names, or (within
 quotes) in section paths, will be replaced with the following character.
 You may choose any character except the dot itself.
+
 */
 #define DOT_REPLACEMENT '_'
 
@@ -59,7 +61,11 @@ static int populate_hash_table (IniDispatch * this, void * v_hash_table) {
 
 	if (!this->format.no_single_quotes || !this->format.no_double_quotes || this->format.multiline_nodes != INI_NO_MULTILINE) {
 
-		/*  We might have quotes to remove or escape sequences to unescape  */
+		/*
+
+			We might have quotes to remove or escape sequences to unescape
+
+		*/
 
 		this->d_len = ini_unquote(this->data, this->format);
 

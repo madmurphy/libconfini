@@ -3,7 +3,7 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 datarootdir=@datarootdir@
 datadir=@datadir@
-includedir=@includedir@/@PACKAGE_NAME@-@PACKAGE_VERSION@
+includedir=@includedir@
 
 Name: @PACKAGE_NAME@
 Description: @LIBRARY_DESCRIPTION@

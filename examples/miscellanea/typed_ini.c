@@ -1,8 +1,8 @@
 /*  examples/miscellanea/typed_ini.c  */
 /*
 
-The following code will try to read an INI section called `my_section`, expected to
-contain the following typed data:
+The following code will try to read an INI section called `my_section`,
+expected to contain the following typed data:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 
@@ -46,7 +46,12 @@ static int my_init (IniStatistics * statistics, void * v_store) {
 
 }
  
-static char ** make_strarray (size_t * arrlen, const char * src, const size_t buffsize, IniFormat ini_format) {
+static char ** make_strarray (
+	size_t * arrlen,
+	const char * src,
+	const size_t buffsize,
+	IniFormat ini_format
+) {
  
 	*arrlen = ini_array_get_length(src, MY_ARRAY_DELIMITER, ini_format);
 

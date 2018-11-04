@@ -48,6 +48,9 @@ Features
   for example, not even single/double quotes are automatically removed from
   values unless the developer explicitly decides to use the formatting functions
   provided by the API)
+* Robust file access (support of all code representations of new lines -- i.e.
+  Classic Mac OS' `CR`, Unix' `LF`, Windows' `CR`+`LF`, RISC OS Open's
+  `LF`+`CR`; protection against null byte injection; UTF-8 support)
 
 
 Sample usage

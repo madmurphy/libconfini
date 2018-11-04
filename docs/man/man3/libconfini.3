@@ -1,13 +1,13 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "LIBCONFINI" "3" "October 2018" "Stefano Gioffré" "Library Functions Manual"
+.TH "LIBCONFINI" "3" "November 2018" "Stefano Gioffré" "Library Functions Manual"
 .
 .SH "NAME"
 \fBlibconfini\fR
 .
 .SH "DESCRIPTION"
-\fBlibconfini\fR is a simple INI parsing library with the ability to read disabled entries (i\.e\., valid entries nested in comments)\. \fBlibconfini\fR does not store the data read from an INI file, but rather dispatches it, formatted, to a custom listener\.
+\fBlibconfini\fR is a simple INI parsing library with the ability to read disabled entries (i\.e\. valid entries nested in comments)\. \fBlibconfini\fR does not store the data read from an INI file, but rather dispatches it, formatted, to a custom listener\.
 .
 .P
 The code is written in C (C99) and does not depend on any particular library, except for the C standard libraries \fBstdio\.h\fR, \fBstdlib\.h\fR and \fBstdint\.h\fR\.
@@ -44,7 +44,7 @@ email = mario\.rossi@example\.com
 .IP "" 0
 .
 .SH "SUPPORTED SYNTAXES"
-During the years, several interpretations of INI files appeared\. In some implementations the colon character (\fB:\fR) has been adopted as delimiter between keys and values instead of the classic equals sign (a typical example under GNU/Linux is \fB/etc/nsswitch\.conf\fR); in other implementations, under the influence of Unix standard configuration files, the space (\fB/[ \et\ev\ef]+/\fR or \fB/(?:\e\e(?:\en\er?|\er\en?)|[\et \ev\ef])+/\fR) has been used instead (see for example \fB/etc/host\.conf\fR)\.
+During the years several interpretations of INI files appeared\. In some implementations the colon character (\fB:\fR) has been adopted as delimiter between keys and values instead of the classic equals sign (a typical example under GNU/Linux is \fB/etc/nsswitch\.conf\fR); in other implementations, under the influence of Unix standard configuration files, a sequence of one or more spaces (\fB/[ \et\ev\ef]+/\fR or \fB/(?:\e\e(?:\en\er?|\er\en?)|[\et \ev\ef])+/\fR) has been used instead (see for example \fB/etc/host\.conf\fR)\.
 .
 .P
 Equals sign used as delimiter between keys and values:
@@ -95,7 +95,7 @@ city    Paris
 .IP "" 0
 .
 .P
-This library has been born as a general INI parser for GNU, so the support of most part of INI dialects has been implemented within it\.
+This library has been born as a general INI parser for GNU \fIhttps://www\.gnu\.org/\fR, so the support of most part of INI dialects has been implemented within it\.
 .
 .P
 Especially in Microsoft Windows a more radical syntax variation has been implemented: the use of semicolon, instead of new lines, as delimiter between nodes, as in the following example:
@@ -142,7 +142,7 @@ foo = \'bar\'
 The \fBkey part\fR can contain any character, except the delimiter (which may be enclosed within quotes for not beeing considered as such)\. In multi\-line formats internal new line sequences must be escaped (\fB/\e\e(?:\en\er?|\er\en?)/\fR)\.
 .
 .P
-If the \fBkey part\fR part is missing \fBlibconfini\fR considers the element of \fIunknown type\fR (example: \fB= foo\fR)\. If the \fBvalue part\fR is missing the key element is considered empty (example: \fBfoo =\fR)\. If the delimiter is missing (and therefore the \fBvalue part\fR as well), according to some formats the key element is considered to be an \fIimplicit key\fR – typically representing the boolean \fBTRUE\fR (example: \fBfoo\fR)\. For instance, in the following example from \fB/etc/pacman\.conf\fR, \fBIgnorePkg\fR is an empty key, while \fBColor\fR is an implicit key (representing a \fBTRUE\fR boolean – i\.e\., \fBColor = YES\fR):
+If the \fBkey part\fR part is missing \fBlibconfini\fR considers the element of \fIunknown type\fR (example: \fB= foo\fR)\. If the \fBvalue part\fR is missing the key element is considered empty (example: \fBfoo =\fR)\. If the delimiter is missing (and therefore the \fBvalue part\fR as well), according to some formats the key element is considered to be an \fIimplicit key\fR – typically representing the boolean \fBTRUE\fR (example: \fBfoo\fR)\. For instance, in the following example from \fB/etc/pacman\.conf\fR, \fBIgnorePkg\fR is an empty key, while \fBColor\fR is an implicit key (representing a \fBTRUE\fR boolean – i\.e\. \fBColor = YES\fR):
 .
 .IP "" 4
 .
@@ -354,7 +354,7 @@ value
 The syntax of \fBlibconfini\fR\'s parsing functions is:
 .
 .P
-#1 Using a pointer to a \fBFILE\fR structure:
+#1 Using a pointer to a \fBFILE\fR handle:
 .
 .IP "" 4
 .
@@ -395,13 +395,13 @@ int load_ini_path (
 where
 .
 .IP "\(bu" 4
-\fBini_file\fR in \fBload_ini_file()\fR is the \fBFILE\fR struct pointing to the INI file
+\fBini_file\fR in \fBload_ini_file()\fR is the \fBFILE\fR handle pointing to the INI file
 .
 .IP "\(bu" 4
 \fBpath\fR in \fBload_ini_path()\fR is the path where the INI file is located (pointer to a char array, a\.k\.a\. a "C string")
 .
 .IP "\(bu" 4
-\fBformat\fR is a bitfield that defines the syntax of the INI file (see the \fBIniFormat\fR struct)
+\fBformat\fR is a bitfield that defines the syntax of the INI file (see the \fBIniFormat\fR \fBstruct\fR)
 .
 .IP "\(bu" 4
 \fBf_init\fR is the function that will be invoked \fIbefore\fR any dispatching begins – it can be \fBNULL\fR
@@ -415,7 +415,7 @@ where
 .IP "" 0
 .
 .P
-The function \fBf_init()\fR will be invoked with two arguments (see \fBIniStatsHandler\fR data type):
+The function \fBf_init()\fR (see \fBIniStatsHandler\fR data type) will be invoked with two arguments:
 .
 .IP "\(bu" 4
 \fBstatistics\fR – a pointer to an \fBIniStatistics\fR object containing some properties about the file read (like its size in bytes and the number of its members)
@@ -426,7 +426,7 @@ The function \fBf_init()\fR will be invoked with two arguments (see \fBIniStatsH
 .IP "" 0
 .
 .P
-The function \fBf_foreach()\fR will be invoked with two arguments (see \fBIniDispHandler\fR data type):
+The function \fBf_foreach()\fR (see \fBIniDispHandler\fR data type) will be invoked with two arguments:
 .
 .IP "\(bu" 4
 \fBdispatch\fR – a pointer to an \fBIniDispatch\fR object containing the parsed member of the INI file
@@ -437,7 +437,7 @@ The function \fBf_foreach()\fR will be invoked with two arguments (see \fBIniDis
 .IP "" 0
 .
 .P
-Both functions \fBload_ini_file()\fR and \fBload_ini_path()\fR will return zero if the INI file has been completely parsed, non\-zero otherwise\.
+Both functions \fBload_ini_file()\fR and \fBload_ini_path()\fR will return zero if the INI file has been completely dispatched, non\-zero otherwise\.
 .
 .SH "BASIC EXAMPLES"
 #1:
@@ -543,7 +543,7 @@ int main () {
 .IP "" 0
 .
 .SH "HOW IT WORKS"
-The function \fBload_ini_path()\fR is a shortcut to the function \fBload_ini_file()\fR that requires a path instead of a \fBFILE\fR struct\.
+The function \fBload_ini_path()\fR is a shortcut to the function \fBload_ini_file()\fR that requires a path instead of a \fBFILE\fR handle\.
 .
 .P
 The function \fBload_ini_file()\fR dynamically allocates at once the whole INI file into the heap, and the two structures \fBIniStatistics\fR and \fBIniDispatch\fR into the stack\. All members of the INI file are then dispatched to the custom listener \fBf_foreach()\fR\. Finally the allocated memory gets automatically freed\.
@@ -731,16 +731,21 @@ Typical peaceful edits are the ones obtained by calling the functions \fBini_arr
 #include <stdio\.h>
 #include <confini\.h>
 
-static int ini_listener (IniDispatch * disp, void * v_null) {
+static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
-  if (disp\->type == INI_KEY || disp\->type == INI_DISABLED_KEY) {
+  if (dispatch\->type == INI_KEY || dispatch\->type == INI_DISABLED_KEY) {
 
-    ini_unquote(disp\->data, disp\->format);
-    ini_string_parse(disp\->value, disp\->format);
+    ini_unquote(dispatch\->data, dispatch\->format);
+    ini_string_parse(dispatch\->value, dispatch\->format);
 
   }
 
-  printf("DATA: %s\enVALUE: %s\en\en", disp\->data, disp\->value);
+  printf(
+    "DATA: %s\enVALUE: %s\enNODE TYPE: %d\en\en",
+    dispatch\->data,
+    dispatch\->value,
+    dispatch\->type
+  );
 
   return 0;
 
@@ -1007,6 +1012,9 @@ size_t INI_GLOBAL_IMPLICIT_V_LEN = 3;
 If not defined elsewhere, these variables are respectively \fBNULL\fR and \fB0\fR by default\.
 .
 .P
+The two variables \fBINI_GLOBAL_IMPLICIT_VALUE\fR and \fBINI_GLOBAL_IMPLICIT_V_LEN\fR may be set to any arbitrary values\. In fact these will not be parsed or analyzed anywhere by \fBlibconfini\fR – they are only used as placeholders for custom information accessible solely by the user\.
+.
+.P
 After having set the value to be assigned to implicit key elements, and having enabled \fBIniFormat::implicit_is_not_empty\fR in the format, it is possible to test whether a dispatched key is implicit or not by comparing the address of its \fBvalue\fR property with the global variable \fBINI_GLOBAL_IMPLICIT_VALUE\fR:
 .
 .IP "" 4
@@ -1021,18 +1029,28 @@ After having set the value to be assigned to implicit key elements, and having e
 #define NO 0
 #define YES 1
 
-static int ini_listener (IniDispatch * disp, void * v_null) {
+static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
-  if (disp\->value == INI_GLOBAL_IMPLICIT_VALUE) {
+  if (dispatch\->value == INI_GLOBAL_IMPLICIT_VALUE) {
 
     printf(
-      "\enDATA: %s\enVALUE: %s\en(This is an implicit key element)\en",
-      disp\->data, disp\->value
+      "\enDATA: %s\enVALUE: %s\enNODE TYPE: %d\en"
+      "(This is an implicit key element)\en",
+
+      dispatch\->data,
+      dispatch\->value,
+      dispatch\->type
     );
 
   } else {
 
-    printf("\enDATA: %s\enVALUE: %s\en", disp\->data, disp\->value);
+    printf(
+      "\enDATA: %s\enVALUE: %s\enNODE TYPE: %d\en",
+
+      dispatch\->data,
+      dispatch\->value,
+      dispatch\->type
+    );
 
   }
 
@@ -1042,7 +1060,7 @@ static int ini_listener (IniDispatch * disp, void * v_null) {
 
 int main () {
 
-  IniFormat my_format = INI_DEFAULT_FORMAT;
+  IniFormat my_format = INI_UNIXLIKE_FORMAT;
 
   ini_global_set_implicit_value("[implicit default value]", 0);
 
@@ -1050,7 +1068,7 @@ int main () {
   my_format\.implicit_is_not_empty = YES;
 
   if (load_ini_path(
-    "ini_files/typed_ini\.conf",
+    "ini_files/unix\-like\.conf",
     my_format,
     NULL,
     ini_listener,
@@ -1061,8 +1079,6 @@ int main () {
     return 1;
 
   }
-
-  return 0;
 
 }
 .
@@ -1130,12 +1146,12 @@ int main () {
 
   /*  Check if parsing has been interrupted by `passfinder()`  */
   retval  ==  CONFINI_FEINTR ?
-        printf(
-          "We found it! It\'s the INI element number #%d!\en",
-          membid
-        )
-      :
-        printf("We didn\'t find it :\-(\en");
+                printf(
+                  "We found it! It\'s the INI element number #%d!\en",
+                  membid
+                )
+              :
+                printf("We didn\'t find it :\-(\en");
 
   return 0;
 
@@ -1197,6 +1213,24 @@ Condition: \fBformat\.no_single_quotes && format\.no_double_quotes && format\.mu
 ⇒ Behavior of \fBini_string_parse()\fR: Spaces at the beginning and at the end of the string will be removed, then the new length of the string will be returned\.
 .
 .IP "" 0
+.
+.SS "STORING THE DISPATCHED DATA"
+In order to be as flexible as possible, \fBlibconfini\fR does not store the dispatched data, nor indicizes it\. This gives the developer the power to deal with it in many different ways\.
+.
+.P
+For small INI files a normal \fBif\fR/\fBelse\fR chain, using \fBini_array_match()\fR for comparing section paths and \fBini_string_match_si()\fR/\fBini_string_match_ii()\fR for comparing key names, represents usually the most practical way to obtain the information required from an INI file\.
+.
+.P
+Sometimes however, especially in case of sizeable INI files, the most efficient solution would be to store the parsed data in a hash table before trying to access it\.
+.
+.P
+Some INI parsers are released with a hash table API included by default\. This is often an unpractical solution, since fantastic free software libraries that focus solely on hash tables already exist, and providing a further API for managing a hash function together with an INI parser only complicates the code, makes it harder to maintain, and does not give the user the real freedom to choose what suits best to each single case\.
+.
+.P
+When a user needs it, the data parsed by \fBlibconfini\fR can still be stored in a third\-party hash table while it is still being dispatched\. By doing so the resulting performance will equal that of an INI parser with a hash table included by default, since the only job of \fBlibconfini\fR is that of scrolling the content of an INI file linearly from the beginning to the end – and there are not more efficient ways to parse and indicize the content of a serialized tree\.
+.
+.P
+If you are interested in combining \fBlibconfini\fR with a hash table, I have left a general example of how to use \fBGLib\fR\'s \fBGHashTable\fR together with \fBlibconfini\fR under \fBexamples/miscellanea/glib_hash_table\.c\fR\. By keeping this example as a model other solutions can be easily explored as well\.
 .
 .SS "SIZE OF THE DISPATCHED DATA"
 Within an INI file it is granted that if one sums together all the \fB(disp\->d_len + 1)\fR and all the \fB(disp\->v_len > 0 ? disp\->v_len + 1 : 0)\fR received, the result will always be less\-than or equal\-to \fB(stats\->bytes + 1)\fR (where \fB+ 1\fR represents the NUL terminators and \fBdisp\fR and \fBstats\fR are respectively the \fBIniDispatch\fR and \fBIniStatistics\fR structures passed as arguments to the callback functions)\. \fBIf one adds to this also all the \fBdisp\->at_len\fR properties, or if the \fBdisp\->v_len\fR properties of implicit keys are non\-zero, the sum may exceed it\.\fR This might be relevant or irrelevant depending on your code\.
