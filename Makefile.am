@@ -34,8 +34,9 @@ examplesinifilesdir = $(examplesdir)/ini_files
 examplesinifiles_DATA = \
 	examples/ini_files/ambiguous.conf \
 	examples/ini_files/bad_ini.conf \
-	examples/ini_files/example.conf \
+	examples/ini_files/delivery.conf \
 	examples/ini_files/hash_table.conf \
+	examples/ini_files/self_explaining.conf \
 	examples/ini_files/typed_ini.conf \
 	examples/ini_files/unix-like.conf
 

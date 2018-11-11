@@ -34,19 +34,18 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
     size_t my_array_length;
 
     /*  Save memory with `ini_array_collapse()`  */
-
-    dispatch->v_len   = ini_array_collapse(
-                          dispatch->value,
-                          DELIMITER,
-                          dispatch->format
-                        );
+    dispatch->v_len = ini_array_collapse(
+                        dispatch->value,
+                        DELIMITER,
+                        dispatch->format
+                      );
 
     /*  Allocate a new array of strings with `malloc()`  */
-    my_array_length   = ini_array_get_length(
-                          dispatch->value,
-                          DELIMITER,
-                          dispatch->format
-                        );
+    my_array_length = ini_array_get_length(
+                        dispatch->value,
+                        DELIMITER,
+                        dispatch->format
+                      );
 
     my_array = (char **) malloc(my_array_length * sizeof(char *) +
                  dispatch->v_len + 1);
@@ -74,7 +73,7 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 
     for (size_t idx = 0; idx < my_array_length; idx++) {
 
-      printf("my_array[%d] -> %s\n", idx, my_array[idx]);
+      printf("my_array[%zu] -> %s\n", idx, my_array[idx]);
 
     }
 

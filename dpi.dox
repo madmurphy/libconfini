@@ -88,11 +88,11 @@ You can get started by seeing the [README](\ref readme) and
 - [**Source Code**](https://github.com/madmurphy/libconfini)
 - [**Releases**](https://github.com/madmurphy/libconfini/releases)
 - \ref fnoverview
-- [confini.h File Reference](\ref confini.h)
+- [Complete Reference Book](\ref confini.h)
+- \ref rationale
 - `IniFormat`
 - `IniStatistics`
 - `IniDispatch`
-- \ref rationale
 
 
 

@@ -12,7 +12,7 @@ static int my_array_fragm_handler (
   void * user_data
 ) {
 
-  printf("%.*s\n", fragm_length, ini_array + fragm_offset);
+  printf("%.*s\n", (unsigned int) fragm_length, ini_array + fragm_offset);
 
   return 0;
 

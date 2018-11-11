@@ -41,7 +41,7 @@ NA_SET_GLOBAL_VAR([LIBRARY_DESCRIPTION], [Yet another INI parser])
 
 NA_SET_GLOBAL_VAR([INTERFACE_NUMBER], [0])
 
-NA_SET_GLOBAL_VAR([IMPLEMENTATION_NUMBER], [1])
+NA_SET_GLOBAL_VAR([IMPLEMENTATION_NUMBER], [2])
 
 NA_SET_GLOBAL_VAR([INTERFACE_COMPATIBILITY], [0])
 
@@ -57,7 +57,7 @@ AM_INIT_AUTOMAKE([1.11])
 
 AM_SILENT_RULES([yes])
 
-AC_PROG_CC
+AC_PROG_CC_C99
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -67,50 +67,55 @@ AC_CONFIG_FILES([
 	src/Makefile
 ])
 
+AC_ARG_VAR([RC], [Microsoft Windows resource compiler command])
+
+AC_ARG_VAR([RCFLAGS], [Microsoft Windows resource compiler flags])
+
 AC_ARG_ENABLE([doc],
 	[AS_HELP_STRING([--disable-doc],
-		[Create package without documentation @<:@default=no@:>@]
+		[Don't generate any documentation @<:@default=no@:>@]
 	)],
 	[:],
-	[na_enable_doc=yes]
+	[enable_doc=yes]
 )
 
 AC_ARG_ENABLE([examples],
 	[AS_HELP_STRING([--disable-examples],
-		[Create package without examples @<:@default=no@:>@]
+		[Don't generate examples @<:@default=disable_doc@:>@]
 	)],
 	[:],
-	[na_enable_examples=yes]
+	[enable_examples=check]
 )
 
-AM_CONDITIONAL([ENABLE_DOC], [test "x${na_enable_doc}" != xno])
+AM_CONDITIONAL([ENABLE_DOC], [test "x${enable_doc}" != xno])
 
-AM_CONDITIONAL([ENABLE_EXAMPLES], [test "x${na_enable_examples}" != xno])
+AS_IF([test "x${enable_examples}" = xcheck],
+	[AM_CONDITIONAL([ENABLE_EXAMPLES], [test "x${enable_doc}" != xno])],
+	[AM_CONDITIONAL([ENABLE_EXAMPLES], [test "x${enable_examples}" != xno])]
+)
 
 
 dnl  ***************************************************************************
-dnl  Check for Windows
+dnl  Checks for Windows
 dnl  ***************************************************************************
 
 
 AC_CANONICAL_HOST
 
-
-case ${host_os} in
-	*mingw*)
+AS_CASE([$host_os],
+	[*mingw*], [
 		na_platform_mswin=yes
 		na_native_mswin=yes
-		;;
-	pw32*|*cygwin*)
+	],
+	[pw32*|*cygwin*], [
 		na_platform_mswin=yes
 		na_native_mswin=no
-		;;
-	*)
+	],
+	[*], [
 		na_platform_mswin=no
 		na_native_mswin=no
-		;;
-esac
-
+	]
+)
 
 AM_CONDITIONAL([PLATFORM_MSWIN], [test "x${na_platform_mswin}" = xyes])
 
@@ -121,6 +126,19 @@ LT_INIT([win32-dll])
 AM_COND_IF([PLATFORM_MSWIN], [LT_PROG_RC])
 
 AM_CONDITIONAL([HAVE_RC], [test "x${RC}" != x])
+
+
+dnl  ***************************************************************************
+dnl  Other rules
+dnl  ***************************************************************************
+
+
+dnl  Optimization `-O3` seems to be working better than `-O2` when compiling
+dnl  under native Microsoft Windows. In all other cases use `-O2`.
+AM_COND_IF([NATIVE_MSWIN],
+	NA_SET_GLOBAL_VAR([CODE_OPTIMIZATION], [3]),
+	NA_SET_GLOBAL_VAR([CODE_OPTIMIZATION], [2])
+)
 
 
 dnl  ***************************************************************************

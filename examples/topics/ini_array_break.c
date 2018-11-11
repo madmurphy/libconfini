@@ -15,7 +15,7 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 
     char * part_a, * part_b = dispatch->value;
 
-    while (part_a = part_b) {
+    while ((part_a = part_b)) {
 
       part_b = ini_array_break(part_b, DELIMITER, dispatch->format);
       ini_string_parse(part_a, dispatch->format);

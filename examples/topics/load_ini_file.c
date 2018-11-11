@@ -16,7 +16,7 @@ static int my_callback (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-  FILE * const ini_file = fopen("ini_files/example.conf", "rb");
+  FILE * const ini_file = fopen("ini_files/delivery.conf", "rb");
 
   if (ini_file == NULL) {
 

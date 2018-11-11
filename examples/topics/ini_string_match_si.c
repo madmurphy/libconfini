@@ -26,7 +26,7 @@ int main () {
 
   /*  Load INI file  */
   int retval = load_ini_path(
-    "ini_files/example.conf",
+    "ini_files/self_explaining.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     passfinder,
@@ -44,7 +44,7 @@ int main () {
   /*  Check if parsing has been interrupted by `passfinder()`  */
   retval  ==  CONFINI_FEINTR ?
                 printf(
-                  "We found it! It's the INI element number #%d!\n",
+                  "We found it! It's the INI element number #%zu!\n",
                   membid
                 )
               :

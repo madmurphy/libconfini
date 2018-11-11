@@ -15,9 +15,9 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 
     char * token, * remaining = dispatch->value;
 
-    while (
+    while ((
       token = ini_array_release(&remaining, DELIMITER, dispatch->format)
-    ) {
+    )) {
 
       ini_string_parse(token, dispatch->format);
       printf("%s\n", token);

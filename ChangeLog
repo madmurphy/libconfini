@@ -2,6 +2,21 @@ Change Log {#changelog}
 =======================
 
 
+## 1.8.2 -- 2018-11-11
+
+Changes:
+
+* Code review (private function `further_cuts()`)
+* Optimization flag `-O2` seems to be working better than `-O3` on Unix systems:
+  conditionally use `-O2` or `-O3` depending on the host
+* Use **libtool**'s `-avoid-version` only when compiling under native Microsoft
+  Windows environment
+* Added `--clean` option to the `autogen.sh` script
+* Updated **Autotools** macros
+* Documentation
+* Examples
+
+
 ## 1.8.1 -- 2018-11-04
 
 Changes:

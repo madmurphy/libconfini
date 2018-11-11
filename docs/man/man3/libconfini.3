@@ -36,7 +36,7 @@ email = john\.smith@example\.com
 
 [receiver]
 
-name = Mario Rossi   # He\'s a fat guy
+name = Mario Rossi   # He\'s a big guy
 email = mario\.rossi@example\.com
 .
 .fi
@@ -110,7 +110,7 @@ Especially in Microsoft Windows a more radical syntax variation has been impleme
 
 location=Colosseum;place=Rome;[sender] name=John Smith;
 email=john\.smith@example\.com;
-[receiver] name=Mario Rossi; # He\'s a fat guy
+[receiver] name=Mario Rossi; # He\'s a big guy
 email=mario\.rossi@example\.com
 .
 .fi
@@ -142,7 +142,7 @@ foo = \'bar\'
 The \fBkey part\fR can contain any character, except the delimiter (which may be enclosed within quotes for not beeing considered as such)\. In multi\-line formats internal new line sequences must be escaped (\fB/\e\e(?:\en\er?|\er\en?)/\fR)\.
 .
 .P
-If the \fBkey part\fR part is missing \fBlibconfini\fR considers the element of \fIunknown type\fR (example: \fB= foo\fR)\. If the \fBvalue part\fR is missing the key element is considered empty (example: \fBfoo =\fR)\. If the delimiter is missing (and therefore the \fBvalue part\fR as well), according to some formats the key element is considered to be an \fIimplicit key\fR – typically representing the boolean \fBTRUE\fR (example: \fBfoo\fR)\. For instance, in the following example from \fB/etc/pacman\.conf\fR, \fBIgnorePkg\fR is an empty key, while \fBColor\fR is an implicit key (representing a \fBTRUE\fR boolean – i\.e\. \fBColor = YES\fR):
+If the \fBkey part\fR part is missing \fBlibconfini\fR considers the element of \fIunknown type\fR (example: \fB= foo\fR)\. If the \fBvalue part\fR is missing the key element is considered empty (example: \fBfoo =\fR)\. If the delimiter is missing (and therefore the \fBvalue part\fR as well), according to some formats the key element is considered to be an \fIimplicit key\fR – typically representing the boolean \fBtrue\fR (example: \fBfoo\fR)\. For instance, in the following example from \fB/etc/pacman\.conf\fR, \fBIgnorePkg\fR is an empty key, while \fBColor\fR is an implicit key (representing a \fBtrue\fR boolean – i\.e\. \fBColor = YES\fR):
 .
 .IP "" 4
 .
@@ -464,7 +464,7 @@ static int my_callback (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-  FILE * const ini_file = fopen("ini_files/example\.conf", "rb");
+  FILE * const ini_file = fopen("ini_files/delivery\.conf", "rb");
 
   if (ini_file == NULL) {
 
@@ -522,7 +522,7 @@ static int my_callback (IniDispatch * dispatch, void * v_null) {
 int main () {
 
   if (load_ini_path(
-    "ini_files/example\.conf",
+    "ini_files/delivery\.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     my_callback,
@@ -692,7 +692,7 @@ The output strings dispatched by \fBlibconfini\fR will follow some formatting ru
 \fBSection paths\fR, if format supports nesting, will be rendered according to ECMAScript \fBsection_name\.replace(/\e\.*\es*$|(?:\es*(\e\.))+\es*|^\es+/g, "$1")\.replace(/\es+/g, " ")\fR – within single or double quotes, if active, the text will be rendered verbatim – otherwise, will be rendered according to the same algorithm used for key names\.
 .
 .IP "\(bu" 4
-\fBValues\fR, if \fBformat\.do_not_collapse_values\fR is active, will only be cleaned of spaces at the beginning and at the end; otherwise will be rendered according to the same algorithm used for key names (with the difference that, if \fBformat\.preserve_empty_quotes\fR is set to \fB1\fR, empty quotes surrounded by spaces will be preserved)\.
+\fBValues\fR, if \fBformat\.do_not_collapse_values\fR is active, will only be cleaned of spaces at the beginning and at the end; otherwise will be rendered according to the same algorithm used for key names (with the difference that, if \fBformat\.preserve_empty_quotes\fR is set to \fBtrue\fR, empty quotes surrounded by spaces will be preserved)\.
 .
 .IP "\(bu" 4
 \fBComments\fR, in multi\-line formats, will be rendered according to ECMAScript \fBcomment_string\.replace(/(^|\en\er?|\er\en?)[ \et\ev\ef]*[#;]+/g, "$1")\fR; elsewhere, according to ECMAScript \fBcomment_string\.replace(/^[ \et\ev\ef]*[#;]+/, "")\fR\.
@@ -754,7 +754,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
 int main () {
 
   if (load_ini_path(
-    "ini_files/example\.conf",
+    "ini_files/self_explaining\.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     ini_listener,
@@ -971,7 +971,10 @@ Together with the functions listed above the following links are available, in c
 .IP "" 0
 .
 .SS "FORMATTING THE KEY NAMES"
-The function \fBini_unquote()\fR might be useful for key names enclosed within quotes\. This function is very similar to \fBini_string_parse()\fR, except that does not bother collapsing the sequences of more than one space that might result from removing empty quotes – this is never necessary since empty quotes surrounded by spaces in key and section names are always collapsed before being dispatched (you could use \fBini_string_parse()\fR as well to parse key and section names, but you would obtain the same result with a slightly bigger effort from the CPU)\.
+The function \fBini_unquote()\fR might be useful for key names enclosed within quotes\. This function is very similar to \fBini_string_parse()\fR, except that does not bother collapsing the sequences of more than one space that might result from removing empty quotes – this is never necessary since empty quotes surrounded by spaces in key and section names are always collapsed before being dispatched\.
+.
+.P
+You could use \fBini_string_parse()\fR as well to parse key and section names, but you would obtain the same result with a slightly bigger effort from the CPU\.
 .
 .SS "FORMATTING THE SECTION PATHS"
 In order to retrieve the parts of a section path, the functions \fBini_array_get_length()\fR, \fBini_array_foreach()\fR, \fBini_array_break()\fR, \fBini_array_release()\fR, \fBini_array_shift()\fR and \fBini_array_split()\fR can be used with \fB\'\.\'\fR as delimiter\. Note that section paths dispatched by \fBlibconfini\fR are \fIalways\fR collapsed arrays, therefore calling the function \fBini_array_collapse()\fR on them will have no effects\.
@@ -980,7 +983,7 @@ In order to retrieve the parts of a section path, the functions \fBini_array_get
 It might be required that the function \fBini_unquote()\fR be applied to each part of a section path, depending on the content and the format of the INI file\.
 .
 .SS "IMPLICIT KEYS"
-In order to set the value to be assigned to implicit keys, please use the \fBini_global_set_implicit_value()\fR function\. A \fIzero\-length \fBTRUE\fR\-boolean\fR is usually a good choice:
+In order to set the value to be assigned to implicit keys, please use the \fBini_global_set_implicit_value()\fR function\. A \fIzero\-length \fBtrue\fR\-boolean\fR is usually a good choice:
 .
 .IP "" 4
 .
@@ -1129,7 +1132,7 @@ int main () {
 
   /*  Load INI file  */
   int retval = load_ini_path(
-    "ini_files/example\.conf",
+    "ini_files/self_explaining\.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     passfinder,
@@ -1147,7 +1150,7 @@ int main () {
   /*  Check if parsing has been interrupted by `passfinder()`  */
   retval  ==  CONFINI_FEINTR ?
                 printf(
-                  "We found it! It\'s the INI element number #%d!\en",
+                  "We found it! It\'s the INI element number #%zu!\en",
                   membid
                 )
               :
@@ -1227,13 +1230,13 @@ Sometimes however, especially in case of sizeable INI files, the most efficient 
 Some INI parsers are released with a hash table API included by default\. This is often an unpractical solution, since fantastic free software libraries that focus solely on hash tables already exist, and providing a further API for managing a hash function together with an INI parser only complicates the code, makes it harder to maintain, and does not give the user the real freedom to choose what suits best to each single case\.
 .
 .P
-When a user needs it, the data parsed by \fBlibconfini\fR can still be stored in a third\-party hash table while it is still being dispatched\. By doing so the resulting performance will equal that of an INI parser with a hash table included by default, since the only job of \fBlibconfini\fR is that of scrolling the content of an INI file linearly from the beginning to the end – and there are not more efficient ways to parse and indicize the content of a serialized tree\.
+When a user needs it, the data parsed by \fBlibconfini\fR can still be stored in a third\-party hash table while it is being dispatched\. By doing so the resulting performance will equal that of an INI parser with a hash table included by default, since the only job of \fBlibconfini\fR is that of scrolling the content of an INI file linearly from the beginning to the end – and there are not more efficient ways to parse and indicize the content of a serialized tree\.
 .
 .P
 If you are interested in combining \fBlibconfini\fR with a hash table, I have left a general example of how to use \fBGLib\fR\'s \fBGHashTable\fR together with \fBlibconfini\fR under \fBexamples/miscellanea/glib_hash_table\.c\fR\. By keeping this example as a model other solutions can be easily explored as well\.
 .
 .SS "SIZE OF THE DISPATCHED DATA"
-Within an INI file it is granted that if one sums together all the \fB(disp\->d_len + 1)\fR and all the \fB(disp\->v_len > 0 ? disp\->v_len + 1 : 0)\fR received, the result will always be less\-than or equal\-to \fB(stats\->bytes + 1)\fR (where \fB+ 1\fR represents the NUL terminators and \fBdisp\fR and \fBstats\fR are respectively the \fBIniDispatch\fR and \fBIniStatistics\fR structures passed as arguments to the callback functions)\. \fBIf one adds to this also all the \fBdisp\->at_len\fR properties, or if the \fBdisp\->v_len\fR properties of implicit keys are non\-zero, the sum may exceed it\.\fR This might be relevant or irrelevant depending on your code\.
+Within an INI file it is granted that if one sums together all the \fB(disp\->d_len + 1)\fR and all the \fB(disp\->v_len > 0 ? disp\->v_len + 1 : 0)\fR received, the result will always be less\-than or equal\-to \fB(stats\->bytes + 1)\fR \-\- where \fB+ 1\fR represents the NUL terminators and \fBdisp\fR and \fBstats\fR are respectively the \fBIniDispatch\fR and \fBIniStatistics\fR structures passed as arguments to the callback functions\. \fBIf one adds to this also all the \fBdisp\->at_len\fR properties, or if the \fBdisp\->v_len\fR properties of implicit keys are non\-zero, the sum may exceed it\.\fR This might be relevant or irrelevant depending on your code\.
 .
 .IP "" 4
 .
@@ -1282,11 +1285,11 @@ int main () {
 
   printf(
 
-    "The file is %d bytes large\.\en\en"
+    "The file is %zu bytes large\.\en\en"
 
-    "The sum of the lengths of all "
-    "`IniDispatch::data` plus the lengths of all\en"
-    "non\-empty `IniDispatch::value` is %d\.\en",
+    "The sum of the lengths of all `disp\->data` "
+    "plus the lengths of all non\-empty\en"
+    "`disp\->value`s is %zu\.\en",
 
     check\.bytes, check\.buff_lengths
 
@@ -1311,7 +1314,7 @@ int main () {
 .IP "" 0
 .
 .SS "OTHER GLOBAL SETTINGS"
-Besides the two global variables \fBINI_GLOBAL_IMPLICIT_VALUE\fR and \fBINI_GLOBAL_IMPLICIT_V_LEN\fR, a third variable named \fBINI_GLOBAL_LOWERCASE_MODE\fR tells \fBlibconfini\fR whether to dispatch key names and section paths lower\-case or not in case\-insensitive INI files\.
+Besides the two global variables \fBINI_GLOBAL_IMPLICIT_VALUE\fR and \fBINI_GLOBAL_IMPLICIT_V_LEN\fR, a third variable named \fBINI_GLOBAL_LOWERCASE_MODE\fR tells \fBlibconfini\fR whether to dispatch in lower case all key names and section paths of case\-insensitive INI files\.
 .
 .P
 As with the other global variables, you can declare the variable \fBINI_GLOBAL_LOWERCASE_MODE\fR at the beginning of your code:
@@ -1320,12 +1323,10 @@ As with the other global variables, you can declare the variable \fBINI_GLOBAL_L
 .
 .nf
 
-#define FALSE 0
-#define TRUE 1
-
+#include <stdbool\.h>
 #include <confini\.h>
 
-_Bool INI_GLOBAL_LOWERCASE_MODE = FALSE;
+bool INI_GLOBAL_LOWERCASE_MODE = false;
 .
 .fi
 .
@@ -1335,10 +1336,10 @@ _Bool INI_GLOBAL_LOWERCASE_MODE = FALSE;
 Alternatively, this variable can be set through the function \fBini_global_set_lowercase_mode()\fR without being explicitly declared\.
 .
 .P
-When the variable \fBINI_GLOBAL_LOWERCASE_MODE\fR is set to \fBTRUE\fR, \fBlibconfini\fR will always dispatch lowercase \fIall\fR ASCII letters of key and section names in case\-insensitive formats – \fIeven when these are enclosed within quotes\fR – but will \fBnot\fR convert UTF\-8 code points to lowercase (for instance, \fBĀ\fR will not be rendered as \fBā\fR, but will be rather rendered verbatim)\. \fIIn general it is a good practice to use UTF\-8 within values, but to use ASCII only within key and section names\.\fR
+When the variable \fBINI_GLOBAL_LOWERCASE_MODE\fR is set to \fBtrue\fR, \fBlibconfini\fR always dispatches in lower case \fIall\fR ASCII letters of key and section names in case\-insensitive formats – \fIeven when these are enclosed within quotes\fR – but does \fBnot\fR dispatch in lower case UTF\-8 code points out of the ASCII range (for instance, \fBĀ\fR will not be rendered as \fBā\fR, but will be rather rendered verbatim)\. \fIIn general it is a good practice to use UTF\-8 within values, but to use ASCII only within key and section names\.\fR
 .
 .P
-Normally \fBINI_GLOBAL_LOWERCASE_MODE\fR does not need to be set to \fBTRUE\fR, since string comparisons made by libconfini are always either case\-sensitive or case\-insensitive depending on the format given\.
+Normally \fBINI_GLOBAL_LOWERCASE_MODE\fR does not need to be set to \fBtrue\fR, since string comparisons made by libconfini are always either case\-sensitive or case\-insensitive depending on the format given\.
 .
 .SS "THREAD SAFETY"
 Depending on the format of the INI file, \fBlibconfini\fR may use up to three global variables (\fBINI_GLOBAL_IMPLICIT_VALUE\fR, \fBINI_GLOBAL_IMPLICIT_V_LEN\fR and \fBINI_GLOBAL_LOWERCASE_MODE\fR)\. In order to be thread\-safe these three variables (if needed) must be defined only once (either directly, or through their modifier functions \fBini_global_set_implicit_value()\fR and \fBini_global_set_lowercase_mode()\fR), or otherwise a mutex logic must be introduced\.
@@ -1432,7 +1433,7 @@ int main () {
   seconds = (double) (end \- start) / CLOCKS_PER_SEC;
 
   printf(
-    "%d bytes parsed in %f seconds\.\en"
+    "%zu bytes parsed in %f seconds\.\en"
     "Number of bytes parsed per second: %f\en",
     bytes, seconds, bytes / seconds
   );
@@ -1632,7 +1633,7 @@ Reliable general patterns:
 \fBIniFormat::semicolon_marker\fR and \fBIniFormat::hash_marker\fR – The imaginary author of our INI file, if we observe the latter closer, chose the semicolon symbol as the marker of disabled entries and the hash symbol as the marker of comments\. We may exploit this difference and set our \fBmy_format\.semicolon_marker\fR to \fBINI_DISABLED_OR_COMMENT\fR and our \fBmy_format\.hash_marker\fR to \fBINI_ONLY_COMMENT\fR to obtain the correct disambiguation\. If you believe that this solution is too artificial, think that \fB/etc/samba/smb\.conf\fR and \fB/etc/pulse/daemon\.conf\fR are systematically distributed using this pattern\.
 .
 .IP "\(bu" 4
-\fBIniFormat::disabled_after_space\fR – Setting this property to \fBFALSE\fR, due to the initial space that follows the comment marker (\fB# INI\.\.\.\fR), forces \fB# INI key/value delimiter: = (everywhere)\fR to be considered as a comment\. Some authors use this syntax to distinguish between comments and disabled entries (examples are \fB/etc/pacman\.conf\fR and \fB/etc/bluetooth/main\.conf\fR)
+\fBIniFormat::disabled_after_space\fR – Setting this property to \fBfalse\fR, due to the initial space that follows the comment marker (\fB# INI\.\.\.\fR), forces \fB# INI key/value delimiter: = (everywhere)\fR to be considered as a comment\. Some authors use this syntax to distinguish between comments and disabled entries (examples are \fB/etc/pacman\.conf\fR and \fB/etc/bluetooth/main\.conf\fR)
 .
 .IP "" 0
 .
@@ -1640,12 +1641,12 @@ Reliable general patterns:
 Temporary workarounds:
 .
 .IP "\(bu" 4
-\fBIniFormat::no_spaces_in_names\fR – If our INI file has only comments containing more than one word and we are sure that key and section names cannot contain internal white spaces, we can set this property to \fBTRUE\fR to enhance disambiguation\.
+\fBIniFormat::no_spaces_in_names\fR – If our INI file has only comments containing more than one word and we are sure that key and section names cannot contain internal white spaces, we can set this property to \fBtrue\fR to enhance disambiguation\.
 .
 .IP "\(bu" 4
-\fBIniFormat::disabled_can_be_implicit\fR – This property, if set to \fBFALSE\fR, forces all comments that do not contain a key\-value delimiter to be never considered as disabled entries\. Despite not having an impact on our example, it has a big impact on the disambiguation algorithms used by \fBlibconfini\fR\. Its value in \fBINI_DEFAULT_FORMAT\fR is set to \fBFALSE\fR\.
+\fBIniFormat::disabled_can_be_implicit\fR – This property, if set to \fBfalse\fR, forces all comments that do not contain a key\-value delimiter to be never considered as disabled entries\. Despite not having an impact on our example, it has a big impact on the disambiguation algorithms used by \fBlibconfini\fR\. Its value in \fBINI_DEFAULT_FORMAT\fR is set to \fBfalse\fR\.
 .
 .IP "" 0
 .
 .P
-As a general rule \fBlibconfini\fR will always try to parse as a disabled entry whatever comment is allowed (by the format) to contain one\. Only if this attempt fails, the block will be dispatched as a normal comment\.
+As a general rule, \fBlibconfini\fR will always try to parse as a disabled entry whatever comment is allowed (by the format) to contain one\. Only if this attempt fails, the block will be dispatched as a normal comment\.

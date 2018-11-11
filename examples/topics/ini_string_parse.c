@@ -26,7 +26,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
 int main () {
 
   if (load_ini_path(
-    "ini_files/example.conf",
+    "ini_files/self_explaining.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     ini_listener,

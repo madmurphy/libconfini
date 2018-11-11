@@ -8,7 +8,7 @@
 	@author		Stefano Gioffr&eacute;
 	@copyright	GNU Public License v3
 	@date		2016-2018
-	@see		Source code at https://github.com/madmurphy/libconfini/blob/master/src/confini.c
+	@see		https://github.com/madmurphy/libconfini/
 
 **/
 
@@ -126,7 +126,7 @@
 					role as delimiter symbol (i.e., the format will have no
 					delimiter symbol); you may use `enum` #IniDelimiters for this.
 	@property	IniFormat::case_sensitive
-					If set to `1`, string comparisons will be always performed
+					If set to `true`, string comparisons will be always performed
 					case-sensitive.
 	@property	IniFormat::semicolon_marker
 					The rule of the semicolon character (use `enum`
@@ -141,44 +141,44 @@
 					Defines which class of entries are allowed to be multi-line (use
 					`enum` #IniMultiline for this).
 	@property	IniFormat::no_spaces_in_names
-					If set to `1`, key and section names containing spaces (even
+					If set to `true`, key and section names containing spaces (even
 					within quotes) will be rendered as #INI_UNKNOWN. Note that
 					setting #IniFormat::delimiter_symbol to #INI_ANY_SPACE will not
-					automatically set this option to `1` (spaces will still be
+					automatically set this option to `true` (spaces will still be
 					allowed in section names).
 	@property	IniFormat::no_single_quotes
-					If set to `1`, the single-quote character (`'`) will be
+					If set to `true`, the single-quote character (`'`) will be
 					considered as a normal character.
 	@property	IniFormat::no_double_quotes
-					If set to `1`, the double-quote character (`"`) will be
+					If set to `true`, the double-quote character (`"`) will be
 					considered as a normal character.
 	@property	IniFormat::implicit_is_not_empty
-					If set to `1`, implicit keys (see @ref libconfini) will always
-					be dispatched using the values given by the global variables
-					#INI_GLOBAL_IMPLICIT_VALUE and #INI_GLOBAL_IMPLICIT_V_LEN for
-					the fields #IniDispatch::value and to #IniDispatch::v_len
-					respectively; if set to `0`, implicit keys will be considered
-					to be empty keys.
+					If set to `true`, implicit keys (see @ref libconfini) will
+					always be dispatched using the values given by the global
+					variables #INI_GLOBAL_IMPLICIT_VALUE and
+					#INI_GLOBAL_IMPLICIT_V_LEN for the fields #IniDispatch::value
+					and to #IniDispatch::v_len respectively; if set to `false`,
+					implicit keys will be considered to be empty keys.
 	@property	IniFormat::do_not_collapse_values
-					If set to `1`, sequences of one or more spaces in values
+					If set to `true`, sequences of one or more spaces in values
 					(`/\s+/`) will be dispatched verbatim.
 	@property	IniFormat::preserve_empty_quotes
-					If set to `1`, and if single/double quotes are metacharacters,
-					ensures that, within values, empty strings enclosed between
-					quotes (`""` or `''`) will not be collapsed together with the
-					spaces that surround them. This option is useful for values
-					containing space-delimited arrays, in order to preserve their
-					empty members -- as in, for instance: `coordinates = "" ""`.
-					Note that, in section and key names, empty strings enclosed
-					between quotes are _always_ collapsed together with their
-					surrounding spaces.
+					If set to `true`, and if single/double quotes are
+					metacharacters, ensures that, within values, empty strings
+					enclosed between quotes (`""` or `''`) will not be collapsed
+					together with the spaces that surround them. This option is
+					useful for values containing space-delimited arrays, in order to
+					preserve their empty members -- as in, for instance:
+					`coordinates = "" ""`. Note that, in section and key names,
+					empty strings enclosed between quotes are _always_ collapsed
+					together with their surrounding spaces.
 	@property	IniFormat::disabled_after_space
-					If set to `1`, allows what follows `/[#;]\s/` to be parsed as
+					If set to `true`, allows what follows `/[#;]\s/` to be parsed as
 					a disabled entry.
 	@property	IniFormat::disabled_can_be_implicit
-					If set to `1`, comments that do not contain a delimiter symbol
-					will never be parsed as disabled keys, but always as simple
-					comments.
+					If set to `true`, comments that do not contain a delimiter
+					symbol will never be parsed as disabled keys, but always as
+					simple comments.
 
 
 
@@ -371,8 +371,8 @@ static const char _LIBCONFINI_SPACES_[_LIBCONFINI_SPALEN_] = {
 
 	There may be infinite pairs here. Each pair must be presented in this order:
 
-	1. Signifier of `FALSE`
-	2. Signifier of `TRUE`.
+	1. Signifier of `false`
+	2. Signifier of `true`
 
 	@note	Everything **must** be lowercase in this list.
 
@@ -395,7 +395,7 @@ static const char * const INI_BOOLEANS[][2] = {
 	@param			depth			What is actually considered a space (possible
 									values: `_LIBCONFINI_WITH_EOL_`,
 									`_LIBCONFINI_NO_EOL_`, `_LIBCONFINI_JUST_S_T_`)
-	@return			A boolean: `TRUE` if the character matches, `FALSE` otherwise
+	@return			A boolean: `true` if the character matches, `false` otherwise
 
 **/
 static inline _LIBCONFINI_BOOL_ is_some_space (const char chr, const int8_t depth) {
@@ -943,9 +943,9 @@ static size_t sanitize_section_path (char * const secpath, const IniFormat forma
 
 	@brief			Out of quotes similar to ECMAScript
 					`ini_string.replace(/''|""/g, "").replace(/^[\n\r]\s*|\s+/g, " ")`
-	@param			ini_string		The string to collapse (multi-line escape
-									sequences must have been already unescaped at
-									this stage)
+	@param			ini_string		The string to collapse -- multi-line escape
+									sequences must be already unescaped at
+									this stage
 	@param			format			The format of the INI file
 	@return			The new length of the string
 
@@ -1044,9 +1044,9 @@ static size_t collapse_everything (char * const ini_string, const IniFormat form
 
 	@brief			Out of quotes similar to ECMAScript
 					`ini_string.replace(/^[\n\r]\s*|\s+/g, " ")`
-	@param			ini_string		The string to collapse (multi-line escape
-									sequences must have been already unescaped at
-									this stage)
+	@param			ini_string		The string to collapse -- multi-line escape
+									sequences must be already unescaped at this
+									stage
 	@param			format			The format of the INI file
 	@return			The new length of the string
 
@@ -1296,8 +1296,8 @@ static size_t uncomment (char * const srcstr, size_t len, const IniFormat format
 	@param			srcstr			String containing an individual node (it may
 									contain multi-line escape sequences)
 	@param			len				Length of the node
-	@param			allow_implicit	A boolean: `TRUE` if keys without a
-									delimiter are allowed, `FALSE` otherwise
+	@param			allow_implicit	A boolean: `true` if keys without a
+									delimiter are allowed, `false` otherwise
 	@param			format			The format of the INI file
 	@return			The node type (see header)
 
@@ -1584,6 +1584,24 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 	}
 
+	/*
+
+	Mask `abcd` (8 bits used):
+
+		FLAG_1		Single quotes are not metacharacters (const)
+		FLAG_2		Double quotes are not metacharacters (const)
+		FLAG_4		Unescaped single quotes are odd right now
+		FLAG_8		Unescaped double quotes are odd right now
+		FLAG_16		We are in an odd sequence of backslashes
+		FLAG_32		The previous character was not a space
+		FLAG_64		This can be a disabled entry
+		FLAG_128	This is nothing but a (multi-line) comment
+
+		Note:	For FLAG_1 and FLAG_2 I keep the values already assigned at the
+				beginning of the function; all other flags will be set to zero.
+
+	*/
+
 	abcd	=	_LIBCONFINI_IS_DIS_MARKER_(srcstr[search_at], format) && (
 					format.disabled_after_space || !is_some_space(srcstr[search_at + 1], _LIBCONFINI_NO_EOL_)
 				) ?
@@ -1600,22 +1618,8 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 		/*
 
-			Node starts with `/[;#]/` and can be multi-line
-
-		*/
-
-		/*
-
-		Mask `abcd` (8 bits used):
-
-			FLAG_1		Single quotes are not metacharacters (const)
-			FLAG_2		Double quotes are not metacharacters (const)
-			FLAG_4		Unescaped single quotes are odd right now
-			FLAG_8		Unescaped double quotes are odd right now
-			FLAG_16		We are in an odd sequence of backslashes
-			FLAG_32		The previous character was not a space
-			FLAG_64		This can be a disabled entry
-			FLAG_128	This is nothing but a (multi-line) comment
+			Node starts with `/[;#]/` and can be multi-line or represent a disabled
+			entry
 
 		*/
 
@@ -1738,7 +1742,8 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 		/*
 
-			Node starts with `/[;#]/` but *cannot* be multi-line
+			Node starts with `/[;#]/` but cannot be multi-line nor represent a
+			disabled entry
 
 		*/
 
@@ -1762,11 +1767,15 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 			FLAG_8		Unescaped double quotes are odd right now
 			FLAG_16		We are in an odd sequence of backslashes
 			FLAG_32		This is neither a hash nor a semicolon character
-			FLAG_64		The previous character is not a space
+			FLAG_64		The previous character was not a space
+
+		Note:	For FLAG_1 and FLAG_2 I keep the values already assigned at the
+				beginning of the function; all other flags have been already set to
+				zero (see previous usage of `abcd` within this function).
 
 		*/
 
-		for (abcd = (abcd & 3) | 96, idx = search_at + 1; srcstr[idx]; idx++) {
+		for (abcd |= 96, idx = search_at + 1; srcstr[idx]; idx++) {
 
 			abcd	=	_LIBCONFINI_IS_ANY_MARKER_(srcstr[idx], format) ?
 							abcd & 79
@@ -1886,10 +1895,10 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	The parsing algorithms used by **libconfini** are able to parse any type of file
-	encoded in 8-bit code units as long as the characters that match the regular
+	encoded in 8-bit code units, as long as the characters that match the regular
 	expression `/[\s\[\]\.\\;#"']/` represent the same code points they represent in
-	ASCII (as with UTF-8 and ISO-8859-1), independently of platform-specific
-	conventions.
+	ASCII, independently of platform-specific conventions (see, for example, UTF-8
+	and ISO-8859-1).
 
 	@note	In order to be null byte injection safe, `NUL` characters, if present in
 			the file, will be removed from the dispatched strings.
@@ -2425,10 +2434,10 @@ int load_ini_file (
 					#ConfiniInterruptNo)
 
 	The parsing algorithms used by **libconfini** are able to parse any type of file
-	encoded in 8-bit code units as long as the characters that match the regular
+	encoded in 8-bit code units, as long as the characters that match the regular
 	expression `/[\s\[\]\.\\;#"']/` represent the same code points they represent in
-	ASCII (as with UTF-8 and ISO-8859-1), independently of platform-specific
-	conventions.
+	ASCII, independently of platform-specific conventions (see, for example, UTF-8
+	and ISO-8859-1).
 
 	@note	In order to be null byte injection safe, `NUL` characters, if present in
 			the file, will be removed from the dispatched strings.
@@ -2474,7 +2483,7 @@ int load_ini_path (
 	@param			simple_string_a		The first simple string
 	@param			simple_string_b		The second simple string
 	@param			format				The format of the INI file
-	@return			A boolean: `TRUE` if the two strings match, `FALSE` otherwise
+	@return			A boolean: `true` if the two strings match, `false` otherwise
 
 	Simple strings are user-given strings or the result of #ini_string_parse(). The
 	@p format argument is used for the following fields:
@@ -2526,7 +2535,7 @@ _Bool ini_string_match_ss (const char * const simple_string_a, const char * cons
 									@p format
 	@param			simple_string	The simple string
 	@param			format			The format of the INI file
-	@return			A boolean: `TRUE` if the two strings match, `FALSE` otherwise
+	@return			A boolean: `true` if the two strings match, `false` otherwise
 
 	INI strings are the strings typically dispatched by #load_ini_file() and
 	#load_ini_path(), which may contain quotes and the three escape sequences `\\`,
@@ -2535,7 +2544,7 @@ _Bool ini_string_match_ss (const char * const simple_string_a, const char * cons
 
 	In order to be suitable for both names and values, **this function always
 	considers sequences of one or more spaces out of quotes in the INI string as
-	collapsed**, _even when `format.do_not_collapse_values` is set to `TRUE`_.
+	collapsed**, even when `format.do_not_collapse_values` is set to `true`.
 
 	This function grants that the result of the comparison between a simple string
 	and an INI string
@@ -2550,9 +2559,9 @@ _Bool ini_string_match_ss (const char * const simple_string_a, const char * cons
 	);
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	will always match the result of the _literal_ comparison between the same simple
-	string and the INI string after this has been parsed by #ini_string_parse() when
-	`format.do_not_collapse_values` is set to `FALSE`.
+	will always match the result of the _literal_ comparison between the simple
+	string and the INI string after the latter has been parsed by
+	#ini_string_parse() when `format.do_not_collapse_values` is set to `false`.
 
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 	ini_string_parse(my_ini_string, format);
@@ -2693,7 +2702,7 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 	@param			ini_string_b	The second INI string unescaped according to
 									@p format
 	@param			format			The format of the INI file
-	@return			A boolean: `TRUE` if the two strings match, `FALSE` otherwise
+	@return			A boolean: `true` if the two strings match, `false` otherwise
 
 	INI strings are the strings typically dispatched by #load_ini_file() and
 	#load_ini_path(), which may contain quotes and the three escape sequences `\\`,
@@ -2701,7 +2710,7 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 
 	In order to be suitable for both names and values, **this function always
 	considers sequences of one or more spaces out of quotes in both strings as
-	collapsed**, _even when `format.do_not_collapse_values` is set to `TRUE`_.
+	collapsed**, even when `format.do_not_collapse_values` is set to `true`.
 
 	This function grants that the result of the comparison between two INI strings
 
@@ -2717,7 +2726,7 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 
 	will always match the result of the _literal_ comparison between the same two
 	INI strings after these have been parsed by #ini_string_parse() when
-	`format.do_not_collapse_values` is set to `FALSE`.
+	`format.do_not_collapse_values` is set to `false`.
 
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 	ini_string_parse(my_ini_string_1, format);
@@ -2904,7 +2913,7 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 									zero (see #INI_ANY_SPACE), any space is
 									delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
 	@param			format			The format of the INI file
-	@return			A boolean: `TRUE` if the two arrays match, `FALSE` otherwise
+	@return			A boolean: `true` if the two arrays match, `false` otherwise
 
 	INI strings are the strings typically dispatched by #load_ini_file() and
 	#load_ini_path(), which may contain quotes and the three escape sequences `\\`,
@@ -2912,14 +2921,14 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 
 	In order to be suitable for both names and values, **this function always
 	considers sequences of one or more spaces out of quotes in both strings as
-	collapsed**, _even when `format.do_not_collapse_values` is set to `TRUE`_.
+	collapsed**, even when `format.do_not_collapse_values` is set to `true`.
 
 	This function can be used, with `'.'` as delimiter, to compare section paths.
 
 	This function grants that the result of the comparison between two INI arrays
 	will always match the the _literal_ comparison between the individual members
 	of both arrays after these have been parsed, one by one, by #ini_string_parse()
-	(with `format.do_not_collapse_values` set to `FALSE`).
+	(with `format.do_not_collapse_values` set to `false`).
 
 	The @p format argument is used for the following fields:
 
@@ -3138,14 +3147,14 @@ _Bool ini_array_match (
 	This function is very similar to #ini_string_parse(), except that does not
 	bother collapsing the sequences of more than one space that might result from
 	removing empty quotes. Its purpose is to be used to parse key and section names,
-	since these are _always_ dispatched as already collapsed. In order to parse
+	since these are always dispatched as already collapsed. In order to parse
 	values, or array parts listed in values, please use #ini_string_parse() instead.
 
 	If you only need to compare @p ini_string with another string, consider to use
 	#ini_string_match_si() and #ini_string_match_ii() instead of parsing the former
 	and perform a simple comparison afterwards. These two functions are in fact able
 	to check directly for equality between unparsed INI strings without actually
-	parsing them.
+	modifiyng them.
 
 	Usually @p ini_string comes from an #IniDispatch (but any other string may be
 	used as well). If the string does not contain quotes, or if quotes are
@@ -3266,7 +3275,7 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 	#ini_string_match_si() and #ini_string_match_ii() instead of parsing the former
 	and perform a simple comparison afterwards. These two functions are in fact able
 	to check directly for equality between unparsed INI strings without actually
-	parsing them.
+	modifying them.
 
 	Usually @p ini_string comes from an #IniDispatch (but any other string may be
 	used as well). If `format.do_not_collapse_values` is set to non-zero, spaces
@@ -3469,7 +3478,7 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 	Usually @p ini_string comes from an #IniDispatch (but any other string may be
 	used as well).
 
-	@note	If @p delimiter matches a metacharacter within the given format (`'\\'`,
+	@note	If @p delimiter matches a metacharacter within the format given (`'\\'`,
 			`'\''` or `'\"'`), its role as metacharacter will have higher priority
 			than its role as delimiter (i.e., the array will have no delimiters and
 			will contain only one member).
@@ -3560,7 +3569,7 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 /**
 
 	@brief			Calls a custom function for each member of a stringified INI
-					array without modifying the content of the buffer -- useful for
+					array, without modifying the content of the buffer -- useful for
 					read-only (`const`) stringified arrays
 	@param			ini_string		The stringified array (it cannot be `NULL`)
 	@param			delimiter		The delimiter between the array members -- if
@@ -3583,7 +3592,7 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 	(the custom argument @p user_data previously passed). If @p f_foreach returns a
 	non-zero value the function #ini_array_foreach() will be interrupted.
 
-	@note	If @p delimiter matches a metacharacter within the given format (`'\\'`,
+	@note	If @p delimiter matches a metacharacter within the format given (`'\\'`,
 			`'\''` or `'\"'`), its role as metacharacter will have higher priority
 			than its role as delimiter (i.e., the array will have no delimiters and
 			will contain only one member).
@@ -3706,7 +3715,7 @@ int ini_array_foreach (
 	Usually @p ini_strptr comes from an #IniDispatch (but any other string may be
 	used as well).
 
-	@note	If @p delimiter matches a metacharacter within the given format (`'\\'`,
+	@note	If @p delimiter matches a metacharacter within the format given (`'\\'`,
 			`'\''` or `'\"'`), its role as metacharacter will have higher priority
 			than its role as delimiter (i.e., the array will have no delimiters and
 			will contain only one member).
@@ -3793,7 +3802,7 @@ size_t ini_array_shift (const char ** const ini_strptr, const char delimiter, co
 	     third&nbsp;&nbsp;&nbsp;&nbsp; etc.&nbsp;&nbsp;&nbsp;`
 	   - After: `first second third etc.`
 
-	@note	If @p delimiter matches a metacharacter within the given format (`'\\'`,
+	@note	If @p delimiter matches a metacharacter within the format given (`'\\'`,
 			`'\''` or `'\"'`), its role as metacharacter will have higher priority
 			than its role as delimiter (i.e., the array will have no delimiters and
 			will contain only one member).
@@ -3801,8 +3810,7 @@ size_t ini_array_shift (const char ** const ini_strptr, const char delimiter, co
 	@include topics/ini_array_collapse.c
 
 	@note	The actual space occupied by the array might get reduced further after
-			each member is parsed by #ini_string_parse() (or #ini_unquote() if
-			@p ini_string is a section path).
+			each member is parsed by #ini_string_parse().
 
 **/
 size_t ini_array_collapse (char * const ini_string, const char delimiter, const IniFormat format) {
@@ -3994,7 +4002,7 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 	Similarly to `strtok_r()` this function can be used only once for a given
 	string.
 
-	@note	If @p delimiter matches a metacharacter within the given format (`'\\'`,
+	@note	If @p delimiter matches a metacharacter within the format given (`'\\'`,
 			`'\''` or `'\"'`), its role as metacharacter will have higher priority
 			than its role as delimiter (i.e., the array will have no delimiters and
 			will contain only one member).
@@ -4070,7 +4078,7 @@ char * ini_array_break (char * const ini_string, const char delimiter, const Ini
 	Similarly to `strtok_r()` this function can be used only once for a given
 	string.
 
-	@note	If @p delimiter matches a metacharacter within the given format (`'\\'`,
+	@note	If @p delimiter matches a metacharacter within the format given (`'\\'`,
 			`'\''` or `'\"'`), its role as metacharacter will have higher priority
 			than its role as delimiter (i.e., the array will have no delimiters and
 			will contain only one member).
@@ -4137,7 +4145,7 @@ char * ini_array_release (char ** const ini_strptr, const char delimiter, const 
 	Similarly to `strtok_r()` this function can be used only once for a given
 	string.
 
-	@note	If @p delimiter matches a metacharacter within the given format (`'\\'`,
+	@note	If @p delimiter matches a metacharacter within the format given (`'\\'`,
 			`'\''` or `'\"'`), its role as metacharacter will have higher priority
 			than its role as delimiter (i.e., the array will have no delimiters and
 			will contain only one member).
@@ -4252,12 +4260,12 @@ int ini_array_split (
 	@param			lowercase		The new value
 	@return			Nothing
 
-	If @p lowercase is `TRUE`, key and section names in case-insensitive INI formats
-	will be dispatched lowercase, verbatim otherwise (default value: `TRUE`).
+	If @p lowercase is `true`, key and section names in case-insensitive INI formats
+	will be dispatched lowercase, verbatim otherwise (default value: `true`).
 
 	@warning	This function changes the value of one or more global variables. In
 				order to be thread-safe this function should be used only once at
-				beginning of execution or otherwise a mutex logic must be
+				beginning of execution, or otherwise a mutex logic must be
 				introduced.
 
 **/
@@ -4280,7 +4288,7 @@ void ini_global_set_lowercase_mode (_Bool lowercase) {
 
 	@warning	This function changes the value of one or more global variables. In
 				order to be thread-safe this function should be used only once at
-				beginning of execution or otherwise a mutex logic must be
+				beginning of execution, or otherwise a mutex logic must be
 				introduced.
 
 	@include topics/ini_global_set_implicit_value.c
@@ -4299,7 +4307,7 @@ void ini_global_set_implicit_value (char * const implicit_value, const size_t im
 
 	@brief			Calculates the #IniFormatNum of an #IniFormat
 	@param			source			The #IniFormat to compute
-	@return			The mask representing the format
+	@return			The unique unsigned integer that identifies the format given
 
 **/
 IniFormatNum ini_fton (const IniFormat source) {

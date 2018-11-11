@@ -16,7 +16,7 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
     size_t length;
     char * left_behind, * shifted = dispatch->value;
 
-    while (left_behind = shifted) {
+    while ((left_behind = shifted)) {
 
       length = ini_array_shift(
                  (const char **) &shifted,
@@ -24,7 +24,7 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
                  dispatch->format
                );
 
-      printf("%.*s\n", length, left_behind);
+      printf("%.*s\n", (unsigned int) length, left_behind);
 
     }
 

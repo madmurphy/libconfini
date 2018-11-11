@@ -79,7 +79,7 @@ while [[ "${_DONE_}" -eq 0 ]] ; do
 	if [[ "${_DONT_RUN_}" -eq 0 ]] ; then
 		_CHOSEN_LONG_="${_SRCS_[$(expr ${_CHOICE_} - 1)]}"
 		_CHOSEN_SHORT_="${_CHOSEN_LONG_:_THIS_PATH_LENGTH_}"
-		_GCC_CMD_="gcc -pedantic -lconfini"
+		_GCC_CMD_="gcc -Wall -pedantic -lconfini"
 		if [[ "${_CHOSEN_SHORT_}" == *"glib_"* ]]; then
 			# We need glib for this...
 			_GCC_CMD_="${_GCC_CMD_} -lglib-2.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include"
