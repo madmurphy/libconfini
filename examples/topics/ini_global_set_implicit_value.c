@@ -11,7 +11,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   if (dispatch->value == INI_GLOBAL_IMPLICIT_VALUE) {
 
     printf(
-      "\nDATA: %s\nVALUE: %s\nNODE TYPE: %d\n"
+      "\nDATA: %s\nVALUE: %s\nNODE TYPE: %u\n"
       "(This is an implicit key element)\n",
 
       dispatch->data,
@@ -22,7 +22,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   } else {
 
     printf(
-      "\nDATA: %s\nVALUE: %s\nNODE TYPE: %d\n",
+      "\nDATA: %s\nVALUE: %s\nNODE TYPE: %u\n",
 
       dispatch->data,
       dispatch->value,

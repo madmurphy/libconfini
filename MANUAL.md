@@ -376,7 +376,7 @@ INI file has been completely dispatched, non-zero otherwise.
 static int my_callback (IniDispatch * dispatch, void * v_null) {
 
   printf(
-    "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
+    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
     dispatch->data, dispatch->value, dispatch->type
   );
 
@@ -426,7 +426,7 @@ int main () {
 static int my_callback (IniDispatch * dispatch, void * v_null) {
 
   printf(
-    "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
+    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
     dispatch->data, dispatch->value, dispatch->type
   );
 
@@ -563,7 +563,7 @@ IniFormat my_format = {
 
 IniFormatNum my_format_num = ini_fton(my_format);
 
-printf("Format No. %d\n", my_format_num); // "Format No. 56893"
+printf("Format No. %u\n", my_format_num); // "Format No. 56893"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The function `ini_fton()` tells us that this format is univocally the format
@@ -621,7 +621,7 @@ before being copied or analyzed they can be edited, **with some precautions**_:
 1. Be sure that your edit remains within the buffer lengths given (see:
    `IniDispatch::d_len` and `IniDispatch::v_len`).
 2. If you want to edit the content of `IniDispatch::data` and this contains a
-   section path, the `IniDispatch::append_to` properties of its children _may_
+   section path, the `IniDispatch::append_to` properties of its children may
    share this buffer. In this case, if you edit its content, you can no more
    rely on the `IniDispatch::append_to` properties of this node's children (you
    will not make any damage, the loop will continue just fine: so if you think
@@ -644,7 +644,7 @@ Typical peaceful edits are the ones obtained by calling the functions
 `IniDispatch::value` -- but make sure that you are not going to edit the global
 string `#INI_GLOBAL_IMPLICIT_VALUE`, if used (see below):
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 /*  examples/topics/ini_string_parse.c  */
 
 #include <stdio.h>
@@ -652,7 +652,9 @@ string `#INI_GLOBAL_IMPLICIT_VALUE`, if used (see below):
 
 static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
-  if (dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY) {
+  if (
+    dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY
+  ) {
 
     ini_unquote(dispatch->data, dispatch->format);
     ini_string_parse(dispatch->value, dispatch->format);
@@ -660,7 +662,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   }
 
   printf(
-    "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
+    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
     dispatch->data,
     dispatch->value,
     dispatch->type
@@ -688,7 +690,7 @@ int main () {
   return 0;
 
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ### STRING COMPARISONS
@@ -856,7 +858,7 @@ case you don't have `#include <stdlib.h>` in your source:
 The function `ini_unquote()` might be useful for key names enclosed within
 quotes. This function is very similar to `ini_string_parse()`, except that does
 not bother collapsing the sequences of more than one space that might result
-from removing empty quotes -- this is never necessary since empty quotes
+from removing empty quotes -- this is never necessary, since empty quotes
 surrounded by spaces in key and section names are always collapsed before being
 dispatched.
 
@@ -880,7 +882,7 @@ of a section path, depending on the content and the format of the INI file.
 ### IMPLICIT KEYS
 
 In order to set the value to be assigned to implicit keys, please use the
-`ini_global_set_implicit_value()` function. A _zero-length `true`-boolean_ is
+`ini_global_set_implicit_value()` function. A _zero-length `TRUE`-boolean_ is
 usually a good choice:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
@@ -926,7 +928,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   if (dispatch->value == INI_GLOBAL_IMPLICIT_VALUE) {
 
     printf(
-      "\nDATA: %s\nVALUE: %s\nNODE TYPE: %d\n"
+      "\nDATA: %s\nVALUE: %s\nNODE TYPE: %u\n"
       "(This is an implicit key element)\n",
 
       dispatch->data,
@@ -937,7 +939,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   } else {
 
     printf(
-      "\nDATA: %s\nVALUE: %s\nNODE TYPE: %d\n",
+      "\nDATA: %s\nVALUE: %s\nNODE TYPE: %u\n",
 
       dispatch->data,
       dispatch->value,
@@ -1270,9 +1272,9 @@ The philosophy of **libconfini** is to parse as much as possible without
 generating error exceptions. No parsing errors are returned once an INI file has
 been correctly allocated into the stack, with the exception of the
 _out-of-range_ error `#CONFINI_EOOR` (see `enum` `#ConfiniInterruptNo`), whose
-meaning is that the loop is for unknown reasons longer than expected -- this
-error is possibly generated by the presence of bugs in the library's code and
-should never be returned (please [contact me][6] if this happens).
+meaning is that the dispatches are for unknown reasons more than expected --
+this error is possibly generated by the presence of bugs in the library's code
+and should never be returned (please [contact me][6] if this happens).
 
 When an INI node is wrongly written in respect to the format given, it is
 dispatched verbatim as an `#INI_UNKNOWN` node -- see `enum` `#IniNodeType`.
@@ -1410,7 +1412,7 @@ If we tried to parse it according to the format used below
 static int ini_listener (IniDispatch * disp, void * v_null) {
 
   printf(
-    "#%d - TYPE: %d, DATA: '%s', VALUE: '%s'\n",
+    "#%zu - TYPE: %u, DATA: '%s', VALUE: '%s'\n",
     disp->dispatch_id, disp->type, disp->data, disp->value
   );
 
@@ -1478,8 +1480,8 @@ that such INI file is parsed properly, we can follow two possible approaches.
 
 **1. Intervene on the INI file.** The reason why `now=Sunday April 3rd, 2016`
 has been properly parsed as a comment -- despite it really looks like a disabled
-entry -- is because it has been nested in a comment block opened by more than
-one leading comment marker (in this case the two `##`). As a general rule,
+entry -- is because it has been nested within a comment block opened by more
+than one leading comment marker (in this case the two `##`). As a general rule,
 _**libconfini** never parses a comment beginning with more than one leading
 marker as a disabled entry_, therefore this is the surest way to ensure that
 proper comments are always considered as such.

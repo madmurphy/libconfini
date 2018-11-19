@@ -1,4 +1,4 @@
-.TH "confini.h" 3 "Sun Nov 11 2018" "libconfini" \" -*- nroff -*-
+.TH "confini.h" 3 "Mon Nov 19 2018" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -188,7 +188,7 @@ confini.h \- libconfini header
 .br
 .RI "Constructs a new \fBIniFormat\fP according to an \fBIniFormatNum\fP\&. "
 .ti -1c
-.RI "signed int \fBini_get_bool\fP (const char *const ini_string, const signed int return_value)"
+.RI "int \fBini_get_bool\fP (const char *const ini_string, const int return_value)"
 .br
 .RI "Checks whether a string matches one of the booleans listed in the private constant \fBINI_BOOLEANS\fP (case-insensitive) "
 .in -1c
@@ -1201,7 +1201,7 @@ The unique unsigned integer that identifies the format given
 .RE
 .PP
 
-.SS "signed int ini_get_bool (const char *const ini_string, const signed int return_value)"
+.SS "int ini_get_bool (const char *const ini_string, const int return_value)"
 
 .PP
 Checks whether a string matches one of the booleans listed in the private constant \fBINI_BOOLEANS\fP (case-insensitive) 
@@ -1499,7 +1499,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   if (dispatch->value == INI_GLOBAL_IMPLICIT_VALUE) {
 
     printf(
-      "\nDATA: %s\nVALUE: %s\nNODE TYPE: %d\n"
+      "\nDATA: %s\nVALUE: %s\nNODE TYPE: %u\n"
       "(This is an implicit key element)\n",
 
       dispatch->data,
@@ -1510,7 +1510,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   } else {
 
     printf(
-      "\nDATA: %s\nVALUE: %s\nNODE TYPE: %d\n",
+      "\nDATA: %s\nVALUE: %s\nNODE TYPE: %u\n",
 
       dispatch->data,
       dispatch->value,
@@ -1573,14 +1573,14 @@ This function changes the value of one or more global variables\&. In order to b
 .RE
 .PP
 
-.SS "\fBIniFormat\fP ini_ntof (\fBIniFormatNum\fP format_id)"
+.SS "\fBIniFormat\fP ini_ntof (\fBIniFormatNum\fP format_num)"
 
 .PP
 Constructs a new \fBIniFormat\fP according to an \fBIniFormatNum\fP\&. 
 .PP
 \fBParameters:\fP
 .RS 4
-\fIformat_id\fP The \fBIniFormatNum\fP to parse 
+\fIformat_num\fP The \fBIniFormatNum\fP to parse 
 .RE
 .PP
 \fBReturns:\fP
@@ -1590,7 +1590,7 @@ The new \fBIniFormat\fP constructed
 .PP
 \fBNote:\fP
 .RS 4
-If \fCformat_id\fP \fC>\fP \fC16777215\fP it will be truncated to 24 bits\&. 
+If \fCformat_num\fP \fC>\fP \fC16777215\fP it will be truncated to 24 bits\&. 
 .RE
 .PP
 
@@ -1859,7 +1859,9 @@ The \fCformat\fP argument is used for the following fields:
 
 static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
-  if (dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY) {
+  if (
+    dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY
+  ) {
 
     ini_unquote(dispatch->data, dispatch->format);
     ini_string_parse(dispatch->value, dispatch->format);
@@ -1867,7 +1869,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   }
 
   printf(
-    "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
+    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
     dispatch->data,
     dispatch->value,
     dispatch->type
@@ -1941,7 +1943,9 @@ The \fCformat\fP argument is used for the following fields:
 
 static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
-  if (dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY) {
+  if (
+    dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY
+  ) {
 
     ini_unquote(dispatch->data, dispatch->format);
     ini_string_parse(dispatch->value, dispatch->format);
@@ -1949,7 +1953,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   }
 
   printf(
-    "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
+    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
     dispatch->data,
     dispatch->value,
     dispatch->type
@@ -2033,7 +2037,7 @@ The function \fCf_foreach\fP (see \fBIniDispHandler\fP data type) will be invoke
 static int my_callback (IniDispatch * dispatch, void * v_null) {
 
   printf(
-    "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
+    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
     dispatch->data, dispatch->value, dispatch->type
   );
 
@@ -2116,7 +2120,7 @@ For the two parameters \fCf_init\fP and \fCf_foreach\fP see function \fBload_ini
 static int my_callback (IniDispatch * dispatch, void * v_null) {
 
   printf(
-    "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
+    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
     dispatch->data, dispatch->value, dispatch->type
   );
 

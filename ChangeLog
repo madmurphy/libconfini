@@ -2,6 +2,16 @@ Change Log {#changelog}
 =======================
 
 
+## 1.8.3 -- 2018-11-19
+
+Changes:
+
+* Code review (`ini_string_match_ss()`, `ini_string_match_si()`,
+  `ini_array_foreach()`, `ini_array_split()`)
+* Documentation
+* Examples
+
+
 ## 1.8.2 -- 2018-11-11
 
 Changes:

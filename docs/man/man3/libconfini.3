@@ -454,7 +454,7 @@ Both functions \fBload_ini_file()\fR and \fBload_ini_path()\fR will return zero 
 static int my_callback (IniDispatch * dispatch, void * v_null) {
 
   printf(
-    "DATA: %s\enVALUE: %s\enNODE TYPE: %d\en\en",
+    "DATA: %s\enVALUE: %s\enNODE TYPE: %u\en\en",
     dispatch\->data, dispatch\->value, dispatch\->type
   );
 
@@ -511,7 +511,7 @@ int main () {
 static int my_callback (IniDispatch * dispatch, void * v_null) {
 
   printf(
-    "DATA: %s\enVALUE: %s\enNODE TYPE: %d\en\en",
+    "DATA: %s\enVALUE: %s\enNODE TYPE: %u\en\en",
     dispatch\->data, dispatch\->value, dispatch\->type
   );
 
@@ -654,7 +654,7 @@ IniFormat my_format = {
 
 IniFormatNum my_format_num = ini_fton(my_format);
 
-printf("Format No\. %d\en", my_format_num); // "Format No\. 56893"
+printf("Format No\. %u\en", my_format_num); // "Format No\. 56893"
 .
 .fi
 .
@@ -709,7 +709,7 @@ The strings dispatched, as already said, must not be freed\. \fINevertheless, be
 Be sure that your edit remains within the buffer lengths given (see: \fBIniDispatch::d_len\fR and \fBIniDispatch::v_len\fR)\.
 .
 .IP "2." 4
-If you want to edit the content of \fBIniDispatch::data\fR and this contains a section path, the \fBIniDispatch::append_to\fR properties of its children \fImay\fR share this buffer\. In this case, if you edit its content, you can no more rely on the \fBIniDispatch::append_to\fR properties of this node\'s children (you will not make any damage, the loop will continue just fine: so if you think you are going to never use the property \fBIniDispatch::append_to\fR just do it); alternatively, use \fBstrdup()\fR\. If, instead, \fBIniDispatch::data\fR contains a key name or a comment, it is granted that no other dispatch will share this buffer, so feel free to edit it before it gets lost\.
+If you want to edit the content of \fBIniDispatch::data\fR and this contains a section path, the \fBIniDispatch::append_to\fR properties of its children may share this buffer\. In this case, if you edit its content, you can no more rely on the \fBIniDispatch::append_to\fR properties of this node\'s children (you will not make any damage, the loop will continue just fine: so if you think you are going to never use the property \fBIniDispatch::append_to\fR just do it); alternatively, use \fBstrdup()\fR\. If, instead, \fBIniDispatch::data\fR contains a key name or a comment, it is granted that no other dispatch will share this buffer, so feel free to edit it before it gets lost\.
 .
 .IP "3." 4
 Regarding \fBIniDispatch::value\fR, if it does not represent an implicit value (see below), this buffer is never shared between dispatches, so feel free to edit it\.
@@ -733,7 +733,9 @@ Typical peaceful edits are the ones obtained by calling the functions \fBini_arr
 
 static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
-  if (dispatch\->type == INI_KEY || dispatch\->type == INI_DISABLED_KEY) {
+  if (
+    dispatch\->type == INI_KEY || dispatch\->type == INI_DISABLED_KEY
+  ) {
 
     ini_unquote(dispatch\->data, dispatch\->format);
     ini_string_parse(dispatch\->value, dispatch\->format);
@@ -741,7 +743,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   }
 
   printf(
-    "DATA: %s\enVALUE: %s\enNODE TYPE: %d\en\en",
+    "DATA: %s\enVALUE: %s\enNODE TYPE: %u\en\en",
     dispatch\->data,
     dispatch\->value,
     dispatch\->type
@@ -971,7 +973,7 @@ Together with the functions listed above the following links are available, in c
 .IP "" 0
 .
 .SS "FORMATTING THE KEY NAMES"
-The function \fBini_unquote()\fR might be useful for key names enclosed within quotes\. This function is very similar to \fBini_string_parse()\fR, except that does not bother collapsing the sequences of more than one space that might result from removing empty quotes – this is never necessary since empty quotes surrounded by spaces in key and section names are always collapsed before being dispatched\.
+The function \fBini_unquote()\fR might be useful for key names enclosed within quotes\. This function is very similar to \fBini_string_parse()\fR, except that does not bother collapsing the sequences of more than one space that might result from removing empty quotes – this is never necessary, since empty quotes surrounded by spaces in key and section names are always collapsed before being dispatched\.
 .
 .P
 You could use \fBini_string_parse()\fR as well to parse key and section names, but you would obtain the same result with a slightly bigger effort from the CPU\.
@@ -983,7 +985,7 @@ In order to retrieve the parts of a section path, the functions \fBini_array_get
 It might be required that the function \fBini_unquote()\fR be applied to each part of a section path, depending on the content and the format of the INI file\.
 .
 .SS "IMPLICIT KEYS"
-In order to set the value to be assigned to implicit keys, please use the \fBini_global_set_implicit_value()\fR function\. A \fIzero\-length \fBtrue\fR\-boolean\fR is usually a good choice:
+In order to set the value to be assigned to implicit keys, please use the \fBini_global_set_implicit_value()\fR function\. A \fIzero\-length \fBTRUE\fR\-boolean\fR is usually a good choice:
 .
 .IP "" 4
 .
@@ -1037,7 +1039,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   if (dispatch\->value == INI_GLOBAL_IMPLICIT_VALUE) {
 
     printf(
-      "\enDATA: %s\enVALUE: %s\enNODE TYPE: %d\en"
+      "\enDATA: %s\enVALUE: %s\enNODE TYPE: %u\en"
       "(This is an implicit key element)\en",
 
       dispatch\->data,
@@ -1048,7 +1050,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   } else {
 
     printf(
-      "\enDATA: %s\enVALUE: %s\enNODE TYPE: %d\en",
+      "\enDATA: %s\enVALUE: %s\enNODE TYPE: %u\en",
 
       dispatch\->data,
       dispatch\->value,
@@ -1348,7 +1350,7 @@ Depending on the format of the INI file, \fBlibconfini\fR may use up to three gl
 Apart from the three variables above, each parsing allocates and frees its own memory and every function is fully reentrant, therefore the library can be considered thread\-safe\.
 .
 .SS "ERROR EXCEPTIONS"
-The philosophy of \fBlibconfini\fR is to parse as much as possible without generating error exceptions\. No parsing errors are returned once an INI file has been correctly allocated into the stack, with the exception of the \fIout\-of\-range\fR error \fBCONFINI_EOOR\fR (see \fBenum\fR \fBConfiniInterruptNo\fR), whose meaning is that the loop is for unknown reasons longer than expected – this error is possibly generated by the presence of bugs in the library\'s code and should never be returned (please contact me \fIhttps://github\.com/madmurphy/libconfini/issues\fR if this happens)\.
+The philosophy of \fBlibconfini\fR is to parse as much as possible without generating error exceptions\. No parsing errors are returned once an INI file has been correctly allocated into the stack, with the exception of the \fIout\-of\-range\fR error \fBCONFINI_EOOR\fR (see \fBenum\fR \fBConfiniInterruptNo\fR), whose meaning is that the dispatches are for unknown reasons more than expected \-\- this error is possibly generated by the presence of bugs in the library\'s code and should never be returned (please contact me \fIhttps://github\.com/madmurphy/libconfini/issues\fR if this happens)\.
 .
 .P
 When an INI node is wrongly written in respect to the format given, it is dispatched verbatim as an \fBINI_UNKNOWN\fR node – see \fBenum\fR \fBIniNodeType\fR\. Empty lines, or lines containing only spaces and empty quotes (if the latter are supported) will be skipped\.
@@ -1505,7 +1507,7 @@ If we tried to parse it according to the format used below
 static int ini_listener (IniDispatch * disp, void * v_null) {
 
   printf(
-    "#%d \- TYPE: %d, DATA: \'%s\', VALUE: \'%s\'\en",
+    "#%zu \- TYPE: %u, DATA: \'%s\', VALUE: \'%s\'\en",
     disp\->dispatch_id, disp\->type, disp\->data, disp\->value
   );
 
@@ -1581,7 +1583,7 @@ we would obtain the following result:
 As we can see, all comments but \fBnow=Sunday April 3rd, 2016\fR would be parsed as disabled entries – which is not what the author intended\. Therefore, to ensure that such INI file is parsed properly, we can follow two possible approaches\.
 .
 .P
-\fB1\. Intervene on the INI file\.\fR The reason why \fBnow=Sunday April 3rd, 2016\fR has been properly parsed as a comment – despite it really looks like a disabled entry – is because it has been nested in a comment block opened by more than one leading comment marker (in this case the two \fB#\fR)\. As a general rule, \fI\fBlibconfini\fR never parses a comment beginning with more than one leading marker as a disabled entry\fR, therefore this is the surest way to ensure that proper comments are always considered as such\.
+\fB1\. Intervene on the INI file\.\fR The reason why \fBnow=Sunday April 3rd, 2016\fR has been properly parsed as a comment – despite it really looks like a disabled entry – is because it has been nested within a comment block opened by more than one leading comment marker (in this case the two \fB#\fR)\. As a general rule, \fI\fBlibconfini\fR never parses a comment beginning with more than one leading marker as a disabled entry\fR, therefore this is the surest way to ensure that proper comments are always considered as such\.
 .
 .P
 Hence, by adding one more number sign to the first comment

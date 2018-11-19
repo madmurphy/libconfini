@@ -28,7 +28,7 @@ static int print_ini_stats (IniStatistics * stats, void * user_data) {
     "Hi there!\n\n"
     "Today is %s.\n\n"
     "We decided to parse the INI file \"%s\".\n\n"
-    "The file is %lu bytes large and contains %lu members.\n"
+    "The file is %zu bytes large and contains %zu members.\n"
     "Please find below the output of each dispatch.\n",
 
     my_other->my_date,
@@ -46,15 +46,15 @@ static int my_ini_listener (IniDispatch * dispatch, void * user_data) {
 
   printf(
 
-    "\ndispatch_id: %lu\n"
+    "\ndispatch_id: %zu\n"
     "format: {IniFormat}\n"
-    "type: %d\n"
+    "type: %u\n"
     "data: |%s|\n"
     "value: |%s|\n"
     "append_to: |%s|\n"
-    "d_len: %lu\n"
-    "v_len: %lu\n"
-    "at_len: %lu\n",
+    "d_len: %zu\n"
+    "v_len: %zu\n"
+    "at_len: %zu\n",
 
     dispatch->dispatch_id,
     dispatch->type,

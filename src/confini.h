@@ -302,9 +302,9 @@ extern IniFormat ini_ntof (
 );
 
 
-extern signed int ini_get_bool (
+extern int ini_get_bool (
     const char * const ini_string,
-    const signed int return_value
+    const int return_value
 );
 
 

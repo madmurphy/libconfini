@@ -5,7 +5,9 @@
 
 static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
-  if (dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY) {
+  if (
+    dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY
+  ) {
 
     ini_unquote(dispatch->data, dispatch->format);
     ini_string_parse(dispatch->value, dispatch->format);
@@ -13,7 +15,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   }
 
   printf(
-    "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
+    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
     dispatch->data,
     dispatch->value,
     dispatch->type

@@ -21,7 +21,7 @@ IF %ERRORLEVEL% NEQ 0 (
 
 WHERE %RCCOMPILER% >nul 2>nul
 SET /A __WINDRESERR__=%ERRORLEVEL%
-SET __TMP_RSO__=tmpresource.o
+SET __TMP_RSO__=winres.o
 
 IF %__WINDRESERR__% NEQ 0 (
 	@ECHO Program %RCCOMPILER% was not found. Proceeding without resource file.

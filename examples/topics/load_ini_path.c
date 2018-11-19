@@ -6,7 +6,7 @@
 static int my_callback (IniDispatch * dispatch, void * v_null) {
 
   printf(
-    "DATA: %s\nVALUE: %s\nNODE TYPE: %d\n\n",
+    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
     dispatch->data, dispatch->value, dispatch->type
   );
 

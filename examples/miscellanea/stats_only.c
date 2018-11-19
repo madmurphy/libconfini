@@ -1,4 +1,10 @@
 /*  examples/miscellanea/stats_only.c  */
+/*
+
+The following code will try to load an INI file in order to get some statistics
+about it without dispatching its content.
+
+*/
 
 #include <stdio.h>
 #include <confini.h>
@@ -6,7 +12,7 @@
 static int my_stats_handler (IniStatistics * statistics, void * user_data) {
 
   printf(
-    "The file is %lu bytes large and contains %lu members.\n",
+    "The file is %zu bytes large and contains %zu members.\n",
     statistics->bytes,
     statistics->members
   );

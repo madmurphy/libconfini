@@ -272,14 +272,14 @@
 	Checks whether a character can be escaped within a given format
 
 */
-#define _LIBCONFINI_IS_ESC_CHAR_(CHR, FMT) (\
-	CHR == _LIBCONFINI_BACKSLASH_ ? \
-		!INIFORMAT_HAS_NO_ESC(FMT) \
-	: CHR == _LIBCONFINI_DOUBLE_QUOTES_ ?\
-		!FMT.no_double_quotes \
-	:\
-		CHR == _LIBCONFINI_SINGLE_QUOTES_ && !FMT.no_single_quotes \
-)
+#define _LIBCONFINI_IS_ESC_CHAR_(CHR, FMT) ( \
+		CHR == _LIBCONFINI_BACKSLASH_ ? \
+			!INIFORMAT_HAS_NO_ESC(FMT) \
+		: CHR == _LIBCONFINI_DOUBLE_QUOTES_ ? \
+			!FMT.no_double_quotes \
+		: \
+			CHR == _LIBCONFINI_SINGLE_QUOTES_ && !FMT.no_single_quotes \
+	)
 
 
 /*
@@ -288,12 +288,12 @@
 	entry within a given format
 
 */
-#define _LIBCONFINI_IS_DIS_MARKER_(CHR, FMT) (\
-	CHR == _LIBCONFINI_HASH_ ?\
-		FMT.hash_marker == INI_DISABLED_OR_COMMENT \
-	:\
-		CHR == _LIBCONFINI_SEMICOLON_ && FMT.semicolon_marker == INI_DISABLED_OR_COMMENT \
-)
+#define _LIBCONFINI_IS_DIS_MARKER_(CHR, FMT) ( \
+		CHR == _LIBCONFINI_HASH_ ? \
+			FMT.hash_marker == INI_DISABLED_OR_COMMENT \
+		: \
+			CHR == _LIBCONFINI_SEMICOLON_ && FMT.semicolon_marker == INI_DISABLED_OR_COMMENT \
+	)
 
 
 /*
@@ -301,12 +301,12 @@
 	Checks whether a character represents any marker within a given format
 
 */
-#define _LIBCONFINI_IS_ANY_MARKER_(CHR, FMT) (\
-	CHR == _LIBCONFINI_HASH_ ?\
-		FMT.hash_marker != INI_IS_NOT_A_MARKER \
-	:\
-		CHR == _LIBCONFINI_SEMICOLON_ && FMT.semicolon_marker != INI_IS_NOT_A_MARKER \
-)
+#define _LIBCONFINI_IS_ANY_MARKER_(CHR, FMT) ( \
+		CHR == _LIBCONFINI_HASH_ ? \
+			FMT.hash_marker != INI_IS_NOT_A_MARKER \
+		: \
+			CHR == _LIBCONFINI_SEMICOLON_ && FMT.semicolon_marker != INI_IS_NOT_A_MARKER \
+	)
 
 
 /*
@@ -315,12 +315,12 @@
 	format
 
 */
-#define _LIBCONFINI_IS_IGN_MARKER_(CHR, FMT) (\
-	CHR == _LIBCONFINI_HASH_ ?\
-		FMT.hash_marker == INI_IGNORE \
-	:\
-		CHR == _LIBCONFINI_SEMICOLON_ && FMT.semicolon_marker == INI_IGNORE \
-)
+#define _LIBCONFINI_IS_IGN_MARKER_(CHR, FMT) ( \
+		CHR == _LIBCONFINI_HASH_ ? \
+			FMT.hash_marker == INI_IGNORE \
+		: \
+			CHR == _LIBCONFINI_SEMICOLON_ && FMT.semicolon_marker == INI_IGNORE \
+	)
 
 
 /*
@@ -968,12 +968,12 @@ static size_t collapse_everything (char * const ini_string, const IniFormat form
 
 	*/
 
+	register size_t idx_s = 0, idx_d = 0;
+
 	register uint16_t abcd	=	(is_some_space(*ini_string, _LIBCONFINI_WITH_EOL_) ? 128 : 160) |
 								(format.no_double_quotes << 1) |
 								format.no_single_quotes;
 
-
-	register size_t idx_s = 0, idx_d = 0;
 
 	for (; ini_string[idx_s]; idx_s++) {
 
@@ -2084,7 +2084,7 @@ int load_ini_file (
 	size_t parse_at;
 	char * curr_parent_str = cache + len, * subparent_str = curr_parent_str, * real_parent_str = curr_parent_str;
 
-	IniDispatch this_disp = {
+	IniDispatch dsp = {
 		.format = format,
 		.dispatch_id = 0
 	};
@@ -2106,19 +2106,19 @@ int load_ini_file (
 
 		}
 
-		if (this_disp.dispatch_id >= this_doc.members) {
+		if (dsp.dispatch_id >= this_doc.members) {
 
 			return_value = CONFINI_EOOR;
 			goto free_and_exit;
 
 		}
 
-		this_disp.data = cache + node_at;
-		this_disp.value = cache + idx;
-		this_disp.d_len = idx - node_at;
-		this_disp.v_len = 0;
+		dsp.data = cache + node_at;
+		dsp.value = cache + idx;
+		dsp.d_len = idx - node_at;
+		dsp.v_len = 0;
 
-		if (_LIBCONFINI_IS_DIS_MARKER_(*this_disp.data, format)) {
+		if (_LIBCONFINI_IS_DIS_MARKER_(*dsp.data, format)) {
 
 			parse_at = ltrim_s(cache, node_at + 1, _LIBCONFINI_NO_EOL_);
 
@@ -2151,13 +2151,14 @@ int load_ini_file (
 						(format.no_double_quotes << 1) |
 						format.no_single_quotes;
 
-			for (__ITER__ = 1; (abcd & 512) && __ITER__ < this_disp.d_len; __ITER__++) {
 
-				abcd	=	this_disp.data[__ITER__] == _LIBCONFINI_LF_ || this_disp.data[__ITER__] == _LIBCONFINI_CR_ ?
+			for (__ITER__ = 1; (abcd & 512) && __ITER__ < dsp.d_len; __ITER__++) {
+
+				abcd	=	dsp.data[__ITER__] == _LIBCONFINI_LF_ || dsp.data[__ITER__] == _LIBCONFINI_CR_ ?
 								abcd | 448
-							: _LIBCONFINI_IS_ANY_MARKER_(this_disp.data[__ITER__], format) ?
+							: _LIBCONFINI_IS_ANY_MARKER_(dsp.data[__ITER__], format) ?
 								(
-									(abcd & 64) && !_LIBCONFINI_IS_DIS_MARKER_(this_disp.data[__ITER__], format) ?
+									(abcd & 64) && !_LIBCONFINI_IS_DIS_MARKER_(dsp.data[__ITER__], format) ?
 										abcd & 31
 									: abcd & 128 ?
 										abcd & 543
@@ -2166,7 +2167,7 @@ int load_ini_file (
 									:
 										abcd & 287
 								)
-							: is_some_space(this_disp.data[__ITER__], _LIBCONFINI_NO_EOL_) ?
+							: is_some_space(dsp.data[__ITER__], _LIBCONFINI_NO_EOL_) ?
 								(
 									abcd & 64 ?
 										(abcd & 991) | 448
@@ -2175,40 +2176,40 @@ int load_ini_file (
 									:
 										abcd & 31
 								)
-							: this_disp.data[__ITER__] == _LIBCONFINI_BACKSLASH_ ?
+							: dsp.data[__ITER__] == _LIBCONFINI_BACKSLASH_ ?
 								((abcd & 831) | 256) ^ 32
-							: !(abcd & 42) && this_disp.data[__ITER__] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+							: !(abcd & 42) && dsp.data[__ITER__] == _LIBCONFINI_DOUBLE_QUOTES_ ?
 								((abcd & 799) | 256) ^ 16
-							: !(abcd & 49) && this_disp.data[__ITER__] == _LIBCONFINI_SINGLE_QUOTES_ ?
+							: !(abcd & 49) && dsp.data[__ITER__] == _LIBCONFINI_SINGLE_QUOTES_ ?
 								((abcd & 799) | 256) ^ 8
 							:
 								(abcd & 799) | 256;
 
 			}
 
-			this_disp.type		=	__ITER__ == this_disp.d_len ?
+			dsp.type		=	__ITER__ == dsp.d_len ?
 										get_type_as_active(cache + parse_at, idx - parse_at, format.disabled_can_be_implicit, format)
 									:
 										INI_UNKNOWN;
 
 
-			if (this_disp.type) {
+			if (dsp.type) {
 
-				this_disp.data = cache + parse_at;
-				this_disp.d_len = idx - parse_at;
+				dsp.data = cache + parse_at;
+				dsp.d_len = idx - parse_at;
 
 			}
 
-			this_disp.type |= 4;
+			dsp.type |= 4;
 
 		} else {
 
-			this_disp.type	=	_LIBCONFINI_IS_ANY_MARKER_(*this_disp.data, format) ?
+			dsp.type	=	_LIBCONFINI_IS_ANY_MARKER_(*dsp.data, format) ?
 									INI_COMMENT
-								: *this_disp.data == _LIBCONFINI_INLINE_MARKER_ ?
+								: *dsp.data == _LIBCONFINI_INLINE_MARKER_ ?
 									INI_INLINE_COMMENT
 								:
-									get_type_as_active(this_disp.data, this_disp.d_len, _LIBCONFINI_TRUE_, format);
+									get_type_as_active(dsp.data, dsp.d_len, _LIBCONFINI_TRUE_, format);
 
 		}
 
@@ -2227,14 +2228,14 @@ int load_ini_file (
 
 		}
 
-		if (__PARENT_IS_DISABLED__ && !(this_disp.type & 4)) {
+		if (__PARENT_IS_DISABLED__ && !(dsp.type & 4)) {
 
 			real_parent_str[__REAL_PARENT_LEN__] = '\0';
 			__CURR_PARENT_LEN__ = __REAL_PARENT_LEN__;
 			curr_parent_str = real_parent_str;
 			__PARENT_IS_DISABLED__ = _LIBCONFINI_FALSE_;
 
-		} else if (!__PARENT_IS_DISABLED__ && this_disp.type == INI_DISABLED_SECTION) {
+		} else if (!__PARENT_IS_DISABLED__ && dsp.type == INI_DISABLED_SECTION) {
 
 			__REAL_PARENT_LEN__ = __CURR_PARENT_LEN__;
 			real_parent_str = curr_parent_str;
@@ -2242,20 +2243,20 @@ int load_ini_file (
 
 		}
 
-		this_disp.append_to = curr_parent_str;
-		this_disp.at_len = __CURR_PARENT_LEN__;
+		dsp.append_to = curr_parent_str;
+		dsp.at_len = __CURR_PARENT_LEN__;
 
-		this_disp.d_len		=	this_disp.type == INI_COMMENT ?
-									uncomment(this_disp.data, idx - node_at, format)
-								: this_disp.type == INI_INLINE_COMMENT ?
-									uncomment(++this_disp.data, idx - node_at - 1, format)
+		dsp.d_len		=	dsp.type == INI_COMMENT ?
+									uncomment(dsp.data, idx - node_at, format)
+								: dsp.type == INI_INLINE_COMMENT ?
+									uncomment(++dsp.data, idx - node_at - 1, format)
 								: format.multiline_nodes != INI_NO_MULTILINE ?
-									unescape_cr_lf(this_disp.data, idx - node_at, this_disp.type & 4, format)
+									unescape_cr_lf(dsp.data, idx - node_at, dsp.type & 4, format)
 								:
 									idx - node_at;
 
 
-		switch (this_disp.type) {
+		switch (dsp.type) {
 
 			/*
 
@@ -2270,22 +2271,22 @@ int load_ini_file (
 			case INI_SECTION:
 			case INI_DISABLED_SECTION:
 
-				*this_disp.data++ = '\0';
-				__ITER__ = getn_metachar_pos(this_disp.data, _LIBCONFINI_CLOSE_SECTION_, this_disp.d_len, format);
+				*dsp.data++ = '\0';
+				__ITER__ = getn_metachar_pos(dsp.data, _LIBCONFINI_CLOSE_SECTION_, dsp.d_len, format);
 
-				while (this_disp.data[__ITER__]) {
+				while (dsp.data[__ITER__]) {
 
-					this_disp.data[__ITER__++] = '\0';
+					dsp.data[__ITER__++] = '\0';
 
 				}
 
-				this_disp.d_len		=	format.section_paths == INI_ONE_LEVEL_ONLY ?
-											collapse_everything(this_disp.data, format)
+				dsp.d_len		=	format.section_paths == INI_ONE_LEVEL_ONLY ?
+											collapse_everything(dsp.data, format)
 										:
-											sanitize_section_path(this_disp.data, format);
+											sanitize_section_path(dsp.data, format);
 
 
-				if (format.section_paths == INI_ONE_LEVEL_ONLY || *this_disp.data != _LIBCONFINI_SUBSECTION_) {
+				if (format.section_paths == INI_ONE_LEVEL_ONLY || *dsp.data != _LIBCONFINI_SUBSECTION_) {
 
 					/*
 
@@ -2293,11 +2294,11 @@ int load_ini_file (
 
 					*/
 
-					curr_parent_str = this_disp.data;
-					__CURR_PARENT_LEN__ = this_disp.d_len;
+					curr_parent_str = dsp.data;
+					__CURR_PARENT_LEN__ = dsp.d_len;
 					subparent_str = cache + idx;
-					this_disp.append_to = subparent_str;
-					this_disp.at_len = 0;
+					dsp.append_to = subparent_str;
+					dsp.at_len = 0;
 
 				} else if (format.section_paths == INI_ABSOLUTE_ONLY || !__CURR_PARENT_LEN__) {
 
@@ -2308,13 +2309,13 @@ int load_ini_file (
 
 					*/
 
-					curr_parent_str = ++this_disp.data;
-					__CURR_PARENT_LEN__ = --this_disp.d_len;
+					curr_parent_str = ++dsp.data;
+					__CURR_PARENT_LEN__ = --dsp.d_len;
 					subparent_str = cache + idx;
-					this_disp.append_to = subparent_str;
-					this_disp.at_len = 0;
+					dsp.append_to = subparent_str;
+					dsp.at_len = 0;
 
-				} else if (this_disp.d_len != 1) {
+				} else if (dsp.d_len != 1) {
 
 					/*
 
@@ -2323,13 +2324,13 @@ int load_ini_file (
 
 					*/
 
-					subparent_str = this_disp.data;
+					subparent_str = dsp.data;
 
 				}
 
 				if (INI_GLOBAL_LOWERCASE_MODE && !format.case_sensitive) {
 
-					string_tolower(this_disp.data);
+					string_tolower(dsp.data);
 
 				}
 
@@ -2339,42 +2340,42 @@ int load_ini_file (
 			case INI_DISABLED_KEY:
 
 				if (
-					valid_delimiter && this_disp.d_len && (
-						__ITER__ = getn_metachar_pos(this_disp.data, (char) this_disp.format.delimiter_symbol, this_disp.d_len, format)
-					) < this_disp.d_len
+					valid_delimiter && dsp.d_len && (
+						__ITER__ = getn_metachar_pos(dsp.data, (char) dsp.format.delimiter_symbol, dsp.d_len, format)
+					) < dsp.d_len
 				) {
 
-					this_disp.data[__ITER__] = '\0';
-					this_disp.value = this_disp.data + __ITER__ + 1;
+					dsp.data[__ITER__] = '\0';
+					dsp.value = dsp.data + __ITER__ + 1;
 
 					switch ((format.preserve_empty_quotes << 1) | format.do_not_collapse_values) {
 
-						case 0:	this_disp.v_len = collapse_everything(this_disp.value, format); break;
+						case 0:	dsp.v_len = collapse_everything(dsp.value, format); break;
 
-						case 1:	this_disp.v_len = collapse_empty_quotes(this_disp.value, format); break;
+						case 1:	dsp.v_len = collapse_empty_quotes(dsp.value, format); break;
 
-						case 2:	this_disp.v_len = collapse_spaces(this_disp.value, format); break;
+						case 2:	dsp.v_len = collapse_spaces(dsp.value, format); break;
 
 						case 4:
 
-							this_disp.value += ltrim_h(this_disp.value, 0, _LIBCONFINI_WITH_EOL_);
-							this_disp.v_len = rtrim_h(this_disp.value, this_disp.d_len + this_disp.data - this_disp.value, _LIBCONFINI_WITH_EOL_);
+							dsp.value += ltrim_h(dsp.value, 0, _LIBCONFINI_WITH_EOL_);
+							dsp.v_len = rtrim_h(dsp.value, dsp.d_len + dsp.data - dsp.value, _LIBCONFINI_WITH_EOL_);
 							break;
 
 					}
 
 				} else if (format.implicit_is_not_empty) {
 
-					this_disp.value = INI_GLOBAL_IMPLICIT_VALUE;
-					this_disp.v_len = INI_GLOBAL_IMPLICIT_V_LEN;
+					dsp.value = INI_GLOBAL_IMPLICIT_VALUE;
+					dsp.v_len = INI_GLOBAL_IMPLICIT_V_LEN;
 
 				}
 
-				this_disp.d_len = collapse_everything(this_disp.data, format);
+				dsp.d_len = collapse_everything(dsp.data, format);
 
 				if (INI_GLOBAL_LOWERCASE_MODE && !format.case_sensitive) {
 
-					string_tolower(this_disp.data);
+					string_tolower(dsp.data);
 
 				}
 
@@ -2383,19 +2384,19 @@ int load_ini_file (
 			case INI_COMMENT:
 			case INI_INLINE_COMMENT:
 
-				this_disp.append_to = cache + idx;
-				this_disp.at_len = 0;
+				dsp.append_to = cache + idx;
+				dsp.at_len = 0;
 
 		}
 
-		if (f_foreach(&this_disp, user_data)) {
+		if (f_foreach(&dsp, user_data)) {
 
 			return_value = CONFINI_FEINTR;
 			goto free_and_exit;
 
 		}
 
-		this_disp.dispatch_id++;
+		dsp.dispatch_id++;
 		node_at = idx + 1;
 
 	}
@@ -2493,7 +2494,7 @@ int load_ini_path (
 **/
 _Bool ini_string_match_ss (const char * const simple_string_a, const char * const simple_string_b, const IniFormat format) {
 
-	size_t idx = 0;
+	register size_t idx = 0;
 
 	if (format.case_sensitive) {
 
@@ -2603,12 +2604,13 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 
 	*/
 
-	size_t idx_i = 0, idx_s = 0, nbacksl = 0;
-
 	register uint8_t abcd	=	INIFORMAT_HAS_NO_ESC(format) ?
 									67
 								:
 									68 | (format.no_double_quotes << 1) | format.no_single_quotes;
+
+	register size_t idx_i = 0;
+	size_t idx_s = 0, nbacksl = 0;
 
 
     /* \                                /\
@@ -3315,12 +3317,11 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 	*/
 
-	size_t idx, lshift;
-
 	register uint8_t abcd	=	(format.do_not_collapse_values ? 68 : 64) |
 								(format.no_double_quotes << 1) |
 								format.no_single_quotes;
 
+	size_t idx, lshift;
 
 	if (format.multiline_nodes == INI_NO_MULTILINE) {
 
@@ -3519,12 +3520,11 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 
 	*/
 
-	size_t counter = 0;
-
 	register uint8_t abcd	=	(delimiter ? 64 : 68) |
 								(format.no_double_quotes << 1) |
 								format.no_single_quotes;
 
+	size_t counter = 0;
 
 	for (size_t idx = 0; ini_string[idx]; idx++) {
 
@@ -3645,11 +3645,13 @@ int ini_array_foreach (
 
 	}
 
-	register uint8_t abcd;
+	register uint8_t abcd	=	(delimiter ? 4 : 0) |
+								(format.no_double_quotes << 1) |
+								format.no_single_quotes;
+
 	size_t memb_num = 0;
 
 	idx = offs;
-	abcd = (delimiter ? 4 : 0) | (format.no_double_quotes << 1) | format.no_single_quotes;
 
 	do {
 
@@ -4198,11 +4200,13 @@ int ini_array_split (
 
 	}
 
-	register uint8_t abcd;
+	register uint8_t abcd	=	(delimiter ? 4 : 0) |
+								(format.no_double_quotes << 1) |
+								format.no_single_quotes;
+
 	size_t memb_num = 0;
 
 	idx = offs;
-	abcd = (delimiter ? 4 : 0) | (format.no_double_quotes << 1) | format.no_single_quotes;
 
 
 	do {
@@ -4325,13 +4329,13 @@ IniFormatNum ini_fton (const IniFormat source) {
 /**
 
 	@brief			Constructs a new #IniFormat according to an #IniFormatNum
-	@param			format_id		The #IniFormatNum to parse
+	@param			format_num		The #IniFormatNum to parse
 	@return			The new #IniFormat constructed
 
-	@note	If @p format_id `>` `16777215` it will be truncated to 24 bits.
+	@note	If @p format_num `>` `16777215` it will be truncated to 24 bits.
 
 **/
-IniFormat ini_ntof (IniFormatNum format_id) {
+IniFormat ini_ntof (IniFormatNum format_num) {
 
 	#define __MAX_1_BITS__ 1
 	#define __MAX_2_BITS__ 3
@@ -4342,7 +4346,7 @@ IniFormat ini_ntof (IniFormatNum format_id) {
 	#define __MAX_7_BITS__ 127
 	#define __MAX_8_BITS__ 255
 	#define __INIFORMATNUM_FLAGS__(NAME, OFFSET, SIZE, DEFVAL) \
-		(format_id >> OFFSET) & __MAX_##SIZE##_BITS__,
+		(format_num >> OFFSET) & __MAX_##SIZE##_BITS__,
 
 	return (IniFormat) { INIFORMAT_TABLE_AS(__INIFORMATNUM_FLAGS__) };
 
@@ -4376,7 +4380,7 @@ IniFormat ini_ntof (IniFormatNum format_id) {
 	@include miscellanea/typed_ini.c
 
 **/
-signed int ini_get_bool (const char * const ini_string, const signed int return_value) {
+int ini_get_bool (const char * const ini_string, const int return_value) {
 
 	uint8_t bool_idx;
 	size_t pair_idx, chr_idx;
@@ -4391,7 +4395,7 @@ signed int ini_get_bool (const char * const ini_string, const signed int return_
 
 				if (!ini_string[chr_idx++]) {
 
-					return (signed int) bool_idx;
+					return (int) bool_idx;
 
 				}
 
