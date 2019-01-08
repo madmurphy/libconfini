@@ -2,6 +2,14 @@ Change Log {#changelog}
 =======================
 
 
+## 1.8.4 -- 2019-01-8
+
+Changes:
+
+* `autogen.sh`: replaced `#!/bin/sh` with `#!/bin/bash` -- see issue
+  [#7](https://github.com/madmurphy/libconfini/issues/7)
+
+
 ## 1.8.3 -- 2018-11-19
 
 Changes:

@@ -7,7 +7,7 @@
 	@brief		libconfini functions
 	@author		Stefano Gioffr&eacute;
 	@copyright	GNU Public License v3
-	@date		2016-2018
+	@date		2016-2019
 	@see		https://github.com/madmurphy/libconfini/
 
 **/
@@ -261,7 +261,7 @@
 
 /*
 
-	This may be any character, in theory... But after the left-trim of each line a
+	This may be any character, in theory... But after the left-trim of each node a
 	leading space works pretty well as metacharacter...
 
 */
@@ -336,7 +336,7 @@
 
 	Possible depths of `_LIBCONFINI_SPACES_` (see function #is_some_space()).
 
-	Please, consider the three following constants as belonging together to a
+	Please, consider the following three constants as belonging together to a
 	virtual opaque `enum`.
 
 */

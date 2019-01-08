@@ -6,7 +6,7 @@
     @brief      libconfini header
     @author     Stefano Gioffr&eacute;
     @copyright  GNU Public License v3
-    @date       2016-2018
+    @date       2016-2019
     @see        https://github.com/madmurphy/libconfini/
 
 **/
