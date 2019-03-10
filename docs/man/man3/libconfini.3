@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "LIBCONFINI" "3" "January 2019" "Stefano Gioffré" "Library Functions Manual"
+.TH "LIBCONFINI" "3" "March 2019" "Stefano Gioffré" "Library Functions Manual"
 .
 .SH "NAME"
 \fBlibconfini\fR
@@ -415,7 +415,7 @@ where
 .IP "" 0
 .
 .P
-The function \fBf_init()\fR (see \fBIniStatsHandler\fR data type) will be invoked with two arguments:
+The user given function \fBf_init\fR (see \fBIniStatsHandler\fR data type) will be invoked with two arguments:
 .
 .IP "\(bu" 4
 \fBstatistics\fR – a pointer to an \fBIniStatistics\fR object containing some properties about the file read (like its size in bytes and the number of its members)
@@ -426,7 +426,7 @@ The function \fBf_init()\fR (see \fBIniStatsHandler\fR data type) will be invoke
 .IP "" 0
 .
 .P
-The function \fBf_foreach()\fR (see \fBIniDispHandler\fR data type) will be invoked with two arguments:
+The user given function \fBf_foreach\fR (see \fBIniDispHandler\fR data type) will be invoked with two arguments:
 .
 .IP "\(bu" 4
 \fBdispatch\fR – a pointer to an \fBIniDispatch\fR object containing the parsed member of the INI file

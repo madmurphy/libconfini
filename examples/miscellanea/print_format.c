@@ -27,20 +27,21 @@ void print_format_num (IniFormatNum fnum) {
   #define __MAX_6_BITS__ 63
   #define __MAX_7_BITS__ 127
   #define __MAX_8_BITS__ 255
-  #define __IF_AS_PFARG__(NAME, OFFSET, SIZE, DEFVAL) \
+  #define __PRINTF_ARGS__(NAME, OFFSET, SIZE, DEFVAL) \
     , (fnum >> OFFSET) & __MAX_##SIZE##_BITS__
-  #define __IF_AS_PFSTRING__(NAME, OFFSET, SIZE, DEFVAL) \
+  #define __PRINTF_STRING__(NAME, OFFSET, SIZE, DEFVAL) \
     "    ." #NAME " = %u,\n"
-  #define __PRINT_FORMAT_NUM__() \
-    printf("(IniFormat) {\n" INIFORMAT_TABLE_AS(__IF_AS_PFSTRING__) "}" \
-    INIFORMAT_TABLE_AS(__IF_AS_PFARG__))
-
-  __PRINT_FORMAT_NUM__();
+  #define PRINT_FORMAT_NUM() \
+    printf("(IniFormat) {\n" INIFORMAT_TABLE_AS(__PRINTF_STRING__) "}" \
+    INIFORMAT_TABLE_AS(__PRINTF_ARGS__))
 
 
-  #undef __PRINT_FORMAT_NUM__
-  #undef __IF_AS_PFARG__
-  #undef __IF_AS_PFSTRING__
+  PRINT_FORMAT_NUM();
+
+
+  #undef PRINT_FORMAT_NUM
+  #undef __PRINTF_ARGS__
+  #undef __PRINTF_STRING__
   #undef __MAX_8_BITS__
   #undef __MAX_7_BITS__
   #undef __MAX_6_BITS__

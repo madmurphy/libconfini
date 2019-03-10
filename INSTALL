@@ -45,5 +45,11 @@ If you want to build (and install) **libconfini** via Autotools under Microsoft
 Windows, several options are available, such as MinGW + MSYS, Cygwin
 and GnuWin32.
 
+Often a compiled DLL is [made available][1] among the assets of each release of
+**libconfini** on GitHub.
+
 For any issue, drop a message at https://github.com/madmurphy/libconfini/issues.
+
+
+[1]: https://github.com/madmurphy/libconfini/releases
 

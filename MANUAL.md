@@ -342,8 +342,8 @@ where
   member of the INI file - it can be `NULL`
 * `user_data` is a pointer to a custom argument -- it can be `NULL`
 
-The function `f_init()` (see `#IniStatsHandler` data type) will be invoked with
-two arguments:
+The user given function `f_init` (see `#IniStatsHandler` data type) will be
+invoked with two arguments:
 
 * `statistics` -- a pointer to an `IniStatistics` object containing some
   properties about the file read (like its size in bytes and the number of its
@@ -351,8 +351,8 @@ two arguments:
 * `user_data` -- a pointer to the custom argument previously passed to the
   `load_ini_file()` / `load_ini_path()` functions
 
-The function `f_foreach()` (see `#IniDispHandler` data type) will be invoked
-with two arguments:
+The user given function `f_foreach` (see `#IniDispHandler` data type) will be
+invoked with two arguments:
 
 * `dispatch` -- a pointer to an `IniDispatch` object containing the parsed
   member of the INI file

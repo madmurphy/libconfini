@@ -1,4 +1,4 @@
-.TH "confini.h" 3 "Tue Jan 8 2019" "libconfini" \" -*- nroff -*-
+.TH "confini.h" 3 "Sun Mar 10 2019" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -198,19 +198,15 @@ confini.h \- libconfini header
 .ti -1c
 .RI "int(*const \fBini_get_int\fP )(const char *ini_string)"
 .br
-.RI "Link to \fC\fCatoi()\fP\fP "
 .ti -1c
 .RI "long int(*const \fBini_get_lint\fP )(const char *ini_string)"
 .br
-.RI "Link to \fC\fCatol()\fP\fP "
 .ti -1c
 .RI "long long int(*const \fBini_get_llint\fP )(const char *ini_string)"
 .br
-.RI "Link to \fC\fCatoll()\fP\fP "
 .ti -1c
 .RI "double(*const \fBini_get_float\fP )(const char *ini_string)"
 .br
-.RI "Link to \fC\fCatof()\fP\fP "
 .ti -1c
 .RI "static const \fBIniFormat\fP \fBINI_DEFAULT_FORMAT\fP = { \fBINI_EQUALS\fP , 0 , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_ABSOLUTE_AND_RELATIVE\fP , \fBINI_MULTILINE_EVERYWHERE\fP , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }"
 .br
@@ -823,7 +819,7 @@ Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\
 .PP
 Usually \fCini_string\fP comes from an \fBIniDispatch\fP (but any other string may be used as well)\&.
 .PP
-The function \fCf_foreach\fP (see \fBIniSubstrHandler\fP data type) will be invoked with six arguments: \fCini_string\fP, \fCmemb_offset\fP (the offset of the member in bytes), \fCmemb_length\fP (the length of the member in bytes), \fCmemb_num\fP (the offset of the member in number of members), \fCformat\fP (the format of the INI file), \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the function \fBini_array_foreach()\fP will be interrupted\&.
+The user given function \fCf_foreach\fP (see \fBIniSubstrHandler\fP data type) will be invoked with six arguments: \fCini_string\fP, \fCmemb_offset\fP (the offset of the member in bytes), \fCmemb_length\fP (the length of the member in bytes), \fCmemb_num\fP (the offset of the member in number of members), \fCformat\fP (the format of the INI file), \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the function \fBini_array_foreach()\fP will be interrupted\&.
 .PP
 \fBNote:\fP
 .RS 4
@@ -1136,7 +1132,7 @@ Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\
 .PP
 Usually \fCini_string\fP comes from an \fBIniDispatch\fP (but any other string may be used as well)\&.
 .PP
-The function \fCf_foreach\fP (see \fBIniStrHandler\fP data type) will be invoked with five arguments: \fCmember\fP (the member of the array), \fCmemb_length\fP (the length of the member in bytes), \fCmemb_num\fP (the offset of the member in number of members), \fCformat\fP (the format of the INI file), \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the function \fBini_array_split()\fP will be interrupted\&.
+The user given function \fCf_foreach\fP (see \fBIniStrHandler\fP data type) will be invoked with five arguments: \fCmember\fP (the member of the array), \fCmemb_length\fP (the length of the member in bytes), \fCmemb_num\fP (the offset of the member in number of members), \fCformat\fP (the format of the INI file), \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the function \fBini_array_split()\fP will be interrupted\&.
 .PP
 Similarly to \fCstrtok_r()\fP this function can be used only once for a given string\&.
 .PP
@@ -2023,9 +2019,9 @@ The parsing algorithms used by \fBlibconfini\fP are able to parse any type of fi
 In order to be null byte injection safe, \fCNUL\fP characters, if present in the file, will be removed from the dispatched strings\&.
 .RE
 .PP
-The function \fCf_init\fP (see \fBIniStatsHandler\fP data type) will be invoked with two arguments: \fCstatistics\fP (a pointer to an \fBIniStatistics\fP structure containing some properties about the file read) and \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_init\fP returns a non-zero value the caller function will be interrupted\&.
+The user given function \fCf_init\fP (see \fBIniStatsHandler\fP data type) will be invoked with two arguments: \fCstatistics\fP (a pointer to an \fBIniStatistics\fP structure containing some properties about the file read) and \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_init\fP returns a non-zero value the caller function will be interrupted\&.
 .PP
-The function \fCf_foreach\fP (see \fBIniDispHandler\fP data type) will be invoked with two arguments: \fCdispatch\fP (a pointer to an \fBIniDispatch\fP structure containing the parsed member of the INI file) and \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the caller function will be interrupted\&.
+The user given function \fCf_foreach\fP (see \fBIniDispHandler\fP data type) will be invoked with two arguments: \fCdispatch\fP (a pointer to an \fBIniDispatch\fP structure containing the parsed member of the INI file) and \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the caller function will be interrupted\&.
 .PP
 .PP
 .nf
@@ -2156,22 +2152,14 @@ int main () {
 
 .PP
 A model format for standard INI files\&. 
-.SS "ini_get_float"
+.SS "double(* const ini_get_float) (const char *ini_string)"
 
-.PP
-Link to \fC\fCatof()\fP\fP 
-.SS "ini_get_int"
+.SS "int(* const ini_get_int) (const char *ini_string)"
 
-.PP
-Link to \fC\fCatoi()\fP\fP 
-.SS "ini_get_lint"
+.SS "long int(* const ini_get_lint) (const char *ini_string)"
 
-.PP
-Link to \fC\fCatol()\fP\fP 
-.SS "ini_get_llint"
+.SS "long long int(* const ini_get_llint) (const char *ini_string)"
 
-.PP
-Link to \fC\fCatoll()\fP\fP 
 .SS "size_t INI_GLOBAL_IMPLICIT_V_LEN"
 
 .PP

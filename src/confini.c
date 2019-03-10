@@ -1439,7 +1439,7 @@ static uint8_t get_type_as_active (
 
 		/*
 
-		Recycling variable `abcd`... Mask `abcd` (3 bits used):
+		Recycling variable `abcd` (3 bits used)...:
 
 			FLAG_1		Last character was a backslash
 			FLAG_2		Throw `return INI_SECTION;`
@@ -1504,7 +1504,7 @@ static uint8_t get_type_as_active (
 
 	/*
 
-	Recycling variable `abcd`... Mask `abcd` (2 bits used):
+	Recycling variable `abcd` (2 bits used)...:
 
 		FLAG_1		The delimiter **must** be present
 		FLAG_2		Search for spaces in names
@@ -1759,7 +1759,7 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 		/*
 
-		Recycling variable `abcd`... Mask `abcd` (7 bits used):
+		Recycling variable `abcd` (7 bits used)...:
 
 			FLAG_1		Single quotes are not metacharacters (const)
 			FLAG_2		Double quotes are not metacharacters (const)
@@ -1903,17 +1903,17 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 	@note	In order to be null byte injection safe, `NUL` characters, if present in
 			the file, will be removed from the dispatched strings.
 
-	The function @p f_init (see #IniStatsHandler data type) will be invoked with two
-	arguments: `statistics` (a pointer to an #IniStatistics structure containing
-	some properties about the file read) and `user_data` (the custom argument
-	@p user_data previously passed). If @p f_init returns a non-zero value the
-	caller function will be interrupted.
+	The user given function @p f_init (see #IniStatsHandler data type) will be
+	invoked with two arguments: `statistics` (a pointer to an #IniStatistics
+	structure containing some properties about the file read) and `user_data` (the
+	custom argument @p user_data previously passed). If @p f_init returns a non-zero
+	value the caller function will be interrupted.
 
-	The function @p f_foreach (see #IniDispHandler data type) will be invoked with
-	two arguments: `dispatch` (a pointer to an #IniDispatch structure containing the
-	parsed member of the INI file) and `user_data` (the custom argument @p user_data
-	previously passed). If @p f_foreach returns a non-zero value the caller function
-	will be interrupted.
+	The user given function @p f_foreach (see #IniDispHandler data type) will be
+	invoked with two arguments: `dispatch` (a pointer to an #IniDispatch structure
+	containing the parsed member of the INI file) and `user_data` (the custom
+	argument @p user_data previously passed). If @p f_foreach returns a non-zero
+	value the caller function will be interrupted.
 
 	@include topics/load_ini_file.c
 
@@ -3585,12 +3585,13 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 	Usually @p ini_string comes from an #IniDispatch (but any other string may be
 	used as well).
 
-	The function @p f_foreach (see #IniSubstrHandler data type) will be invoked with
-	six arguments: `ini_string`, `memb_offset` (the offset of the member in bytes),
-	`memb_length` (the length of the member in bytes), `memb_num` (the offset of the
-	member in number of members), `format` (the format of the INI file), `user_data`
-	(the custom argument @p user_data previously passed). If @p f_foreach returns a
-	non-zero value the function #ini_array_foreach() will be interrupted.
+	The user given function @p f_foreach (see #IniSubstrHandler data type) will be
+	invoked with six arguments: `ini_string`, `memb_offset` (the offset of the
+	member in bytes), `memb_length` (the length of the member in bytes), `memb_num`
+	(the offset of the member in number of members), `format` (the format of the INI
+	file), `user_data` (the custom argument @p user_data previously passed). If
+	@p f_foreach returns a non-zero value the function #ini_array_foreach() will be
+	interrupted.
 
 	@note	If @p delimiter matches a metacharacter within the format given (`'\\'`,
 			`'\''` or `'\"'`), its role as metacharacter will have higher priority
@@ -4137,12 +4138,12 @@ char * ini_array_release (char ** const ini_strptr, const char delimiter, const 
 	Usually @p ini_string comes from an #IniDispatch (but any other string may be
 	used as well).
 
-	The function @p f_foreach (see #IniStrHandler data type) will be invoked with
-	five arguments: `member` (the member of the array), `memb_length` (the length of
-	the member in bytes), `memb_num` (the offset of the member in number of
-	members), `format` (the format of the INI file), `user_data` (the custom
-	argument @p user_data previously passed). If @p f_foreach returns a non-zero
-	value the function #ini_array_split() will be interrupted.
+	The user given function @p f_foreach (see #IniStrHandler data type) will be
+	invoked with five arguments: `member` (the member of the array), `memb_length`
+	(the length of the member in bytes), `memb_num` (the offset of the member in
+	number of members), `format` (the format of the INI file), `user_data` (the
+	custom argument @p user_data previously passed). If @p f_foreach returns a
+	non-zero value the function #ini_array_split() will be interrupted.
 
 	Similarly to `strtok_r()` this function can be used only once for a given
 	string.
@@ -4316,11 +4317,11 @@ void ini_global_set_implicit_value (char * const implicit_value, const size_t im
 **/
 IniFormatNum ini_fton (const IniFormat source) {
 
-	#define __INIFORMAT_PROPERTIES__(NAME, OFFSET, SIZE, DEFVAL) (source.NAME << OFFSET) |
+	#define __INIFORMAT_ID__(NAME, OFFSET, SIZE, DEFVAL) (source.NAME << OFFSET) |
 
-	return INIFORMAT_TABLE_AS(__INIFORMAT_PROPERTIES__) 0;
+	return INIFORMAT_TABLE_AS(__INIFORMAT_ID__) 0;
 
-	#undef __INIFORMAT_PROPERTIES__
+	#undef __INIFORMAT_ID__
 
 }
 
@@ -4345,12 +4346,12 @@ IniFormat ini_ntof (IniFormatNum format_num) {
 	#define __MAX_6_BITS__ 63
 	#define __MAX_7_BITS__ 127
 	#define __MAX_8_BITS__ 255
-	#define __INIFORMATNUM_FLAGS__(NAME, OFFSET, SIZE, DEFVAL) \
+	#define __INIFORMAT_PROPERTIES__(NAME, OFFSET, SIZE, DEFVAL) \
 		(format_num >> OFFSET) & __MAX_##SIZE##_BITS__,
 
-	return (IniFormat) { INIFORMAT_TABLE_AS(__INIFORMATNUM_FLAGS__) };
+	return (IniFormat) { INIFORMAT_TABLE_AS(__INIFORMAT_PROPERTIES__) };
 
-	#undef __INIFORMATNUM_FLAGS__
+	#undef __INIFORMAT_PROPERTIES__
 	#undef __MAX_8_BITS__
 	#undef __MAX_7_BITS__
 	#undef __MAX_6_BITS__

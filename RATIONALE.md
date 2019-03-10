@@ -1,10 +1,10 @@
 Why libconfini? {#rationale}
 ============================
 
-The motivation behind this library comes from the observation that many
-system applications in GNU/Linux rely on _INI-like_ files (systemd, pacman,
+The motivation behind this library came from the observation that many system
+applications in GNU/Linux rely on _INI-like_ files (systemd, pacman,
 networkmanager, etc.), and for many users who approach GNU/Linux for the
-first time it can be frustrating not to have a GUI for configuring their
+first time it could be frustrating not to have a GUI for configuring their
 system. So, I thought, a general .conf/.ini editor for GNOME _in dconf-style_
 had to be done.
 

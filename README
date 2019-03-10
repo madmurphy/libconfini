@@ -15,7 +15,7 @@ each INI node read. The API has been designed to be powerful, flexible and
 simple to use.
 
 With **libconfini** you will find in INI files the same serialization power you
-would normally find in other heavily structured formats (such as JXON, YAML,
+would normally find in other heavily structured formats (such as JSON, YAML,
 TOML), but with the advantage of using the most human-readable configuration
 format ever invented (thanks to their informal status, INI files are indeed more
 fluid and human-readable than formats explicitly designed with this purpose,
