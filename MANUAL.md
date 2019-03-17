@@ -890,7 +890,7 @@ ini_global_set_implicit_value("YES", 0);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Alternatively, instead of `ini_global_set_implicit_value()` you can manually
-define at the beginning of your code the two global variables
+declare at the beginning of your code the two global variables
 `#INI_GLOBAL_IMPLICIT_VALUE` and `#INI_GLOBAL_IMPLICIT_V_LEN`, which will be
 retrieved by **libconfini**:
 
@@ -901,8 +901,24 @@ char * INI_GLOBAL_IMPLICIT_VALUE = "YES";
 size_t INI_GLOBAL_IMPLICIT_V_LEN = 3;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+or you can assign a value to them at the beginning of the `main()` function of
+your program:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+#include <confini.h>
+
+int main () {
+
+  INI_GLOBAL_IMPLICIT_VALUE = "YES";
+  INI_GLOBAL_IMPLICIT_V_LEN = 3;
+
+  /* ... */
+
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 If not defined elsewhere, these variables are respectively `NULL` and `0` by
-default.
+default (so they are not in any case undefined).
 
 The two variables `INI_GLOBAL_IMPLICIT_VALUE` and `INI_GLOBAL_IMPLICIT_V_LEN`
 may be set to any arbitrary values. In fact these will not be parsed or analyzed
@@ -1235,8 +1251,23 @@ As with the other global variables, you can declare the variable
 bool INI_GLOBAL_LOWERCASE_MODE = false;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+or assign a value to it at the beginning of the `main()` function:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+#include <stdbool.h>
+#include <confini.h>
+
+int main () {
+
+  INI_GLOBAL_LOWERCASE_MODE = true;
+
+  /* ... */
+
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Alternatively, this variable can be set through the function
-`ini_global_set_lowercase_mode()` without being explicitly declared.
+`ini_global_set_lowercase_mode()`.
 
 When the variable `#INI_GLOBAL_LOWERCASE_MODE` is set to `true`, **libconfini**
 always dispatches in lower case _all_ ASCII letters of key and section names in
@@ -1244,11 +1275,45 @@ case-insensitive formats -- _even when these are enclosed within quotes_ -- but
 does **not** dispatch in lower case UTF-8 code points out of the ASCII range
 (for instance, `Ā` will not be rendered as `ā`, but will be rather rendered
 verbatim). _In general it is a good practice to use UTF-8 within values, but to
-use ASCII only within key and section names._
+use ASCII only within key and section names, at least in case insensitive INI
+files_ (see below). As for values instead, their case is always preserved.
 
 Normally `#INI_GLOBAL_LOWERCASE_MODE` does not need to be set to `true`, since
 string comparisons made by libconfini are always either case-sensitive or
 case-insensitive depending on the format given.
+
+
+### THE UNICODE PROBLEM
+
+Comparing an ASCII upper case letter to an ASCII lower case letter is an
+invariant process. But comparing two Unicode letter cases is a process that
+depends on the locale of the machine. Consider for example the lower case letter
+`i`: in most European languages its upper case is `I`, while this is not the
+case in Turkish, where the upper case of `i` is `İ` (and the lower case of `I`
+is `ı`). Therefore for a person living in Italy or France, `i` and `I` will
+represent the same letter, while for a person living in Turkey they will not.
+
+Key and section names of an INI file however cannot depend on the locale of the
+machine, since they must be reliably searched for independently of where a
+machine is located. Therefore **libconfini** (and probably any senseful INI
+parser) will never perform a case folding of Unicode characters out of the ASCII
+range within key and section names. Imagine for example a key named “INI” and
+imagine that Unicode case folding were performed on key names during string
+comparisons. If you lived in Europe you could look up for such key using its
+lower case “INI”, while if you lived in Turkey you would have to use the lower
+case “ını” to find it. So the only solution in this context is to consider
+Unicode characters out of the ASCII range always as case sensitive.
+
+It must be said however that most of Unicode characters do not possess a lower
+and upper case, so most characters out of the ASCII range could theoretically
+appear without problems in key and section names also in case insensitive INI
+files (think of the character `§` for example). And, as for case sensitive INI
+files, no Unicode character would ever represent a problem. However, it is still
+generally more acceptable to use ASCII only within key and section names, and
+possibly, if needed, non-ASCII Unicode characters within values and comments.
+That said, **libconfini** deals perfectly fine with UTF-8 (but is always case
+sensitive outside of the ASCII range), so use the latter as you feel
+appropriate.
 
 
 ### THREAD SAFETY

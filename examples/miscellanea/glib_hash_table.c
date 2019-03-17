@@ -14,6 +14,7 @@ attempt to read the value of the key `my_section.my_subsection.find_me`.
 #include <stdio.h>
 #include <confini.h>
 #include <glib.h>
+#include <stdbool.h>
 
 /*
 
@@ -151,6 +152,9 @@ static int populate_hash_table (
 }
 
 int main () {
+
+  /*  Important! We are using `g_hash_table_lookup()` to search for the indicized keys, therefore we must fold the character case */
+  INI_GLOBAL_LOWERCASE_MODE = true;
 
   /*  Important! In this context the length given to implicit values *must* always represent their real length!  */
   ini_global_set_implicit_value("YES", 3);

@@ -325,8 +325,8 @@
 
 /*
 
-	Maybe in the future there will be support for UTF-8 casefold, but for now only
-	ASCII...
+	Maybe in the future there will be support for UTF-8 casefold (although probably
+	not -- see Code Considerations in the Manual), but for now only ASCII...
 
 */
 #define _LIBCONFINI_CHR_CASEFOLD_(CHR) (CHR > 0x40 && CHR < 0x5b ? CHR | 0x60 : CHR)
@@ -517,7 +517,7 @@ static inline size_t urtrim_s (const char * const str, const size_t len) {
 
 
     /* \                                /\
-    \ */     continue_trim:            /* \
+    \ */     continue_rtrim:           /* \
      \/     ______________________     \ */
 
 
@@ -535,19 +535,19 @@ static inline size_t urtrim_s (const char * const str, const size_t len) {
 		case _LIBCONFINI_SIMPLE_SPACE_:
 
 			abcd = 1;
-			goto continue_trim;
+			goto continue_rtrim;
 
 		case _LIBCONFINI_LF_:
 		case _LIBCONFINI_CR_:
 
 			abcd = 3;
-			goto continue_trim;
+			goto continue_rtrim;
 
 		case _LIBCONFINI_BACKSLASH_:
 
 			if (abcd >>= 1) {
 
-				goto continue_trim;
+				goto continue_rtrim;
 
 			}
 
@@ -1433,21 +1433,24 @@ static uint8_t get_type_as_active (
 
 			Scan for possible non-space characters following the CLOSE_SECTION
 			character: if found the node cannot represent a section path (but it can
-			possibly represent a key).
+			possibly represent a key). Empty quotes will be tolerated.
 
 		*/
 
 		/*
 
-		Recycling variable `abcd` (3 bits used)...:
+		Recycling variable `abcd` (6 bits used)...:
 
-			FLAG_1		Last character was a backslash
-			FLAG_2		Throw `return INI_SECTION;`
-			FLAG_4		Continue the loop
+			FLAG_1		Single quotes are not metacharacters (const)
+			FLAG_2		Double quotes are not metacharacters (const)
+			FLAG_4		Unescaped single quotes are odd right now
+			FLAG_8		Unescaped double quotes are odd right now
+			FLAG_16		We are in an odd sequence of backslashes
+			FLAG_32		Continue the loop
 
 		*/
 
-		abcd = idx < len ? 4 : 2;
+		abcd = 32 | (format.no_double_quotes << 1) | format.no_single_quotes;
 
 
 		/* \                                /\
@@ -1455,13 +1458,13 @@ static uint8_t get_type_as_active (
 		 \/     ______________________     \ */
 
 
-		if (abcd & 2) {
+		if (abcd) {
 
-			return INI_SECTION;
+			if (idx >= len) {
 
-		}
+				return INI_SECTION;
 
-		if (abcd & 4) {
+			}
 
 			switch (srcstr[idx++]) {
 
@@ -1470,18 +1473,28 @@ static uint8_t get_type_as_active (
 				case _LIBCONFINI_HT_:
 				case _LIBCONFINI_SIMPLE_SPACE_:
 
-					abcd = abcd & 1 ? 0 : idx < len ? 4 : 2;
+					abcd = abcd & 28 ? 0 : abcd & 47;
 					goto nonspace_check;
 
 				case _LIBCONFINI_LF_:
 				case _LIBCONFINI_CR_:
 
-					abcd = idx < len ? 4 : 2;
+					abcd = abcd & 12 ? 0 : abcd & 47;
 					goto nonspace_check;
 
 				case _LIBCONFINI_BACKSLASH_:
 
-					abcd = abcd & 1 ? 1 : idx < len ? 5 : 1;
+					abcd = abcd & 28 ? 0 : abcd | 16;
+					goto nonspace_check;
+
+				case _LIBCONFINI_DOUBLE_QUOTES_:
+
+					abcd = abcd & 22 ? 0 : (abcd & 47) ^ 8;
+					goto nonspace_check;
+
+				case _LIBCONFINI_SINGLE_QUOTES_:
+
+					abcd = abcd & 25 ? 0 : (abcd & 47) ^ 4;
 					goto nonspace_check;
 
 			}
@@ -1560,6 +1573,7 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 	_LIBCONFINI_BOOL_ forget_me;
 	register uint8_t abcd = (format.no_double_quotes << 1) | format.no_single_quotes;
+	register uint8_t eol_i = _LIBCONFINI_EOL_IDX_;
 	register size_t idx;
 	size_t focus_at, unparsable_at, search_at = 0, segm_size = 0;
 
@@ -1793,6 +1807,20 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 			if (!(abcd & 124)) {
 
+				if (srcstr[idx - 1] == _LIBCONFINI_SPACES_[eol_i] || srcstr[idx - 1] == _LIBCONFINI_SPACES_[eol_i ^= 1]) {
+
+					/* Remove the backslash if the comment immediately follows an escaped new line */
+
+					if (srcstr[idx - 2] == _LIBCONFINI_SPACES_[eol_i ^ 1]) {
+
+						srcstr[idx - 3] = '\0';
+
+					}
+
+					srcstr[idx - 2] = '\0';
+
+				}
+
 				srcstr[idx - 1] = '\0';
 
 				if (!_LIBCONFINI_IS_IGN_MARKER_(srcstr[idx], format)) {
@@ -1966,7 +1994,7 @@ int load_ini_file (
 	*/
 
 	#define __ISNT_ESCAPED__ tmp_bool
-	#define __EOL_ID__ abcd
+	#define __EOL_N__ abcd
 	#define __N_MEMBERS__ tmp_uint_2
 	#define __LSHIFT__ tmp_uint_3
 
@@ -1976,7 +2004,7 @@ int load_ini_file (
 	for (
 
 		__N_MEMBERS__ = 0,
-		__EOL_ID__ = _LIBCONFINI_EOL_IDX_,
+		__EOL_N__ = _LIBCONFINI_EOL_IDX_,
 		__ISNT_ESCAPED__ = _LIBCONFINI_TRUE_,
 		node_at = 0,
 		idx = __LSHIFT__;
@@ -1989,7 +2017,7 @@ int load_ini_file (
 
 		cache[idx - __LSHIFT__] = cache[idx];
 
-		if (cache[idx] == _LIBCONFINI_SPACES_[__EOL_ID__] || cache[idx] == _LIBCONFINI_SPACES_[__EOL_ID__ ^= 1]) {
+		if (cache[idx] == _LIBCONFINI_SPACES_[__EOL_N__] || cache[idx] == _LIBCONFINI_SPACES_[__EOL_N__ ^= 1]) {
 
 			if (format.multiline_nodes == INI_NO_MULTILINE || __ISNT_ESCAPED__) {
 
@@ -1997,7 +2025,7 @@ int load_ini_file (
 				__N_MEMBERS__ += further_cuts(cache + qultrim_h(cache, node_at, format), format);
 				node_at = idx - __LSHIFT__ + 1;
 
-			} else if (cache[idx + 1] == _LIBCONFINI_SPACES_[__EOL_ID__ ^ 1]) {
+			} else if (cache[idx + 1] == _LIBCONFINI_SPACES_[__EOL_N__ ^ 1]) {
 
 				idx++;
 
@@ -2058,7 +2086,7 @@ int load_ini_file (
 
 	#undef __LSHIFT__
 	#undef __N_MEMBERS__
-	#undef __EOL_ID__
+	#undef __EOL_N__
 	#undef __ISNT_ESCAPED__
 	#undef __N_BYTES__
 
@@ -2139,15 +2167,15 @@ int load_ini_file (
 				FLAG_8		Unescaped single quotes are odd right now
 				FLAG_16		Unescaped double quotes are odd right now
 				FLAG_32		We are in an odd sequence of backslashes
-				FLAG_64		We are in `\n[\t \v\f]*`
-				FLAG_128	Last was not `[\t \v\f]` OR `FLAG_64 == FALSE`
-				FLAG_256	Last was not `\s[;#]`, or it was but was semantic rather
-							than syntactic
+				FLAG_64		We are not in `[\n\r][\t \v\f]*`
+				FLAG_128	This is not any space
+				FLAG_256	We are not in not `\s[;#]`, or we are but we are at the
+							beginning of a new line or within quotes
 				FLAG_512	Continue the loop
 
 			*/
 
-			abcd	=	(format.disabled_after_space ? 516 : 512) |
+			abcd	=	(format.disabled_after_space ? 708 : 704) |
 						(format.no_double_quotes << 1) |
 						format.no_single_quotes;
 
@@ -2155,35 +2183,26 @@ int load_ini_file (
 			for (__ITER__ = 1; (abcd & 512) && __ITER__ < dsp.d_len; __ITER__++) {
 
 				abcd	=	dsp.data[__ITER__] == _LIBCONFINI_LF_ || dsp.data[__ITER__] == _LIBCONFINI_CR_ ?
-								abcd | 448
-							: _LIBCONFINI_IS_ANY_MARKER_(dsp.data[__ITER__], format) ?
-								(
-									(abcd & 64) && !_LIBCONFINI_IS_DIS_MARKER_(dsp.data[__ITER__], format) ?
-										abcd & 31
-									: abcd & 128 ?
-										abcd & 543
-									: abcd & 24 ?
-										(abcd & 799) | 256
-									:
-										abcd & 287
-								)
+								(abcd & 799) | 256
 							: is_some_space(dsp.data[__ITER__], _LIBCONFINI_NO_EOL_) ?
 								(
-									abcd & 64 ?
-										(abcd & 991) | 448
-									: abcd & 260 ?
-										(abcd & 799) | 256
+									abcd & 260 ?
+										(abcd & 863) | 256
 									:
-										abcd & 31
+										(abcd & 223) | 192
 								)
 							: dsp.data[__ITER__] == _LIBCONFINI_BACKSLASH_ ?
-								((abcd & 831) | 256) ^ 32
+								(abcd | 448) ^ 32
 							: !(abcd & 42) && dsp.data[__ITER__] == _LIBCONFINI_DOUBLE_QUOTES_ ?
-								((abcd & 799) | 256) ^ 16
+								((abcd & 991) | 448) ^ 16
 							: !(abcd & 49) && dsp.data[__ITER__] == _LIBCONFINI_SINGLE_QUOTES_ ?
-								((abcd & 799) | 256) ^ 8
+								((abcd & 991) | 448) ^ 8
+							: !(abcd & 64) && _LIBCONFINI_IS_DIS_MARKER_(dsp.data[__ITER__], format) ?
+								(abcd & 735) | 192
+							: (!(abcd & 152) || !(abcd & 64)) && _LIBCONFINI_IS_ANY_MARKER_(dsp.data[__ITER__], format) ?
+								(abcd & 223) | 192
 							:
-								(abcd & 799) | 256;
+								(abcd & 991) | 448;
 
 			}
 

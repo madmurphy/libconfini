@@ -1,4 +1,4 @@
-.TH "confini.h" 3 "Sun Mar 10 2019" "libconfini" \" -*- nroff -*-
+.TH "confini.h" 3 "Mon Mar 18 2019" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -198,15 +198,19 @@ confini.h \- libconfini header
 .ti -1c
 .RI "int(*const \fBini_get_int\fP )(const char *ini_string)"
 .br
+.RI "Link to \fC\fCatoi()\fP\fP "
 .ti -1c
 .RI "long int(*const \fBini_get_lint\fP )(const char *ini_string)"
 .br
+.RI "Link to \fC\fCatol()\fP\fP "
 .ti -1c
 .RI "long long int(*const \fBini_get_llint\fP )(const char *ini_string)"
 .br
+.RI "Link to \fC\fCatoll()\fP\fP "
 .ti -1c
 .RI "double(*const \fBini_get_float\fP )(const char *ini_string)"
 .br
+.RI "Link to \fC\fCatof()\fP\fP "
 .ti -1c
 .RI "static const \fBIniFormat\fP \fBINI_DEFAULT_FORMAT\fP = { \fBINI_EQUALS\fP , 0 , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_ABSOLUTE_AND_RELATIVE\fP , \fBINI_MULTILINE_EVERYWHERE\fP , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }"
 .br
@@ -2152,14 +2156,22 @@ int main () {
 
 .PP
 A model format for standard INI files\&. 
-.SS "double(* const ini_get_float) (const char *ini_string)"
+.SS "ini_get_float"
 
-.SS "int(* const ini_get_int) (const char *ini_string)"
+.PP
+Link to \fC\fCatof()\fP\fP 
+.SS "ini_get_int"
 
-.SS "long int(* const ini_get_lint) (const char *ini_string)"
+.PP
+Link to \fC\fCatoi()\fP\fP 
+.SS "ini_get_lint"
 
-.SS "long long int(* const ini_get_llint) (const char *ini_string)"
+.PP
+Link to \fC\fCatol()\fP\fP 
+.SS "ini_get_llint"
 
+.PP
+Link to \fC\fCatoll()\fP\fP 
 .SS "size_t INI_GLOBAL_IMPLICIT_V_LEN"
 
 .PP

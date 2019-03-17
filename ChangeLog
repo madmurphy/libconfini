@@ -2,6 +2,16 @@ Change Log {#changelog}
 =======================
 
 
+## 1.8.6 -- 2019-03-18
+
+Changes:
+
+* Code review (`load_ini_file()`, private functions `get_type_as_active()` and
+  `further_cuts()`)
+* Documentation
+* Examples
+
+
 ## 1.8.5 -- 2019-03-10
 
 Changes:
