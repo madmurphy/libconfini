@@ -5,9 +5,9 @@ datarootdir=@datarootdir@
 datadir=@datadir@
 includedir=@includedir@
 
-Name: @PACKAGE_NAME@
+Name: @PACKAGE_REALNAME@
 Description: @LIBRARY_DESCRIPTION@
 Version: @PACKAGE_VERSION@
 Requires: 
-Libs: -L${libdir} -l@LIBRARY_NAME@
+Libs: -L${libdir} -l@LIBRARY_LOCALNAME@
 Cflags: -I${includedir}

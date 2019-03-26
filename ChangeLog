@@ -2,6 +2,28 @@ Change Log {#changelog}
 =======================
 
 
+## 1.9.0 -- 2019-03-26
+
+Changes:
+
+* Improved performance of `load_ini_file()` (ambiguous disabled entries that
+  have been already tested with a negative result before invoking `f_init()`
+  will be internally marked as comments for not being tested twice -- an example
+  of such ambiguous disabled entries is `#[foo #bar]`)
+* Added `--multiversion` option to the `autogen.sh` script for future major
+  version changes (see `INSTALL`)
+* Added `--with-pkgconfigdir=DIR` option to the `configure` script
+* Private function `dqultrim_s()` has been created
+* Private macros `_LIBCONFINI_IS_COM_MARKER_()` and `_LIBCONFINI_SC_INT_MARKER_`
+  have been created
+* Private macro † `_LIBCONFINI_INLINE_MARKER_` has been renamed to
+  `_LIBCONFINI_IC_INT_MARKER_`
+* Code review (`load_ini_file()`, private functions `uncomment()` and
+  `further_cuts()`)
+* Documentation
+* Examples
+
+
 ## 1.8.6 -- 2019-03-18
 
 Changes:

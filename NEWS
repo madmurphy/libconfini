@@ -2,6 +2,12 @@ NEWS
 ====
 
 
+## 1.9.0
+
+* Added `--multiversion` option to the `autogen.sh` script for future major
+  version changes (see `INSTALL`)
+
+
 ## 1.8.0
 
 * Introduced libtool versioning system for the compiled binary (versioning

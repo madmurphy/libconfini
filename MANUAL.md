@@ -167,7 +167,7 @@ my_array = Asia, Africa, 'North America', South America,\
 A **section** might be imagined like a directory. A **section path** is
 identified as the string `"$1"` in the regular expression
 `/(?:^|\n|\r)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\][ \t\v\f]*(?:\n|\r|$)/`
-globally applied to an INI file. A section path expresses nesting through the
+globally applied to an INI file. A section path expresses nesting using the
 “dot” character, as in the following example:
 
 ~~~~~~~~~~~~~~~~~~~~{.ini}
@@ -517,7 +517,7 @@ my_format.implicit_is_not_empty = NO;
 my_format.do_not_collapse_values = NO;
 my_format.preserve_empty_quotes = NO;
 my_format.disabled_after_space = NO;
-my_format.disabled_can_be_implicit = NO,
+my_format.disabled_can_be_implicit = NO;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Since version 1.7.0 a format named `#INI_UNIXLIKE_FORMAT` is available as well.
@@ -1266,7 +1266,7 @@ int main () {
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Alternatively, this variable can be set through the function
+Alternatively, this variable can be set by using its setter function
 `ini_global_set_lowercase_mode()`.
 
 When the variable `#INI_GLOBAL_LOWERCASE_MODE` is set to `true`, **libconfini**
@@ -1295,22 +1295,24 @@ represent the same letter, while for a person living in Turkey they will not.
 
 Key and section names of an INI file however cannot depend on the locale of the
 machine, since they must be reliably searched for independently of where a
-machine is located. Therefore **libconfini** (and probably any senseful INI
-parser) will never perform a case folding of Unicode characters out of the ASCII
-range within key and section names. Imagine for example a key named “INI” and
-imagine that Unicode case folding were performed on key names during string
-comparisons. If you lived in Europe you could look up for such key using its
-lower case “INI”, while if you lived in Turkey you would have to use the lower
-case “ını” to find it. So the only solution in this context is to consider
-Unicode characters out of the ASCII range always as case sensitive.
+machine is located. Imagine for example a key named “INI” and imagine that
+Unicode case folding were performed on key names during string comparisons. If
+you lived in Europe you could look up for such key using its lower case “ini”,
+while if you lived in Turkey you would have to use the lower case “ını” to find
+it. So the only solution in this context is to consider Unicode characters out
+of the ASCII range always as case sensitive. For this reason, **libconfini**
+(and probably any senseful INI parser) will never perform a case folding of
+Unicode characters out of the ASCII range within key and section names. 
 
-It must be said however that most of Unicode characters do not possess a lower
-and upper case, so most characters out of the ASCII range could theoretically
+It must be said however that most Unicode characters do not possess a lower and
+upper case, and most characters outside of the ASCII range could theoretically
 appear without problems in key and section names also in case insensitive INI
 files (think of the character `§` for example). And, as for case sensitive INI
-files, no Unicode character would ever represent a problem. However, it is still
-generally more acceptable to use ASCII only within key and section names, and
-possibly, if needed, non-ASCII Unicode characters within values and comments.
+files, no Unicode character would ever represent a problem. Nonetheless, it is
+still generally more acceptable to use ASCII only within key and section names
+-- and possibly, if needed, non-ASCII Unicode characters within values and
+comments.
+
 That said, **libconfini** deals perfectly fine with UTF-8 (but is always case
 sensitive outside of the ASCII range), so use the latter as you feel
 appropriate.
@@ -1321,8 +1323,8 @@ appropriate.
 Depending on the format of the INI file, **libconfini** may use up to three
 global variables (`#INI_GLOBAL_IMPLICIT_VALUE`, `#INI_GLOBAL_IMPLICIT_V_LEN` and
 `#INI_GLOBAL_LOWERCASE_MODE`). In order to be thread-safe these three variables
-(if needed) must be defined only once (either directly, or through their
-modifier functions `ini_global_set_implicit_value()` and
+(if needed) must be defined only once (either directly, or by using their setter
+functions `ini_global_set_implicit_value()` and
 `ini_global_set_lowercase_mode()`), or otherwise a mutex logic must be
 introduced.
 

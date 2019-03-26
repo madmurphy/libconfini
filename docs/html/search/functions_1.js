@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['further_5fcuts',['further_cuts',['../confini_8c.html#a28e12cde8688ade4d85ea5d8b0db31d3',1,'confini.c']]]
+  ['dqultrim_5fs',['dqultrim_s',['../confini_8c.html#ac2aa1c0316cc78e3f878e1ea644b48f8',1,'confini.c']]]
 ];

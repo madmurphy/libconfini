@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['uncomment',['uncomment',['../confini_8c.html#ad2abf4acb5b68e6c6930e63ecc754bbe',1,'confini.c']]],
-  ['unescape_5fcr_5flf',['unescape_cr_lf',['../confini_8c.html#aa139c7fd80a4a707683a45d16f527a60',1,'confini.c']]],
-  ['urtrim_5fs',['urtrim_s',['../confini_8c.html#ae763c8d7fa3afbb34e20172e1defc05f',1,'confini.c']]]
+  ['sanitize_5fsection_5fpath',['sanitize_section_path',['../confini_8c.html#aa17889754780149f18e417607e5ffb24',1,'confini.c']]],
+  ['string_5ftolower',['string_tolower',['../confini_8c.html#ad6e6972b13052e995b3ceb2fb4996ede',1,'confini.c']]]
 ];

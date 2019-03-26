@@ -36,20 +36,54 @@ to compile the library manually, you can run:
     gcc.exe -std=c99 -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined \
         -Wl,--subsystem,windows -o libconfini.dll confini.c winres.o
 
-If you want to compile only the library without the resource file, run:
+If you want to compile only the library without the resource file, you can run:
 
     gcc.exe -std=c99 -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined \
         -Wl,--subsystem,windows -o libconfini.dll confini.c
 
 If you want to build (and install) **libconfini** via Autotools under Microsoft
-Windows, several options are available, such as MinGW + MSYS, Cygwin
-and GnuWin32.
+Windows, several options are available, such as MinGW + MSYS, GnuWin32 and
+Cygwin (for which [an unofficial port][1] of **libconfini** exists).
 
-Often a compiled DLL is [made available][1] among the assets of each release of
-**libconfini** on GitHub.
+Often a compiled DLL [is available][2] among the assets of each release of this
+package on GitHub.
+
+
+Complex installations
+---------------------
+
+This library has been designed to be able to coexist with other major releases
+of itself. However, when two versions share the same major number but have
+different minor or revision numbers, only the most recent package must be
+installed.
+
+For two or more different major releases to be able to coexist, the major number
+of each version must be appended to the package name it refers to, with the
+possible exception of only one package (usually version 1.x.x). This can be done
+easily by passing the `--multiversion` option to the `autogen.sh` script:
+
+    ./autogen.sh --multiversion
+
+This will ensure **libconfini** X.Y.Z to be installed as **libconfiniX** X.Y.Z.
+
+If you are not using the `autogen.sh` script provided, passing the
+`--multiversion` paramenter above is equivalent to setting a `$MULTIVERSION_LIB`
+environment variable to any non-empty value other than `no` before launching
+`automake`. In particular, the command above corresponds to
+
+    libtoolize
+    aclocal
+    MULTIVERSION_LIB=yes \
+        automake --add-missing --copy --gnu
+    autoconf
+    ./configure
+
+By convention you need to append the major version number to the name of the
+package only for major version numbers greater than one.
 
 For any issue, drop a message at https://github.com/madmurphy/libconfini/issues.
 
 
-[1]: https://github.com/madmurphy/libconfini/releases
+[1]: https://github.com/fd00/yacp/tree/master/libconfini
+[2]: https://github.com/madmurphy/libconfini/releases
 

@@ -12,26 +12,26 @@ AM_CFLAGS = \
 	-g \
 	"-O$(CODE_OPTIMIZATION)"
 
-lib_LTLIBRARIES = libconfini.la
+lib_LTLIBRARIES = lib@LIBRARY_LOCALNAME@.la
 
-libconfini_la_SOURCES = \
+lib@LIBRARY_LOCALNAME@_la_SOURCES = \
 	confini.c
 
-libconfini_la_LDFLAGS = \
+lib@LIBRARY_LOCALNAME@_la_LDFLAGS = \
 	-version-info "$(INTERFACE_NUMBER):$(IMPLEMENTATION_NUMBER):$(INTERFACE_COMPATIBILITY)"
 
-libconfini_la_LIBADD = 
+lib@LIBRARY_LOCALNAME@_la_LIBADD = 
 
 
 if PLATFORM_MSWIN
 
-libconfini_la_LDFLAGS += \
+lib@LIBRARY_LOCALNAME@_la_LDFLAGS += \
 	-no-undefined
 
 
 if NATIVE_MSWIN
 
-libconfini_la_LDFLAGS += \
+lib@LIBRARY_LOCALNAME@_la_LDFLAGS += \
 	-export-dynamic \
 	-avoid-version
 
@@ -44,7 +44,7 @@ if HAVE_RC
 AM_RCFLAGS = \
 	--codepage=65001
 
-libconfini_la_SOURCES += \
+lib@LIBRARY_LOCALNAME@_la_SOURCES += \
 	winres.rc
 
 .rc.lo:
@@ -59,10 +59,9 @@ endif
 include_HEADERS = \
 	confini.h
 
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libconfini-$(PACKAGE_VERSION).pc
+pkgconfig_DATA = $(PACKAGE_NAME).pc
 
-EXTRA_DIST = libconfini-$(PACKAGE_VERSION).pc.in
+EXTRA_DIST = $(PACKAGE_REALNAME).pc.in
 
 ## EOF
 

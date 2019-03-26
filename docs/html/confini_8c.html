@@ -100,14 +100,17 @@ Functions</h2></td></tr>
 <tr class="memdesc:a5064aeff2ed4d78319237aec6ce96094"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hard right trim &ndash; <b>does</b> change the buffer.  <a href="#a5064aeff2ed4d78319237aec6ce96094">More...</a><br /></td></tr>
 <tr class="separator:a5064aeff2ed4d78319237aec6ce96094"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae763c8d7fa3afbb34e20172e1defc05f"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ae763c8d7fa3afbb34e20172e1defc05f">urtrim_s</a> (const char *const str, const size_t len)</td></tr>
-<tr class="memdesc:ae763c8d7fa3afbb34e20172e1defc05f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescaped soft right trim (right trim of <code>/(\s+|\\[\n\r])+$/</code>) &ndash; does not change the buffer.  <a href="#ae763c8d7fa3afbb34e20172e1defc05f">More...</a><br /></td></tr>
+<tr class="memdesc:ae763c8d7fa3afbb34e20172e1defc05f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unescaped soft right trim (right trim of <code>/(?:\s|\\[\n\r])+$/</code>) &ndash; does not change the buffer.  <a href="#ae763c8d7fa3afbb34e20172e1defc05f">More...</a><br /></td></tr>
 <tr class="separator:ae763c8d7fa3afbb34e20172e1defc05f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6e6972b13052e995b3ceb2fb4996ede"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ad6e6972b13052e995b3ceb2fb4996ede">string_tolower</a> (char *const str)</td></tr>
 <tr class="memdesc:ad6e6972b13052e995b3ceb2fb4996ede"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an ASCII string to lower case.  <a href="#ad6e6972b13052e995b3ceb2fb4996ede">More...</a><br /></td></tr>
 <tr class="separator:ad6e6972b13052e995b3ceb2fb4996ede"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc2039866ca1e79344d7da6ef06ddf87"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#adc2039866ca1e79344d7da6ef06ddf87">qultrim_h</a> (char *const srcstr, const size_t offs, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
-<tr class="memdesc:adc2039866ca1e79344d7da6ef06ddf87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unparsed hard left trim (left trim of <code>/^(\s+|\\[\n\r]|''|&quot;&quot;)+/</code>) &ndash; <b>does</b> change the buffer.  <a href="#adc2039866ca1e79344d7da6ef06ddf87">More...</a><br /></td></tr>
+<tr class="memdesc:adc2039866ca1e79344d7da6ef06ddf87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unparsed hard left trim (left trim of <code>/^(?:\s+|\\[\n\r]|''|&quot;&quot;)+/</code>) &ndash; <b>does</b> change the buffer.  <a href="#adc2039866ca1e79344d7da6ef06ddf87">More...</a><br /></td></tr>
 <tr class="separator:adc2039866ca1e79344d7da6ef06ddf87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2aa1c0316cc78e3f878e1ea644b48f8"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ac2aa1c0316cc78e3f878e1ea644b48f8">dqultrim_s</a> (const char *const srcstr, const size_t offs, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
+<tr class="memdesc:ac2aa1c0316cc78e3f878e1ea644b48f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Soft left trim within an unparsed disabled entry (left trim of <code>/(?:(?:^|\\?[\n\r])[ \t\v\f]*(?:#(?:[ \t\v\f]|''|&quot;&quot;)*)?)+/</code>) &ndash; does not change the buffer.  <a href="#ac2aa1c0316cc78e3f878e1ea644b48f8">More...</a><br /></td></tr>
+<tr class="separator:ac2aa1c0316cc78e3f878e1ea644b48f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab34de4f3cd8ff30c45ac7652457f695e"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ab34de4f3cd8ff30c45ac7652457f695e">getn_metachar_pos</a> (const char *const str, const char chr, const size_t len, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
 <tr class="memdesc:ab34de4f3cd8ff30c45ac7652457f695e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the position of the first occurence out of quotes of a given character, stopping after a given number of charcters.  <a href="#ab34de4f3cd8ff30c45ac7652457f695e">More...</a><br /></td></tr>
 <tr class="separator:ab34de4f3cd8ff30c45ac7652457f695e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -136,7 +139,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a9fe94d3afd1e3a9f95501605f6d0fd77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tries to determine the type of a member "as if it was active".  <a href="#a9fe94d3afd1e3a9f95501605f6d0fd77">More...</a><br /></td></tr>
 <tr class="separator:a9fe94d3afd1e3a9f95501605f6d0fd77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28e12cde8688ade4d85ea5d8b0db31d3"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a28e12cde8688ade4d85ea5d8b0db31d3">further_cuts</a> (char *const srcstr, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
-<tr class="memdesc:a28e12cde8688ade4d85ea5d8b0db31d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Examines a (single-/multi- line) segment and checks whether it contains sub-segments.  <a href="#a28e12cde8688ade4d85ea5d8b0db31d3">More...</a><br /></td></tr>
+<tr class="memdesc:a28e12cde8688ade4d85ea5d8b0db31d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Examines a (single-/multi- line) segment and checks whether it contains more than just one entry.  <a href="#a28e12cde8688ade4d85ea5d8b0db31d3">More...</a><br /></td></tr>
 <tr class="separator:a28e12cde8688ade4d85ea5d8b0db31d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d5042d3044dfb5a34a6bfc5af3a882d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a7d5042d3044dfb5a34a6bfc5af3a882d">load_ini_file</a> (FILE *const ini_file, const <a class="el" href="structIniFormat.html">IniFormat</a> format, const <a class="el" href="confini_8h.html#a3330e1083693c66b63b18c0d8883f9a8">IniStatsHandler</a> f_init, const <a class="el" href="confini_8h.html#a0eff1cb87db5b73071e87f8cc9c4b445">IniDispHandler</a> f_foreach, void *const user_data)</td></tr>
 <tr class="memdesc:a7d5042d3044dfb5a34a6bfc5af3a882d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses an INI file and dispatches its content using a <code>FILE</code> structure as argument.  <a href="#a7d5042d3044dfb5a34a6bfc5af3a882d">More...</a><br /></td></tr>
@@ -371,6 +374,59 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="ac2aa1c0316cc78e3f878e1ea644b48f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2aa1c0316cc78e3f878e1ea644b48f8">&#9670;&nbsp;</a></span>dqultrim_s()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static size_t dqultrim_s </td>
+          <td>(</td>
+          <td class="paramtype">const char *const&#160;</td>
+          <td class="paramname"><em>srcstr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>offs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structIniFormat.html">IniFormat</a>&#160;</td>
+          <td class="paramname"><em>format</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Soft left trim within an unparsed disabled entry (left trim of <code>/(?:(?:^|\\?[\n\r])[ \t\v\f]*(?:#(?:[ \t\v\f]|''|&quot;&quot;)*)?)+/</code>) &ndash; does not change the buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">srcstr</td><td>The target string (it may contain multi-line escape sequences) </td></tr>
+    <tr><td class="paramname">offs</td><td>The offset where to start the left trim </td></tr>
+    <tr><td class="paramname">format</td><td>The format of the INI file </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The offset of the first non-trivial character </dd></dl>
+
+</div>
+</div>
 <a id="a28e12cde8688ade4d85ea5d8b0db31d3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a28e12cde8688ade4d85ea5d8b0db31d3">&#9670;&nbsp;</a></span>further_cuts()</h2>
 
@@ -405,7 +461,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Examines a (single-/multi- line) segment and checks whether it contains sub-segments. </p>
+<p>Examines a (single-/multi- line) segment and checks whether it contains more than just one entry. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">srcstr</td><td>Segment to examine (it may contain multi-line escape sequences) </td></tr>
@@ -413,7 +469,13 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Number of segments found </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Number of entries found </dd></dl>
+<p>&lt; Inline comment internal marker</p>
+<p>&lt; Simple comment internal marker</p>
+<p>&lt; Inline comment internal marker</p>
+<p>&lt; Simple comment internal marker</p>
+<p>&lt; Simple comment internal marker</p>
+<p>&lt; Inline comment internal marker </p>
 
 </div>
 </div>
@@ -1566,7 +1628,9 @@ Variables</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>In order to be null byte injection safe, <code>NUL</code> characters, if present in the file, will be removed from the dispatched strings.</dd></dl>
 <p>The user given function <code>f_init</code> (see <a class="el" href="confini_8h.html#a3330e1083693c66b63b18c0d8883f9a8" title="Callback function for handling an IniStatistics structure.">IniStatsHandler</a> data type) will be invoked with two arguments: <code>statistics</code> (a pointer to an <a class="el" href="structIniStatistics.html" title="Global statistics about an INI file.">IniStatistics</a> structure containing some properties about the file read) and <code>user_data</code> (the custom argument <code>user_data</code> previously passed). If <code>f_init</code> returns a non-zero value the caller function will be interrupted.</p>
 <p>The user given function <code>f_foreach</code> (see <a class="el" href="confini_8h.html#a0eff1cb87db5b73071e87f8cc9c4b445" title="Callback function for handling an IniDispatch structure.">IniDispHandler</a> data type) will be invoked with two arguments: <code>dispatch</code> (a pointer to an <a class="el" href="structIniDispatch.html" title="Dispatch of a single INI node.">IniDispatch</a> structure containing the parsed member of the INI file) and <code>user_data</code> (the custom argument <code>user_data</code> previously passed). If <code>f_foreach</code> returns a non-zero value the caller function will be interrupted.</p>
-<div class="fragment"><div class="line"><span class="comment">/*  examples/topics/load_ini_file.c  */</span></div><div class="line"></div><div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> my_callback (<a class="code" href="structIniDispatch.html">IniDispatch</a> * dispatch, <span class="keywordtype">void</span> * v_null) {</div><div class="line"></div><div class="line">  printf(</div><div class="line">    <span class="stringliteral">&quot;DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n&quot;</span>,</div><div class="line">    dispatch-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a></div><div class="line">  );</div><div class="line"></div><div class="line">  <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">int</span> main () {</div><div class="line"></div><div class="line">  FILE * <span class="keyword">const</span> ini_file = fopen(<span class="stringliteral">&quot;ini_files/delivery.conf&quot;</span>, <span class="stringliteral">&quot;rb&quot;</span>);</div><div class="line"></div><div class="line">  <span class="keywordflow">if</span> (ini_file == NULL) {</div><div class="line"></div><div class="line">    fprintf(stderr, <span class="stringliteral">&quot;File doesn&#39;t exist :-(\n&quot;</span>);</div><div class="line">    <span class="keywordflow">return</span> 1;</div><div class="line"></div><div class="line">  }</div><div class="line"></div><div class="line">  <span class="keywordflow">if</span> (<a class="code" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d">load_ini_file</a>(</div><div class="line">    ini_file,</div><div class="line">    <a class="code" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a>,</div><div class="line">    NULL,</div><div class="line">    my_callback,</div><div class="line">    NULL</div><div class="line">  )) {</div><div class="line"></div><div class="line">    fprintf(stderr, <span class="stringliteral">&quot;Sorry, something went wrong :-(\n&quot;</span>);</div><div class="line">    <span class="keywordflow">return</span> 1;</div><div class="line"></div><div class="line">  }</div><div class="line"></div><div class="line">  fclose(ini_file);</div><div class="line"></div><div class="line">  <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="comment">/*  examples/topics/load_ini_file.c  */</span></div><div class="line"></div><div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> my_callback (<a class="code" href="structIniDispatch.html">IniDispatch</a> * dispatch, <span class="keywordtype">void</span> * v_null) {</div><div class="line"></div><div class="line">  printf(</div><div class="line">    <span class="stringliteral">&quot;DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n&quot;</span>,</div><div class="line">    dispatch-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a></div><div class="line">  );</div><div class="line"></div><div class="line">  <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">int</span> main () {</div><div class="line"></div><div class="line">  FILE * <span class="keyword">const</span> ini_file = fopen(<span class="stringliteral">&quot;ini_files/delivery.conf&quot;</span>, <span class="stringliteral">&quot;rb&quot;</span>);</div><div class="line"></div><div class="line">  <span class="keywordflow">if</span> (ini_file == NULL) {</div><div class="line"></div><div class="line">    fprintf(stderr, <span class="stringliteral">&quot;File doesn&#39;t exist :-(\n&quot;</span>);</div><div class="line">    <span class="keywordflow">return</span> 1;</div><div class="line"></div><div class="line">  }</div><div class="line"></div><div class="line">  <span class="keywordflow">if</span> (<a class="code" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d">load_ini_file</a>(</div><div class="line">    ini_file,</div><div class="line">    <a class="code" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a>,</div><div class="line">    NULL,</div><div class="line">    my_callback,</div><div class="line">    NULL</div><div class="line">  )) {</div><div class="line"></div><div class="line">    fprintf(stderr, <span class="stringliteral">&quot;Sorry, something went wrong :-(\n&quot;</span>);</div><div class="line">    <span class="keywordflow">return</span> 1;</div><div class="line"></div><div class="line">  }</div><div class="line"></div><div class="line">  fclose(ini_file);</div><div class="line"></div><div class="line">  <span class="keywordflow">return</span> 0;</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <p>&lt; Simple comment internal marker</p>
+<p>&lt; Inline comment internal marker </p>
+
 </div>
 </div>
 <a id="a54be108d26619db3066ce1c000dc8a17"></a>
@@ -1830,7 +1894,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Unparsed hard left trim (left trim of <code>/^(\s+|\\[\n\r]|''|&quot;&quot;)+/</code>) &ndash; <b>does</b> change the buffer. </p>
+<p>Unparsed hard left trim (left trim of <code>/^(?:\s+|\\[\n\r]|''|&quot;&quot;)+/</code>) &ndash; <b>does</b> change the buffer. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">srcstr</td><td>The target string (it may contain multi-line escape sequences) </td></tr>
@@ -1839,7 +1903,7 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The offset of the first non-space character </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The offset of the first non-trivial character </dd></dl>
 
 </div>
 </div>
@@ -2083,9 +2147,10 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The new length of the string</dd></dl>
 <ul>
-<li>In multi-line comments: <code>srcstr.replace(/(^|\n\r?|\r\n?)[\t \v\f]*[#;]+/g, "$1")</code></li>
-<li>In single-line comments: <code>srcstr.replace(/^[\t \v\f]*[#;]+/, "")</code> </li>
+<li>In multi-line comments: <code>srcstr.replace(/^[#;]+|(\n\r?|\r\n?)[\t \v\f]*[#;]+/g, "$1")</code></li>
+<li>In single-line comments: <code>srcstr.replace(/^[#;]+/, "")</code></li>
 </ul>
+<p>The argument <code>srcstr</code> may begin with a comment initializer (<code>#</code> or <code>;</code> depending on the format), or with the character that immediately follows it. </p>
 
 </div>
 </div>
@@ -2183,7 +2248,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Unescaped soft right trim (right trim of <code>/(\s+|\\[\n\r])+$/</code>) &ndash; does not change the buffer. </p>
+<p>Unescaped soft right trim (right trim of <code>/(?:\s|\\[\n\r])+$/</code>) &ndash; does not change the buffer. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">str</td><td>The target string </td></tr>
@@ -2217,7 +2282,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div><div class="line">    { <span class="stringliteral">&quot;no&quot;</span>, <span class="stringliteral">&quot;yes&quot;</span> },</div><div class="line">    { <span class="stringliteral">&quot;false&quot;</span>, <span class="stringliteral">&quot;true&quot;</span> },</div><div class="line">    { <span class="stringliteral">&quot;off&quot;</span>, <span class="stringliteral">&quot;on&quot;</span> }</div><div class="line">}</div></div><!-- fragment -->
 <p>A list of possible string representations of boolean pairs. </p>
-<p>There may be infinite pairs here. Each pair must be presented in this order:</p>
+<p>There may be infinite pairs here. Each pair must be organized according to the following order:</p>
 <ol type="1">
 <li>Signifier of <code>false</code></li>
 <li>Signifier of <code>true</code></li>

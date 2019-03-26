@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['sanitize_5fsection_5fpath',['sanitize_section_path',['../confini_8c.html#aa17889754780149f18e417607e5ffb24',1,'confini.c']]],
-  ['string_5ftolower',['string_tolower',['../confini_8c.html#ad6e6972b13052e995b3ceb2fb4996ede',1,'confini.c']]]
+  ['rtrim_5fh',['rtrim_h',['../confini_8c.html#a5064aeff2ed4d78319237aec6ce96094',1,'confini.c']]],
+  ['rtrim_5fs',['rtrim_s',['../confini_8c.html#a48366c6dc6437e73ed93d85f6e109d02',1,'confini.c']]]
 ];

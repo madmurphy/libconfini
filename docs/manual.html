@@ -230,7 +230,7 @@ my_array = Asia, Africa, 'North America', South America,\
 <p>A <strong>section</strong> might be imagined like a directory. A <strong>section path</strong> is
 identified as the string <code>"$1"</code> in the regular expression
 <code>/(?:^|\n|\r)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\][ \t\v\f]*(?:\n|\r|$)/</code>
-globally applied to an INI file. A section path expresses nesting through the
+globally applied to an INI file. A section path expresses nesting using the
 &ldquo;dot&rdquo; character, as in the following example:</p>
 
 <pre><code class="{.ini}">[section]
@@ -566,7 +566,7 @@ my_format.implicit_is_not_empty = NO;
 my_format.do_not_collapse_values = NO;
 my_format.preserve_empty_quotes = NO;
 my_format.disabled_after_space = NO;
-my_format.disabled_can_be_implicit = NO,
+my_format.disabled_can_be_implicit = NO;
 </code></pre>
 
 <p>Since version 1.7.0 a format named <code>INI_UNIXLIKE_FORMAT</code> is available as well.</p>
@@ -1299,7 +1299,7 @@ int main () {
 }
 </code></pre>
 
-<p>Alternatively, this variable can be set through the function
+<p>Alternatively, this variable can be set by using its setter function
 <code>ini_global_set_lowercase_mode()</code>.</p>
 
 <p>When the variable <code>INI_GLOBAL_LOWERCASE_MODE</code> is set to <code>true</code>, <strong>libconfini</strong>
@@ -1327,23 +1327,25 @@ represent the same letter, while for a person living in Turkey they will not.</p
 
 <p>Key and section names of an INI file however cannot depend on the locale of the
 machine, since they must be reliably searched for independently of where a
-machine is located. Therefore <strong>libconfini</strong> (and probably any senseful INI
-parser) will never perform a case folding of Unicode characters out of the ASCII
-range within key and section names. Imagine for example a key named &ldquo;INI&rdquo; and
-imagine that Unicode case folding were performed on key names during string
-comparisons. If you lived in Europe you could look up for such key using its
-lower case &ldquo;INI&rdquo;, while if you lived in Turkey you would have to use the lower
-case &ldquo;&#305;n&#305;&rdquo; to find it. So the only solution in this context is to consider
-Unicode characters out of the ASCII range always as case sensitive.</p>
+machine is located. Imagine for example a key named &ldquo;INI&rdquo; and imagine that
+Unicode case folding were performed on key names during string comparisons. If
+you lived in Europe you could look up for such key using its lower case &ldquo;ini&rdquo;,
+while if you lived in Turkey you would have to use the lower case &ldquo;&#305;n&#305;&rdquo; to find
+it. So the only solution in this context is to consider Unicode characters out
+of the ASCII range always as case sensitive. For this reason, <strong>libconfini</strong>
+(and probably any senseful INI parser) will never perform a case folding of
+Unicode characters out of the ASCII range within key and section names.</p>
 
-<p>It must be said however that most of Unicode characters do not possess a lower
-and upper case, so most characters out of the ASCII range could theoretically
+<p>It must be said however that most Unicode characters do not possess a lower and
+upper case, and most characters outside of the ASCII range could theoretically
 appear without problems in key and section names also in case insensitive INI
 files (think of the character <code>&sect;</code> for example). And, as for case sensitive INI
-files, no Unicode character would ever represent a problem. However, it is still
-generally more acceptable to use ASCII only within key and section names, and
-possibly, if needed, non-ASCII Unicode characters within values and comments.
-That said, <strong>libconfini</strong> deals perfectly fine with UTF-8 (but is always case
+files, no Unicode character would ever represent a problem. Nonetheless, it is
+still generally more acceptable to use ASCII only within key and section names
+-- and possibly, if needed, non-ASCII Unicode characters within values and
+comments.</p>
+
+<p>That said, <strong>libconfini</strong> deals perfectly fine with UTF-8 (but is always case
 sensitive outside of the ASCII range), so use the latter as you feel
 appropriate.</p>
 
@@ -1352,8 +1354,8 @@ appropriate.</p>
 <p>Depending on the format of the INI file, <strong>libconfini</strong> may use up to three
 global variables (<code>INI_GLOBAL_IMPLICIT_VALUE</code>, <code>INI_GLOBAL_IMPLICIT_V_LEN</code> and
 <code>INI_GLOBAL_LOWERCASE_MODE</code>). In order to be thread-safe these three variables
-(if needed) must be defined only once (either directly, or through their
-modifier functions <code>ini_global_set_implicit_value()</code> and
+(if needed) must be defined only once (either directly, or by using their setter
+functions <code>ini_global_set_implicit_value()</code> and
 <code>ini_global_set_lowercase_mode()</code>), or otherwise a mutex logic must be
 introduced.</p>
 

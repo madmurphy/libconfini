@@ -180,7 +180,7 @@ my_array = Asia, Africa, \'North America\', South America,\e
 .IP "" 0
 .
 .SS "SECTIONS"
-A \fBsection\fR might be imagined like a directory\. A \fBsection path\fR is identified as the string \fB"$1"\fR in the regular expression \fB/(?:^|\en|\er)[ \et\ev\ef]*\e[[ \et\ev\ef]*([^\e]]*)[ \et\ev\ef]*\e][ \et\ev\ef]*(?:\en|\er|$)/\fR globally applied to an INI file\. A section path expresses nesting through the “dot” character, as in the following example:
+A \fBsection\fR might be imagined like a directory\. A \fBsection path\fR is identified as the string \fB"$1"\fR in the regular expression \fB/(?:^|\en|\er)[ \et\ev\ef]*\e[[ \et\ev\ef]*([^\e]]*)[ \et\ev\ef]*\e][ \et\ev\ef]*(?:\en|\er|$)/\fR globally applied to an INI file\. A section path expresses nesting using the “dot” character, as in the following example:
 .
 .IP "" 4
 .
@@ -600,7 +600,7 @@ my_format\.implicit_is_not_empty = NO;
 my_format\.do_not_collapse_values = NO;
 my_format\.preserve_empty_quotes = NO;
 my_format\.disabled_after_space = NO;
-my_format\.disabled_can_be_implicit = NO,
+my_format\.disabled_can_be_implicit = NO;
 .
 .fi
 .
@@ -1379,7 +1379,7 @@ int main () {
 .IP "" 0
 .
 .P
-Alternatively, this variable can be set through the function \fBini_global_set_lowercase_mode()\fR\.
+Alternatively, this variable can be set by using its setter function \fBini_global_set_lowercase_mode()\fR\.
 .
 .P
 When the variable \fBINI_GLOBAL_LOWERCASE_MODE\fR is set to \fBtrue\fR, \fBlibconfini\fR always dispatches in lower case \fIall\fR ASCII letters of key and section names in case\-insensitive formats – \fIeven when these are enclosed within quotes\fR – but does \fBnot\fR dispatch in lower case UTF\-8 code points out of the ASCII range (for instance, \fBĀ\fR will not be rendered as \fBā\fR, but will be rather rendered verbatim)\. \fIIn general it is a good practice to use UTF\-8 within values, but to use ASCII only within key and section names, at least in case insensitive INI files\fR (see below)\. As for values instead, their case is always preserved\.
@@ -1391,13 +1391,16 @@ Normally \fBINI_GLOBAL_LOWERCASE_MODE\fR does not need to be set to \fBtrue\fR, 
 Comparing an ASCII upper case letter to an ASCII lower case letter is an invariant process\. But comparing two Unicode letter cases is a process that depends on the locale of the machine\. Consider for example the lower case letter \fBi\fR: in most European languages its upper case is \fBI\fR, while this is not the case in Turkish, where the upper case of \fBi\fR is \fBİ\fR (and the lower case of \fBI\fR is \fBı\fR)\. Therefore for a person living in Italy or France, \fBi\fR and \fBI\fR will represent the same letter, while for a person living in Turkey they will not\.
 .
 .P
-Key and section names of an INI file however cannot depend on the locale of the machine, since they must be reliably searched for independently of where a machine is located\. Therefore \fBlibconfini\fR (and probably any senseful INI parser) will never perform a case folding of Unicode characters out of the ASCII range within key and section names\. Imagine for example a key named “INI” and imagine that Unicode case folding were performed on key names during string comparisons\. If you lived in Europe you could look up for such key using its lower case “INI”, while if you lived in Turkey you would have to use the lower case “ını” to find it\. So the only solution in this context is to consider Unicode characters out of the ASCII range always as case sensitive\.
+Key and section names of an INI file however cannot depend on the locale of the machine, since they must be reliably searched for independently of where a machine is located\. Imagine for example a key named “INI” and imagine that Unicode case folding were performed on key names during string comparisons\. If you lived in Europe you could look up for such key using its lower case “ini”, while if you lived in Turkey you would have to use the lower case “ını” to find it\. So the only solution in this context is to consider Unicode characters out of the ASCII range always as case sensitive\. For this reason, \fBlibconfini\fR (and probably any senseful INI parser) will never perform a case folding of Unicode characters out of the ASCII range within key and section names\.
 .
 .P
-It must be said however that most of Unicode characters do not possess a lower and upper case, so most characters out of the ASCII range could theoretically appear without problems in key and section names also in case insensitive INI files (think of the character \fB§\fR for example)\. And, as for case sensitive INI files, no Unicode character would ever represent a problem\. However, it is still generally more acceptable to use ASCII only within key and section names, and possibly, if needed, non\-ASCII Unicode characters within values and comments\. That said, \fBlibconfini\fR deals perfectly fine with UTF\-8 (but is always case sensitive outside of the ASCII range), so use the latter as you feel appropriate\.
+It must be said however that most Unicode characters do not possess a lower and upper case, and most characters outside of the ASCII range could theoretically appear without problems in key and section names also in case insensitive INI files (think of the character \fB§\fR for example)\. And, as for case sensitive INI files, no Unicode character would ever represent a problem\. Nonetheless, it is still generally more acceptable to use ASCII only within key and section names \-\- and possibly, if needed, non\-ASCII Unicode characters within values and comments\.
+.
+.P
+That said, \fBlibconfini\fR deals perfectly fine with UTF\-8 (but is always case sensitive outside of the ASCII range), so use the latter as you feel appropriate\.
 .
 .SS "THREAD SAFETY"
-Depending on the format of the INI file, \fBlibconfini\fR may use up to three global variables (\fBINI_GLOBAL_IMPLICIT_VALUE\fR, \fBINI_GLOBAL_IMPLICIT_V_LEN\fR and \fBINI_GLOBAL_LOWERCASE_MODE\fR)\. In order to be thread\-safe these three variables (if needed) must be defined only once (either directly, or through their modifier functions \fBini_global_set_implicit_value()\fR and \fBini_global_set_lowercase_mode()\fR), or otherwise a mutex logic must be introduced\.
+Depending on the format of the INI file, \fBlibconfini\fR may use up to three global variables (\fBINI_GLOBAL_IMPLICIT_VALUE\fR, \fBINI_GLOBAL_IMPLICIT_V_LEN\fR and \fBINI_GLOBAL_LOWERCASE_MODE\fR)\. In order to be thread\-safe these three variables (if needed) must be defined only once (either directly, or by using their setter functions \fBini_global_set_implicit_value()\fR and \fBini_global_set_lowercase_mode()\fR), or otherwise a mutex logic must be introduced\.
 .
 .P
 Apart from the three variables above, each parsing allocates and frees its own memory and every function is fully reentrant, therefore the library can be considered thread\-safe\.
