@@ -67,6 +67,13 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Record of notable changes</p>
+<h2>1.9.1 &ndash; 2019-03-28</h2>
+<p>Changes:</p>
+<ul>
+<li>Private function <code><a class="el" href="confini_8c.html#a28e12cde8688ade4d85ea5d8b0db31d3" title="Examines a (single-/multi- line) segment and checks whether it contains more than just one entry.">further_cuts()</a></code>: fixed bug concerning blocks that had been marked as <code>INI_IGNORE</code> wrongly re-marked as comments after 1.9.0 (due to this bug error <code>CONFINI_EOOR</code> was thrown)</li>
+<li>Private function <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parses an INI file and dispatches its content using a FILE structure as argument.">load_ini_file()</a></code>: fixed bug related to <code><a class="el" href="structIniFormat.html#a6ad00ea76bbe5ed109f4192f89859656">IniFormat::disabled_after_space</a></code> stopping to work properly after 1.9.0</li>
+<li>Documentation</li>
+</ul>
 <h2>1.9.0 &ndash; 2019-03-26</h2>
 <p>Changes:</p>
 <ul>

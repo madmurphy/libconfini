@@ -259,14 +259,18 @@
 /*  The character that will replace sequences of one or more spaces (`/\s+/`)  */
 #define _LIBCONFINI_COLLAPSED_ _LIBCONFINI_SIMPLE_SPACE_
 
+
 /*
 
 	These may be any character in theory... But after the left-trim of each node
 	leading spaces work pretty well as metacharacters...
 
 */
-#define _LIBCONFINI_SC_INT_MARKER_ _LIBCONFINI_SIMPLE_SPACE_	/**< Simple comment internal marker */
-#define _LIBCONFINI_IC_INT_MARKER_ _LIBCONFINI_HT_				/**< Inline comment internal marker */
+/*  Simple comment internal marker  */
+#define _LIBCONFINI_SC_INT_MARKER_ _LIBCONFINI_SIMPLE_SPACE_
+/*  Inline comment internal marker  */
+#define _LIBCONFINI_IC_INT_MARKER_ _LIBCONFINI_HT_
+
 
 /*
 
@@ -1934,12 +1938,11 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 		/*
 
-			Node starts with `/[;#]/` but cannot be multi-line or represent a
+			Node starts with `/[;#]/` but cannot be multi-line nor represent a
 			disabled entry
 
 		*/
 
-		srcstr[search_at] = _LIBCONFINI_SC_INT_MARKER_;
 		unparsable_at = search_at + 1;
 
 	} else {
@@ -2366,7 +2369,7 @@ int load_ini_file (
 		dsp.d_len = idx - node_at;
 		dsp.v_len = 0;
 
-		if (_LIBCONFINI_IS_DIS_MARKER_(*dsp.data, format)) {
+		if (_LIBCONFINI_IS_DIS_MARKER_(*dsp.data, format) && (format.disabled_after_space || !is_some_space(dsp.data[1], _LIBCONFINI_NO_EOL_))) {
 
 			parse_at = dqultrim_s(cache, node_at, format);
 			dsp.type = get_type_as_active(cache + parse_at, idx - parse_at, format.disabled_can_be_implicit, format);

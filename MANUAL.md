@@ -1398,12 +1398,11 @@ int main () {
   size_t bytes;
   double seconds;
   clock_t start, end;
-  IniFormat my_format = INI_DEFAULT_FORMAT;
   start = clock();
 
   if (load_ini_path(
     "big_file.ini",
-    my_format,
+    INI_DEFAULT_FORMAT,
     get_ini_size,
     empty_listener,
     &bytes

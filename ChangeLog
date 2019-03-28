@@ -2,6 +2,18 @@ Change Log {#changelog}
 =======================
 
 
+## 1.9.1 -- 2019-03-28
+
+Changes:
+
+* Private function `further_cuts()`: fixed bug concerning blocks that had been
+  marked as `INI_IGNORE` wrongly re-marked as comments after 1.9.0 (due to this
+  bug error `CONFINI_EOOR` was thrown)
+* Private function `load_ini_file()`: fixed bug related to
+  `IniFormat::disabled_after_space` stopping to work properly after 1.9.0
+* Documentation
+
+
 ## 1.9.0 -- 2019-03-26
 
 Changes:
