@@ -60,7 +60,7 @@ static int my_ini_listener (IniDispatch * dispatch, void * user_data) {
     dispatch->type,
     dispatch->data,
     dispatch->value,
-    dispatch->append_to,
+    *dispatch->append_to ? dispatch->append_to : "{root}",
     dispatch->d_len,
     dispatch->v_len,
     dispatch->at_len

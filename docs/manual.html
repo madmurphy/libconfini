@@ -55,12 +55,12 @@
   <div class='man-navigation' style='display:none'>
     <a href="#NAME">NAME</a>
     <a href="#DESCRIPTION">DESCRIPTION</a>
-    <a href="#WHAT-IS-AN-INI-FILE">WHAT IS AN INI FILE</a>
+    <a href="#WHAT-IS-AN-INI-FILE-">WHAT IS AN INI FILE?</a>
     <a href="#SUPPORTED-SYNTAXES">SUPPORTED SYNTAXES</a>
     <a href="#READ-AN-INI-FILE">READ AN INI FILE</a>
     <a href="#BASIC-EXAMPLES">BASIC EXAMPLES</a>
     <a href="#HOW-IT-WORKS">HOW IT WORKS</a>
-    <a href="#THE-IniFormat-BITFIELD">THE IniFormat BITFIELD</a>
+    <a href="#THE-IniFormat-DATA-TYPE">THE IniFormat DATA TYPE</a>
     <a href="#THE-IniStatistics-AND-IniDispatch-STRUCTURES">THE IniStatistics AND IniDispatch STRUCTURES</a>
     <a href="#RENDERING">RENDERING</a>
     <a href="#CODE-CONSIDERATIONS">CODE CONSIDERATIONS</a>
@@ -85,13 +85,13 @@ the data read from an INI file, but rather dispatches it, formatted, to a custom
 listener.</p>
 
 <p>The code is written in C (C99) and does not depend on any particular library,
-except for the C standard libraries <strong>stdio.h</strong>, <strong>stdlib.h</strong> and <strong>stdint.h</strong>.</p>
+except for the C standard headers <strong>stdio.h</strong>, <strong>stdlib.h</strong> and <strong>stdint.h</strong>.</p>
 
 <p>If you want to start to learn directly from the code, you can find partially
 self-documented sample usages of <strong>libconfini</strong> under
 <code>/usr/share/doc/libconfini/examples/</code>.</p>
 
-<h2 id="WHAT-IS-AN-INI-FILE">WHAT IS AN INI FILE</h2>
+<h2 id="WHAT-IS-AN-INI-FILE-">WHAT IS AN INI FILE?</h2>
 
 <p>INI files were introduced with the early versions of Microsoft Windows, where
 the .ini file name extension stood for INItialization. An INI file may be
@@ -527,15 +527,16 @@ data be saved</em>: after the end of the functions <code>load_ini_file()</code> 
 (<code>IniDispatch * dispatch</code>) is always the same <code>struct</code> that gets constantly
 updated with new information.</p>
 
-<h2 id="THE-IniFormat-BITFIELD">THE <code>IniFormat</code> BITFIELD</h2>
+<h2 id="THE-IniFormat-DATA-TYPE">THE <code>IniFormat</code> DATA TYPE</h2>
 
 <p>For a correct use of this library it is fundamental to understand the
-<code>IniFormat</code> bitfield. <strong>libconfini</strong> has been born as a general INI parser, with
-the main purpose of <em>being able to understand INI files written by other
-programs</em> (see <strong>Rationale</strong>), therefore some flexibility was required.</p>
-
-<p>When an INI file is parsed it is parsed according to a format. The <code>IniFormat</code>
-bitfield is a description of such format.</p>
+<code>IniFormat</code> data type. <strong>libconfini</strong> has been born as a general INI parser,
+with the main purpose of <em>being able to understand INI files written by other
+programs</em> (see <strong>Rationale</strong>), therefore some flexibility was required.
+When an INI file is parsed it is parsed according to a particular format. The
+<code>IniFormat</code> data type is a univocal description of such format. It is
+implemented as a 24-bit bitfield. Its small size (3 bytes) allows it to be
+passed by value to the functions that require it.</p>
 
 <h3 id="THE-MODEL-FORMATS">THE MODEL FORMATS</h3>
 
@@ -574,9 +575,26 @@ my_format.disabled_can_be_implicit = NO;
 <pre><code class="{.c}">IniFormat my_format = INI_UNIXLIKE_FORMAT;
 </code></pre>
 
-<p>This format is a clone of <code>INI_DEFAULT_FORMAT</code>, with the only
-exception of the <code>IniFormat::delimiter_symbol</code> field, whose value is set to
-<code>INI_ANY_SPACE</code> instead of <code>INI_EQUALS</code>.</p>
+<p>This format is a clone of <code>INI_DEFAULT_FORMAT</code> with the only exception of the
+<code>IniFormat::delimiter_symbol</code> field, whose value is set to <code>INI_ANY_SPACE</code>
+instead of <code>INI_EQUALS</code>.</p>
+
+<p>The semantics of the <code>IniFormat</code> bitfield has been designed in order to ensure
+that when all its fields are set to zero it equals <code>INI_UNIXLIKE_FORMAT</code>.</p>
+
+<pre><code class="{.c}">IniFormat format_zero = (IniFormat) { 0 };
+
+printf(
+
+  "`format_zero` and `INI_UNIXLIKE_FORMAT` are %s.\n",
+
+  memcmp(&amp;format_zero, &amp;INI_UNIXLIKE_FORMAT, sizeof(IniFormat)) ?
+    "not equal"
+  :
+    "equal"
+
+); // "`format_zero` and `INI_UNIXLIKE_FORMAT` are equal."
+</code></pre>
 
 <h3 id="THE-IniFormatNum-DATA-TYPE">THE <code>IniFormatNum</code> DATA TYPE</h3>
 
@@ -665,7 +683,7 @@ according to ECMAScript <code>comment_string.replace(/^[ \t\v\f]*[#;]+/, "")</co
 before being copied or analyzed they can be edited, <strong>with some precautions</strong></em>:</p>
 
 <ol>
-<li>Be sure that your edit remains within the buffer lengths given (see:
+<li>Be sure that your edit remains within the buffer lengths given (see
 <code>IniDispatch::d_len</code> and <code>IniDispatch::v_len</code>).</li>
 <li>If you want to edit the content of <code>IniDispatch::data</code> and this contains a
 section path, the <code>IniDispatch::append_to</code> properties of its children may
@@ -820,11 +838,12 @@ int main () {
 </code></pre>
 
 <p>In formats that support quotes, the function <code>ini_array_match()</code> is also the
-function that should be used, with <code>'.'</code> as delimiter, to properly compare
-section paths containing more than one level of nesting.</p>
+function that should be used, with <code>'.'</code> or <code>INI_DOT</code> as delimiter (see <code>enum</code>
+<code>IniDelimiters</code>), to properly compare section paths containing more than one
+level of nesting.</p>
 
 <pre><code class="{.c}">if (
-  ini_array_match("foo.bar", this-&gt;append_to, '.', this-&gt;format) &amp;&amp;
+  ini_array_match("foo.bar", this-&gt;append_to, INI_DOT, this-&gt;format) &amp;&amp;
   ini_string_match_si("username", this-&gt;data, this-&gt;format)
 ) {
 
@@ -865,7 +884,7 @@ of the ASCII range are always compared case-sensitive.</p>
 
 <p>Note that, within INI strings, empty quotes and spaces out of quotes are always
 collapsed during comparisons. Furthermore, remember that the multi-line escape
-sequence (<code>/\\(?:\n\r?|\r\n?)/</code>) is <em>not</em> considered as such in INI strings,
+sequence <code>/\\(?:\n\r?|\r\n?)/</code> is <em>not</em> considered as such in INI strings,
 since this is the only escape sequence automatically unescaped by <strong>libconfini</strong>
 <em>before</em> each dispatch.</p>
 
@@ -925,9 +944,9 @@ of a section path, depending on the content and the format of the INI file.</p>
 
 <h3 id="IMPLICIT-KEYS">IMPLICIT KEYS</h3>
 
-<p>In order to set the value to be assigned to implicit keys, please use the
-<code>ini_global_set_implicit_value()</code> function. A <em>zero-length <code>TRUE</code>-boolean</em> is
-usually a good choice:</p>
+<p>In order to set the value to be assigned to implicit keys (i.e. keys without a
+delimiter and a value), please use the <code>ini_global_set_implicit_value()</code>
+function. A <em>zero-length <code>TRUE</code>-boolean</em> is usually a good choice:</p>
 
 <pre><code class="{.c}">ini_global_set_implicit_value("YES", 0);
 </code></pre>
@@ -943,7 +962,7 @@ char * INI_GLOBAL_IMPLICIT_VALUE = "YES";
 size_t INI_GLOBAL_IMPLICIT_V_LEN = 3;
 </code></pre>
 
-<p>or you can assign a value to them at the beginning of the <code>main()</code> function of
+<p>Or you can assign a value to them at the beginning of the <code>main()</code> function of
 your program:</p>
 
 <pre><code class="{.c}">#include &lt;confini.h&gt;
@@ -958,12 +977,12 @@ int main () {
 }
 </code></pre>
 
-<p>If not defined elsewhere, these variables are respectively <code>NULL</code> and <code>0</code> by
-default (so they are not in any case undefined).</p>
+<p>If not defined elsewhere, these variables are initialized respectively to <code>NULL</code>
+and <code>0</code> by default.</p>
 
 <p>The two variables <code>INI_GLOBAL_IMPLICIT_VALUE</code> and <code>INI_GLOBAL_IMPLICIT_V_LEN</code>
 may be set to any arbitrary values. In fact these will not be parsed or analyzed
-anywhere by <strong>libconfini</strong> &ndash; they are only used as placeholders for custom
+anywhere by <strong>libconfini</strong>, they are only used as placeholders for custom
 information accessible solely by the user.</p>
 
 <p>After having set the value to be assigned to implicit key elements, and having
@@ -1046,12 +1065,12 @@ well.</p>
 <p>The functions <code>load_ini_file()</code> and <code>load_ini_path()</code> return a non-zero value
 also if the INI file, for any reason, has not been completely parsed (see <code>enum</code>
 <code>ConfiniInterruptNo</code>). Therefore, in order to be able to distinguish between
-internal errors and user-generated interruptions the flag <code>CONFINI_ERROR</code> can
+internal errors and user-generated interruptions the mask <code>CONFINI_ERROR</code> can
 be used.</p>
 
 <p>For instance, in the following example the <code>f_foreach()</code> listener returns a
 non-zero value if a key named <code>password</code> with a value that equals <code>Hello world</code>
-is found. Hence, by using the flag <code>CONFINI_ERROR</code>, the code below
+is found. Hence, by using the mask <code>CONFINI_ERROR</code>, the code below
 distinguishes a non-zero value generated by the listener from a non-zero value
 due to a parsing error.</p>
 
@@ -1155,6 +1174,9 @@ the string will be removed, then the new length of the string will be returned.<
 </ol>
 
 
+<p>A function-like macro named <code>INIFORMAT_HAS_NO_ESC()</code> is available in order to
+check whether a format supports escape sequences or not.</p>
+
 <h3 id="STORING-THE-DISPATCHED-DATA">STORING THE DISPATCHED DATA</h3>
 
 <p>In order to be as flexible as possible, <strong>libconfini</strong> does not store the
@@ -1163,7 +1185,7 @@ with it in many different ways.</p>
 
 <p>For small INI files a normal <code>if</code>/<code>else</code> chain, using <code>ini_array_match()</code> for
 comparing section paths and <code>ini_string_match_si()</code>/<code>ini_string_match_ii()</code> for
-comparing key names, represents usually the most practical way to obtain the
+comparing key names, usually represents the most practical way to obtain the
 information required from an INI file.</p>
 
 <p>Sometimes however, especially in case of sizeable INI files, the most efficient
@@ -1309,7 +1331,8 @@ does <strong>not</strong> dispatch in lower case UTF-8 code points out of the AS
 (for instance, <code>&Amacr;</code> will not be rendered as <code>&amacr;</code>, but will be rather rendered
 verbatim). <em>In general it is a good practice to use UTF-8 within values, but to
 use ASCII only within key and section names, at least in case insensitive INI
-files</em> (see below). As for values instead, their case is always preserved.</p>
+files</em> (see below). As for the dispatched values instead, their case is always
+preserved.</p>
 
 <p>Normally <code>INI_GLOBAL_LOWERCASE_MODE</code> does not need to be set to <code>true</code>, since
 string comparisons made by libconfini are always either case-sensitive or
@@ -1647,7 +1670,7 @@ fails, the block will be dispatched as a normal comment.</p>
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'>Stefano Gioffr&eacute;</li>
-    <li class='tc'>March 2019</li>
+    <li class='tc'>April 2019</li>
     <li class='tr'>libconfini(3)</li>
   </ol>
 

@@ -1,4 +1,4 @@
-.TH "confini.h" 3 "Thu Mar 28 2019" "libconfini" \" -*- nroff -*-
+.TH "confini.h" 3 "Thu Apr 25 2019" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -917,13 +917,13 @@ Compares two INI arrays and checks if they match\&.
 A boolean: \fCtrue\fP if the two arrays match, \fCfalse\fP otherwise
 .RE
 .PP
-INI strings are the strings typically dispatched by \fBload_ini_file()\fP and \fBload_ini_path()\fP, which may contain quotes and the three escape sequences \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP\&.
-.PP
-In order to be suitable for both names and values, \fBthis function always considers sequences of one or more spaces out of quotes in both strings as collapsed\fP, even when \fCformat\&.do_not_collapse_values\fP is set to \fCtrue\fP\&.
+This function grants that the result of the comparison between two INI arrays will always match the the \fIliteral\fP comparison between the individual members of both arrays after these have been parsed, one by one, by \fBini_string_parse()\fP (with \fCformat\&.do_not_collapse_values\fP set to \fCfalse\fP)\&.
 .PP
 This function can be used, with \fC'\&.'\fP as delimiter, to compare section paths\&.
 .PP
-This function grants that the result of the comparison between two INI arrays will always match the the \fIliteral\fP comparison between the individual members of both arrays after these have been parsed, one by one, by \fBini_string_parse()\fP (with \fCformat\&.do_not_collapse_values\fP set to \fCfalse\fP)\&.
+INI strings are the strings typically dispatched by \fBload_ini_file()\fP and \fBload_ini_path()\fP, which may contain quotes and the three escape sequences \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP\&.
+.PP
+In order to be suitable for both names and values, \fBthis function always considers sequences of one or more spaces out of quotes in both strings as collapsed\fP, even when \fCformat\&.do_not_collapse_values\fP is set to \fCtrue\fP\&.
 .PP
 The \fCformat\fP argument is used for the following fields:
 .PP
@@ -1613,10 +1613,6 @@ Compares two INI strings and checks if they match\&.
 A boolean: \fCtrue\fP if the two strings match, \fCfalse\fP otherwise
 .RE
 .PP
-INI strings are the strings typically dispatched by \fBload_ini_file()\fP and \fBload_ini_path()\fP, which may contain quotes and the three escape sequences \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP\&.
-.PP
-In order to be suitable for both names and values, \fBthis function always considers sequences of one or more spaces out of quotes in both strings as collapsed\fP, even when \fCformat\&.do_not_collapse_values\fP is set to \fCtrue\fP\&.
-.PP
 This function grants that the result of the comparison between two INI strings
 .PP
 .PP
@@ -1646,6 +1642,10 @@ printf("%s\n",
 );
 .fi
 .PP
+.PP
+INI strings are the strings typically dispatched by \fBload_ini_file()\fP and \fBload_ini_path()\fP, which may contain quotes and the three escape sequences \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP\&.
+.PP
+In order to be suitable for both names and values, \fBthis function always considers sequences of one or more spaces out of quotes in both strings as collapsed\fP, even when \fCformat\&.do_not_collapse_values\fP is set to \fCtrue\fP\&.
 .PP
 The \fCformat\fP argument is used for the following fields:
 .PP
@@ -1678,10 +1678,6 @@ Compares a simple string and an INI string and and checks if they match\&.
 A boolean: \fCtrue\fP if the two strings match, \fCfalse\fP otherwise
 .RE
 .PP
-INI strings are the strings typically dispatched by \fBload_ini_file()\fP and \fBload_ini_path()\fP, which may contain quotes and the three escape sequences \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP\&. Simple strings are user-given strings or the result of \fBini_string_parse()\fP\&.
-.PP
-In order to be suitable for both names and values, \fBthis function always considers sequences of one or more spaces out of quotes in the INI string as collapsed\fP, even when \fCformat\&.do_not_collapse_values\fP is set to \fCtrue\fP\&.
-.PP
 This function grants that the result of the comparison between a simple string and an INI string
 .PP
 .PP
@@ -1711,6 +1707,10 @@ printf(
 );
 .fi
 .PP
+.PP
+INI strings are the strings typically dispatched by \fBload_ini_file()\fP and \fBload_ini_path()\fP, which may contain quotes and the three escape sequences \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP\&. Simple strings are user-given strings or the result of \fBini_string_parse()\fP\&.
+.PP
+In order to be suitable for both names and values, \fBthis function always considers sequences of one or more spaces out of quotes in the INI string as collapsed\fP, even when \fCformat\&.do_not_collapse_values\fP is set to \fCtrue\fP\&.
 .PP
 The \fCformat\fP argument is used for the following fields:
 .PP
@@ -2016,11 +2016,11 @@ FILE * my_file = fopen("example\&.conf", "rb");
 .fi
 .PP
 .PP
-The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP represent the same code points they represent in ASCII, independently of platform-specific conventions (see, for example, UTF-8 and ISO-8859-1)\&.
+The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP represent the same code points they represent in ASCII, independently of platform-specific conventions (as in, for example, UTF-8 and ISO-8859-1)\&.
 .PP
 \fBNote:\fP
 .RS 4
-In order to be null byte injection safe, \fCNUL\fP characters, if present in the file, will be removed from the dispatched strings\&.
+In order to be null-byte-injection safe, \fCNUL\fP characters, if present in the file, will be removed from the dispatched strings\&.
 .RE
 .PP
 The user given function \fCf_init\fP (see \fBIniStatsHandler\fP data type) will be invoked with two arguments: \fCstatistics\fP (a pointer to an \fBIniStatistics\fP structure containing some properties about the file read) and \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_init\fP returns a non-zero value the caller function will be interrupted\&.

@@ -185,19 +185,20 @@
 	@struct		IniStatistics
 
 	@property	IniStatistics::format
-					The format of the INI file (see `struct` #IniFormat)
+					The format of the INI file (see #IniFormat)
 	@property	IniStatistics::bytes
 					The size of the parsed file in bytes
 	@property	IniStatistics::members
-					The size of the parsed file in members (nodes) -- this number
-					equals the number of dispatches
+					The size of the parsed file in number of members (nodes) -- this
+					number always equals the number of dispatches that will be sent
+					by #load_ini_file() and #load_ini_path()
 
 
 
 	@struct		IniDispatch
 
 	@property	IniDispatch::format
-					The format of the INI file (see `struct` #IniFormat)
+					The format of the INI file (see #IniFormat)
 	@property	IniDispatch::type
 					The dispatch type (see `enum` #IniNodeType)
 	@property	IniDispatch::data
@@ -205,7 +206,8 @@
 	@property	IniDispatch::value
 					It can be the value of a key element, an empty string or it can
 					point to the address pointed by the global variable
-					#INI_GLOBAL_IMPLICIT_VALUE
+					#INI_GLOBAL_IMPLICIT_VALUE (the latter is the only case in which
+					`IniDispatch::value` might be ·`NULL`)
 	@property	IniDispatch::append_to
 					The current section path
 	@property	IniDispatch::d_len
@@ -215,7 +217,7 @@
 	@property	IniDispatch::at_len
 					The length of the string #IniDispatch::append_to
 	@property	IniDispatch::dispatch_id
-					The dispatch id
+					The dispatch number (the first dispatch is number zero)
 
 
 **/
@@ -2140,10 +2142,10 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 	The parsing algorithms used by **libconfini** are able to parse any type of file
 	encoded in 8-bit code units, as long as the characters that match the regular
 	expression `/[\s\[\]\.\\;#"']/` represent the same code points they represent in
-	ASCII, independently of platform-specific conventions (see, for example, UTF-8
+	ASCII, independently of platform-specific conventions (as in, for example, UTF-8
 	and ISO-8859-1).
 
-	@note	In order to be null byte injection safe, `NUL` characters, if present in
+	@note	In order to be null-byte-injection safe, `NUL` characters, if present in
 			the file, will be removed from the dispatched strings.
 
 	The user given function @p f_init (see #IniStatsHandler data type) will be
@@ -2515,7 +2517,7 @@ int load_ini_file (
 
 					/*
 
-						Append to root (it is an absolute path)
+						Append to root (this is an absolute path)
 
 					*/
 
@@ -2544,8 +2546,8 @@ int load_ini_file (
 
 					/*
 
-						Append to the current parent (it is a relative path and
-						parent is not root)
+						Append to the current parent (this is a relative path
+						and parent is not root)
 
 					*/
 
@@ -2763,15 +2765,6 @@ _Bool ini_string_match_ss (const char * const simple_string_a, const char * cons
 	@param			format			The format of the INI file
 	@return			A boolean: `true` if the two strings match, `false` otherwise
 
-	INI strings are the strings typically dispatched by #load_ini_file() and
-	#load_ini_path(), which may contain quotes and the three escape sequences `\\`,
-	`\'` and `\"`. Simple strings are user-given strings or the result of
-	#ini_string_parse().
-
-	In order to be suitable for both names and values, **this function always
-	considers sequences of one or more spaces out of quotes in the INI string as
-	collapsed**, even when `format.do_not_collapse_values` is set to `true`.
-
 	This function grants that the result of the comparison between a simple string
 	and an INI string
 
@@ -2800,6 +2793,15 @@ _Bool ini_string_match_ss (const char * const simple_string_a, const char * cons
 			"They don't match"
 	);
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	INI strings are the strings typically dispatched by #load_ini_file() and
+	#load_ini_path(), which may contain quotes and the three escape sequences `\\`,
+	`\'` and `\"`. Simple strings are user-given strings or the result of
+	#ini_string_parse().
+
+	In order to be suitable for both names and values, **this function always
+	considers sequences of one or more spaces out of quotes in the INI string as
+	collapsed**, even when `format.do_not_collapse_values` is set to `true`.
 
 	The @p format argument is used for the following fields:
 
@@ -2931,14 +2933,6 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 	@param			format			The format of the INI file
 	@return			A boolean: `true` if the two strings match, `false` otherwise
 
-	INI strings are the strings typically dispatched by #load_ini_file() and
-	#load_ini_path(), which may contain quotes and the three escape sequences `\\`,
-	`\'` and `\"`.
-
-	In order to be suitable for both names and values, **this function always
-	considers sequences of one or more spaces out of quotes in both strings as
-	collapsed**, even when `format.do_not_collapse_values` is set to `true`.
-
 	This function grants that the result of the comparison between two INI strings
 
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
@@ -2966,6 +2960,14 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 			"They don't match"
 	);
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	INI strings are the strings typically dispatched by #load_ini_file() and
+	#load_ini_path(), which may contain quotes and the three escape sequences `\\`,
+	`\'` and `\"`.
+
+	In order to be suitable for both names and values, **this function always
+	considers sequences of one or more spaces out of quotes in both strings as
+	collapsed**, even when `format.do_not_collapse_values` is set to `true`.
 
 	The @p format argument is used for the following fields:
 
@@ -3142,6 +3144,13 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 	@param			format			The format of the INI file
 	@return			A boolean: `true` if the two arrays match, `false` otherwise
 
+	This function grants that the result of the comparison between two INI arrays
+	will always match the the _literal_ comparison between the individual members
+	of both arrays after these have been parsed, one by one, by #ini_string_parse()
+	(with `format.do_not_collapse_values` set to `false`).
+
+	This function can be used, with `'.'` as delimiter, to compare section paths.
+
 	INI strings are the strings typically dispatched by #load_ini_file() and
 	#load_ini_path(), which may contain quotes and the three escape sequences `\\`,
 	`\'` and `\"`.
@@ -3149,13 +3158,6 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 	In order to be suitable for both names and values, **this function always
 	considers sequences of one or more spaces out of quotes in both strings as
 	collapsed**, even when `format.do_not_collapse_values` is set to `true`.
-
-	This function can be used, with `'.'` as delimiter, to compare section paths.
-
-	This function grants that the result of the comparison between two INI arrays
-	will always match the the _literal_ comparison between the individual members
-	of both arrays after these have been parsed, one by one, by #ini_string_parse()
-	(with `format.do_not_collapse_values` set to `false`).
 
 	The @p format argument is used for the following fields:
 

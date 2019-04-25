@@ -72,6 +72,7 @@ dist_examples_DATA = \
 examplesinifilesdir = $(examplesdir)/ini_files
 dist_examplesinifiles_DATA = \
 	examples/ini_files/ambiguous.conf \
+	examples/ini_files/colon_as_delimiter.conf \
 	examples/ini_files/bad_ini.conf \
 	examples/ini_files/delivery.conf \
 	examples/ini_files/hash_table.conf \
@@ -81,6 +82,7 @@ dist_examplesinifiles_DATA = \
 
 examplesotherdir = $(examplesdir)/miscellanea
 dist_examplesother_DATA = \
+	examples/miscellanea/colon_as_delimiter.c \
 	examples/miscellanea/disambiguate.c \
 	examples/miscellanea/dispatch_everything.c \
 	examples/miscellanea/glib_hash_table.c \

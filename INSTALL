@@ -22,7 +22,7 @@ to list the configure options.
 If the `configure` script is missing from your package you need to create it by
 running the `autogen.sh` script. Use the `--noconfigure` parameter in order to
 prevent `autogen.sh` from running automatically `configure` immediately after
-having generated it.
+having generated it. To list different options use `autogen.sh --help`.
 
 
 Microsoft Windows

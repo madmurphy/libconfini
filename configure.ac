@@ -19,6 +19,16 @@ dnl  ***************************************************************************
 
 
 dnl  ***************************************************************************
+dnl  NA_UP_WORDS_ONLY(string)
+dnl
+dnl  Replaces `/[a-z]/g` with `/[A-Z]/g` and `/\W/g,` with `'_'`,
+dnl  ***************************************************************************
+m4_define([NA_UP_WORDS_ONLY],
+	[m4_translit([$1],
+		[ !"#$%&\'()*+,./0123456789:;<=>?@[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~],
+		[________________________________________ABCDEFGHIJKLMNOPQRSTUVWXYZ____])])
+
+dnl  ***************************************************************************
 dnl  NA_SET_GLOBALLY(name, value)
 dnl
 dnl  Creates a new argumentless macro named `[NA_]name` and a new output
@@ -31,26 +41,26 @@ AC_DEFUN([NA_SET_GLOBALLY], [
 ])
 
 dnl  ***************************************************************************
-dnl  NA_REQ_PROGS(prog1, [descr1][, prog2, [descr2][, etc., [...]]])
+dnl  NA_REQ_PROGS(prog1, descr1[, prog2, descr2[, ... progN, ... descrN]]])
 dnl
 dnl  Checks whether one or more programs have been provided by the user or can
-dnl  be retrieved automatically. For each program `progx` an uppercase variable
-dnl  named `PROGX` containing the path where `progx` is located will be created.
-dnl  If a program is not reachable and the user has not provided any path for it
-dnl  an error will be generated. The program names given to this function will
-dnl  be advertised among the `influential environment variables` visible when
-dnl  launching `./configure --help`.
+dnl  be retrieved automatically. For each program `progx` an uppercase bash
+dnl  variable named `PROGX` containing the path where `progx` is located will be
+dnl  created. If a program is not reachable and the user has not provided any
+dnl  path for it an error will be generated. The program names given to this
+dnl  function will be advertised among the `influential environment variables`
+dnl  visible when launching `./configure --help`.
+dnl
+dnl  Requires: `NA_UP_WORDS_ONLY()`
 dnl  ***************************************************************************
 AC_DEFUN([NA_REQ_PROGS], [
 	m4_if([$#], [0], [], [
-		AC_ARG_VAR(m4_translit([$1], [a-z], [A-Z]), [$2])
-		AS_IF([test "x@S|@{]m4_translit([$1], [a-z], [A-Z])[}" = x], [
-			AC_PATH_PROG(m4_translit([$1], [a-z], [A-Z]), [$1])
-			AS_IF([test "x@S|@{]m4_translit([$1], [a-z], [A-Z])[}" = x], [
-				AC_MSG_ERROR([$1 utility not found])
-			])
+		AC_ARG_VAR(NA_UP_WORDS_ONLY([$1]), [$2])
+		AS_IF([test "x@S|@{]NA_UP_WORDS_ONLY([$1])[}" = x], [
+			AC_PATH_PROG(NA_UP_WORDS_ONLY([$1]), [$1])
+			AS_IF([test "x@S|@{]NA_UP_WORDS_ONLY([$1])[}" = x], [AC_MSG_ERROR([$1 utility not found])])
 		])
-		m4_if(m4_eval([$# + 1 >> 1]), [1], [], [NA_REQ_PROGS(m4_shift(m4_shift($*)))])
+		m4_if(m4_eval([$# + 1 >> 1]), [1], [], [NA_REQ_PROGS(m4_shift2($*))])
 	])
 ])
 
@@ -61,9 +71,9 @@ dnl  Gets the version environment for this package and sets the versioning
 dnl  macros accordingly. This macro can be invoked only once. After being
 dnl  invoked the following argumentless macros will be created:
 dnl
-dnl  - `NA_MULTIVERSION_LIB`: expands to `[yes]` if the `$MULTIVERSION_LIB`
+dnl  - `NA_MULTIVERSION_LIB`: expands to `1` if the `$MULTIVERSION_LIB`
 dnl    environment variable was set to any value other than `no` during the
-dnl    the automake process, it expands to `[no]` otherwise
+dnl    the automake process, expands to `0` otherwise
 dnl  - `NA_LIBRARY_NAME`: expands to the argument `libname` passed to this macro
 dnl  - `NA_LIBRARY_MAJVER`: expands to the argument `majver` passed to this
 dnl    macro
@@ -79,8 +89,8 @@ AC_DEFUN_ONCE([NA_GET_VERSION_ENVIRONMENT], [
 	m4_define([NA_LIBRARY_MAJVER], [$2])
 	m4_define([NA_LIBRARY_MINVER], [$3])
 	m4_define([NA_LIBRARY_REVVER], [$4])
-	m4_define([NA_MULTIVERSION_LIB], m4_esyscmd_s([test "x${MULTIVERSION_LIB}" = x -o "x${MULTIVERSION_LIB}" = xno && echo 'no' || echo 'yes']))
-	m4_define([NA_LIBRARY_LOCALNAME], m4_if(NA_MULTIVERSION_LIB, [yes], NA_LIBRARY_NAME[]NA_LIBRARY_MAJVER, NA_LIBRARY_NAME))
+	m4_define([NA_MULTIVERSION_LIB], m4_esyscmd_s([test "x${MULTIVERSION_LIB}" = x -o "x${MULTIVERSION_LIB}" = xno && echo '0' || echo '1']))
+	m4_define([NA_LIBRARY_LOCALNAME], m4_if(NA_MULTIVERSION_LIB, [1], NA_LIBRARY_NAME[]NA_LIBRARY_MAJVER, NA_LIBRARY_NAME))
 ])
 
 
@@ -89,7 +99,7 @@ dnl  P A C K A G E   M E T A D A T A
 dnl  ***************************************************************************
 
 
-NA_GET_VERSION_ENVIRONMENT([confini], [1], [9], [1])
+NA_GET_VERSION_ENVIRONMENT([confini], [1], [9], [2])
 
 AC_INIT([lib]NA_LIBRARY_LOCALNAME, NA_LIBRARY_MAJVER[.]NA_LIBRARY_MINVER[.]NA_LIBRARY_REVVER)
 
@@ -169,12 +179,12 @@ AC_ARG_ENABLE([examples],
 	[enable_examples=check]
 )
 
-m4_if(NA_MULTIVERSION_LIB, [yes], [NA_REQ_PROGS(
+m4_if(NA_MULTIVERSION_LIB, [1], [NA_REQ_PROGS(
 	[find],		[Unix find utility],
 	[xargs],	[Unix xargs utility]
 )])
 
-AM_CONDITIONAL([MAJOR_VERSIONS_COEXIST], [test x]NA_MULTIVERSION_LIB[ = xyes])
+AM_CONDITIONAL([MAJOR_VERSIONS_COEXIST], m4_if(NA_MULTIVERSION_LIB, [1], [true], [false]))
 
 AM_CONDITIONAL([ENABLE_DOC], [test "x${enable_doc}" != xno])
 

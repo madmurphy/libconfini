@@ -169,7 +169,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The dispatch id </p>
+<p>The dispatch number (the first dispatch is number zero) </p>
 
 </div>
 </div>
@@ -184,7 +184,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The format of the INI file (see <code>struct</code> <a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect)">IniFormat</a>) </p>
+<p>The format of the INI file (see <a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect)">IniFormat</a>) </p>
 
 </div>
 </div>
@@ -229,7 +229,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>It can be the value of a key element, an empty string or it can point to the address pointed by the global variable <a class="el" href="confini_8c.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL)">INI_GLOBAL_IMPLICIT_VALUE</a> </p>
+<p>It can be the value of a key element, an empty string or it can point to the address pointed by the global variable <a class="el" href="confini_8c.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL)">INI_GLOBAL_IMPLICIT_VALUE</a> (the latter is the only case in which <code><a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></code> might be ·<code>NULL</code>) </p>
 
 </div>
 </div>

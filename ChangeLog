@@ -2,6 +2,14 @@ Change Log {#changelog}
 =======================
 
 
+## 1.9.2 -- 2019-04-25
+
+Changes:
+
+* Documentation
+* Created new examples (see `examples/miscellanea/colon_as_delimiter.c`)
+
+
 ## 1.9.1 -- 2019-03-28
 
 Changes:
@@ -170,7 +178,7 @@ Changes:
 * Examples
 
 
-## 1.6.3 -- 2018-09-29
+## 1.6.3 (unstable) -- 2018-09-29
 
 Changes:
 
@@ -179,7 +187,7 @@ Changes:
 * Documentation
 
 
-## 1.6.2 -- 2018-05-21
+## 1.6.2 (unstable) -- 2018-05-21
 
 Changes:
 
@@ -190,7 +198,7 @@ Changes:
 * Examples
 
 
-## 1.6.1 -- 2018-05-17
+## 1.6.1 (unstable) -- 2018-05-17
 
 Changes:
 
@@ -199,7 +207,7 @@ Changes:
 * Examples
 
 
-## 1.6.0 -- 2018-05-15
+## 1.6.0 (unstable) -- 2018-05-15
 
 Changes:
 
@@ -225,7 +233,7 @@ Changes:
 * Examples
 
 
-## 1.5.2 -- 2018-05-06
+## 1.5.2 (unstable) -- 2018-05-06
 
 Changes:
 
@@ -239,7 +247,7 @@ Changes:
   private functions † `get_delimiter_pos()` and `get_type_as_active()`)
 
 
-## 1.5.1 -- 2018-04-30
+## 1.5.1 (unstable) -- 2018-04-30
 
 Changes:
 
@@ -250,7 +258,7 @@ Changes:
 * Documentation
 
 
-## 1.5.0 -- 2018-04-22
+## 1.5.0 (unstable) -- 2018-04-22
 
 Changes:
 
@@ -322,14 +330,14 @@ version 1.4.2 by using the following aliases:
     #define CONFINI_EFEINTR CONFINI_FEINTR
 
 
-## 1.4.2 -- 2017-10-05
+## 1.4.2 (unstable) -- 2017-10-05
 
 Changes:
 
 * Code review and bug fix in private function † `sanitize_section_name()`
 
 
-## 1.4.1 -- 2017-10-02
+## 1.4.1 (unstable) -- 2017-10-02
 
 Changes:
 
@@ -346,7 +354,7 @@ Changes:
 * Examples
 
 
-## 1.4.0 -- 2017-09-07
+## 1.4.0 (unstable) -- 2017-09-07
 
 Changes:
 
@@ -365,7 +373,7 @@ Changes:
   `${major}.${minor}-${release}`)
 * Documentation
 
-## 1.3-5 -- 2017-05-04
+## 1.3-5 (unstable) -- 2017-05-04
 
 Changes:
 
@@ -373,7 +381,7 @@ Changes:
   https://github.com/madmurphy/libconfini/commit/4c3e6ec0b73ab5a0449cf08d3504f73fdf5c0edd
 
 
-## 1.3-4 -- 2016-11-10
+## 1.3-4 (unstable) -- 2016-11-10
 
 Changes:
 
@@ -381,7 +389,7 @@ Changes:
 * Removed recursion in private function `further_cuts()`
 
 
-## 1.3-3 -- 2016-11-02
+## 1.3-3 (unstable) -- 2016-11-02
 
 Changes:
 
@@ -389,7 +397,7 @@ Changes:
 * Added new documentation
 
 
-## 1.3-2 -- 2016-10-28
+## 1.3-2 (unstable) -- 2016-10-28
 
 Changes:
 
@@ -398,7 +406,7 @@ Changes:
 * Added new documentation
 
 
-## 1.3-1 -- 2016-10-24
+## 1.3-1 (unstable) -- 2016-10-24
 
 Changes:
 
@@ -409,7 +417,7 @@ Changes:
 * Added new documentation and examples
 
 
-## 1.2-2 -- 2016-10-21
+## 1.2-2 (unstable) -- 2016-10-21
 
 Changes:
 
@@ -417,7 +425,7 @@ Changes:
 * Code optimization
 
 
-## 1.2-1 -- 2016-10-20
+## 1.2-1 (unstable) -- 2016-10-20
 
 Changes:
 
@@ -431,7 +439,7 @@ Changes:
 * `IniDispatch::at_len` (length of `IniDispatch::append_to`) has been created
 
 
-## 1.1-2 -- 2016-10-15
+## 1.1-2 (unstable) -- 2016-10-15
 
 Changes:
 
@@ -442,7 +450,7 @@ Changes:
 * General code review
 
 
-## 1.1-1 -- 2016-10-14
+## 1.1-1 (unstable) -- 2016-10-14
 
 Changes:
 
@@ -457,7 +465,7 @@ Changes:
   † `IniFormat::no_collapsed_values`
 
 
-## 1.0-1 -- 2016-10-10
+## 1.0-1 (unstable) -- 2016-10-10
 
 Changes:
 
@@ -470,28 +478,28 @@ Changes:
 * † `read_ini_format_mask()` has been renamed to † `ini_format_set_from_mask()`
 
 
-## 0.9-4 -- 2016-10-07
+## 0.9-4 (unstable) -- 2016-10-07
 
 Changes:
 
 * Small bug regarding multiline inline comments has been fixed
 
 
-## 0.9-3 -- 2016-10-06
+## 0.9-3 (unstable) -- 2016-10-06
 
 Changes:
 
 * Small bug regarding inline comments has been fixed
 
 
-## 0.9-2 -- 2016-10-06
+## 0.9-2 (unstable) -- 2016-10-06
 
 Changes:
 
 * Documentation has been moved to docs/
 
 
-## 0.9-1 -- 2016-10-05
+## 0.9-1 (unstable) -- 2016-10-05
 
 libconfini 0.9-1 is ready to be published!
 

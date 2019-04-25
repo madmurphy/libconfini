@@ -1,4 +1,4 @@
-.TH "IniDispatch" 3 "Thu Mar 28 2019" "libconfini" \" -*- nroff -*-
+.TH "IniDispatch" 3 "Thu Apr 25 2019" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -54,15 +54,15 @@ The length of the string \fBIniDispatch::data\fP
 .SS "IniDispatch::data"
 It can be the content of a comment, a section path or a key name 
 .SS "IniDispatch::dispatch_id"
-The dispatch id 
+The dispatch number (the first dispatch is number zero) 
 .SS "IniDispatch::format"
-The format of the INI file (see \fCstruct\fP \fBIniFormat\fP) 
+The format of the INI file (see \fBIniFormat\fP) 
 .SS "IniDispatch::type"
 The dispatch type (see \fCenum\fP \fBIniNodeType\fP) 
 .SS "IniDispatch::v_len"
 The length of the string \fBIniDispatch::value\fP 
 .SS "IniDispatch::value"
-It can be the value of a key element, an empty string or it can point to the address pointed by the global variable \fBINI_GLOBAL_IMPLICIT_VALUE\fP 
+It can be the value of a key element, an empty string or it can point to the address pointed by the global variable \fBINI_GLOBAL_IMPLICIT_VALUE\fP (the latter is the only case in which \fC\fBIniDispatch::value\fP\fP might be ·\fCNULL\fP) 
 
 .SH "Author"
 .PP 

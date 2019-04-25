@@ -1,4 +1,4 @@
-.TH "IniStatistics" 3 "Thu Mar 28 2019" "libconfini" \" -*- nroff -*-
+.TH "IniStatistics" 3 "Thu Apr 25 2019" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -30,9 +30,9 @@ Global statistics about an INI file\&.
 .SS "IniStatistics::bytes"
 The size of the parsed file in bytes 
 .SS "IniStatistics::format"
-The format of the INI file (see \fCstruct\fP \fBIniFormat\fP) 
+The format of the INI file (see \fBIniFormat\fP) 
 .SS "IniStatistics::members"
-The size of the parsed file in members (nodes) – this number equals the number of dispatches 
+The size of the parsed file in number of members (nodes) – this number always equals the number of dispatches that will be sent by \fBload_ini_file()\fP and \fBload_ini_path()\fP 
 
 .SH "Author"
 .PP 
