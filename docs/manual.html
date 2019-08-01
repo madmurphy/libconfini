@@ -58,11 +58,10 @@
     <a href="#WHAT-IS-AN-INI-FILE-">WHAT IS AN INI FILE?</a>
     <a href="#SUPPORTED-SYNTAXES">SUPPORTED SYNTAXES</a>
     <a href="#READ-AN-INI-FILE">READ AN INI FILE</a>
-    <a href="#BASIC-EXAMPLES">BASIC EXAMPLES</a>
-    <a href="#HOW-IT-WORKS">HOW IT WORKS</a>
     <a href="#THE-IniFormat-DATA-TYPE">THE IniFormat DATA TYPE</a>
     <a href="#THE-IniStatistics-AND-IniDispatch-STRUCTURES">THE IniStatistics AND IniDispatch STRUCTURES</a>
     <a href="#RENDERING">RENDERING</a>
+    <a href="#PARSING-A-BUFFER-INSTEAD-OF-A-FILE">PARSING A BUFFER INSTEAD OF A FILE</a>
     <a href="#CODE-CONSIDERATIONS">CODE CONSIDERATIONS</a>
     <a href="#INI-SYNTAX-CONSIDERATIONS">INI SYNTAX CONSIDERATIONS</a>
   </div>
@@ -193,11 +192,11 @@ internal new line sequences must be escaped (<code>/\\(?:\n\r?|\r\n?)/</code>).<
 <p>If the <strong>key part</strong> part is missing <strong>libconfini</strong> considers the element of
 <em>unknown type</em> (example: <code>= foo</code>). If the <strong>value part</strong> is missing the key
 element is considered empty (example: <code>foo =</code>). If the delimiter is missing (and
-therefore the <strong>value part</strong> as well), according to some formats the key element
+therefore the value part as well), according to some formats the key element is
 is considered to be an <em>implicit key</em> &ndash; typically representing the boolean
 <code>true</code> (example: <code>foo</code>). For instance, in the following example from
 <code>/etc/pacman.conf</code>, <code>IgnorePkg</code> is an empty key, while <code>Color</code> is an implicit
-key (representing a <code>true</code> boolean &ndash; i.e. <code>Color = YES</code>):</p>
+key representing a <code>true</code> boolean &ndash; i.e. <code>Color = YES</code>:</p>
 
 <pre><code class="{.ini}">HoldPkg = pacman glibc
 Architecture = auto
@@ -221,7 +220,7 @@ my_string = "Hello world"
 'my_number' = 42
 my_boolean = NO
 my_implicit_boolean
-my_array = Asia, Africa, 'North America', South America,\
+my_array = Asia, Africa, 'North America', South America, \
            Antarctica, Europe, Australia
 </code></pre>
 
@@ -419,7 +418,7 @@ member of the INI file</li>
 <p>Both functions <code>load_ini_file()</code> and <code>load_ini_path()</code> will return zero if the
 INI file has been completely dispatched, non-zero otherwise.</p>
 
-<h2 id="BASIC-EXAMPLES">BASIC EXAMPLES</h2>
+<h3 id="BASIC-EXAMPLES">BASIC EXAMPLES</h3>
 
 <p>#1:</p>
 
@@ -508,9 +507,9 @@ int main () {
 }
 </code></pre>
 
-<h2 id="HOW-IT-WORKS">HOW IT WORKS</h2>
+<h3 id="HOW-IT-WORKS">HOW IT WORKS</h3>
 
-<p>The function <code>load_ini_path()</code> is a shortcut to the function <code>load_ini_file()</code>
+<p>The function <code>load_ini_path()</code> is a clone of the <code>load_ini_file()</code> function
 that requires a path instead of a <code>FILE</code> handle.</p>
 
 <p>The function <code>load_ini_file()</code> dynamically allocates at once the whole INI file
@@ -521,7 +520,8 @@ stack. All members of the INI file are then dispatched to the custom listener
 <p>Because of this mechanism <em>it is very important that all the dispatched data be
 <strong>immediately</strong> copied by the user (when needed), and no pointers to the passed
 data be saved</em>: after the end of the functions <code>load_ini_file()</code> /
-<code>load_ini_path()</code> all the allocated data will be destroyed indeed.</p>
+<code>load_ini_path()</code> all the allocated data will be destroyed indeed (and each
+dispatch might already overwrite data from previous dispatches).</p>
 
 <p>Within a dispatching cycle, the structure containing each dispatch
 (<code>IniDispatch * dispatch</code>) is always the same <code>struct</code> that gets constantly
@@ -642,10 +642,11 @@ different versions of this library.</em></p>
 
 <h2 id="THE-IniStatistics-AND-IniDispatch-STRUCTURES">THE <code>IniStatistics</code> AND <code>IniDispatch</code> STRUCTURES</h2>
 
-<p>When the functions <code>load_ini_file()</code> and <code>load_ini_path()</code> read an INI file,
-they dispatch the file content to the <code>f_foreach()</code> listener. Before the
-dispatching begins some statistics about the parsed file can be dispatched to
-the <code>f_init()</code> listener (if this is non-<code>NULL</code>).</p>
+<p>When the functions <code>load_ini_file()</code>, <code>load_ini_path()</code> read an INI file, or
+when the function <code>strip_ini_cache()</code> parses a buffer, they dispatch the file
+content to the <code>f_foreach()</code> listener. Before the dispatching begins some
+statistics about the parsed file can be dispatched to the <code>f_init()</code> listener
+(if this is non-<code>NULL</code>).</p>
 
 <p>The information passed to <code>f_init()</code> is passed through an <code>IniStatistics</code>
 structure, while the information passed to <code>f_foreach()</code> is passed through an
@@ -767,9 +768,9 @@ two simple strings, the function <code>ini_string_match_si()</code> compares a s
 string with an unparsed INI string, the function <code>ini_string_match_ii()</code>
 compares two unparsed INI strings, and the function <code>ini_array_match()</code> compares
 two INI arrays. INI strings are the strings typically dispatched by
-<code>load_ini_file()</code> and <code>load_ini_path()</code>, which may contain quotes and the three
-escape sequences <code>\\</code>, <code>\'</code>, <code>\"</code>. Simple strings are user-given strings or the
-result of <code>ini_string_parse()</code>.</p>
+<code>load_ini_file()</code>, <code>load_ini_path()</code> or <code>strip_ini_cache()</code> which may contain
+quotes and the three escape sequences <code>\\</code>, <code>\'</code>, <code>\"</code>. Simple strings are
+user-given strings or the result of <code>ini_string_parse()</code>.</p>
 
 <p>As a consequence, the functions <code>ini_string_match_si()</code>, <code>ini_string_match_ii()</code>
 and <code>ini_array_match()</code> do not perform literal comparisons of equality between
@@ -1052,21 +1053,113 @@ int main () {
 }
 </code></pre>
 
+<h2 id="PARSING-A-BUFFER-INSTEAD-OF-A-FILE">PARSING A BUFFER INSTEAD OF A FILE</h2>
+
+<p>Starting from version 1.10.0, it is possible to parse a disposable buffer
+containing an INI file instead of a physical file (i.e., to parse a <code>char</code>
+array). The function that allows to do so is named <code>strip_ini_cache()</code>. This
+function however presents some important differences when compared to
+<code>load_ini_file()</code> and <code>load_ini_path()</code>:</p>
+
+<ol>
+<li>As the name suggests, the buffer passed is not left untouched, but gets
+tokenized and rearranged instead &ndash; if you want to keep the original buffer
+you must pass a copy of it to <code>strip_ini_cache()</code> &ndash; you can use <code>strdup()</code>
+for this, or use the example below</li>
+<li>No memory is freed after the dispatching cycle: getting rid of the disposable
+buffer is something that must be done manually</li>
+<li>The strings dispatched are tokens from the buffer passed as argument
+(no new memory is allocated), but the existence of each token is granted only
+for a short time, that is <em>until the dispatch of the next node</em> (in fact the
+latter may overwrite previous information) &ndash; therefore, as with
+<code>load_ini_file()</code> and <code>load_ini_path()</code>, every needed information must be
+copied immediately with each dispatch</li>
+<li>After the dispatching cycle is over, the buffer must be regarded as
+<em>unreliable information</em> (portions of it might have been repeatedly
+overwritten and corrupted by subsequent dispatches)</li>
+</ol>
+
+
+<p>In short, <code>strip_ini_cache()</code> works exactly like <code>load_ini_file()</code> and
+<code>load_ini_path()</code>, but with the difference that it destroys the input while
+dispatching it. And of course the input is not anymore a file, but a disposable
+buffer instead. As a matter of fact, <code>strip_ini_cache()</code> is the main parsing
+function both <code>load_ini_file()</code> and <code>load_ini_path()</code> rely on in order to
+dispatch the content of an INI file. For a sample usage, please see
+<code>examples/topics/strip_ini_cache.c</code>.</p>
+
+<p>If you want to automatize the process of making a copy of a read-only buffer,
+strip and parse the copy, then free the allocated memory, you can use the
+following function:</p>
+
+<pre><code class="{.c}">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;confini.h&gt;
+
+int load_ini_buffer (
+    const char * const ini_buffer,
+    const size_t ini_length,
+    const IniFormat format,
+    const IniStatsHandler f_init,
+    const IniDispHandler f_foreach,
+    void * const user_data
+) {
+
+  char * const ini_cache = strndup(ini_buffer, ini_length);
+
+  if (!ini_cache) {
+
+    return CONFINI_ENOMEM;
+
+  }
+
+  const int retval = strip_ini_cache(
+    ini_cache,
+    ini_length,
+    format,
+    f_init,
+    f_foreach,
+    user_data
+  );
+
+  free(ini_cache);
+
+  return retval;
+
+}
+</code></pre>
+
+<p>The function above can then be invoked directly on a <code>const</code> buffer:</p>
+
+<pre><code class="{.c}">load_ini_buffer(
+  my_const_buffer,
+  strlen(my_const_buffer),
+  my_format,
+  my_stats_handler,
+  my_callback,
+  my_other_data
+);
+</code></pre>
+
+<p>Since in most cases <em>an INI buffer is a disposable buffer</em> (unless one wants to
+parse the very same buffer more than once), <strong>libconfini</strong>'s interface does not
+include the function in the example above.</p>
+
 <h2 id="CODE-CONSIDERATIONS">CODE CONSIDERATIONS</h2>
 
 <h3 id="RETURN-VALUES">RETURN VALUES</h3>
 
-<p>The functions <code>load_ini_file()</code>, <code>load_ini_path()</code>, <code>ini_array_foreach()</code> and
-<code>ini_array_split()</code> require some listeners defined by the user. Such listeners
-must return an <code>int</code> value. When this is non-zero the caller function is
-interrupted, its loop stopped, and a non-zero value is returned by the caller as
-well.</p>
+<p>The functions <code>load_ini_file()</code>, <code>load_ini_path()</code>, <code>strip_ini_cache()</code>,
+<code>ini_array_foreach()</code> and <code>ini_array_split()</code> require some listeners defined by
+the user. Such listeners must return an <code>int</code> value. When this is non-zero the
+caller function is interrupted, its loop stopped, and a non-zero value is
+returned by the caller as well.</p>
 
-<p>The functions <code>load_ini_file()</code> and <code>load_ini_path()</code> return a non-zero value
-also if the INI file, for any reason, has not been completely parsed (see <code>enum</code>
-<code>ConfiniInterruptNo</code>). Therefore, in order to be able to distinguish between
-internal errors and user-generated interruptions the mask <code>CONFINI_ERROR</code> can
-be used.</p>
+<p>The functions <code>load_ini_file()</code>, <code>load_ini_path()</code> and <code>strip_ini_cache()</code>
+return a non-zero value also if the INI file, for any reason, has not been
+completely parsed (see <code>enum</code> <code>ConfiniInterruptNo</code>). Therefore, in order to be
+able to distinguish between internal errors and user-generated interruptions the
+mask <code>CONFINI_ERROR</code> can be used.</p>
 
 <p>For instance, in the following example the <code>f_foreach()</code> listener returns a
 non-zero value if a key named <code>password</code> with a value that equals <code>Hello world</code>
@@ -1475,8 +1568,8 @@ int main () {
 }
 </code></pre>
 
-<p>By changing the properties of the variable <code>my_format</code> on the code above you may
-obtain different results.</p>
+<p>By changing the format of the INI file on the code above you may obtain
+different results.</p>
 
 <p>On my old laptop <strong>libconfini</strong> seems to parse around 23 MiB per second using
 the model format <code>INI_DEFAULT_FORMAT</code>. Whether this is enough for you or not,
@@ -1641,10 +1734,10 @@ disambiguation. If you believe that this solution is too artificial, think
 that <code>/etc/samba/smb.conf</code> and <code>/etc/pulse/daemon.conf</code> are systematically
 distributed using this pattern.</li>
 <li><code>IniFormat::disabled_after_space</code> &ndash; Setting this property to <code>false</code>, due to
-the initial space that follows the comment marker (<code># INI...</code>), forces
-<code># INI key/value delimiter: = (everywhere)</code> to be considered as a comment.
-Some authors use this syntax to distinguish between comments and disabled
-entries (examples are <code>/etc/pacman.conf</code> and <code>/etc/bluetooth/main.conf</code>)</li>
+the initial space that follows the comment marker (<code># INI...</code>), forces the
+entire line to be considered as a comment. Some authors use this syntax to
+distinguish between comments and disabled entries (examples are
+<code>/etc/pacman.conf</code> and <code>/etc/bluetooth/main.conf</code>)</li>
 </ul>
 
 
@@ -1670,7 +1763,7 @@ fails, the block will be dispatched as a normal comment.</p>
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'>Stefano Gioffr&eacute;</li>
-    <li class='tc'>April 2019</li>
+    <li class='tc'>August 2019</li>
     <li class='tr'>libconfini(3)</li>
   </ol>
 

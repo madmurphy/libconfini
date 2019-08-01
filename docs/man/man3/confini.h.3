@@ -1,4 +1,4 @@
-.TH "confini.h" 3 "Thu Apr 25 2019" "libconfini" \" -*- nroff -*-
+.TH "confini.h" 3 "Thu Aug 1 2019" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -111,6 +111,10 @@ confini.h \- libconfini header
 .SS "Functions"
 
 .in +1c
+.ti -1c
+.RI "int \fBstrip_ini_cache\fP (register char *const ini_buffer, const size_t ini_length, const \fBIniFormat\fP format, const \fBIniStatsHandler\fP f_init, const \fBIniDispHandler\fP f_foreach, void *const user_data)"
+.br
+.RI "Parses and tokenizes a buffer containing an INI file, then dispatches its content to a custom callback\&. "
 .ti -1c
 .RI "int \fBload_ini_file\fP (FILE *const ini_file, const \fBIniFormat\fP format, const \fBIniStatsHandler\fP f_init, const \fBIniDispHandler\fP f_foreach, void *const user_data)"
 .br
@@ -417,7 +421,7 @@ Interrupted by the user during \fCf_foreach()\fP [value=2]
 File inaccessible [value=4] 
 .TP
 \fB\fICONFINI_ENOMEM \fP\fP
-Error allocating memory [value=5] 
+Error allocating virtual memory [value=5] 
 .TP
 \fB\fICONFINI_EIO \fP\fP
 Error reading the file [value=6] 
@@ -921,7 +925,7 @@ This function grants that the result of the comparison between two INI arrays wi
 .PP
 This function can be used, with \fC'\&.'\fP as delimiter, to compare section paths\&.
 .PP
-INI strings are the strings typically dispatched by \fBload_ini_file()\fP and \fBload_ini_path()\fP, which may contain quotes and the three escape sequences \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP\&.
+INI strings are the strings typically dispatched by \fBload_ini_file()\fP, \fBload_ini_path()\fP or \fBstrip_ini_cache()\fP, which may contain quotes and the three escape sequences \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP\&.
 .PP
 In order to be suitable for both names and values, \fBthis function always considers sequences of one or more spaces out of quotes in both strings as collapsed\fP, even when \fCformat\&.do_not_collapse_values\fP is set to \fCtrue\fP\&.
 .PP
@@ -1278,13 +1282,13 @@ static int my_init (IniStatistics * statistics, void * v_store) {
 }
 
 static char ** make_strarray (
-  size_t * arrlen,
-  const char * src,
+  const char * const srcstr,
   const size_t buffsize,
-  IniFormat ini_format
+  const IniFormat ini_format,
+  size_t * const arrlen
 ) {
 
-  *arrlen = ini_array_get_length(src, MY_ARRAY_DELIMITER, ini_format);
+  *arrlen = ini_array_get_length(srcstr, MY_ARRAY_DELIMITER, ini_format);
 
   char ** const dest  = *arrlen ?
                           (char **) malloc(*arrlen * sizeof(char *) + buffsize)
@@ -1298,9 +1302,9 @@ static char ** make_strarray (
 
   }
 
-  memcpy(dest + *arrlen, src, buffsize);
+  memcpy(dest + *arrlen, srcstr, buffsize);
 
-  char * iter = (char *) (dest + *arrlen);
+  char * iter = (char *) ((char **) dest + *arrlen);
 
   for (size_t idx = 0; idx < *arrlen; idx++) {
 
@@ -1369,9 +1373,10 @@ static int my_handler (IniDispatch * this, void * v_store) {
 
       /*  Allocate a new array of strings  */
       store->my_section_my_array = make_strarray(
-        &store->my_section_my_arr_len,
-        this->value, this->v_len + 1,
-        this->format
+        this->value,
+        this->v_len + 1,
+        this->format,
+        &store->my_section_my_arr_len
       );
 
       if (!store->my_section_my_array) {
@@ -1643,7 +1648,7 @@ printf("%s\n",
 .fi
 .PP
 .PP
-INI strings are the strings typically dispatched by \fBload_ini_file()\fP and \fBload_ini_path()\fP, which may contain quotes and the three escape sequences \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP\&.
+INI strings are the strings typically dispatched by \fBload_ini_file()\fP, \fBload_ini_path()\fP or \fBstrip_ini_cache()\fP, which may contain quotes and the three escape sequences \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP\&.
 .PP
 In order to be suitable for both names and values, \fBthis function always considers sequences of one or more spaces out of quotes in both strings as collapsed\fP, even when \fCformat\&.do_not_collapse_values\fP is set to \fCtrue\fP\&.
 .PP
@@ -1708,7 +1713,7 @@ printf(
 .fi
 .PP
 .PP
-INI strings are the strings typically dispatched by \fBload_ini_file()\fP and \fBload_ini_path()\fP, which may contain quotes and the three escape sequences \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP\&. Simple strings are user-given strings or the result of \fBini_string_parse()\fP\&.
+INI strings are the strings typically dispatched by \fBload_ini_file()\fP, \fBload_ini_path()\fP or \fBstrip_ini_cache()\fP, which may contain quotes and the three escape sequences \fC\\\\\fP, \fC\\'\fP and \fC\\"\fP\&. Simple strings are user-given strings or the result of \fBini_string_parse()\fP\&.
 .PP
 In order to be suitable for both names and values, \fBthis function always considers sequences of one or more spaces out of quotes in the INI string as collapsed\fP, even when \fCformat\&.do_not_collapse_values\fP is set to \fCtrue\fP\&.
 .PP
@@ -2016,7 +2021,7 @@ FILE * my_file = fopen("example\&.conf", "rb");
 .fi
 .PP
 .PP
-The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP represent the same code points they represent in ASCII, independently of platform-specific conventions (as in, for example, UTF-8 and ISO-8859-1)\&.
+The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP express the same code points they express in ASCII, independently of platform-specific conventions (as in, for example, UTF-8 and ISO-8859-1)\&.
 .PP
 \fBNote:\fP
 .RS 4
@@ -2026,6 +2031,8 @@ In order to be null-byte-injection safe, \fCNUL\fP characters, if present in the
 The user given function \fCf_init\fP (see \fBIniStatsHandler\fP data type) will be invoked with two arguments: \fCstatistics\fP (a pointer to an \fBIniStatistics\fP structure containing some properties about the file read) and \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_init\fP returns a non-zero value the caller function will be interrupted\&.
 .PP
 The user given function \fCf_foreach\fP (see \fBIniDispHandler\fP data type) will be invoked with two arguments: \fCdispatch\fP (a pointer to an \fBIniDispatch\fP structure containing the parsed member of the INI file) and \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the caller function will be interrupted\&.
+.PP
+Possible return values: \fC\fBCONFINI_SUCCESS\fP\fP, \fC\fBCONFINI_IINTR\fP\fP, \fC\fBCONFINI_FEINTR\fP\fP, \fC\fBCONFINI_ENOMEM\fP\fP, \fC\fBCONFINI_EIO\fP\fP, \fC\fBCONFINI_EOOR\fP\fP
 .PP
 .PP
 .nf
@@ -2101,7 +2108,7 @@ Parses an INI file and dispatches its content using a path as argument\&.
 Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\fP)
 .RE
 .PP
-The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP represent the same code points they represent in ASCII, independently of platform-specific conventions (see, for example, UTF-8 and ISO-8859-1)\&.
+The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP express the same code points they express in ASCII, independently of platform-specific conventions (see, for example, UTF-8 and ISO-8859-1)\&.
 .PP
 \fBNote:\fP
 .RS 4
@@ -2109,6 +2116,8 @@ In order to be null byte injection safe, \fCNUL\fP characters, if present in the
 .RE
 .PP
 For the two parameters \fCf_init\fP and \fCf_foreach\fP see function \fBload_ini_file()\fP\&.
+.PP
+Possible return values: \fC\fBCONFINI_SUCCESS\fP\fP, \fC\fBCONFINI_IINTR\fP\fP, \fC\fBCONFINI_FEINTR\fP\fP, \fC\fBCONFINI_ENOENT\fP\fP, \fC\fBCONFINI_ENOMEM\fP\fP, \fC\fBCONFINI_EIO\fP\fP, \fC\fBCONFINI_EOOR\fP\fP
 .PP
 .PP
 .nf
@@ -2142,6 +2151,137 @@ int main () {
     return 1;
 
   }
+
+  return 0;
+
+}
+
+.fi
+.PP
+ 
+.SS "int strip_ini_cache (register char *const ini_buffer, const size_t ini_length, const \fBIniFormat\fP format, const \fBIniStatsHandler\fP f_init, const \fBIniDispHandler\fP f_foreach, void *const user_data)"
+
+.PP
+Parses and tokenizes a buffer containing an INI file, then dispatches its content to a custom callback\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIini_buffer\fP The buffer containing the INI file to tokenize 
+.br
+\fIini_length\fP The length of \fCini_buffer\fP 
+.br
+\fIformat\fP The format of the INI file 
+.br
+\fIf_init\fP The function that will be invoked before the first dispatch, or \fCNULL\fP 
+.br
+\fIf_foreach\fP The function that will be invoked for each dispatch, or \fCNULL\fP 
+.br
+\fIuser_data\fP A custom argument, or \fCNULL\fP 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\fP)
+.RE
+.PP
+The \fCini_buffer\fP parameter must be a valid pointer to a \fCchar\fP array of size \fCini_length\fP and cannot be \fCNULL\fP, otherwise the behavior is undefined\&.
+.PP
+After invoking \fC\fBstrip_ini_cache()\fP\fP, the buffer pointed by the \fCini_buffer\fP parameter must be considered as a corrupted buffer and should be freed or overwritten\&.
+.PP
+For more information about this function, please refer to the \fBLibrary Functions Manual\fP\&.
+.PP
+The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP express the same code points they express in ASCII, independently of platform-specific conventions (as in, for example, UTF-8 and ISO-8859-1)\&.
+.PP
+\fBNote:\fP
+.RS 4
+In order to be null byte injection safe, the \fCNUL\fP characters possibly present in the buffer will be stripped from it before the dispatching begins\&.
+.RE
+.PP
+For the two parameters \fCf_init\fP and \fCf_foreach\fP see function \fBload_ini_file()\fP\&.
+.PP
+Possible return values: \fC\fBCONFINI_SUCCESS\fP\fP, \fC\fBCONFINI_IINTR\fP\fP, \fC\fBCONFINI_FEINTR\fP\fP, \fC\fBCONFINI_EOOR\fP\fP
+.PP
+.PP
+.nf
+/*  examples/topics/strip_ini_cache\&.c  */
+
+#include <stdio\&.h>
+#include <stdlib\&.h>
+#include <string\&.h>
+#include <confini\&.h>
+
+static int my_callback (IniDispatch * dispatch, void * v_null) {
+
+  printf(
+    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
+    dispatch->data, dispatch->value, dispatch->type
+  );
+
+  return 0;
+
+}
+
+int main () {
+
+  const char original_ini_buffer[] = 
+    "[SectionOne]\n"
+    " \n"
+    "key = \"value\"\n"
+    "integer = 1234\n"
+    "real = 3\&.14\n"
+    "string1 = \"Case 1\"\n"
+    "string2 = 'Case 2'\n";
+
+  size_t ini_length = strlen(original_ini_buffer);
+  char * const ini_cache = strndup(original_ini_buffer, ini_length);
+
+  if (!ini_cache || strip_ini_cache(
+    ini_cache,
+    ini_length,
+    INI_DEFAULT_FORMAT,
+    NULL,
+    my_callback,
+    NULL
+  )) {
+
+    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    return 1;
+
+  }
+
+  printf(
+
+    "The previous dispatches come from the following INI buffer:\n\n"
+    "-----------------[original INI buffer]-----------------\n"
+    "%s"
+    "-------------------------------------------------------\n\n",
+
+    original_ini_buffer
+
+  );
+
+  printf(
+    "After being processed by `strip_ini_cache()`, the buffer looks "
+    "like this:\n"
+  );
+
+  printf("\n--------------------[disposed copy]--------------------\n");
+
+  for (size_t idx = 0; idx < ini_length + 1; idx++) {
+
+    putchar(ini_cache[idx] == 0 ? '\&.' : ini_cache[idx]);
+
+  }
+
+  printf("\n-------------------------------------------------------\n\n");
+
+  printf(
+    "The dots in the example above represent NUL characters\&. Remember that\n"
+    "`strip_ini_cache()` does not free the buffer passed, you will "
+    "have to do that\nby yourself!\n"
+  );
+
+  free(ini_cache);
 
   return 0;
 

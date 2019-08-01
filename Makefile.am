@@ -102,7 +102,8 @@ dist_examplestopics_DATA = \
 	examples/topics/ini_string_match_si.c \
 	examples/topics/ini_string_parse.c \
 	examples/topics/load_ini_file.c \
-	examples/topics/load_ini_path.c
+	examples/topics/load_ini_path.c \
+	examples/topics/strip_ini_cache.c
 
 
 if MAJOR_VERSIONS_COEXIST

@@ -169,6 +169,16 @@ typedef int (* IniSubstrHandler) (
 /*  PUBLIC FUNCTIONS  */
 
 
+extern int strip_ini_cache (
+	register char * const ini_buffer,
+	const size_t ini_length,
+	const IniFormat format,
+	const IniStatsHandler f_init,
+	const IniDispHandler f_foreach,
+	void * const user_data
+);
+
+
 extern int load_ini_file (
     FILE * const ini_file,
     const IniFormat format,
@@ -353,7 +363,7 @@ enum ConfiniInterruptNo {
     CONFINI_FEINTR = 2,     /**< Interrupted by the user during `f_foreach()`
                                  [value=2] **/
     CONFINI_ENOENT = 4,     /**< File inaccessible [value=4] **/
-    CONFINI_ENOMEM = 5,     /**< Error allocating memory [value=5] **/
+    CONFINI_ENOMEM = 5,     /**< Error allocating virtual memory [value=5] **/
     CONFINI_EIO = 6,        /**< Error reading the file [value=6] **/
     CONFINI_EOOR = 7        /**< Out-of-range error: callbacks are more than
                                  expected [value=7] **/

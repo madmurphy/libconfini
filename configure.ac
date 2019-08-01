@@ -99,17 +99,17 @@ dnl  P A C K A G E   M E T A D A T A
 dnl  ***************************************************************************
 
 
-NA_GET_VERSION_ENVIRONMENT([confini], [1], [9], [2])
+NA_GET_VERSION_ENVIRONMENT([confini], [1], [10], [0])
 
 AC_INIT([lib]NA_LIBRARY_LOCALNAME, NA_LIBRARY_MAJVER[.]NA_LIBRARY_MINVER[.]NA_LIBRARY_REVVER)
 
 NA_SET_GLOBALLY([LIBRARY_DESCRIPTION], [Yet another INI parser])
 
-NA_SET_GLOBALLY([INTERFACE_NUMBER], [0])
+NA_SET_GLOBALLY([INTERFACE_NUMBER], [1])
 
-NA_SET_GLOBALLY([IMPLEMENTATION_NUMBER], [6])
+NA_SET_GLOBALLY([IMPLEMENTATION_NUMBER], [0])
 
-NA_SET_GLOBALLY([INTERFACE_COMPATIBILITY], [0])
+NA_SET_GLOBALLY([INTERFACE_COMPATIBILITY], [1])
 
 
 dnl  ***************************************************************************

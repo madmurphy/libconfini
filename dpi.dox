@@ -35,9 +35,9 @@
 
 What follows is the list of public functions available with **libconfini**.
 Almost each of them is independent, hence if you are compiling this library you
-may decide to remove any of them from the code, with the only exceptions of
-`ini_string_match_ii()`, required by `ini_array_match()`, and `load_ini_file()`,
-required by `load_ini_path()`.
+may decide to remove the function listed below from the code, with the only
+exceptions of `ini_string_match_ii()`, required by `ini_array_match()`, and
+`strip_ini_cache()`, required by both `load_ini_file()` and `load_ini_path()`.
 
 
 

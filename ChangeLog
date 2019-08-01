@@ -2,6 +2,18 @@ Change Log {#changelog}
 =======================
 
 
+## 1.10.0 -- 2019-08-01
+
+Changes:
+
+* Function `strip_ini_cache()` has been created -- see issue
+  [#9](https://github.com/madmurphy/libconfini/issues/9) -- most of the code of
+  `load_ini_file()` has now been moved to `strip_ini_cache()`
+* Code review (`load_ini_file()` and `load_ini_path()`)
+* Documentation
+* Created new examples (see `examples/topics/strip_ini_cache.c`)
+
+
 ## 1.9.2 -- 2019-04-25
 
 Changes:

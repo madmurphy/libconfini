@@ -54,13 +54,13 @@ static int my_init (IniStatistics * statistics, void * v_store) {
 }
 
 static char ** make_strarray (
-  size_t * arrlen,
-  const char * src,
+  const char * const srcstr,
   const size_t buffsize,
-  IniFormat ini_format
+  const IniFormat ini_format,
+  size_t * const arrlen
 ) {
 
-  *arrlen = ini_array_get_length(src, MY_ARRAY_DELIMITER, ini_format);
+  *arrlen = ini_array_get_length(srcstr, MY_ARRAY_DELIMITER, ini_format);
 
   char ** const dest  = *arrlen ?
                           (char **) malloc(*arrlen * sizeof(char *) + buffsize)
@@ -74,9 +74,9 @@ static char ** make_strarray (
 
   }
 
-  memcpy(dest + *arrlen, src, buffsize);
+  memcpy(dest + *arrlen, srcstr, buffsize);
 
-  char * iter = (char *) (dest + *arrlen);
+  char * iter = (char *) ((char **) dest + *arrlen);
 
   for (size_t idx = 0; idx < *arrlen; idx++) {
 
@@ -145,9 +145,10 @@ static int my_handler (IniDispatch * this, void * v_store) {
 
       /*  Allocate a new array of strings  */
       store->my_section_my_array = make_strarray(
-        &store->my_section_my_arr_len,
-        this->value, this->v_len + 1,
-        this->format
+        this->value,
+        this->v_len + 1,
+        this->format,
+        &store->my_section_my_arr_len
       );
 
       if (!store->my_section_my_array) {

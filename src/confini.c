@@ -191,7 +191,7 @@
 	@property	IniStatistics::members
 					The size of the parsed file in number of members (nodes) -- this
 					number always equals the number of dispatches that will be sent
-					by #load_ini_file() and #load_ini_path()
+					by #load_ini_file(), #load_ini_path() or #strip_ini_cache()
 
 
 
@@ -2035,9 +2035,9 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 					/*
 
 						Remove the backslash if the comment immediately follows an
-						escaped new line made of one single chararacter. In case of
-						CR + LF or LF + CR the backslash will be removed later by
-						#load_ini_file().
+						escaped new line made of two chararacters (`/\\[\r\n]/`).
+						In case of CR + LF or LF + CR (`/\\\n\r|\\\r\n/`) the
+						backslash will be removed later by #strip_ini_cache().
 
 					*/
 
@@ -2114,13 +2114,13 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 		/*  LIBRARY'S MAIN FUNCTIONS  */
 
 
-												/**  @utility{load_ini_file}  **/
+												/**  @utility{strip_ini_cache}  **/
 /**
 
-	@brief			Parses an INI file and dispatches its content using a `FILE`
-					structure as argument
-	@param			ini_file		The `FILE` handle pointing to the INI file to
-									parse
+	@brief			Parses and tokenizes a buffer containing an INI file, then
+					dispatches its content to a custom callback
+	@param			ini_buffer		The buffer containing the INI file to tokenize
+	@param			ini_length		The length of @p ini_buffer
 	@param			format			The format of the INI file
 	@param			f_init			The function that will be invoked before the
 									first dispatch, or `NULL`
@@ -2130,79 +2130,49 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 	@return			Zero for success, otherwise an error code (see `enum`
 					#ConfiniInterruptNo)
 
-	The @p ini_file parameter must be a `FILE` handle with read privileges. In some
-	platforms, such as Microsoft Windows, it might be needed to add the binary
-	specifier to the mode string (`"b"`) in order to prevent discrepancies between
-	the physical size of the file and its computed size:
+	The @p ini_buffer parameter must be a valid pointer to a `char` array of size
+	@p ini_length and cannot be `NULL`, otherwise the behavior is undefined.
 
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-	FILE * my_file = fopen("example.conf", "rb");
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	After invoking `strip_ini_cache()`, the buffer pointed by the @p ini_buffer
+	parameter must be considered as a corrupted buffer and should be freed or
+	overwritten.
+
+	For more information about this function, please refer to the @ref libconfini.
 
 	The parsing algorithms used by **libconfini** are able to parse any type of file
 	encoded in 8-bit code units, as long as the characters that match the regular
-	expression `/[\s\[\]\.\\;#"']/` represent the same code points they represent in
+	expression `/[\s\[\]\.\\;#"']/` express the same code points they express in
 	ASCII, independently of platform-specific conventions (as in, for example, UTF-8
 	and ISO-8859-1).
 
-	@note	In order to be null-byte-injection safe, `NUL` characters, if present in
-			the file, will be removed from the dispatched strings.
+	@note	In order to be null byte injection safe, the `NUL` characters possibly
+			present in the buffer will be stripped from it before the dispatching
+			begins.
 
-	The user given function @p f_init (see #IniStatsHandler data type) will be
-	invoked with two arguments: `statistics` (a pointer to an #IniStatistics
-	structure containing some properties about the file read) and `user_data` (the
-	custom argument @p user_data previously passed). If @p f_init returns a non-zero
-	value the caller function will be interrupted.
+	For the two parameters @p f_init and @p f_foreach see function #load_ini_file().
 
-	The user given function @p f_foreach (see #IniDispHandler data type) will be
-	invoked with two arguments: `dispatch` (a pointer to an #IniDispatch structure
-	containing the parsed member of the INI file) and `user_data` (the custom
-	argument @p user_data previously passed). If @p f_foreach returns a non-zero
-	value the caller function will be interrupted.
+	Possible return values: `#CONFINI_SUCCESS`, `#CONFINI_IINTR`, `#CONFINI_FEINTR`,
+	`#CONFINI_EOOR`
 
-	@include topics/load_ini_file.c
+	@include topics/strip_ini_cache.c
 
 **/
-int load_ini_file (
-	FILE * const ini_file,
+int strip_ini_cache (
+	register char * const ini_buffer,
+	const size_t ini_length,
 	const IniFormat format,
 	const IniStatsHandler f_init,
 	const IniDispHandler f_foreach,
 	void * const user_data
 ) {
 
-	fseek(ini_file, 0, SEEK_END);
-
-	size_t tmp_uint_1 = ftell(ini_file);
-
-	#define __N_BYTES__ tmp_uint_1
-
-	char * const cache = (char *) malloc(__N_BYTES__ + 1);
-
-	if (!cache) {
-
-		return CONFINI_ENOMEM;
-
-	}
-
-	int return_value = CONFINI_SUCCESS;
-
-	rewind(ini_file);
-
-	if (fread(cache, 1, __N_BYTES__, ini_file) < __N_BYTES__) {
-
-		return_value = CONFINI_EIO;
-		goto free_and_exit;
-
-	}
-
-	cache[__N_BYTES__] = '\0';
+	ini_buffer[ini_length] = '\0';
 
 	const _LIBCONFINI_BOOL_ valid_delimiter = !_LIBCONFINI_IS_ESC_CHAR_(format.delimiter_symbol, format);
 	_LIBCONFINI_BOOL_ tmp_bool;
-	register uint16_t abcd;
-	register size_t idx;
-	size_t tmp_uint_2, tmp_uint_3, node_at;
+	register size_t idx, tmp_fast_size_t;
+	uint8_t tmp_uint8;
+	size_t tmp_size_t_1, tmp_size_t_2, node_at;
 
 	/*
 
@@ -2211,14 +2181,14 @@ int load_ini_file (
 	*/
 
 	#define __ISNT_ESCAPED__ tmp_bool
-	#define __EOL_N__ abcd
-	#define __N_MEMBERS__ tmp_uint_2
-	#define __LSHIFT__ tmp_uint_3
+	#define __EOL_N__ tmp_uint8
+	#define __N_MEMBERS__ tmp_size_t_1
+	#define __LSHIFT__ tmp_fast_size_t
 
 	/*  UTF-8 BOM  */
-	__LSHIFT__	=	*((unsigned char *) cache) == 0xEF &&
-					*((unsigned char *) cache + 1) == 0xBB &&
-					*((unsigned char *) cache + 2) == 0xBF
+	__LSHIFT__	=	*((unsigned char *) ini_buffer) == 0xEF &&
+					*((unsigned char *) ini_buffer + 1) == 0xBB &&
+					*((unsigned char *) ini_buffer + 2) == 0xBF
 					? 3 : 0;
 
 
@@ -2230,23 +2200,23 @@ int load_ini_file (
 		node_at = 0,
 		idx = __LSHIFT__;
 
-			idx < __N_BYTES__;
+			idx < ini_length;
 
 		idx++
 
 	) {
 
-		cache[idx - __LSHIFT__] = cache[idx];
+		ini_buffer[idx - __LSHIFT__] = ini_buffer[idx];
 
-		if (cache[idx] == _LIBCONFINI_SPACES_[__EOL_N__] || cache[idx] == _LIBCONFINI_SPACES_[__EOL_N__ ^= 1]) {
+		if (ini_buffer[idx] == _LIBCONFINI_SPACES_[__EOL_N__] || ini_buffer[idx] == _LIBCONFINI_SPACES_[__EOL_N__ ^= 1]) {
 
 			if (format.multiline_nodes == INI_NO_MULTILINE || __ISNT_ESCAPED__) {
 
-				cache[idx - __LSHIFT__] = '\0';
-				__N_MEMBERS__ += further_cuts(cache + qultrim_h(cache, node_at, format), format);
+				ini_buffer[idx - __LSHIFT__] = '\0';
+				__N_MEMBERS__ += further_cuts(ini_buffer + qultrim_h(ini_buffer, node_at, format), format);
 				node_at = idx - __LSHIFT__ + 1;
 
-			} else if (cache[idx + 1] == _LIBCONFINI_SPACES_[__EOL_N__ ^ 1]) {
+			} else if (ini_buffer[idx + 1] == _LIBCONFINI_SPACES_[__EOL_N__ ^ 1]) {
 
 				idx++;
 
@@ -2254,11 +2224,11 @@ int load_ini_file (
 
 			__ISNT_ESCAPED__ = _LIBCONFINI_TRUE_;
 
-		} else if (cache[idx] == _LIBCONFINI_BACKSLASH_) {
+		} else if (ini_buffer[idx] == _LIBCONFINI_BACKSLASH_) {
 
 			__ISNT_ESCAPED__ = !__ISNT_ESCAPED__;
 
-		} else if (cache[idx]) {
+		} else if (ini_buffer[idx]) {
 
 			__ISNT_ESCAPED__ = _LIBCONFINI_TRUE_;
 
@@ -2271,22 +2241,22 @@ int load_ini_file (
 
 	}
 
-	const size_t len = idx - __LSHIFT__;
+	const size_t real_length = idx - __LSHIFT__;
 
-	while (idx > len) {
+	while (idx > real_length) {
 
-		cache[--idx] = '\0';
+		ini_buffer[--idx] = '\0';
 
 	}
 
-	__N_MEMBERS__ += further_cuts(cache + qultrim_h(cache, node_at, format), format);
+	__N_MEMBERS__ += further_cuts(ini_buffer + qultrim_h(ini_buffer, node_at, format), format);
 
 	/*  Debug  */
 
 	/*
 
-	for (size_t tmp = 0; tmp < len + 1; tmp++) {
-		putchar(cache[tmp] == 0 ? '$' : cache[tmp]);
+	for (size_t tmp = 0; tmp < real_length + 1; tmp++) {
+		putchar(ini_buffer[tmp] == 0 ? '$' : ini_buffer[tmp]);
 	}
 	putchar('\n');
 
@@ -2294,14 +2264,13 @@ int load_ini_file (
 
 	IniStatistics this_doc = {
 		.format = format,
-		.bytes = __N_BYTES__,
+		.bytes = ini_length,
 		.members = __N_MEMBERS__
 	};
 
 	if (f_init && f_init(&this_doc, user_data)) {
 
-		return_value = CONFINI_IINTR;
-		goto free_and_exit;
+		return CONFINI_IINTR;
 
 	}
 
@@ -2309,7 +2278,6 @@ int load_ini_file (
 	#undef __N_MEMBERS__
 	#undef __EOL_N__
 	#undef __ISNT_ESCAPED__
-	#undef __N_BYTES__
 
 	/*
 
@@ -2319,19 +2287,19 @@ int load_ini_file (
 
 	if (!f_foreach) {
 
-		goto free_and_exit;
+		return CONFINI_SUCCESS;
 
 	}
 
 	#define __PARENT_IS_DISABLED__ tmp_bool
-	#define __REAL_PARENT_LEN__ tmp_uint_1
-	#define __CURR_PARENT_LEN__ tmp_uint_2
-	#define __ITER__ tmp_uint_3
+	#define __REAL_PARENT_LEN__ tmp_size_t_1
+	#define __CURR_PARENT_LEN__ tmp_size_t_2
+	#define __ITER__ tmp_fast_size_t
 
 	__REAL_PARENT_LEN__ = 0, __CURR_PARENT_LEN__ = 0;
 
 	char
-		* curr_parent_str = cache + len,
+		* curr_parent_str = ini_buffer + real_length,
 		* subparent_str = curr_parent_str,
 		* real_parent_str = curr_parent_str;
 
@@ -2344,15 +2312,15 @@ int load_ini_file (
 
 	__PARENT_IS_DISABLED__ = _LIBCONFINI_FALSE_;
 
-	for (node_at = 0, idx = 0; idx <= len; idx++) {
+	for (node_at = 0, idx = 0; idx <= real_length; idx++) {
 
-		if (cache[idx]) {
+		if (ini_buffer[idx]) {
 
 			continue;
 
 		}
 
-		if (!cache[node_at] || _LIBCONFINI_IS_IGN_MARKER_(cache[node_at], format)) {
+		if (!ini_buffer[node_at] || _LIBCONFINI_IS_IGN_MARKER_(ini_buffer[node_at], format)) {
 
 			node_at = idx + 1;
 			continue;
@@ -2361,20 +2329,19 @@ int load_ini_file (
 
 		if (dsp.dispatch_id >= this_doc.members) {
 
-			return_value = CONFINI_EOOR;
-			goto free_and_exit;
+			return CONFINI_EOOR;
 
 		}
 
-		dsp.data = cache + node_at;
-		dsp.value = cache + idx;
+		dsp.data = ini_buffer + node_at;
+		dsp.value = ini_buffer + idx;
 		dsp.d_len = idx - node_at;
 		dsp.v_len = 0;
 
 		if (_LIBCONFINI_IS_DIS_MARKER_(*dsp.data, format) && (format.disabled_after_space || !is_some_space(dsp.data[1], _LIBCONFINI_NO_EOL_))) {
 
-			parse_at = dqultrim_s(cache, node_at, format);
-			dsp.type = get_type_as_active(cache + parse_at, idx - parse_at, format.disabled_can_be_implicit, format);
+			parse_at = dqultrim_s(ini_buffer, node_at, format);
+			dsp.type = get_type_as_active(ini_buffer + parse_at, idx - parse_at, format.disabled_can_be_implicit, format);
 
 			if (dsp.type) {
 
@@ -2385,7 +2352,7 @@ int load_ini_file (
 
 				*/
 
-				dsp.data = cache + parse_at;
+				dsp.data = ini_buffer + parse_at;
 				dsp.d_len = idx - parse_at;
 
 			}
@@ -2435,7 +2402,6 @@ int load_ini_file (
 					*/
 
 					dsp.type = INI_INLINE_COMMENT;
-
 					/*  No case break here (last case)  */
 
 			}
@@ -2523,7 +2489,7 @@ int load_ini_file (
 
 					curr_parent_str = dsp.data;
 					__CURR_PARENT_LEN__ = dsp.d_len;
-					subparent_str = cache + idx;
+					subparent_str = ini_buffer + idx;
 					dsp.append_to = subparent_str;
 					dsp.at_len = 0;
 
@@ -2538,7 +2504,7 @@ int load_ini_file (
 
 					curr_parent_str = ++dsp.data;
 					__CURR_PARENT_LEN__ = --dsp.d_len;
-					subparent_str = cache + idx;
+					subparent_str = ini_buffer + idx;
 					dsp.append_to = subparent_str;
 					dsp.at_len = 0;
 
@@ -2611,15 +2577,15 @@ int load_ini_file (
 			case INI_COMMENT:
 			case INI_INLINE_COMMENT:
 
-				dsp.append_to = cache + idx;
+				dsp.append_to = ini_buffer + idx;
 				dsp.at_len = 0;
+				/*  No case break here (last case)  */
 
 		}
 
 		if (f_foreach(&dsp, user_data)) {
 
-			return_value = CONFINI_FEINTR;
-			goto free_and_exit;
+			return CONFINI_FEINTR;
 
 		}
 
@@ -2633,14 +2599,94 @@ int load_ini_file (
 	#undef __REAL_PARENT_LEN__
 	#undef __PARENT_IS_DISABLED__
 
+	return CONFINI_SUCCESS;
 
-	/* \                                /\
-	\ */     free_and_exit:            /* \
-	 \/     ______________________     \ */
+}
 
+
+												/**  @utility{load_ini_file}  **/
+/**
+
+	@brief			Parses an INI file and dispatches its content using a `FILE`
+					structure as argument
+	@param			ini_file		The `FILE` handle pointing to the INI file to
+									parse
+	@param			format			The format of the INI file
+	@param			f_init			The function that will be invoked before the
+									first dispatch, or `NULL`
+	@param			f_foreach		The function that will be invoked for each
+									dispatch, or `NULL`
+	@param			user_data		A custom argument, or `NULL`
+	@return			Zero for success, otherwise an error code (see `enum`
+					#ConfiniInterruptNo)
+
+	The @p ini_file parameter must be a `FILE` handle with read privileges. In some
+	platforms, such as Microsoft Windows, it might be needed to add the binary
+	specifier to the mode string (`"b"`) in order to prevent discrepancies between
+	the physical size of the file and its computed size:
+
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+	FILE * my_file = fopen("example.conf", "rb");
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	The parsing algorithms used by **libconfini** are able to parse any type of file
+	encoded in 8-bit code units, as long as the characters that match the regular
+	expression `/[\s\[\]\.\\;#"']/` express the same code points they express in
+	ASCII, independently of platform-specific conventions (as in, for example, UTF-8
+	and ISO-8859-1).
+
+	@note	In order to be null-byte-injection safe, `NUL` characters, if present in
+			the file, will be removed from the dispatched strings.
+
+	The user given function @p f_init (see #IniStatsHandler data type) will be
+	invoked with two arguments: `statistics` (a pointer to an #IniStatistics
+	structure containing some properties about the file read) and `user_data` (the
+	custom argument @p user_data previously passed). If @p f_init returns a non-zero
+	value the caller function will be interrupted.
+
+	The user given function @p f_foreach (see #IniDispHandler data type) will be
+	invoked with two arguments: `dispatch` (a pointer to an #IniDispatch structure
+	containing the parsed member of the INI file) and `user_data` (the custom
+	argument @p user_data previously passed). If @p f_foreach returns a non-zero
+	value the caller function will be interrupted.
+
+	Possible return values: `#CONFINI_SUCCESS`, `#CONFINI_IINTR`, `#CONFINI_FEINTR`,
+	`#CONFINI_ENOMEM`, `#CONFINI_EIO`, `#CONFINI_EOOR`
+
+	@include topics/load_ini_file.c
+
+**/
+int load_ini_file (
+	FILE * const ini_file,
+	const IniFormat format,
+	const IniStatsHandler f_init,
+	const IniDispHandler f_foreach,
+	void * const user_data
+) {
+
+	fseek(ini_file, 0, SEEK_END);
+
+	const size_t ini_length = ftell(ini_file);
+	char * const cache = (char *) malloc(ini_length + 1);
+
+	if (!cache) {
+
+		return CONFINI_ENOMEM;
+
+	}
+
+	rewind(ini_file);
+
+	if (fread(cache, 1, ini_length, ini_file) < ini_length) {
+
+		free(cache);
+		return CONFINI_EIO;
+
+	}
+
+	const int return_value = strip_ini_cache(cache, ini_length, format, f_init, f_foreach, user_data);
 
 	free(cache);
-
 	return return_value;
 
 }
@@ -2663,7 +2709,7 @@ int load_ini_file (
 
 	The parsing algorithms used by **libconfini** are able to parse any type of file
 	encoded in 8-bit code units, as long as the characters that match the regular
-	expression `/[\s\[\]\.\\;#"']/` represent the same code points they represent in
+	expression `/[\s\[\]\.\\;#"']/` express the same code points they express in
 	ASCII, independently of platform-specific conventions (see, for example, UTF-8
 	and ISO-8859-1).
 
@@ -2671,6 +2717,9 @@ int load_ini_file (
 			the file, will be removed from the dispatched strings.
 
 	For the two parameters @p f_init and @p f_foreach see function #load_ini_file().
+
+	Possible return values: `#CONFINI_SUCCESS`, `#CONFINI_IINTR`, `#CONFINI_FEINTR`,
+	`#CONFINI_ENOENT`, `#CONFINI_ENOMEM`, `#CONFINI_EIO`, `#CONFINI_EOOR`
 
 	@include topics/load_ini_path.c
 
@@ -2691,10 +2740,29 @@ int load_ini_path (
 
 	}
 
-	int return_value = load_ini_file(ini_file, format, f_init, f_foreach, user_data);
+	fseek(ini_file, 0, SEEK_END);
 
-	fclose(ini_file);
+	const size_t ini_length = ftell(ini_file);
+	char * const cache = (char *) malloc(ini_length + 1);
 
+	if (!cache) {
+
+		return CONFINI_ENOMEM;
+
+	}
+
+	rewind(ini_file);
+
+	if (fread(cache, 1, ini_length, ini_file) < ini_length) {
+
+		free(cache);
+		return CONFINI_EIO;
+
+	}
+
+	const int return_value = strip_ini_cache(cache, ini_length, format, f_init, f_foreach, user_data);
+
+	free(cache);
 	return return_value;
 
 }
@@ -2794,10 +2862,10 @@ _Bool ini_string_match_ss (const char * const simple_string_a, const char * cons
 	);
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	INI strings are the strings typically dispatched by #load_ini_file() and
-	#load_ini_path(), which may contain quotes and the three escape sequences `\\`,
-	`\'` and `\"`. Simple strings are user-given strings or the result of
-	#ini_string_parse().
+	INI strings are the strings typically dispatched by #load_ini_file(),
+	#load_ini_path() or #strip_ini_cache(), which may contain quotes and the three
+	escape sequences `\\`, `\'` and `\"`. Simple strings are user-given strings or
+	the result of #ini_string_parse().
 
 	In order to be suitable for both names and values, **this function always
 	considers sequences of one or more spaces out of quotes in the INI string as
@@ -2961,9 +3029,9 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 	);
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	INI strings are the strings typically dispatched by #load_ini_file() and
-	#load_ini_path(), which may contain quotes and the three escape sequences `\\`,
-	`\'` and `\"`.
+	INI strings are the strings typically dispatched by #load_ini_file(),
+	#load_ini_path() or #strip_ini_cache(), which may contain quotes and the three
+	escape sequences `\\`, `\'` and `\"`.
 
 	In order to be suitable for both names and values, **this function always
 	considers sequences of one or more spaces out of quotes in both strings as
@@ -3151,9 +3219,9 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 
 	This function can be used, with `'.'` as delimiter, to compare section paths.
 
-	INI strings are the strings typically dispatched by #load_ini_file() and
-	#load_ini_path(), which may contain quotes and the three escape sequences `\\`,
-	`\'` and `\"`.
+	INI strings are the strings typically dispatched by #load_ini_file(),
+	#load_ini_path() or #strip_ini_cache(), which may contain quotes and the three
+	escape sequences `\\`, `\'` and `\"`.
 
 	In order to be suitable for both names and values, **this function always
 	considers sequences of one or more spaces out of quotes in both strings as
@@ -3321,7 +3389,7 @@ _Bool ini_array_match (
 
 	}
 
-	if (!(*abcd_pair & 64)) {
+	if (~*abcd_pair & 64) {
 
 		if (
 			format.case_sensitive ?

@@ -2,6 +2,11 @@ NEWS
 ====
 
 
+## 1.10.0
+
+* Function `strip_ini_cache()` has been created
+
+
 ## 1.9.0
 
 * Added `--multiversion` option to the `autogen.sh` script for future major
