@@ -67,15 +67,22 @@ easily by passing the `--multiversion` option to the `autogen.sh` script:
 This will ensure **libconfini** X.Y.Z to be installed as **libconfiniX** X.Y.Z.
 
 If you are not using the `autogen.sh` script provided, passing the
-`--multiversion` paramenter above is equivalent to setting a `$MULTIVERSION_LIB`
-environment variable to any non-empty value other than `no` before launching
-`automake`. In particular, the command above corresponds to
+`--multiversion` paramenter above is equivalent to setting a
+`$MULTIVERSION_PACKAGE` environment variable to any non-empty value other than
+`no` before launching `automake`. In particular, the command above corresponds
+to
 
     libtoolize
     aclocal
-    MULTIVERSION_LIB=yes \
+    MULTIVERSION_PACKAGE=yes \
         automake --add-missing --copy --gnu
     autoconf
+    ./configure
+
+Or, using a more modern approach,
+
+    MULTIVERSION_PACKAGE=yes \
+        autoreconf -i
     ./configure
 
 By convention you need to append the major version number to the name of the

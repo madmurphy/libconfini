@@ -1,4 +1,4 @@
-.TH "confini.h" 3 "Thu Aug 1 2019" "libconfini" \" -*- nroff -*-
+.TH "confini.h" 3 "Thu Sep 19 2019" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -242,22 +242,22 @@ libconfini header
 
 
 .PP
-\fBAuthor:\fP
+\fBAuthor\fP
 .RS 4
 Stefano Gioffre\*(` 
 .RE
 .PP
-\fBCopyright:\fP
+\fBCopyright\fP
 .RS 4
 GNU Public License v3 
 .RE
 .PP
-\fBDate:\fP
+\fBDate\fP
 .RS 4
 2016-2019 
 .RE
 .PP
-\fBSee also:\fP
+\fBSee also\fP
 .RS 4
 https://github.com/madmurphy/libconfini/ 
 .RE
@@ -325,7 +325,7 @@ Dispatch of a single INI node\&.
 .PP
 Callback function for handling an \fBIniDispatch\fP structure\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIdispatch\fP A pointer to the \fBIniDispatch\fP to handle 
 .br
@@ -350,7 +350,7 @@ Global statistics about an INI file\&.
 .PP
 Callback function for handling an \fBIniStatistics\fP structure\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIstatistics\fP A pointer to the \fBIniStatistics\fP to handle 
 .br
@@ -363,7 +363,7 @@ Callback function for handling an \fBIniStatistics\fP structure\&.
 .PP
 Callback function for handling an INI string\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_string\fP The INI string to handle 
 .br
@@ -382,7 +382,7 @@ Callback function for handling an INI string\&.
 .PP
 Callback function for handling a selected fragment of an INI string\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_string\fP The INI string containing the fragment to handle 
 .br
@@ -545,7 +545,7 @@ Format does \fInot\fP support sections – \fC/\\[[^\\]]*\\]/g\fP, if any, will 
 .PP
 Replaces the first delimiter found (together with the spaces that surround it) with \fC\\0\fP 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_string\fP The stringified array – it can be \fCNULL\fP 
 .br
@@ -554,7 +554,7 @@ Replaces the first delimiter found (together with the spaces that surround it) w
 \fIformat\fP The format of the INI file 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 A pointer to the remaining INI array or \fCNULL\fP if the remaining array is empty
 .RE
@@ -563,7 +563,7 @@ Usually \fCini_string\fP comes from an \fBIniDispatch\fP (but any other string m
 .PP
 Similarly to \fCstrtok_r()\fP this function can be used only once for a given string\&.
 .PP
-\fBNote:\fP
+\fBNote\fP
 .RS 4
 If \fCdelimiter\fP matches a metacharacter within the format given (\fC'\\\\'\fP, \fC'\\''\fP or \fC'\\"'\fP), its role as metacharacter will have higher priority than its role as delimiter (i\&.e\&., the array will have no delimiters and will contain only one member)\&.
 .RE
@@ -630,7 +630,7 @@ int main () {
 .PP
 Compresses the distribution of the data of a stringified INI array by removing all the white spaces that surround its delimiters, empty quotes, collapsable spaces, etc\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_string\fP The stringified array 
 .br
@@ -639,7 +639,7 @@ Compresses the distribution of the data of a stringified INI array by removing a
 \fIformat\fP The format of the INI file 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 The new length of the stringified array
 .RE
@@ -682,7 +682,7 @@ After: \fCfirst second third etc\&.\fP
 
 .PP
 .PP
-\fBNote:\fP
+\fBNote\fP
 .RS 4
 If \fCdelimiter\fP matches a metacharacter within the format given (\fC'\\\\'\fP, \fC'\\''\fP or \fC'\\"'\fP), its role as metacharacter will have higher priority than its role as delimiter (i\&.e\&., the array will have no delimiters and will contain only one member)\&.
 .RE
@@ -796,7 +796,7 @@ int main () {
 .fi
 .PP
 .PP
-\fBNote:\fP
+\fBNote\fP
 .RS 4
 The actual space occupied by the array might get reduced further after each member is parsed by \fBini_string_parse()\fP\&. 
 .RE
@@ -807,7 +807,7 @@ The actual space occupied by the array might get reduced further after each memb
 .PP
 Calls a custom function for each member of a stringified INI array, without modifying the content of the buffer – useful for read-only (\fCconst\fP) stringified arrays\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_string\fP The stringified array (it cannot be \fCNULL\fP) 
 .br
@@ -820,7 +820,7 @@ Calls a custom function for each member of a stringified INI array, without modi
 \fIuser_data\fP A custom argument, or \fCNULL\fP 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\fP)
 .RE
@@ -829,7 +829,7 @@ Usually \fCini_string\fP comes from an \fBIniDispatch\fP (but any other string m
 .PP
 The user given function \fCf_foreach\fP (see \fBIniSubstrHandler\fP data type) will be invoked with six arguments: \fCini_string\fP, \fCmemb_offset\fP (the offset of the member in bytes), \fCmemb_length\fP (the length of the member in bytes), \fCmemb_num\fP (the offset of the member in number of members), \fCformat\fP (the format of the INI file), \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the function \fBini_array_foreach()\fP will be interrupted\&.
 .PP
-\fBNote:\fP
+\fBNote\fP
 .RS 4
 If \fCdelimiter\fP matches a metacharacter within the format given (\fC'\\\\'\fP, \fC'\\''\fP or \fC'\\"'\fP), its role as metacharacter will have higher priority than its role as delimiter (i\&.e\&., the array will have no delimiters and will contain only one member)\&.
 .RE
@@ -878,7 +878,7 @@ int main () {
 .PP
 Gets the length of a stringified INI array in number of members\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_string\fP The stringified array (it can be \fCNULL\fP) 
 .br
@@ -887,14 +887,14 @@ Gets the length of a stringified INI array in number of members\&.
 \fIformat\fP The format of the INI file 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 The length of the INI array
 .RE
 .PP
 Usually \fCini_string\fP comes from an \fBIniDispatch\fP (but any other string may be used as well)\&.
 .PP
-\fBNote:\fP
+\fBNote\fP
 .RS 4
 If \fCdelimiter\fP matches a metacharacter within the format given (\fC'\\\\'\fP, \fC'\\''\fP or \fC'\\"'\fP), its role as metacharacter will have higher priority than its role as delimiter (i\&.e\&., the array will have no delimiters and will contain only one member)\&. 
 .RE
@@ -905,7 +905,7 @@ If \fCdelimiter\fP matches a metacharacter within the format given (\fC'\\\\'\fP
 .PP
 Compares two INI arrays and checks if they match\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_string_a\fP The first INI array 
 .br
@@ -916,7 +916,7 @@ Compares two INI arrays and checks if they match\&.
 \fIformat\fP The format of the INI file 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 A boolean: \fCtrue\fP if the two arrays match, \fCfalse\fP otherwise
 .RE
@@ -946,7 +946,7 @@ The \fCformat\fP argument is used for the following fields:
 .PP
 Replaces the first delimiter found (together with the spaces that surround it) with \fC\\0\fP, then shifts the location pointed by \fCini_strptr\fP to the next member of the INI array, or to \fCNULL\fP if the INI array has no more members\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_strptr\fP The memory location of the stringified array – it cannot be \fCNULL\fP, but it can point to \fCNULL\fP 
 .br
@@ -955,7 +955,7 @@ Replaces the first delimiter found (together with the spaces that surround it) w
 \fIformat\fP The format of the INI file 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 The array member that has been released
 .RE
@@ -964,7 +964,7 @@ Usually \fCini_strptr\fP comes from an \fBIniDispatch\fP (but any other string m
 .PP
 Similarly to \fCstrtok_r()\fP this function can be used only once for a given string\&.
 .PP
-\fBNote:\fP
+\fBNote\fP
 .RS 4
 If \fCdelimiter\fP matches a metacharacter within the format given (\fC'\\\\'\fP, \fC'\\''\fP or \fC'\\"'\fP), its role as metacharacter will have higher priority than its role as delimiter (i\&.e\&., the array will have no delimiters and will contain only one member)\&.
 .RE
@@ -1032,7 +1032,7 @@ int main () {
 .PP
 Shifts the location pointed by \fCini_strptr\fP to the next member of the INI array (without modifying the content of the buffer), or to \fCNULL\fP if the INI array has no more members – useful for read-only (\fCconst\fP) stringified arrays\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_strptr\fP The memory location of the stringified array – it cannot be \fCNULL\fP, but it can point to \fCNULL\fP 
 .br
@@ -1041,14 +1041,14 @@ Shifts the location pointed by \fCini_strptr\fP to the next member of the INI ar
 \fIformat\fP The format of the INI file 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 The length of the array member that has been left behind
 .RE
 .PP
 Usually \fCini_strptr\fP comes from an \fBIniDispatch\fP (but any other string may be used as well)\&.
 .PP
-\fBNote:\fP
+\fBNote\fP
 .RS 4
 If \fCdelimiter\fP matches a metacharacter within the format given (\fC'\\\\'\fP, \fC'\\''\fP or \fC'\\"'\fP), its role as metacharacter will have higher priority than its role as delimiter (i\&.e\&., the array will have no delimiters and will contain only one member)\&.
 .RE
@@ -1120,7 +1120,7 @@ int main () {
 .PP
 Splits a stringified INI array into NUL-separated members and calls a custom function for each member\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_string\fP The stringified array (it cannot be \fCNULL\fP) 
 .br
@@ -1133,7 +1133,7 @@ Splits a stringified INI array into NUL-separated members and calls a custom fun
 \fIuser_data\fP A custom argument, or \fCNULL\fP 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\fP)
 .RE
@@ -1144,7 +1144,7 @@ The user given function \fCf_foreach\fP (see \fBIniStrHandler\fP data type) will
 .PP
 Similarly to \fCstrtok_r()\fP this function can be used only once for a given string\&.
 .PP
-\fBNote:\fP
+\fBNote\fP
 .RS 4
 If \fCdelimiter\fP matches a metacharacter within the format given (\fC'\\\\'\fP, \fC'\\''\fP or \fC'\\"'\fP), its role as metacharacter will have higher priority than its role as delimiter (i\&.e\&., the array will have no delimiters and will contain only one member)\&.
 .RE
@@ -1194,12 +1194,12 @@ int main () {
 .PP
 Calculates the \fBIniFormatNum\fP of an \fBIniFormat\fP\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIsource\fP The \fBIniFormat\fP to compute 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 The unique unsigned integer that identifies the format given 
 .RE
@@ -1210,14 +1210,14 @@ The unique unsigned integer that identifies the format given
 .PP
 Checks whether a string matches one of the booleans listed in the private constant \fBINI_BOOLEANS\fP (case-insensitive) 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_string\fP A string to be checked 
 .br
 \fIreturn_value\fP A value that is returned if no matching boolean has been found 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 The matching boolean value (0 or 1) or \fCreturn_value\fP if no boolean has been found
 .RE
@@ -1472,19 +1472,19 @@ int main () {
 .PP
 Sets the value to be to be assigned to implicit keys\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIimplicit_value\fP The string to be used as implicit value (usually \fC'YES'\fP, or \fC'TRUE'\fP) 
 .br
 \fIimplicit_v_len\fP The length of \fCimplicit_value\fP (usually \fC0\fP, independently of its real length) 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 Nothing
 .RE
 .PP
-\fBWarning:\fP
+\fBWarning\fP
 .RS 4
 This function changes the value of one or more global variables\&. In order to be thread-safe this function should be used only once at beginning of execution, or otherwise a mutex logic must be introduced\&.
 .RE
@@ -1560,19 +1560,19 @@ int main () {
 .PP
 Sets the value of the global variable \fBINI_GLOBAL_LOWERCASE_MODE\fP\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIlowercase\fP The new value 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 Nothing
 .RE
 .PP
 If \fClowercase\fP is \fCtrue\fP, key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: \fCtrue\fP)\&.
 .PP
-\fBWarning:\fP
+\fBWarning\fP
 .RS 4
 This function changes the value of one or more global variables\&. In order to be thread-safe this function should be used only once at beginning of execution, or otherwise a mutex logic must be introduced\&. 
 .RE
@@ -1583,17 +1583,17 @@ This function changes the value of one or more global variables\&. In order to b
 .PP
 Constructs a new \fBIniFormat\fP according to an \fBIniFormatNum\fP\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIformat_num\fP The \fBIniFormatNum\fP to parse 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 The new \fBIniFormat\fP constructed
 .RE
 .PP
-\fBNote:\fP
+\fBNote\fP
 .RS 4
 If \fCformat_num\fP \fC>\fP \fC16777215\fP it will be truncated to 24 bits\&. 
 .RE
@@ -1604,7 +1604,7 @@ If \fCformat_num\fP \fC>\fP \fC16777215\fP it will be truncated to 24 bits\&.
 .PP
 Compares two INI strings and checks if they match\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_string_a\fP The first INI string unescaped according to \fCformat\fP 
 .br
@@ -1613,7 +1613,7 @@ Compares two INI strings and checks if they match\&.
 \fIformat\fP The format of the INI file 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 A boolean: \fCtrue\fP if the two strings match, \fCfalse\fP otherwise
 .RE
@@ -1669,7 +1669,7 @@ The \fCformat\fP argument is used for the following fields:
 .PP
 Compares a simple string and an INI string and and checks if they match\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_string\fP The INI string escaped according to \fCformat\fP 
 .br
@@ -1678,7 +1678,7 @@ Compares a simple string and an INI string and and checks if they match\&.
 \fIformat\fP The format of the INI file 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 A boolean: \fCtrue\fP if the two strings match, \fCfalse\fP otherwise
 .RE
@@ -1795,7 +1795,7 @@ int main () {
 .PP
 Compares two simple strings and checks if they match\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIsimple_string_a\fP The first simple string 
 .br
@@ -1804,7 +1804,7 @@ Compares two simple strings and checks if they match\&.
 \fIformat\fP The format of the INI file 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 A boolean: \fCtrue\fP if the two strings match, \fCfalse\fP otherwise
 .RE
@@ -1820,14 +1820,14 @@ Simple strings are user-given strings or the result of \fBini_string_parse()\fP\
 .PP
 Unescapes \fC\\'\fP, \fC\\"\fP, and \fC\\\\\fP and removes all unescaped quotes (if single/double quotes are considered metacharacters in respect to the format given); if the format allows it, sequences of one or more spaces out of quotes will be collapsed\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_string\fP The string to be unescaped 
 .br
 \fIformat\fP The format of the INI file 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 The new length of the string
 .RE
@@ -1850,7 +1850,7 @@ The \fCformat\fP argument is used for the following fields:
 \fCformat\&.do_not_collapse_values\fP
 .PP
 .PP
-\fBNote:\fP
+\fBNote\fP
 .RS 4
 \fCformat\&.multiline_nodes\fP is used only to figure out whether there are escape sequences or not\&. For all other purposes new line characters will be considered to be equal to any other space character, even if the format is not multi-line – in fact new line characters should never appear in non-multi-line formats \&.
 .RE
@@ -1911,14 +1911,14 @@ int main () {
 .PP
 Unescapes \fC\\'\fP, \fC\\"\fP, and \fC\\\\\fP and removes all unescaped quotes (if single/double quotes are considered metacharacters in respect to the format given) 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_string\fP The string to be unescaped 
 .br
 \fIformat\fP The format of the INI file 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 The new length of the string
 .RE
@@ -1995,7 +1995,7 @@ int main () {
 .PP
 Parses an INI file and dispatches its content using a \fCFILE\fP structure as argument\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_file\fP The \fCFILE\fP handle pointing to the INI file to parse 
 .br
@@ -2008,7 +2008,7 @@ Parses an INI file and dispatches its content using a \fCFILE\fP structure as ar
 \fIuser_data\fP A custom argument, or \fCNULL\fP 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\fP)
 .RE
@@ -2023,7 +2023,7 @@ FILE * my_file = fopen("example\&.conf", "rb");
 .PP
 The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP express the same code points they express in ASCII, independently of platform-specific conventions (as in, for example, UTF-8 and ISO-8859-1)\&.
 .PP
-\fBNote:\fP
+\fBNote\fP
 .RS 4
 In order to be null-byte-injection safe, \fCNUL\fP characters, if present in the file, will be removed from the dispatched strings\&.
 .RE
@@ -2032,7 +2032,7 @@ The user given function \fCf_init\fP (see \fBIniStatsHandler\fP data type) will 
 .PP
 The user given function \fCf_foreach\fP (see \fBIniDispHandler\fP data type) will be invoked with two arguments: \fCdispatch\fP (a pointer to an \fBIniDispatch\fP structure containing the parsed member of the INI file) and \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the caller function will be interrupted\&.
 .PP
-Possible return values: \fC\fBCONFINI_SUCCESS\fP\fP, \fC\fBCONFINI_IINTR\fP\fP, \fC\fBCONFINI_FEINTR\fP\fP, \fC\fBCONFINI_ENOMEM\fP\fP, \fC\fBCONFINI_EIO\fP\fP, \fC\fBCONFINI_EOOR\fP\fP
+Possible return values: \fC#CONFINI_SUCCESS\fP, \fC#CONFINI_IINTR\fP, \fC#CONFINI_FEINTR\fP, \fC#CONFINI_ENOMEM\fP, \fC#CONFINI_EIO\fP, \fC#CONFINI_EOOR\fP
 .PP
 .PP
 .nf
@@ -2090,7 +2090,7 @@ int main () {
 .PP
 Parses an INI file and dispatches its content using a path as argument\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIpath\fP The path of the INI file 
 .br
@@ -2103,21 +2103,21 @@ Parses an INI file and dispatches its content using a path as argument\&.
 \fIuser_data\fP A custom argument, or \fCNULL\fP 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\fP)
 .RE
 .PP
 The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP express the same code points they express in ASCII, independently of platform-specific conventions (see, for example, UTF-8 and ISO-8859-1)\&.
 .PP
-\fBNote:\fP
+\fBNote\fP
 .RS 4
 In order to be null byte injection safe, \fCNUL\fP characters, if present in the file, will be removed from the dispatched strings\&.
 .RE
 .PP
 For the two parameters \fCf_init\fP and \fCf_foreach\fP see function \fBload_ini_file()\fP\&.
 .PP
-Possible return values: \fC\fBCONFINI_SUCCESS\fP\fP, \fC\fBCONFINI_IINTR\fP\fP, \fC\fBCONFINI_FEINTR\fP\fP, \fC\fBCONFINI_ENOENT\fP\fP, \fC\fBCONFINI_ENOMEM\fP\fP, \fC\fBCONFINI_EIO\fP\fP, \fC\fBCONFINI_EOOR\fP\fP
+Possible return values: \fC#CONFINI_SUCCESS\fP, \fC#CONFINI_IINTR\fP, \fC#CONFINI_FEINTR\fP, \fC#CONFINI_ENOENT\fP, \fC#CONFINI_ENOMEM\fP, \fC#CONFINI_EIO\fP, \fC#CONFINI_EOOR\fP
 .PP
 .PP
 .nf
@@ -2164,7 +2164,7 @@ int main () {
 .PP
 Parses and tokenizes a buffer containing an INI file, then dispatches its content to a custom callback\&. 
 .PP
-\fBParameters:\fP
+\fBParameters\fP
 .RS 4
 \fIini_buffer\fP The buffer containing the INI file to tokenize 
 .br
@@ -2179,7 +2179,7 @@ Parses and tokenizes a buffer containing an INI file, then dispatches its conten
 \fIuser_data\fP A custom argument, or \fCNULL\fP 
 .RE
 .PP
-\fBReturns:\fP
+\fBReturns\fP
 .RS 4
 Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\fP)
 .RE
@@ -2192,14 +2192,14 @@ For more information about this function, please refer to the \fBLibrary Functio
 .PP
 The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP express the same code points they express in ASCII, independently of platform-specific conventions (as in, for example, UTF-8 and ISO-8859-1)\&.
 .PP
-\fBNote:\fP
+\fBNote\fP
 .RS 4
 In order to be null byte injection safe, the \fCNUL\fP characters possibly present in the buffer will be stripped from it before the dispatching begins\&.
 .RE
 .PP
 For the two parameters \fCf_init\fP and \fCf_foreach\fP see function \fBload_ini_file()\fP\&.
 .PP
-Possible return values: \fC\fBCONFINI_SUCCESS\fP\fP, \fC\fBCONFINI_IINTR\fP\fP, \fC\fBCONFINI_FEINTR\fP\fP, \fC\fBCONFINI_EOOR\fP\fP
+Possible return values: \fC#CONFINI_SUCCESS\fP, \fC#CONFINI_IINTR\fP, \fC#CONFINI_FEINTR\fP, \fC#CONFINI_EOOR\fP
 .PP
 .PP
 .nf

@@ -110,7 +110,7 @@ if MAJOR_VERSIONS_COEXIST
 
 # Edit example files when the package must coexist with other major versions of itself
 examples_hook_1 = \
-	sed -i "s/-l$(LIBRARY_NAME)/-l$(LIBRARY_LOCALNAME)/g" "$(DESTDIR)$(examplesdir)/run_example.sh" && \
+	sed -i "s/-l$(LIBRARY_NAME)/-l$(LIBRARY_DISTNAME)/g" "$(DESTDIR)$(examplesdir)/run_example.sh" && \
 	$(FIND) "$(DESTDIR)$(examplesdir)" -type f -name '*.c' | $(XARGS) sed -i 's/<$(LIBRARY_NAME).h>/<$(LIBRARY_NAME)-$(LIBRARY_MAJVER).h>/g'
 
 endif

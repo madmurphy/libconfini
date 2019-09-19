@@ -2219,6 +2219,7 @@ int strip_ini_cache (
 			} else if (ini_buffer[idx + 1] == _LIBCONFINI_SPACES_[__EOL_N__ ^ 1]) {
 
 				idx++;
+				ini_buffer[idx - __LSHIFT__] = ini_buffer[idx];
 
 			}
 

@@ -2,6 +2,14 @@ Change Log {#changelog}
 =======================
 
 
+## 1.10.1 -- 2019-09-19
+
+Changes:
+
+* Code review (`strip_ini_cache()`) -- a small bug concerning `CR` + `LF` line
+  breaks has been fixed
+
+
 ## 1.10.0 -- 2019-08-01
 
 Changes:

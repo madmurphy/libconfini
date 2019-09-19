@@ -9,5 +9,5 @@ Name: @PACKAGE_REALNAME@
 Description: @LIBRARY_DESCRIPTION@
 Version: @PACKAGE_VERSION@
 Requires: 
-Libs: -L${libdir} -l@LIBRARY_LOCALNAME@
+Libs: -L${libdir} -l@LIBRARY_DISTNAME@
 Cflags: -I${includedir}
