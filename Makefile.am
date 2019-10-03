@@ -5,65 +5,58 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src
 
 EXTRA_DIST = \
-	docs \
-	autogen.sh \
-	README.md \
 	ChangeLog.md \
-	doxygen.conf \
-	dpi.dox \
 	MANUAL.md \
+	RATIONALE.md \
+	README.md \
+	autogen.sh \
+	autostuff \
+	docs \
 	mgwmake.bat \
 	package.json \
-	RATIONALE.md \
-	README.md
+	tests
 
 dist_doc_DATA = \
 	AUTHORS \
 	COPYING
 
-# Create `$(LIBRARY_NAME)-$(EFFECTIVE_VERSION).h` and `$(LIBRARY_NAME)-$(LIBRARY_MAJVER).h`
-include_hook_1 = \
-	mv "$(DESTDIR)$(includedir)/$(LIBRARY_NAME).h" "$(DESTDIR)$(includedir)/$(LIBRARY_NAME)-$(EFFECTIVE_VERSION).h" && \
-	(cd "$(DESTDIR)$(includedir)" && $(LN_S) "$(LIBRARY_NAME)-$(EFFECTIVE_VERSION).h" "$(LIBRARY_NAME)-$(LIBRARY_MAJVER).h")
+# Create `$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h` and
+# `$(PROJECT_CONFNAME)-$(PROJECT_MAJVER).h`
+include_insthook_1 = \
+	mv "$(DESTDIR)$(includedir)/$(PROJECT_NAME).h" "$(DESTDIR)$(includedir)/$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h" && \
+	(cd "$(DESTDIR)$(includedir)" && $(LN_S) "$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h" "$(PROJECT_CONFNAME)-$(PROJECT_MAJVER).h")
 
 
-if !MAJOR_VERSIONS_COEXIST
+if THIS_IS_THE_ONLY_VERSION
 
-# Create `$(LIBRARY_NAME).h` only when the package must *not* coexist with other major versions of itself
-include_hook_2 = \
-	(cd "$(DESTDIR)$(includedir)" && $(LN_S) "$(LIBRARY_NAME)-$(EFFECTIVE_VERSION).h" "$(LIBRARY_NAME).h")
+# Create `$(PROJECT_CONFNAME).h` only when the package must *not* coexist with
+# other major versions of itself
+include_insthook_2 = \
+	(cd "$(DESTDIR)$(includedir)" && $(LN_S) "$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h" "$(PROJECT_CONFNAME).h")
 
 endif
 
 
-if ENABLE_DOC
+if INCLUDE_DOC
 
 dist_doc_DATA += docs/manual.html \
 	ChangeLog \
 	NEWS \
 	README
 
-dist_man_MANS = docs/man/man3/confini.h.3 \
-	docs/man/man3/IniDispatch.3 \
-	docs/man/man3/IniFormat.3 \
-	docs/man/man3/IniStatistics.3 \
-	docs/man/man3/libconfini.3
-
-
-if MAJOR_VERSIONS_COEXIST
-
-# Rename man files when the package must coexist with other major versions of itself
-man_hook = \
-	$(FIND) "$(DESTDIR)$(mandir)" -type f | sed "s|\\([^.]*\\)\\(\\.\\S*\\)|\\0 \\1-$(LIBRARY_MAJVER)\\2|g" | $(XARGS) -n2 mv && \
-	$(FIND) "$(DESTDIR)$(mandir)" -type f -name "*$(PACKAGE_REALNAME)-$(LIBRARY_MAJVER)*" | sed "s|\\(\\S*\\)$(PACKAGE_REALNAME)-$(LIBRARY_MAJVER)\\(\\.\\S*\\)|\\0 \\1$(PACKAGE_NAME)\\2|g" | $(XARGS) -n2 mv
+# Currently it's not possible to do `notrans_man_MANS = $(MANPAGE_LIST)`,
+# because although the variable gets correctly assigned, it results still empty
+# when Automake creates the rules, so no rules for man pages will be created. A
+# workaround is to make Automake see at least one random file, and then re-set
+# the variable properly immediately afterwards, in a way that Automake cannot
+# see.
+notrans_man_MANS = docs/man/man3/libconfini.3
+@POPULATE_MANPAGE_LIST@
 
 endif
 
 
-endif
-
-
-if ENABLE_EXAMPLES
+if INCLUDE_EXAMPLES
 
 examplesdir = $(docdir)/examples
 dist_examples_DATA = \
@@ -75,6 +68,7 @@ dist_examplesinifiles_DATA = \
 	examples/ini_files/colon_as_delimiter.conf \
 	examples/ini_files/bad_ini.conf \
 	examples/ini_files/delivery.conf \
+	examples/ini_files/extreme_ini.conf \
 	examples/ini_files/hash_table.conf \
 	examples/ini_files/self_explaining.conf \
 	examples/ini_files/typed_ini.conf \
@@ -105,36 +99,67 @@ dist_examplestopics_DATA = \
 	examples/topics/load_ini_path.c \
 	examples/topics/strip_ini_cache.c
 
+exampleutilsdir = $(examplesdir)/utilities
+dist_exampleutils_DATA = \
+	examples/utilities/load_ini_buffer.h \
+	examples/utilities/make_strarray.h
 
-if MAJOR_VERSIONS_COEXIST
 
-# Edit example files when the package must coexist with other major versions of itself
-examples_hook_1 = \
-	sed -i "s/-l$(LIBRARY_NAME)/-l$(LIBRARY_DISTNAME)/g" "$(DESTDIR)$(examplesdir)/run_example.sh" && \
-	$(FIND) "$(DESTDIR)$(examplesdir)" -type f -name '*.c' | $(XARGS) sed -i 's/<$(LIBRARY_NAME).h>/<$(LIBRARY_NAME)-$(LIBRARY_MAJVER).h>/g'
+if RENAME_PACKAGE
+
+# Edit example files if the package has been renamed
+examples_insthook_1 = \
+	$(SED) -i "s/-l$(PROJECT_NAME)/-l$(PROJECT_LOCALNAME)/g" "$(DESTDIR)$(examplesdir)/run_example.sh" && \
+	$(FIND) "$(DESTDIR)$(examplesdir)" -type f -name '*.c' | $(XARGS) $(SED) -i 's/<$(PROJECT_NAME).h>/<$(PROJECT_LOCALNAME).h>/g'
+
+else
+
+
+if !THIS_IS_THE_ONLY_VERSION
+
+# Edit example files if the package must coexist with other major versions of
+# itself
+examples_insthook_1 = \
+	$(SED) -i "s/-l$(PROJECT_NAME)/-l$(PROJECT_DISTNAME)/g" "$(DESTDIR)$(examplesdir)/run_example.sh" && \
+	$(FIND) "$(DESTDIR)$(examplesdir)" -type f -name '*.c' | $(XARGS) $(SED) -i 's/<$(PROJECT_NAME).h>/<$(PROJECT_NAME)-$(PROJECT_MAJVER).h>/g'
 
 endif
 
 
-# Make example script executable
-examples_hook_2 = \
+endif
+
+
+# Make examples script executable
+examples_insthook_2 = \
 	chmod +x "$(DESTDIR)$(examplesdir)/run_example.sh"
 
 endif
 
 
 install-exec-hook:
-	$(include_hook_1)
-	$(include_hook_2)
+	$(include_insthook_1)
+	$(include_insthook_2)
 
 install-data-hook:
-	$(man_hook)
-	$(examples_hook_1)
-	$(examples_hook_2)
+	$(man_insthook)
+	$(examples_insthook_1)
+	$(examples_insthook_2)
 
-# Remove doc directory on uninstall
 uninstall-local:
-	-rm -r $(docdir)
+	-rm -rf "$(docdir)"
+	-rm -f "$(includedir)/$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h" \
+		"$(includedir)/$(PROJECT_CONFNAME)-$(PROJECT_MAJVER).h"
+
+clean-local:
+	$(renaming_cleanhook)
+	-rm -rf 'no-dist' "$(CONFNEW_DIR)"
+
+synch:
+	$(synch_actions)
+
+dist-hook:
+	$(renaming_disthook)
+
 
 ## EOF
 

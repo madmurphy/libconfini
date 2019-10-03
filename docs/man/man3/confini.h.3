@@ -1,4 +1,4 @@
-.TH "confini.h" 3 "Thu Sep 19 2019" "libconfini" \" -*- nroff -*-
+.TH "confini.h" 3 "Thu Oct 3 2019" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -112,7 +112,7 @@ confini.h \- libconfini header
 
 .in +1c
 .ti -1c
-.RI "int \fBstrip_ini_cache\fP (register char *const ini_buffer, const size_t ini_length, const \fBIniFormat\fP format, const \fBIniStatsHandler\fP f_init, const \fBIniDispHandler\fP f_foreach, void *const user_data)"
+.RI "int \fBstrip_ini_cache\fP (register char *const ini_source, const size_t ini_length, const \fBIniFormat\fP format, const \fBIniStatsHandler\fP f_init, const \fBIniDispHandler\fP f_foreach, void *const user_data)"
 .br
 .RI "Parses and tokenizes a buffer containing an INI file, then dispatches its content to a custom callback\&. "
 .ti -1c
@@ -222,7 +222,7 @@ confini.h \- libconfini header
 .ti -1c
 .RI "static const \fBIniFormat\fP \fBINI_UNIXLIKE_FORMAT\fP = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, }"
 .br
-.RI "A model format for Unix-like \&.conf files (space characters are delimiters between keys and values) "
+.RI "A model format for Unix-like \&.conf files (where space characters are delimiters between keys and values) "
 .ti -1c
 .RI "_Bool \fBINI_GLOBAL_LOWERCASE_MODE\fP"
 .br
@@ -484,7 +484,7 @@ Comments, section paths and keys – disabled or not – are allowed to be multi
 Only section paths and keys – disabled or not – are allowed to be multi-line 
 .TP
 \fB\fIINI_BUT_DISABLED_AND_COMMENTS \fP\fP
-Only \fIactive\fP section paths and active* keys are allowed to be multi-line 
+Only active section paths and active keys are allowed to be multi-line 
 .TP
 \fB\fIINI_NO_MULTILINE \fP\fP
 Multi-line escape sequences are disabled 
@@ -1254,6 +1254,8 @@ No errors will be generated if any of the data above are absent\&.
 #include <stdbool\&.h>
 #include <confini\&.h>
 
+#include "\&.\&./utilities/make_strarray\&.h"
+
 #define MY_ARRAY_DELIMITER ','
 
 /*  My stored data  */
@@ -1281,51 +1283,15 @@ static int my_init (IniStatistics * statistics, void * v_store) {
 
 }
 
-static char ** make_strarray (
-  const char * const srcstr,
-  const size_t buffsize,
-  const IniFormat ini_format,
-  size_t * const arrlen
-) {
-
-  *arrlen = ini_array_get_length(srcstr, MY_ARRAY_DELIMITER, ini_format);
-
-  char ** const dest  = *arrlen ?
-                          (char **) malloc(*arrlen * sizeof(char *) + buffsize)
-                        :
-                          NULL;
-
-
-  if (!dest) {
-
-    return NULL;
-
-  }
-
-  memcpy(dest + *arrlen, srcstr, buffsize);
-
-  char * iter = (char *) ((char **) dest + *arrlen);
-
-  for (size_t idx = 0; idx < *arrlen; idx++) {
-
-    dest[idx] = ini_array_release(&iter, MY_ARRAY_DELIMITER, ini_format);
-    ini_string_parse(dest[idx], ini_format);
-
-  }
-
-  return dest;
-
-}
-
-static int my_handler (IniDispatch * this, void * v_store) {
+static int my_handler (IniDispatch * disp, void * v_store) {
 
   struct ini_store * store = (struct ini_store *) v_store;
 
-  if (this->type == INI_KEY && ini_string_match_si("my_section", this->append_to, this->format)) {
+  if (disp->type == INI_KEY && ini_string_match_si("my_section", disp->append_to, disp->format)) {
 
-    if (ini_string_match_si("my_string", this->data, this->format)) {
+    if (ini_string_match_si("my_string", disp->data, disp->format)) {
 
-      this->v_len = ini_string_parse(this->value, this->format);
+      disp->v_len = ini_string_parse(disp->value, disp->format);
 
       /*  Free previous duplicate key (if any)  */
       if (store->my_section_my_string) {
@@ -1335,7 +1301,7 @@ static int my_handler (IniDispatch * this, void * v_store) {
       }
 
       /*  Allocate the new string  */
-      store->my_section_my_string = strndup(this->value, this->v_len);
+      store->my_section_my_string = strndup(disp->value, disp->v_len);
 
       if (!store->my_section_my_string) {
 
@@ -1343,25 +1309,25 @@ static int my_handler (IniDispatch * this, void * v_store) {
 
       }
 
-    } else if (ini_string_match_si("my_number", this->data, this->format)) {
+    } else if (ini_string_match_si("my_number", disp->data, disp->format)) {
 
-      store->my_section_my_number = ini_get_int(this->value);
+      store->my_section_my_number = ini_get_int(disp->value);
 
-    } else if (ini_string_match_si("my_boolean", this->data, this->format)) {
+    } else if (ini_string_match_si("my_boolean", disp->data, disp->format)) {
 
-      store->my_section_my_boolean = ini_get_bool(this->value, 1);
+      store->my_section_my_boolean = ini_get_bool(disp->value, 0);
 
-    } else if (ini_string_match_si("my_implicit_boolean", this->data, this->format)) {
+    } else if (ini_string_match_si("my_implicit_boolean", disp->data, disp->format)) {
 
-      store->my_section_my_implicit_boolean = ini_get_bool(this->value, 1);
+      store->my_section_my_implicit_boolean = ini_get_bool(disp->value, 1);
 
-    } else if (ini_string_match_si("my_array", this->data, this->format)) {
+    } else if (ini_string_match_si("my_array", disp->data, disp->format)) {
 
       /*  Save memory (not strictly needed)  */
-      this->v_len = ini_array_collapse(
-        this->value,
+      disp->v_len = ini_array_collapse(
+        disp->value,
         MY_ARRAY_DELIMITER,
-        this->format
+        disp->format
       );
 
       /*  Free previous duplicate key (if any)  */
@@ -1371,11 +1337,12 @@ static int my_handler (IniDispatch * this, void * v_store) {
 
       }
 
-      /*  Allocate a new array of strings  */
+      /*  Allocate a new array of strings (see examples/utilities/make_strarray\&.h)  */
       store->my_section_my_array = make_strarray(
-        this->value,
-        this->v_len + 1,
-        this->format,
+        disp->value,
+        disp->v_len,
+        MY_ARRAY_DELIMITER,
+        disp->format,
         &store->my_section_my_arr_len
       );
 
@@ -2021,7 +1988,7 @@ FILE * my_file = fopen("example\&.conf", "rb");
 .fi
 .PP
 .PP
-The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP express the same code points they express in ASCII, independently of platform-specific conventions (as in, for example, UTF-8 and ISO-8859-1)\&.
+The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP refer to the same code points they refer to in ASCII (as they do, for example, in UTF-8 and ISO-8859-1), independently of platform-specific conventions\&.
 .PP
 \fBNote\fP
 .RS 4
@@ -2032,7 +1999,7 @@ The user given function \fCf_init\fP (see \fBIniStatsHandler\fP data type) will 
 .PP
 The user given function \fCf_foreach\fP (see \fBIniDispHandler\fP data type) will be invoked with two arguments: \fCdispatch\fP (a pointer to an \fBIniDispatch\fP structure containing the parsed member of the INI file) and \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the caller function will be interrupted\&.
 .PP
-Possible return values: \fC#CONFINI_SUCCESS\fP, \fC#CONFINI_IINTR\fP, \fC#CONFINI_FEINTR\fP, \fC#CONFINI_ENOMEM\fP, \fC#CONFINI_EIO\fP, \fC#CONFINI_EOOR\fP
+Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFINI_FEINTR\fP, \fBCONFINI_ENOMEM\fP, \fBCONFINI_EIO\fP, \fBCONFINI_EOOR\fP\&.
 .PP
 .PP
 .nf
@@ -2108,16 +2075,16 @@ Parses an INI file and dispatches its content using a path as argument\&.
 Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\fP)
 .RE
 .PP
-The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP express the same code points they express in ASCII, independently of platform-specific conventions (see, for example, UTF-8 and ISO-8859-1)\&.
+The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP refer to the same code points they refer to in ASCII (as they do, for example, in UTF-8 and ISO-8859-1), independently of platform-specific conventions\&.
 .PP
 \fBNote\fP
 .RS 4
-In order to be null byte injection safe, \fCNUL\fP characters, if present in the file, will be removed from the dispatched strings\&.
+In order to be null-byte-injection safe, \fCNUL\fP characters, if present in the file, will be removed from the dispatched strings\&.
 .RE
 .PP
 For the two parameters \fCf_init\fP and \fCf_foreach\fP see function \fBload_ini_file()\fP\&.
 .PP
-Possible return values: \fC#CONFINI_SUCCESS\fP, \fC#CONFINI_IINTR\fP, \fC#CONFINI_FEINTR\fP, \fC#CONFINI_ENOENT\fP, \fC#CONFINI_ENOMEM\fP, \fC#CONFINI_EIO\fP, \fC#CONFINI_EOOR\fP
+Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFINI_FEINTR\fP, \fBCONFINI_ENOENT\fP, \fBCONFINI_ENOMEM\fP, \fBCONFINI_EIO\fP, \fBCONFINI_EOOR\fP\&.
 .PP
 .PP
 .nf
@@ -2159,16 +2126,16 @@ int main () {
 .fi
 .PP
  
-.SS "int strip_ini_cache (register char *const ini_buffer, const size_t ini_length, const \fBIniFormat\fP format, const \fBIniStatsHandler\fP f_init, const \fBIniDispHandler\fP f_foreach, void *const user_data)"
+.SS "int strip_ini_cache (register char *const ini_source, const size_t ini_length, const \fBIniFormat\fP format, const \fBIniStatsHandler\fP f_init, const \fBIniDispHandler\fP f_foreach, void *const user_data)"
 
 .PP
 Parses and tokenizes a buffer containing an INI file, then dispatches its content to a custom callback\&. 
 .PP
 \fBParameters\fP
 .RS 4
-\fIini_buffer\fP The buffer containing the INI file to tokenize 
+\fIini_source\fP The buffer containing the INI file to tokenize 
 .br
-\fIini_length\fP The length of \fCini_buffer\fP 
+\fIini_length\fP The length of \fCini_source\fP without counting the NUL terminator (if any) 
 .br
 \fIformat\fP The format of the INI file 
 .br
@@ -2184,22 +2151,22 @@ Parses and tokenizes a buffer containing an INI file, then dispatches its conten
 Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\fP)
 .RE
 .PP
-The \fCini_buffer\fP parameter must be a valid pointer to a \fCchar\fP array of size \fCini_length\fP and cannot be \fCNULL\fP, otherwise the behavior is undefined\&.
+The \fCini_source\fP parameter must be a valid pointer to a buffer of size \fCini_length\fP + 1 and cannot be \fCNULL\fP\&. The \fCini_source\fP string does not need to be NUL-terminated (although for portability it should, since this might become a requirement in the future), but \fIit does need one extra byte where to append a NUL terminator\fP – in fact, as soon as this function is invoked, \fCini_source[ini_length]\fP will be immediately set to \fC\\0\fP\&. In most cases, as when using \fCstrlen()\fP for computing \fCini_length\fP, this is not a concern, since \fCini_source[ini_length]\fP will always be \fC\\0\fP by the very definition of \fCstrlen()\fP, and will only get overwritten with the same value\&. However, if you are passing a substring of a string, for example the fragment \fCfoo=bar\fP of the string \fCfoo=barracuda\fP, you must expect the string to be immediately truncated into \fCfoo=bar\\0acuda\fP\&. In other words, \fCini_source\fP must point to a memory location where at least \fCini_length + 1\fP bytes are freely usable\&.
 .PP
-After invoking \fC\fBstrip_ini_cache()\fP\fP, the buffer pointed by the \fCini_buffer\fP parameter must be considered as a corrupted buffer and should be freed or overwritten\&.
+After invoking \fC\fBstrip_ini_cache()\fP\fP, the buffer pointed by the \fCini_source\fP parameter must be considered as a corrupted buffer and should be freed or overwritten\&.
 .PP
 For more information about this function, please refer to the \fBLibrary Functions Manual\fP\&.
 .PP
-The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP express the same code points they express in ASCII, independently of platform-specific conventions (as in, for example, UTF-8 and ISO-8859-1)\&.
+The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP refer to the same code points they refer to in ASCII (as they do, for example, in UTF-8 and ISO-8859-1), independently of platform-specific conventions\&.
 .PP
 \fBNote\fP
 .RS 4
-In order to be null byte injection safe, the \fCNUL\fP characters possibly present in the buffer will be stripped from it before the dispatching begins\&.
+In order to be null-byte-injection-safe, the \fCNUL\fP characters possibly present in the buffer, except the last one, will be stripped from it before the dispatching begins\&.
 .RE
 .PP
 For the two parameters \fCf_init\fP and \fCf_foreach\fP see function \fBload_ini_file()\fP\&.
 .PP
-Possible return values: \fC#CONFINI_SUCCESS\fP, \fC#CONFINI_IINTR\fP, \fC#CONFINI_FEINTR\fP, \fC#CONFINI_EOOR\fP
+Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFINI_FEINTR\fP, \fBCONFINI_EOOR\fP\&.
 .PP
 .PP
 .nf
@@ -2267,7 +2234,7 @@ int main () {
 
   printf("\n--------------------[disposed copy]--------------------\n");
 
-  for (size_t idx = 0; idx < ini_length + 1; idx++) {
+  for (size_t idx = 0; idx <= ini_length; idx++) {
 
     putchar(ini_cache[idx] == 0 ? '\&.' : ini_cache[idx]);
 
@@ -2276,8 +2243,8 @@ int main () {
   printf("\n-------------------------------------------------------\n\n");
 
   printf(
-    "The dots in the example above represent NUL characters\&. Remember that\n"
-    "`strip_ini_cache()` does not free the buffer passed, you will "
+    "The dots in the example above represent NUL characters\&. Remember "
+    "that\n`strip_ini_cache()` does not free the buffer passed, you will "
     "have to do that\nby yourself!\n"
   );
 
@@ -2327,7 +2294,7 @@ If set to \fCtrue\fP, key and section names in case-insensitive INI formats will
 .SS "const \fBIniFormat\fP INI_UNIXLIKE_FORMAT = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, }\fC [static]\fP"
 
 .PP
-A model format for Unix-like \&.conf files (space characters are delimiters between keys and values) 
+A model format for Unix-like \&.conf files (where space characters are delimiters between keys and values) 
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for libconfini from the source code\&.

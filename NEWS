@@ -2,9 +2,31 @@ NEWS
 ====
 
 
+## 1.10.2
+
+Changes:
+
+* New examples have been created (`examples/utilities/load_ini_buffer.h` and
+  `examples/utilities/make_strarray.h`)
+* The `configure` script has been improved with a built-in support for complete
+  package renaming (using `--program-prefix=PREFIX`, `--program-suffix=SUFFX`
+  and `--program-transform-name='s/[OLDTEXT]/[NEWTEXT]/[g]'`) and several new
+  options (`--enable-version-info` and `--disable-version-info`, for
+  enabling/disabling **libtool** versioning system; `--enable-extended-config`,
+  for safely exporting package renamings at `configure` time, or any changes in
+  `configure.ac`, directly to `src/winres.rc` and `package.json` -- see
+  `INSTALL` and `./configure --help` for more information)
+
+
 ## 1.10.0
 
 * Function `strip_ini_cache()` has been created
+* New examples have been created (`examples/topics/strip_ini_cache.c`)
+
+
+## 1.9.2
+
+* New examples have been created (`examples/miscellanea/colon_as_delimiter.c`)
 
 
 ## 1.9.0
@@ -18,8 +40,10 @@ NEWS
 * Introduced libtool versioning system for the compiled binary (versioning
   begins with current version 1.8.0, represented as `0:0:0`); note that
   libtool versioning system does not affect the versioning of the project
-  currently in use, but constitutes only a means for the linker to keep track of
-  incompatibilities between different releases of the library
+  currently in use, but constitutes only a means for the linker to keep track
+  of incompatibilities between different releases of the library
+* New examples have been created (`examples/topics/ini_array_foreach.c`,
+  `examples/topics/ini_array_split.c` and `examples/miscellanea/stats_only.c`)
 
 
 ## 1.7.0
@@ -34,8 +58,8 @@ NEWS
 
 ## 1.6.0 (unstable)
 
-* Functions `ini_array_shift()`, `ini_array_break()`, `ini_array_release()` have
-  been created
+* Functions `ini_array_shift()`, `ini_array_break()`, `ini_array_release()`
+  have been created
 * Boolean pair `OFF`/`ON` has been added to the list of supported INI booleans
 * Boolean pair `0`/`1` has been removed from the list of supported INI booleans
 * Redundant function † `ini_get_lazy_bool()` has been removed
@@ -53,8 +77,8 @@ NEWS
 * Default value of `INI_GLOBAL_LOWERCASE_MODE` has been set to `FALSE`
 * Made sure that sections appended to root as pseudo-subsections will be
   dispatched always without the leading dot
-* Made sure that key and section names will always be cleaned of empty quotes in
-  formats that support quotes (relevant for space collapsing)
+* Made sure that key and section names will always be cleaned of empty quotes
+  in formats that support quotes (relevant for space collapsing)
 
 Due to the many renamings this release is largely incompatible with previous
 versions. However it is possible to reach full backward compatibility with

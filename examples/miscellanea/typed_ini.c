@@ -26,6 +26,8 @@ No errors will be generated if any of the data above are absent.
 #include <stdbool.h>
 #include <confini.h>
 
+#include "../utilities/make_strarray.h"
+
 #define MY_ARRAY_DELIMITER ','
 
 /*  My stored data  */
@@ -53,51 +55,15 @@ static int my_init (IniStatistics * statistics, void * v_store) {
 
 }
 
-static char ** make_strarray (
-  const char * const srcstr,
-  const size_t buffsize,
-  const IniFormat ini_format,
-  size_t * const arrlen
-) {
-
-  *arrlen = ini_array_get_length(srcstr, MY_ARRAY_DELIMITER, ini_format);
-
-  char ** const dest  = *arrlen ?
-                          (char **) malloc(*arrlen * sizeof(char *) + buffsize)
-                        :
-                          NULL;
-
-
-  if (!dest) {
-
-    return NULL;
-
-  }
-
-  memcpy(dest + *arrlen, srcstr, buffsize);
-
-  char * iter = (char *) ((char **) dest + *arrlen);
-
-  for (size_t idx = 0; idx < *arrlen; idx++) {
-
-    dest[idx] = ini_array_release(&iter, MY_ARRAY_DELIMITER, ini_format);
-    ini_string_parse(dest[idx], ini_format);
-
-  }
-
-  return dest;
-
-}
-
-static int my_handler (IniDispatch * this, void * v_store) {
+static int my_handler (IniDispatch * disp, void * v_store) {
 
   struct ini_store * store = (struct ini_store *) v_store;
 
-  if (this->type == INI_KEY && ini_string_match_si("my_section", this->append_to, this->format)) {
+  if (disp->type == INI_KEY && ini_string_match_si("my_section", disp->append_to, disp->format)) {
 
-    if (ini_string_match_si("my_string", this->data, this->format)) {
+    if (ini_string_match_si("my_string", disp->data, disp->format)) {
 
-      this->v_len = ini_string_parse(this->value, this->format);
+      disp->v_len = ini_string_parse(disp->value, disp->format);
 
       /*  Free previous duplicate key (if any)  */
       if (store->my_section_my_string) {
@@ -107,7 +73,7 @@ static int my_handler (IniDispatch * this, void * v_store) {
       }
 
       /*  Allocate the new string  */
-      store->my_section_my_string = strndup(this->value, this->v_len);
+      store->my_section_my_string = strndup(disp->value, disp->v_len);
 
       if (!store->my_section_my_string) {
 
@@ -115,25 +81,25 @@ static int my_handler (IniDispatch * this, void * v_store) {
 
       }
 
-    } else if (ini_string_match_si("my_number", this->data, this->format)) {
+    } else if (ini_string_match_si("my_number", disp->data, disp->format)) {
 
-      store->my_section_my_number = ini_get_int(this->value);
+      store->my_section_my_number = ini_get_int(disp->value);
 
-    } else if (ini_string_match_si("my_boolean", this->data, this->format)) {
+    } else if (ini_string_match_si("my_boolean", disp->data, disp->format)) {
 
-      store->my_section_my_boolean = ini_get_bool(this->value, 1);
+      store->my_section_my_boolean = ini_get_bool(disp->value, 0);
 
-    } else if (ini_string_match_si("my_implicit_boolean", this->data, this->format)) {
+    } else if (ini_string_match_si("my_implicit_boolean", disp->data, disp->format)) {
 
-      store->my_section_my_implicit_boolean = ini_get_bool(this->value, 1);
+      store->my_section_my_implicit_boolean = ini_get_bool(disp->value, 1);
 
-    } else if (ini_string_match_si("my_array", this->data, this->format)) {
+    } else if (ini_string_match_si("my_array", disp->data, disp->format)) {
 
       /*  Save memory (not strictly needed)  */
-      this->v_len = ini_array_collapse(
-        this->value,
+      disp->v_len = ini_array_collapse(
+        disp->value,
         MY_ARRAY_DELIMITER,
-        this->format
+        disp->format
       );
 
       /*  Free previous duplicate key (if any)  */
@@ -143,11 +109,12 @@ static int my_handler (IniDispatch * this, void * v_store) {
 
       }
 
-      /*  Allocate a new array of strings  */
+      /*  Allocate a new array of strings (see examples/utilities/make_strarray.h)  */
       store->my_section_my_array = make_strarray(
-        this->value,
-        this->v_len + 1,
-        this->format,
+        disp->value,
+        disp->v_len,
+        MY_ARRAY_DELIMITER,
+        disp->format,
         &store->my_section_my_arr_len
       );
 

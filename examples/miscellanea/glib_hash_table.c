@@ -96,46 +96,64 @@ static int populate_hash_table (
     #define _PATH_LEN_ tmp_size
     #define _END_PTR_ str_a
     #define _PARSED_PATH_ str_b
-    /*  We cannot edit the buffer `dispatch->append_to`. So let's strdup it.  */
+
+    /*  We cannot edit the buffer `dispatch->append_to`. So let's copy it.  */
     _END_PTR_ = _PARSED_PATH_ = (char *) malloc(this->at_len + 2);
     _MALLOC_CHECK_(_PARSED_PATH_)
     ini_array_foreach(this->append_to, '.', this->format, path_part_handler, &_END_PTR_);
     *_END_PTR_ = '\0';
     _PATH_LEN_ = _END_PTR_ - _PARSED_PATH_;
+
     /*  We can *finally* leave `str_a` available for pointing to the full path  */
     #undef _END_PTR_
     str_a = (char *) malloc(_PATH_LEN_ + this->d_len + 1);
     _MALLOC_CHECK_(str_a)
     memcpy(str_a, _PARSED_PATH_, _PATH_LEN_);
     free(_PARSED_PATH_);
-    /*  `str_b` is now available  */
     #undef _PARSED_PATH_
-    /*  For the key part we need to borrow again `str_b`  */
+    /*  `str_b` is now available  */
+
+    /*  For the `data` part we need to borrow again `str_b`  */
     str_b = str_a + _PATH_LEN_;
-    /*  `tmp_size` is now available  */
     #undef _PATH_LEN_
+    /*  `tmp_size` is now available  */
 
   } else {
 
-    /*  For the key part we need to borrow `str_b`  */
+    /*  For the `data` part we need to borrow `str_b`  */
     str_a = str_b = (char *) malloc(this->d_len + 1);
     _MALLOC_CHECK_(str_a)
 
   }
 
+  #define _DATA_PART_ str_b
+
   for (
     tmp_size = this->d_len + 2;
       tmp_size-- > 0;
-    str_b[tmp_size] = this->data[tmp_size] == '.' ? DOT_REPLACEMENT : this->data[tmp_size]
+    _DATA_PART_[tmp_size] = this->data[tmp_size] == '.' ? DOT_REPLACEMENT : this->data[tmp_size]
   );
 
-  /*  We are borrowing again `str_b` in order to search for duplicate keys  */
-  if (g_hash_table_lookup_extended((GHashTable *) v_hash_table, str_a, (gpointer) &str_b, NULL)) {
+  #undef _DATA_PART_
+  /*  `str_b` is now available  */
 
-    printf("`%s` will be overwritten (duplicate key found)\n", str_a);
-    g_hash_table_remove((GHashTable *) v_hash_table, str_b);
+  /*  We are borrowing again `str_b` in order to search for duplicate keys  */
+  #define _EXISTING_ str_b
+
+  if (g_hash_table_lookup_extended((GHashTable *) v_hash_table, str_a, (gpointer) &_EXISTING_, NULL)) {
+
+    fprintf(stderr, "`%s` will be overwritten (duplicate key found)\n", str_a);
+
+    if (!g_hash_table_remove((GHashTable *) v_hash_table, _EXISTING_)) {
+
+      fprintf(stderr, "Unable to remove `%s` from the hash table\n", str_a);
+
+    }
 
   }
+
+  #undef _EXISTING_
+  /*  `str_b` is now available  */
 
   /*  We can *finally* leave `str_b` available for pointing to the value part  */
   str_b = (char *) malloc(this->v_len + 1);

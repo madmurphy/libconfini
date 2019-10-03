@@ -1145,7 +1145,7 @@ static size_t collapse_everything (char * const ini_string, const IniFormat form
 /**
 
 	@brief			Out of quotes similar to ECMAScript
-					`ini_string.replace(/^[\n\r]\s*|\s+/g, " ")`
+					`ini_string.replace(/\s+/g, " ")`
 	@param			ini_string		The string to collapse -- multi-line escape
 									sequences must be already unescaped at this
 									stage
@@ -1222,8 +1222,7 @@ static size_t collapse_spaces (char * const ini_string, const IniFormat format) 
 
 /**
 
-	@brief			Out of quotes similar to ECMAScript
-					`str.replace(/''|""/g, "")`
+	@brief			Similar to ECMAScript `str.replace(/''|""/g, "")`
 	@param			str				The string to collapse
 	@param			format			The format of the INI file
 	@return			The new length of the string
@@ -2099,7 +2098,7 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 }
 
-/**  @startfnlist  **/
+/** @startfnlist **/
 
 
 
@@ -2114,13 +2113,14 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 		/*  LIBRARY'S MAIN FUNCTIONS  */
 
 
-												/**  @utility{strip_ini_cache}  **/
+												/** @utility{strip_ini_cache} **/
 /**
 
 	@brief			Parses and tokenizes a buffer containing an INI file, then
 					dispatches its content to a custom callback
-	@param			ini_buffer		The buffer containing the INI file to tokenize
-	@param			ini_length		The length of @p ini_buffer
+	@param			ini_source		The buffer containing the INI file to tokenize
+	@param			ini_length		The length of @p ini_source without counting the
+									NUL terminator (if any)
 	@param			format			The format of the INI file
 	@param			f_init			The function that will be invoked before the
 									first dispatch, or `NULL`
@@ -2130,10 +2130,21 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 	@return			Zero for success, otherwise an error code (see `enum`
 					#ConfiniInterruptNo)
 
-	The @p ini_buffer parameter must be a valid pointer to a `char` array of size
-	@p ini_length and cannot be `NULL`, otherwise the behavior is undefined.
+	The @p ini_source parameter must be a valid pointer to a buffer of size
+	@p ini_length + 1 and cannot be `NULL`. The @p ini_source string does not need
+	to be NUL-terminated (although for portability it should, since this might
+	become a requirement in the future), but _it does need one extra byte where to
+	append a NUL terminator_ -- in fact, as soon as this function is invoked,
+	`ini_source[ini_length]` will be immediately set to `\0`. In most cases, as when
+	using `strlen()` for computing @p ini_length, this is not a concern, since
+	`ini_source[ini_length]` will always be `\0` by the very definition of
+	`strlen()`, and will only get overwritten with the same value. However, if you
+	are passing a substring of a string, for example the fragment `foo=bar` of the
+	string `foo=barracuda`, you must expect the string to be immediately truncated
+	into `foo=bar\0acuda`. In other words, @p ini_source must point to a memory
+	location where at least `ini_length + 1` bytes are freely usable.
 
-	After invoking `strip_ini_cache()`, the buffer pointed by the @p ini_buffer
+	After invoking `strip_ini_cache()`, the buffer pointed by the @p ini_source
 	parameter must be considered as a corrupted buffer and should be freed or
 	overwritten.
 
@@ -2141,24 +2152,24 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 	The parsing algorithms used by **libconfini** are able to parse any type of file
 	encoded in 8-bit code units, as long as the characters that match the regular
-	expression `/[\s\[\]\.\\;#"']/` express the same code points they express in
-	ASCII, independently of platform-specific conventions (as in, for example, UTF-8
-	and ISO-8859-1).
+	expression `/[\s\[\]\.\\;#"']/` refer to the same code points they refer to in
+	ASCII (as they do, for example, in UTF-8 and ISO-8859-1), independently of
+	platform-specific conventions.
 
-	@note	In order to be null byte injection safe, the `NUL` characters possibly
-			present in the buffer will be stripped from it before the dispatching
-			begins.
+	@note	In order to be null-byte-injection-safe, the `NUL` characters possibly
+			present in the buffer, except the last one, will be stripped from it
+			before the dispatching begins.
 
 	For the two parameters @p f_init and @p f_foreach see function #load_ini_file().
 
-	Possible return values: `#CONFINI_SUCCESS`, `#CONFINI_IINTR`, `#CONFINI_FEINTR`,
-	`#CONFINI_EOOR`
+	Possible return values are: #CONFINI_SUCCESS, #CONFINI_IINTR, #CONFINI_FEINTR,
+	#CONFINI_EOOR.
 
 	@include topics/strip_ini_cache.c
 
 **/
 int strip_ini_cache (
-	register char * const ini_buffer,
+	register char * const ini_source,
 	const size_t ini_length,
 	const IniFormat format,
 	const IniStatsHandler f_init,
@@ -2166,13 +2177,12 @@ int strip_ini_cache (
 	void * const user_data
 ) {
 
-	ini_buffer[ini_length] = '\0';
-
 	const _LIBCONFINI_BOOL_ valid_delimiter = !_LIBCONFINI_IS_ESC_CHAR_(format.delimiter_symbol, format);
 	_LIBCONFINI_BOOL_ tmp_bool;
-	register size_t idx, tmp_fast_size_t;
-	uint8_t tmp_uint8;
-	size_t tmp_size_t_1, tmp_size_t_2, node_at;
+	register size_t idx, tmp_fast_size_t_1, tmp_fast_size_t_2;
+	size_t tmp_size_t_1, tmp_size_t_2;
+
+	ini_source[ini_length] = '\0';
 
 	/*
 
@@ -2181,14 +2191,15 @@ int strip_ini_cache (
 	*/
 
 	#define __ISNT_ESCAPED__ tmp_bool
-	#define __EOL_N__ tmp_uint8
+	#define __LSHIFT__ tmp_fast_size_t_1
+	#define __EOL_N__ tmp_fast_size_t_2
 	#define __N_MEMBERS__ tmp_size_t_1
-	#define __LSHIFT__ tmp_fast_size_t
+	#define __NODE_AT__ tmp_size_t_2
 
 	/*  UTF-8 BOM  */
-	__LSHIFT__	=	*((unsigned char *) ini_buffer) == 0xEF &&
-					*((unsigned char *) ini_buffer + 1) == 0xBB &&
-					*((unsigned char *) ini_buffer + 2) == 0xBF
+	__LSHIFT__	=	*((unsigned char *) ini_source) == 0xEF &&
+					*((unsigned char *) ini_source + 1) == 0xBB &&
+					*((unsigned char *) ini_source + 2) == 0xBF
 					? 3 : 0;
 
 
@@ -2197,7 +2208,7 @@ int strip_ini_cache (
 		__N_MEMBERS__ = 0,
 		__EOL_N__ = _LIBCONFINI_EOL_IDX_,
 		__ISNT_ESCAPED__ = _LIBCONFINI_TRUE_,
-		node_at = 0,
+		__NODE_AT__ = 0,
 		idx = __LSHIFT__;
 
 			idx < ini_length;
@@ -2206,36 +2217,36 @@ int strip_ini_cache (
 
 	) {
 
-		ini_buffer[idx - __LSHIFT__] = ini_buffer[idx];
+		ini_source[idx - __LSHIFT__] = ini_source[idx];
 
-		if (ini_buffer[idx] == _LIBCONFINI_SPACES_[__EOL_N__] || ini_buffer[idx] == _LIBCONFINI_SPACES_[__EOL_N__ ^= 1]) {
+		if (ini_source[idx] == _LIBCONFINI_SPACES_[__EOL_N__] || ini_source[idx] == _LIBCONFINI_SPACES_[__EOL_N__ ^= 1]) {
 
 			if (format.multiline_nodes == INI_NO_MULTILINE || __ISNT_ESCAPED__) {
 
-				ini_buffer[idx - __LSHIFT__] = '\0';
-				__N_MEMBERS__ += further_cuts(ini_buffer + qultrim_h(ini_buffer, node_at, format), format);
-				node_at = idx - __LSHIFT__ + 1;
+				ini_source[idx - __LSHIFT__] = '\0';
+				__N_MEMBERS__ += further_cuts(ini_source + qultrim_h(ini_source, __NODE_AT__, format), format);
+				__NODE_AT__ = idx - __LSHIFT__ + 1;
 
-			} else if (ini_buffer[idx + 1] == _LIBCONFINI_SPACES_[__EOL_N__ ^ 1]) {
+			} else if (ini_source[idx + 1] == _LIBCONFINI_SPACES_[__EOL_N__ ^ 1]) {
 
 				idx++;
-				ini_buffer[idx - __LSHIFT__] = ini_buffer[idx];
+				ini_source[idx - __LSHIFT__] = ini_source[idx];
 
 			}
 
 			__ISNT_ESCAPED__ = _LIBCONFINI_TRUE_;
 
-		} else if (ini_buffer[idx] == _LIBCONFINI_BACKSLASH_) {
+		} else if (ini_source[idx] == _LIBCONFINI_BACKSLASH_) {
 
 			__ISNT_ESCAPED__ = !__ISNT_ESCAPED__;
 
-		} else if (ini_buffer[idx]) {
+		} else if (ini_source[idx]) {
 
 			__ISNT_ESCAPED__ = _LIBCONFINI_TRUE_;
 
 		} else {
 
-			/*  Remove `NUL` characters in the buffer (if any)  */
+			/*  Remove `NUL` characters from the buffer (if any)  */
 			__LSHIFT__++;
 
 		}
@@ -2246,18 +2257,18 @@ int strip_ini_cache (
 
 	while (idx > real_length) {
 
-		ini_buffer[--idx] = '\0';
+		ini_source[--idx] = '\0';
 
 	}
 
-	__N_MEMBERS__ += further_cuts(ini_buffer + qultrim_h(ini_buffer, node_at, format), format);
+	__N_MEMBERS__ += further_cuts(ini_source + qultrim_h(ini_source, __NODE_AT__, format), format);
 
 	/*  Debug  */
 
 	/*
 
-	for (size_t tmp = 0; tmp < real_length + 1; tmp++) {
-		putchar(ini_buffer[tmp] == 0 ? '$' : ini_buffer[tmp]);
+	for (size_t tmp = 0; tmp < ini_length + 1; tmp++) {
+		putchar(ini_source[tmp] == 0 ? '$' : ini_source[tmp]);
 	}
 	putchar('\n');
 
@@ -2275,9 +2286,10 @@ int strip_ini_cache (
 
 	}
 
-	#undef __LSHIFT__
+	#undef __NODE_AT__
 	#undef __N_MEMBERS__
 	#undef __EOL_N__
+	#undef __LSHIFT__
 	#undef __ISNT_ESCAPED__
 
 	/*
@@ -2292,19 +2304,18 @@ int strip_ini_cache (
 
 	}
 
+	#define __ITER__ tmp_fast_size_t_1
+	#define __NODE_AT__ tmp_fast_size_t_2
 	#define __PARENT_IS_DISABLED__ tmp_bool
 	#define __REAL_PARENT_LEN__ tmp_size_t_1
 	#define __CURR_PARENT_LEN__ tmp_size_t_2
-	#define __ITER__ tmp_fast_size_t
 
 	__REAL_PARENT_LEN__ = 0, __CURR_PARENT_LEN__ = 0;
 
 	char
-		* curr_parent_str = ini_buffer + real_length,
+		* curr_parent_str = ini_source + real_length,
 		* subparent_str = curr_parent_str,
 		* real_parent_str = curr_parent_str;
-
-	size_t parse_at;
 
 	IniDispatch dsp = {
 		.format = format,
@@ -2313,17 +2324,17 @@ int strip_ini_cache (
 
 	__PARENT_IS_DISABLED__ = _LIBCONFINI_FALSE_;
 
-	for (node_at = 0, idx = 0; idx <= real_length; idx++) {
+	for (__NODE_AT__ = 0, idx = 0; idx <= real_length; idx++) {
 
-		if (ini_buffer[idx]) {
+		if (ini_source[idx]) {
 
 			continue;
 
 		}
 
-		if (!ini_buffer[node_at] || _LIBCONFINI_IS_IGN_MARKER_(ini_buffer[node_at], format)) {
+		if (!ini_source[__NODE_AT__] || _LIBCONFINI_IS_IGN_MARKER_(ini_source[__NODE_AT__], format)) {
 
-			node_at = idx + 1;
+			__NODE_AT__ = idx + 1;
 			continue;
 
 		}
@@ -2334,27 +2345,28 @@ int strip_ini_cache (
 
 		}
 
-		dsp.data = ini_buffer + node_at;
-		dsp.value = ini_buffer + idx;
-		dsp.d_len = idx - node_at;
-		dsp.v_len = 0;
+		dsp.data = ini_source + __NODE_AT__;
+		dsp.d_len = idx - __NODE_AT__;
+
+		/*  Set `dsp.value` to an empty string  */
+		dsp.value = ini_source + idx;
 
 		if (_LIBCONFINI_IS_DIS_MARKER_(*dsp.data, format) && (format.disabled_after_space || !is_some_space(dsp.data[1], _LIBCONFINI_NO_EOL_))) {
 
-			parse_at = dqultrim_s(ini_buffer, node_at, format);
-			dsp.type = get_type_as_active(ini_buffer + parse_at, idx - parse_at, format.disabled_can_be_implicit, format);
+			__ITER__ = dqultrim_s(dsp.data, 0, format);
+			dsp.type = get_type_as_active(dsp.data + __ITER__, dsp.d_len - __ITER__, format.disabled_can_be_implicit, format);
 
 			if (dsp.type) {
+
+				dsp.data += __ITER__;
+				dsp.d_len -= __ITER__;
 
 				/*
 
 				// Not strictly needed...
-				for (__ITER__ = parse_at; __ITER__ > node_at; cache[--__ITER__] = '\0');
+				for (; __ITER__ > 0; dsp.data[--__ITER__] = '\0');
 
 				*/
-
-				dsp.data = ini_buffer + parse_at;
-				dsp.d_len = idx - parse_at;
 
 			}
 
@@ -2442,13 +2454,15 @@ int strip_ini_cache (
 		dsp.append_to = curr_parent_str;
 		dsp.at_len = __CURR_PARENT_LEN__;
 
-		dsp.d_len		=	dsp.type == INI_COMMENT || dsp.type == INI_INLINE_COMMENT ?
-								uncomment(++dsp.data, idx - node_at - 1, format)
-							: format.multiline_nodes != INI_NO_MULTILINE ?
-								unescape_cr_lf(dsp.data, idx - node_at, dsp.type & 4, format)
-							:
-								idx - node_at;
+		if (dsp.type == INI_COMMENT || dsp.type == INI_INLINE_COMMENT) {
 
+			dsp.d_len = uncomment(++dsp.data, dsp.d_len - 1, format);
+
+		} else if (format.multiline_nodes != INI_NO_MULTILINE) {
+
+			dsp.d_len = unescape_cr_lf(dsp.data, dsp.d_len, dsp.type & 4, format);
+
+		}
 
 		switch (dsp.type) {
 
@@ -2474,10 +2488,10 @@ int strip_ini_cache (
 
 				}
 
-				dsp.d_len		=	format.section_paths == INI_ONE_LEVEL_ONLY ?
-										collapse_everything(dsp.data, format)
-									:
-										sanitize_section_path(dsp.data, format);
+				dsp.d_len	=	format.section_paths == INI_ONE_LEVEL_ONLY ?
+									collapse_everything(dsp.data, format)
+								:
+									sanitize_section_path(dsp.data, format);
 
 
 				if (format.section_paths == INI_ONE_LEVEL_ONLY || *dsp.data != _LIBCONFINI_SUBSECTION_) {
@@ -2490,7 +2504,7 @@ int strip_ini_cache (
 
 					curr_parent_str = dsp.data;
 					__CURR_PARENT_LEN__ = dsp.d_len;
-					subparent_str = ini_buffer + idx;
+					subparent_str = ini_source + idx;
 					dsp.append_to = subparent_str;
 					dsp.at_len = 0;
 
@@ -2505,7 +2519,7 @@ int strip_ini_cache (
 
 					curr_parent_str = ++dsp.data;
 					__CURR_PARENT_LEN__ = --dsp.d_len;
-					subparent_str = ini_buffer + idx;
+					subparent_str = ini_source + idx;
 					dsp.append_to = subparent_str;
 					dsp.at_len = 0;
 
@@ -2541,6 +2555,7 @@ int strip_ini_cache (
 
 					dsp.data[__ITER__] = '\0';
 					dsp.value = dsp.data + __ITER__ + 1;
+
 
 					switch ((format.preserve_empty_quotes << 1) | format.do_not_collapse_values) {
 
@@ -2578,7 +2593,7 @@ int strip_ini_cache (
 			case INI_COMMENT:
 			case INI_INLINE_COMMENT:
 
-				dsp.append_to = ini_buffer + idx;
+				dsp.append_to = ini_source + idx;
 				dsp.at_len = 0;
 				/*  No case break here (last case)  */
 
@@ -2591,21 +2606,22 @@ int strip_ini_cache (
 		}
 
 		dsp.dispatch_id++;
-		node_at = idx + 1;
+		__NODE_AT__ = idx + 1;
 
 	}
 
-	#undef __ITER__
 	#undef __CURR_PARENT_LEN__
 	#undef __REAL_PARENT_LEN__
 	#undef __PARENT_IS_DISABLED__
+	#undef __NODE_AT__
+	#undef __ITER__
 
 	return CONFINI_SUCCESS;
 
 }
 
 
-												/**  @utility{load_ini_file}  **/
+													/** @utility{load_ini_file} **/
 /**
 
 	@brief			Parses an INI file and dispatches its content using a `FILE`
@@ -2632,9 +2648,9 @@ int strip_ini_cache (
 
 	The parsing algorithms used by **libconfini** are able to parse any type of file
 	encoded in 8-bit code units, as long as the characters that match the regular
-	expression `/[\s\[\]\.\\;#"']/` express the same code points they express in
-	ASCII, independently of platform-specific conventions (as in, for example, UTF-8
-	and ISO-8859-1).
+	expression `/[\s\[\]\.\\;#"']/` refer to the same code points they refer to in
+	ASCII (as they do, for example, in UTF-8 and ISO-8859-1), independently of
+	platform-specific conventions.
 
 	@note	In order to be null-byte-injection safe, `NUL` characters, if present in
 			the file, will be removed from the dispatched strings.
@@ -2651,8 +2667,8 @@ int strip_ini_cache (
 	argument @p user_data previously passed). If @p f_foreach returns a non-zero
 	value the caller function will be interrupted.
 
-	Possible return values: `#CONFINI_SUCCESS`, `#CONFINI_IINTR`, `#CONFINI_FEINTR`,
-	`#CONFINI_ENOMEM`, `#CONFINI_EIO`, `#CONFINI_EOOR`
+	Possible return values are: #CONFINI_SUCCESS, #CONFINI_IINTR, #CONFINI_FEINTR,
+	#CONFINI_ENOMEM, #CONFINI_EIO, #CONFINI_EOOR.
 
 	@include topics/load_ini_file.c
 
@@ -2667,8 +2683,8 @@ int load_ini_file (
 
 	fseek(ini_file, 0, SEEK_END);
 
-	const size_t ini_length = ftell(ini_file);
-	char * const cache = (char *) malloc(ini_length + 1);
+	const size_t file_size = ftell(ini_file);
+	char * const cache = (char *) malloc(file_size + 1);
 
 	if (!cache) {
 
@@ -2678,14 +2694,14 @@ int load_ini_file (
 
 	rewind(ini_file);
 
-	if (fread(cache, 1, ini_length, ini_file) < ini_length) {
+	if (fread(cache, 1, file_size, ini_file) < file_size) {
 
 		free(cache);
 		return CONFINI_EIO;
 
 	}
 
-	const int return_value = strip_ini_cache(cache, ini_length, format, f_init, f_foreach, user_data);
+	const int return_value = strip_ini_cache(cache, file_size, format, f_init, f_foreach, user_data);
 
 	free(cache);
 	return return_value;
@@ -2693,7 +2709,7 @@ int load_ini_file (
 }
 
 
-												/**  @utility{load_ini_path}  **/
+													/** @utility{load_ini_path} **/
 /**
 
 	@brief			Parses an INI file and dispatches its content using a path as
@@ -2710,17 +2726,17 @@ int load_ini_file (
 
 	The parsing algorithms used by **libconfini** are able to parse any type of file
 	encoded in 8-bit code units, as long as the characters that match the regular
-	expression `/[\s\[\]\.\\;#"']/` express the same code points they express in
-	ASCII, independently of platform-specific conventions (see, for example, UTF-8
-	and ISO-8859-1).
+	expression `/[\s\[\]\.\\;#"']/` refer to the same code points they refer to in
+	ASCII (as they do, for example, in UTF-8 and ISO-8859-1), independently of
+	platform-specific conventions.
 
-	@note	In order to be null byte injection safe, `NUL` characters, if present in
+	@note	In order to be null-byte-injection safe, `NUL` characters, if present in
 			the file, will be removed from the dispatched strings.
 
 	For the two parameters @p f_init and @p f_foreach see function #load_ini_file().
 
-	Possible return values: `#CONFINI_SUCCESS`, `#CONFINI_IINTR`, `#CONFINI_FEINTR`,
-	`#CONFINI_ENOENT`, `#CONFINI_ENOMEM`, `#CONFINI_EIO`, `#CONFINI_EOOR`
+	Possible return values are: #CONFINI_SUCCESS, #CONFINI_IINTR, #CONFINI_FEINTR,
+	#CONFINI_ENOENT, #CONFINI_ENOMEM, #CONFINI_EIO, #CONFINI_EOOR.
 
 	@include topics/load_ini_path.c
 
@@ -2743,8 +2759,8 @@ int load_ini_path (
 
 	fseek(ini_file, 0, SEEK_END);
 
-	const size_t ini_length = ftell(ini_file);
-	char * const cache = (char *) malloc(ini_length + 1);
+	const size_t file_size = ftell(ini_file);
+	char * const cache = (char *) malloc(file_size + 1);
 
 	if (!cache) {
 
@@ -2754,14 +2770,14 @@ int load_ini_path (
 
 	rewind(ini_file);
 
-	if (fread(cache, 1, ini_length, ini_file) < ini_length) {
+	if (fread(cache, 1, file_size, ini_file) < file_size) {
 
 		free(cache);
 		return CONFINI_EIO;
 
 	}
 
-	const int return_value = strip_ini_cache(cache, ini_length, format, f_init, f_foreach, user_data);
+	const int return_value = strip_ini_cache(cache, file_size, format, f_init, f_foreach, user_data);
 
 	free(cache);
 	return return_value;
@@ -2773,7 +2789,7 @@ int load_ini_path (
 		/*  OTHER UTILITIES (NOT REQUIRED BY LIBCONFINI'S MAIN FUNCTIONS)  */
 
 
-											/**  @utility{ini_string_match_ss}  **/
+											/** @utility{ini_string_match_ss} **/
 /**
 
 	@brief			Compares two simple strings and checks if they match
@@ -2823,7 +2839,7 @@ _Bool ini_string_match_ss (const char * const simple_string_a, const char * cons
 }
 
 
-											/**  @utility{ini_string_match_si}  **/
+											/** @utility{ini_string_match_si} **/
 /**
 
 	@brief			Compares a simple string and an INI string and and checks if
@@ -2991,7 +3007,7 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 }
 
 
-											/**  @utility{ini_string_match_ii}  **/
+											/** @utility{ini_string_match_ii} **/
 /**
 
 	@brief			Compares two INI strings and checks if they match
@@ -3201,7 +3217,7 @@ _Bool ini_string_match_ii (const char * const ini_string_a, const char * const i
 }
 
 
-												/**  @utility{ini_array_match}  **/
+												/** @utility{ini_array_match} **/
 /**
 
 	@brief			Compares two INI arrays and checks if they match
@@ -3432,7 +3448,7 @@ _Bool ini_array_match (
 }
 
 
-													/**  @utility{ini_unquote}  **/
+													/** @utility{ini_unquote} **/
 /**
 
 	@brief			Unescapes `\'`, `\"`, and `\\` and removes all unescaped quotes
@@ -3555,7 +3571,7 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 }
 
 
-												/**  @utility{ini_string_parse}  **/
+												/** @utility{ini_string_parse} **/
 /**
 
 	@brief			Unescapes `\'`, `\"`, and `\\` and removes all unescaped quotes
@@ -3761,7 +3777,7 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 }
 
 
-											/**  @utility{ini_array_get_length}  **/
+											/** @utility{ini_array_get_length} **/
 /**
 
 	@brief			Gets the length of a stringified INI array in number of members
@@ -3861,7 +3877,7 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 }
 
 
-											/**  @utility{ini_array_foreach}  **/
+												/** @utility{ini_array_foreach} **/
 /**
 
 	@brief			Calls a custom function for each member of a stringified INI
@@ -3996,7 +4012,7 @@ int ini_array_foreach (
 }
 
 
-												/**  @utility{ini_array_shift}  **/
+												/** @utility{ini_array_shift} **/
 /**
 
 	@brief			Shifts the location pointed by @p ini_strptr to the next member
@@ -4058,7 +4074,7 @@ size_t ini_array_shift (const char ** const ini_strptr, const char delimiter, co
 }
 
 
-											/**  @utility{ini_array_collapse}  **/
+												/** @utility{ini_array_collapse} **/
 /**
 
 	@brief			Compresses the distribution of the data of a stringified INI
@@ -4282,7 +4298,7 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 }
 
 
-												/**  @utility{ini_array_break}  **/
+												/** @utility{ini_array_break} **/
 /**
 
 	@brief			Replaces the first delimiter found (together with the spaces
@@ -4356,7 +4372,7 @@ char * ini_array_break (char * const ini_string, const char delimiter, const Ini
 }
 
 
-											/**  @utility{ini_array_release}  **/
+												/** @utility{ini_array_release} **/
 /**
 
 	@brief			Replaces the first delimiter found (together with the spaces
@@ -4415,7 +4431,7 @@ char * ini_array_release (char ** const ini_strptr, const char delimiter, const 
 }
 
 
-												/**  @utility{ini_array_split}  **/
+												/** @utility{ini_array_split} **/
 /**
 
 	@brief			Splits a stringified INI array into NUL-separated members and
@@ -4553,7 +4569,7 @@ int ini_array_split (
 }
 
 
-								/**  @utility{ini_global_set_lowercase_mode}  **/
+									/** @utility{ini_global_set_lowercase_mode} **/
 /**
 
 	@brief			Sets the value of the global variable
@@ -4577,7 +4593,7 @@ void ini_global_set_lowercase_mode (_Bool lowercase) {
 }
 
 
-								/**  @utility{ini_global_set_implicit_value}  **/
+									/** @utility{ini_global_set_implicit_value} **/
 /**
 
 	@brief			Sets the value to be to be assigned to implicit keys
@@ -4603,7 +4619,7 @@ void ini_global_set_implicit_value (char * const implicit_value, const size_t im
 }
 
 
-														/**  @utility{ini_fton}  **/
+														/** @utility{ini_fton} **/
 /**
 
 	@brief			Calculates the #IniFormatNum of an #IniFormat
@@ -4622,7 +4638,7 @@ IniFormatNum ini_fton (const IniFormat source) {
 }
 
 
-														/**  @utility{ini_ntof}  **/
+														/** @utility{ini_ntof} **/
 /**
 
 	@brief			Constructs a new #IniFormat according to an #IniFormatNum
@@ -4660,7 +4676,7 @@ IniFormat ini_ntof (IniFormatNum format_num) {
 }
 
 
-													/**  @utility{ini_get_bool}  **/
+													/** @utility{ini_get_bool} **/
 /**
 
 	@brief			Checks whether a string matches one of the booleans listed in
@@ -4745,7 +4761,7 @@ size_t INI_GLOBAL_IMPLICIT_V_LEN = 0;
 
 
 
-/**  @endfnlist  **/
+/** @endfnlist **/
 
 /*  EOF  */
 

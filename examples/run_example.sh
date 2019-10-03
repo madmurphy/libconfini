@@ -15,7 +15,7 @@ fi
 
 # constants
 _TMP_FOLDER_="$(mktemp -d)"
-_THIS_PATH_=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
+_THIS_PATH_="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 _THIS_PATH_LENGTH_=$(expr "${#_THIS_PATH_}" + 1)
 _COMPILE_TO_="${_TMP_FOLDER_}/libconfini_example"
 _SRCS_=("${_THIS_PATH_}/miscellanea"/*.c

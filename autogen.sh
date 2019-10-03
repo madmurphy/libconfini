@@ -9,7 +9,7 @@ CONFIGURE_ARGS=()
 for __AG_ARG__; do
 	case "${__AG_ARG__}" in
 		-h|--help)
-			echo "Usage: ${0} [OPTION]"
+			echo "Usage: ${0##*/} [OPTION]"
 			echo
 			echo 'Options:'	
 			echo '    -h, --help          Show this help message'
@@ -164,11 +164,11 @@ echo
 if test "${NOCONFIGURE}" -eq 0; then
 	echo 'I am going to prepare the build system and then run the `configure` script. If'
 	echo 'you wish differently, please specify the `--noconfigure` argument on the'
-	echo "\`${0}\` command line."
+	echo "\`${0##*/}\` command line."
 	echo
 	if test -z "$*"; then
 		echo '**Warning**: I am going to run `configure` with no arguments. If you wish to'
-		echo "pass any, please specify them on the \`${0}\` command line."
+		echo "pass any, please specify them on the \`${0##*/}\` command line."
 		echo
 	fi
 else

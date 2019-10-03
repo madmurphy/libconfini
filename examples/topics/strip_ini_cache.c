@@ -62,7 +62,7 @@ int main () {
 
   printf("\n--------------------[disposed copy]--------------------\n");
 
-  for (size_t idx = 0; idx < ini_length + 1; idx++) {
+  for (size_t idx = 0; idx <= ini_length; idx++) {
 
     putchar(ini_cache[idx] == 0 ? '.' : ini_cache[idx]);
 
@@ -71,8 +71,8 @@ int main () {
   printf("\n-------------------------------------------------------\n\n");
 
   printf(
-    "The dots in the example above represent NUL characters. Remember that\n"
-    "`strip_ini_cache()` does not free the buffer passed, you will "
+    "The dots in the example above represent NUL characters. Remember "
+    "that\n`strip_ini_cache()` does not free the buffer passed, you will "
     "have to do that\nby yourself!\n"
   );
 

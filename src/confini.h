@@ -170,7 +170,7 @@ typedef int (* IniSubstrHandler) (
 
 
 extern int strip_ini_cache (
-	register char * const ini_buffer,
+	register char * const ini_source,
 	const size_t ini_length,
 	const IniFormat format,
 	const IniStatsHandler f_init,
@@ -447,8 +447,8 @@ enum IniMultiline {
     INI_BUT_COMMENTS = 1,               /**< Only section paths and keys --
                                              disabled or not -- are allowed to
                                              be multi-line **/
-    INI_BUT_DISABLED_AND_COMMENTS = 2,  /**< Only *active* section paths and
-                                             *active* keys are allowed to be
+    INI_BUT_DISABLED_AND_COMMENTS = 2,  /**< Only active section paths and
+                                             active keys are allowed to be
                                              multi-line **/
     INI_NO_MULTILINE = 3                /**< Multi-line escape sequences are
                                              disabled **/
@@ -462,8 +462,8 @@ static const IniFormat INI_DEFAULT_FORMAT = _LIBCONFINI_DEFAULT_FORMAT_;
 
 
 /**
-    @brief  A model format for Unix-like .conf files (space characters are
-            delimiters between keys and values)
+    @brief  A model format for Unix-like .conf files (where space characters
+            are delimiters between keys and values)
 **/
 /*  All properties are set to `0` here.  */
 static const IniFormat INI_UNIXLIKE_FORMAT = _LIBCONFINI_UNIXLIKE_FORMAT_;

@@ -2,6 +2,27 @@ Change Log {#changelog}
 =======================
 
 
+## 1.10.2 -- 2019-10-03
+
+Changes:
+
+* Code review (`strip_ini_cache()`)
+* Subdirectory `tests` has been created
+* New examples have been created (`examples/utilities/load_ini_buffer.h` and
+  `examples/utilities/make_strarray.h`)
+* The `configure` script has been improved with a built-in support for complete
+  package renaming (using `--program-prefix=PREFIX`, `--program-suffix=SUFFX`
+  and `--program-transform-name='s/[OLDTEXT]/[NEWTEXT]/[g]'`) and several new
+  options (`--enable-version-info` and `--disable-version-info`, for
+  enabling/disabling **libtool** versioning system; `--enable-extended-config`,
+  for safely exporting package renamings at `configure` time, or any changes in
+  `configure.ac`, directly to `src/winres.rc` and `package.json` -- see
+  `INSTALL` and `./configure --help` for more information)
+* The package tree has been re-organized -- all the files needed only at build
+  time have been moved into the `autostuff` subdirectory
+* Documentation
+
+
 ## 1.10.1 -- 2019-09-19
 
 Changes:
@@ -19,7 +40,7 @@ Changes:
   `load_ini_file()` has now been moved to `strip_ini_cache()`
 * Code review (`load_ini_file()` and `load_ini_path()`)
 * Documentation
-* Created new examples (see `examples/topics/strip_ini_cache.c`)
+* New examples have been created (`examples/topics/strip_ini_cache.c`)
 
 
 ## 1.9.2 -- 2019-04-25
@@ -27,7 +48,7 @@ Changes:
 Changes:
 
 * Documentation
-* Created new examples (see `examples/miscellanea/colon_as_delimiter.c`)
+* New examples have been created (`examples/miscellanea/colon_as_delimiter.c`)
 
 
 ## 1.9.1 -- 2019-03-28
@@ -48,14 +69,14 @@ Changes:
 
 * Improved performance of `load_ini_file()` (ambiguous disabled entries that
   have been already tested with a negative result before invoking `f_init()`
-  will be internally marked as comments for not being tested twice -- an example
-  of such ambiguous disabled entries is `#[foo #bar]`)
+  will be internally marked as comments for not being tested twice -- an
+  example of such ambiguous disabled entries is `#[foo #bar]`)
 * Added `--multiversion` option to the `autogen.sh` script for future major
   version changes (see `INSTALL`)
 * Added `--with-pkgconfigdir=DIR` option to the `configure` script
 * Private function `dqultrim_s()` has been created
-* Private macros `_LIBCONFINI_IS_COM_MARKER_()` and `_LIBCONFINI_SC_INT_MARKER_`
-  have been created
+* Private macros `_LIBCONFINI_IS_COM_MARKER_()` and
+  `_LIBCONFINI_SC_INT_MARKER_` have been created
 * Private macro † `_LIBCONFINI_INLINE_MARKER_` has been renamed to
   `_LIBCONFINI_IC_INT_MARKER_`
 * Code review (`load_ini_file()`, private functions `uncomment()` and
@@ -104,8 +125,8 @@ Changes:
 Changes:
 
 * Code review (private function `further_cuts()`)
-* Optimization flag `-O2` seems to be working better than `-O3` on Unix systems:
-  conditionally use `-O2` or `-O3` depending on the host
+* Optimization flag `-O2` seems to be working better than `-O3` on Unix
+  systems: conditionally use `-O2` or `-O3` depending on the host
 * Use **libtool**'s `-avoid-version` only when compiling under native Microsoft
   Windows environment
 * Added `--clean` option to the `autogen.sh` script
@@ -140,8 +161,8 @@ Changes:
 * Introduced **libtool** versioning system for the compiled binary (versioning
   begins with current version 1.8.0, represented as `0:0:0`); note that
   **libtool** versioning system does not affect the versioning of the project
-  currently in use, but constitutes only a means for the linker to keep track of
-  incompatibilities between different releases of the library
+  currently in use, but constitutes only a means for the linker to keep track
+  of incompatibilities between different releases of the library
 * Improved support for building **libconfini** under Microsoft Windows (created
   Windows resource file `src/winres.rc`; conditionally added option
   `-avoid-version` to `LDFLAGS` in order to skip foreign **libtool** versioning
@@ -150,7 +171,7 @@ Changes:
 * Code review (`ini_fton()` and `ini_ntof()`)
 * Updated **Autotools** macros
 * Documentation
-* Created new examples (see `examples/topics/ini_array_foreach.c`,
+* New examples have been created (`examples/topics/ini_array_foreach.c`,
   `examples/topics/ini_array_split.c` and `examples/miscellanea/stats_only.c`)
 
 
@@ -231,8 +252,8 @@ Changes:
 
 Changes:
 
-* Functions `ini_array_shift()`, `ini_array_break()`, `ini_array_release()` have
-  been created
+* Functions `ini_array_shift()`, `ini_array_break()`, `ini_array_release()`
+  have been created
 * Made sure that escapable characters cannot be used as delimiters in formats
   that support escape sequences
 * Boolean pair `OFF`/`ON` has been added to the list of supported INI booleans
@@ -244,8 +265,8 @@ Changes:
   `ini_string_match_ii()`, `ini_string_parse()`, `ini_array_get_length()`,
   `ini_array_foreach()`, `ini_array_split()`, private functions `uncomment()`
   and `further_cuts()`)
-* Private functions `get_metachar_pos()` and `collapse_empty_quotes()` have been
-  created
+* Private functions `get_metachar_pos()` and `collapse_empty_quotes()` have
+  been created
 * Private functions † `sanitize_key_name()` and † `get_delimiter_pos()` have
   been renamed to `collapse_everything()` and `getn_metachar_pos()` (the latter
   now requires one more argument)
@@ -263,8 +284,9 @@ Changes:
   formats that support quotes
 * Private function † `ultrim_h()` has been renamed to `qultrim_h()` and
   rewritten
-* Code review (`ini_array_foreach()`, `ini_array_split()`, `ini_string_parse()`,
-  private functions † `get_delimiter_pos()` and `get_type_as_active()`)
+* Code review (`ini_array_foreach()`, `ini_array_split()`,
+  `ini_string_parse()`, private functions † `get_delimiter_pos()` and
+  `get_type_as_active()`)
 
 
 ## 1.5.1 (unstable) -- 2018-04-30
@@ -319,8 +341,8 @@ Changes:
   `collapse_spaces()`)
 * Made sure that sections appended to root as pseudo-subsections will be
   dispatched always without the leading dot
-* Made sure that key and section names will always be cleaned of empty quotes in
-  formats that support quotes (relevant for space collapsing)
+* Made sure that key and section names will always be cleaned of empty quotes
+  in formats that support quotes (relevant for space collapsing)
 * Removed unused internationalization support from **Autotools**
 * Documentation
 * Examples

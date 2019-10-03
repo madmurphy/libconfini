@@ -4,10 +4,10 @@ Library Functions Manual {#libconfini}
 
 ## DESCRIPTION
 
-**libconfini** is a simple INI parsing library with the ability to read disabled
-entries (i.e. valid entries nested in comments). **libconfini** does not store
-the data read from an INI file, but rather dispatches it, formatted, to a custom
-listener.
+**libconfini** is a simple INI parsing library with the ability to read
+disabled entries (i.e. valid entries nested in comments). **libconfini** does
+not store the data read from an INI file, but rather dispatches it, formatted,
+to a custom listener.
 
 The code is written in C (C99) and does not depend on any particular library,
 except for the C standard headers **stdio.h**, **stdlib.h** and **stdint.h**.
@@ -20,7 +20,7 @@ self-documented sample usages of **libconfini** under
 ## WHAT IS AN INI FILE?
 
 INI files were introduced with the early versions of Microsoft Windows, where
-the .ini file name extension stood for INItialization. An INI file may be
+the .ini file name extension stood for INItialization. An INI file can be
 considered as a string representation of a tree object, with new lines used as
 delimiters between nodes. A typical INI file is a plain text file looking like
 the following example:
@@ -51,9 +51,9 @@ During the years several interpretations of INI files appeared. In some
 implementations the colon character (`:`) has been adopted as delimiter between
 keys and values instead of the classic equals sign (a typical example under
 GNU/Linux is `/etc/nsswitch.conf`); in other implementations, under the
-influence of Unix standard configuration files, a sequence of one or more spaces
-(`/[ \t\v\f]+/` or `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`) has been used instead
-(see for example `/etc/host.conf`).
+influence of Unix standard configuration files, a sequence of one or more
+spaces (`/[ \t\v\f]+/` or `/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`) has been used
+instead (see for example `/etc/host.conf`).
 
 Equals sign used as delimiter between keys and values:
 
@@ -106,10 +106,10 @@ never be) supported by **libconfini**.
 
 ### KEYS
 
-A **key element** is identified as a string placed after a new line and followed
-by a delimiter -- typically the equals sign (`=`) or the colon sign (`:`) or a
-space sequence (`/\s+/`) -- which is followed by a value, which is followed by a
-new line or an inline comment. 
+A **key-value element** is identified as a string placed after a new line and
+followed by a key-value delimiter -- typically the equals sign (`=`) or the
+colon sign (`:`) or a space sequence (`/\s+/`) -- which is followed by a value,
+which is followed by a new line or an inline comment. 
 
 Both the **key part** and the **value part** may be enclosed within quotes (`'`
 or `"`):
@@ -121,15 +121,15 @@ foo = 'bar'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **key part** can contain any character, except the delimiter (which may be
-enclosed within quotes for not beeing considered as such). In multi-line formats
-internal new line sequences must be escaped (`/\\(?:\n\r?|\r\n?)/`).
+enclosed within quotes for not beeing considered as such). In multi-line
+formats internal new line sequences must be escaped (`/\\(?:\n\r?|\r\n?)/`).
 
 If the **key part** part is missing **libconfini** considers the element of
 _unknown type_ (example: `= foo`). If the **value part** is missing the key
-element is considered empty (example: `foo =`). If the delimiter is missing (and
-therefore the value part as well), according to some formats the key element is
-is considered to be an _implicit key_ -- typically representing the boolean
-`true` (example: `foo`). For instance, in the following example from
+element is considered empty (example: `foo =`). If the delimiter is missing
+(and therefore the value part as well), according to some formats the key
+element is is considered to be an _implicit key_ -- typically representing the
+boolean `true` (example: `foo`). For instance, in the following example from
 `/etc/pacman.conf`, `IgnorePkg` is an empty key, while `Color` is an implicit
 key representing a `true` boolean -- i.e. `Color = YES`:
 
@@ -147,8 +147,8 @@ supported by **libconfini** are: `FALSE`/`TRUE`, `NO`/`YES`, `OFF`/`ON` -- case
 insensitive), a string, a number, or an array (typically with commas or spaces
 as delimiters between members -- examples: `paths = /etc, /usr,
 "/home/john/Personal Data"` or `paths = /etc /usr "/home/john/Personal Data"`).
-In multi-line formats internal
-new line sequences must be escaped (`/\\(?:\n\r?|\r\n?)/`).
+In multi-line formats internal new line sequences must be escaped
+(`/\\(?:\n\r?|\r\n?)/`).
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 [my_section]
@@ -220,8 +220,8 @@ foo = bar
 
 ### COMMENTS
 
-Comments are string segments enclosed within the sequence `/(?:^|\s)[;#]/` and a
-new line sequence, as in the following example:
+Comments are string segments enclosed within the sequence `/(?:^|\s)[;#]/` and
+a new line sequence, as in the following example:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 # this is a comment
@@ -250,7 +250,7 @@ play2 = Twelfth Night # If music be the food of love, play on;      \
                       #     Orsino, scene I
 
 # This is also a masterpiece!
-comedy3 = The Merchant of Venice
+play3 = The Merchant of Venice
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -272,15 +272,15 @@ According to some formats disabled entries can be multi-line, using
 
 ### ESCAPE SEQUENCES
 
-In order to maximize the flexibility of the data, only four escape sequences are
-supported by **libconfini**: `\'`, `\"`, `\\` and the multi-line escape sequence
-(`/\\(?:\n\r?|\r\n?)/`).
+In order to maximize the flexibility of the data, only four escape sequences
+are supported by **libconfini**: `\'`, `\"`, `\\` and the multi-line escape
+sequence (`/\\(?:\n\r?|\r\n?)/`).
 
 The first three escape sequences are left untouched by all functions except
 `ini_string_parse()` and `ini_unquote()` (see below). Nevertheless, the
-characters `'`, `"` and `\` can determine different behaviors during the parsing
-depending on whether they are escaped or unescaped. For instance, the string
-`johnsmith !"` in the following example will not be parsed as a comment:
+characters `'`, `"` and `\` can determine different behaviors during the
+parsing depending on whether they are escaped or unescaped. For instance, the
+string `johnsmith !"` in the following example will not be parsed as a comment:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 [users.jsmith]
@@ -301,7 +301,7 @@ value
 ~~~~~~~~~~~
 
 
-## READ AN INI FILE
+## READING AN INI FILE
 
 The syntax of **libconfini**'s parsing functions is:
 
@@ -332,8 +332,8 @@ int load_ini_path (
 where
 
 * `ini_file` in `load_ini_file()` is the `FILE` handle pointing to the INI file
-* `path` in `load_ini_path()` is the path where the INI file is located (pointer
-  to a char array, a.k.a. a "C string")
+* `path` in `load_ini_path()` is the path where the INI file is located
+  (pointer to a char array, a.k.a. a "C string")
 * `format` is a bitfield that defines the syntax of the INI file (see the
   `IniFormat` `struct`)
 * `f_init` is the function that will be invoked _before_ any dispatching begins
@@ -457,23 +457,117 @@ int main () {
 
 ### HOW IT WORKS
 
-The function `load_ini_path()` is a clone of the `load_ini_file()` function
-that requires a path instead of a `FILE` handle.
+The function `load_ini_path()` is a clone of `load_ini_file()` that requires a
+path instead of a `FILE` handle.
 
 The function `load_ini_file()` dynamically allocates at once the whole INI file
-into the heap, and the two structures `IniStatistics` and `IniDispatch` into the
-stack. All members of the INI file are then dispatched to the custom listener
-`f_foreach()`. Finally the allocated memory gets automatically freed.
+into the heap, and the two structures `IniStatistics` and `IniDispatch` into
+the stack. All members of the INI file are then dispatched to the custom
+listener `f_foreach()`. Finally the allocated memory gets automatically freed.
 
 Because of this mechanism _it is very important that all the dispatched data be
 **immediately** copied by the user (when needed), and no pointers to the passed
 data be saved_: after the end of the functions `load_ini_file()` /
-`load_ini_path()` all the allocated data will be destroyed indeed (and each
-dispatch might already overwrite data from previous dispatches).
+`load_ini_path()` all the allocated data will be destroyed indeed, and each
+dispatch might furthermore overwrite data from previous dispatches.
 
 Within a dispatching cycle, the structure containing each dispatch
 (`IniDispatch * dispatch`) is always the same `struct` that gets constantly
 updated with new information.
+
+
+### PARSING A BUFFER INSTEAD OF A FILE
+
+Starting from version 1.10.0, it is possible to parse a disposable buffer
+containing an INI file instead of a physical file (i.e., to parse a `char`
+array). The function that allows to do so is named `strip_ini_cache()`. This
+function presents some important differences when compared to `load_ini_file()`
+and `load_ini_path()`:
+
+1. As the name suggests, the buffer passed is not left untouched, but gets
+   tokenized and rearranged instead -- if you want to keep the original buffer
+   you must pass a copy of it to `strip_ini_cache()` -- you can use `strndup()`
+   for this, or use the example below
+2. No memory is freed after the dispatching cycle is over: getting rid of the
+   disposable buffer is something that must be done manually
+3. The strings dispatched are all tokens from the buffer passed as argument (no
+   new memory is ever allocated), but the existence of each token is granted
+   only for a short time, that is _until the dispatch of the next node_ (in
+   fact the latter may overwrite previous information) -- therefore, as with
+   `load_ini_file()` and `load_ini_path()`, every needed information must be
+   copied immediately with each dispatch
+4. After the dispatching cycle is over, the buffer passed as argument must be
+   regarded as _unreliable information_ (portions of it might have been
+   repeatedly overwritten and corrupted by subsequent dispatches)
+
+In short, `strip_ini_cache()` works exactly like `load_ini_file()` and
+`load_ini_path()`, but with the difference that the former destroys the input
+while it dispatches it. And of course the input is not anymore a file, but a
+disposable buffer instead. As a matter of fact, `strip_ini_cache()` is the main
+parsing function both `load_ini_file()` and `load_ini_path()` rely on in order
+to dispatch the content of an INI file. For a sample usage, please see
+`examples/topics/strip_ini_cache.c`.
+
+If you want to automatize the process of making a copy of a read-only buffer,
+strip and parse the copy, then free the allocated memory, you can use the
+following function:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+/*  examples/utilities/load_ini_buffer.h  */
+
+#include <stdio.h>
+#include <string.h>
+#include <confini.h>
+
+int load_ini_buffer (
+  const char * const ini_buffer,
+  const size_t ini_length,
+  const IniFormat format,
+  const IniStatsHandler f_init,
+  const IniDispHandler f_foreach,
+  void * const user_data
+) {
+
+  char * const ini_cache = strndup(ini_buffer, ini_length);
+
+  if (!ini_cache) {
+
+    return CONFINI_ENOMEM;
+
+  }
+
+  const int retval = strip_ini_cache(
+    ini_cache,
+    ini_length,
+    format,
+    f_init,
+    f_foreach,
+    user_data
+  );
+
+  free(ini_cache);
+
+  return retval;
+
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The function above can be then invoked directly on a `const` buffer:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+load_ini_buffer(
+  my_const_buffer,
+  strlen(my_const_buffer),
+  my_format,
+  my_stats_handler,
+  my_callback,
+  my_other_data
+);
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Since in most cases an INI buffer _is_ a disposable buffer (unless one wants to
+parse the very same buffer more than once), **libconfini**'s interface does not
+include the function in the example above.
 
 
 ## THE `IniFormat` DATA TYPE
@@ -481,8 +575,8 @@ updated with new information.
 For a correct use of this library it is fundamental to understand the
 `IniFormat` data type. **libconfini** has been born as a general INI parser,
 with the main purpose of _being able to understand INI files written by other
-programs_ (see **Rationale**), therefore some flexibility was required.
-When an INI file is parsed it is parsed according to a particular format. The
+programs_ (see **Rationale**), therefore some flexibility was required. When an
+INI file is parsed it is parsed according to a particular format. The
 `IniFormat` data type is a univocal description of such format. It is
 implemented as a 24-bit bitfield. Its small size (3 bytes) allows it to be
 passed by value to the functions that require it.
@@ -522,15 +616,15 @@ my_format.disabled_after_space = NO;
 my_format.disabled_can_be_implicit = NO;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Since version 1.7.0 a format named `#INI_UNIXLIKE_FORMAT` is available as well.
+Since version 1.7.0 a format named `#INI_UNIXLIKE_FORMAT` is available.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 IniFormat my_format = INI_UNIXLIKE_FORMAT;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This format is a clone of `#INI_DEFAULT_FORMAT` with the only exception of the
-`IniFormat::delimiter_symbol` field, whose value is set to `#INI_ANY_SPACE`
-instead of `#INI_EQUALS`.
+This format is a clone of `#INI_DEFAULT_FORMAT` with the only exception of
+`IniFormat::delimiter_symbol`, whose value is set to `#INI_ANY_SPACE` instead
+of `#INI_EQUALS`.
 
 The semantics of the `IniFormat` bitfield has been designed in order to ensure
 that when all its fields are set to zero it equals `#INI_UNIXLIKE_FORMAT`.
@@ -567,7 +661,7 @@ typical Windows INI files. Probably we would define our format as follows:
 IniFormat my_format = {
   .delimiter_symbol = INI_EQUALS,
   .case_sensitive = NO,
-  .semicolon_marker = INI_IGNORE,
+  .semicolon_marker = INI_ONLY_COMMENT,
   .hash_marker = INI_IS_NOT_A_MARKER,
   .section_paths = INI_ABSOLUTE_ONLY,
   .multiline_nodes = INI_NO_MULTILINE,
@@ -583,19 +677,19 @@ IniFormat my_format = {
 
 IniFormatNum my_format_num = ini_fton(my_format);
 
-printf("Format No. %u\n", my_format_num); // "Format No. 56893"
+printf("Format No. %u\n", my_format_num); // "Format No. 56637"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The function `ini_fton()` tells us that this format is univocally the format
-No. 56893. The function `ini_ntof()` gives us then a shortcut to construct the
+No. 56637. The function `ini_ntof()` gives us then a shortcut to construct the
 very same format using its format number. Hence, the code above corresponds to:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-IniFormat my_format = ini_ntof(56893);
+IniFormat my_format = ini_ntof(56637);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-_Please be aware that the same INI format might have different format numbers in
-different versions of this library._
+_Please be aware that the same INI format might have different format numbers
+in different versions of this library._
 
 
 ## THE `IniStatistics` AND `IniDispatch` STRUCTURES
@@ -613,9 +707,9 @@ structure, while the information passed to `f_foreach()` is passed through an
 
 ## RENDERING
 
-The output strings dispatched by **libconfini** will follow some formatting
-rules depending on their role within the INI file. First, multi-line escape
-sequences will be unescaped, then
+The output strings dispatched by **libconfini** follow some formatting rules
+depending on their role within the INI file. First, multi-line escape sequences
+will be unescaped, then
 
 * **Key names** will be rendered according to ECMAScript
   `key_name.replace(/^[\n\r]\s*|\s+/g, " ")` -- within single or double quotes,
@@ -626,11 +720,11 @@ sequences will be unescaped, then
   " ")` -- within single or double quotes, if active, the text will be rendered
   verbatim -- otherwise, will be rendered according to the same algorithm used
   for key names.
-* **Values**, if `format.do_not_collapse_values` is active, will only be cleaned
-  of spaces at the beginning and at the end; otherwise will be rendered
+* **Values**, if `format.do_not_collapse_values` is active, will only be
+  cleaned of spaces at the beginning and at the end; otherwise will be rendered
   according to the same algorithm used for key names (with the difference that,
-  if `format.preserve_empty_quotes` is set to `true`, empty quotes surrounded by
-  spaces will be preserved).
+  if `format.preserve_empty_quotes` is set to `true`, empty quotes surrounded
+  by spaces will be preserved).
 * **Comments**, in multi-line formats, will be rendered according to ECMAScript
   `comment_string.replace(/(^|\n\r?|\r\n?)[ \t\v\f]*[#;]+/g, "$1")`; elsewhere,
   according to ECMAScript `comment_string.replace(/^[ \t\v\f]*[#;]+/, "")`.
@@ -646,19 +740,19 @@ before being copied or analyzed they can be edited, **with some precautions**_:
    share this buffer. In this case, if you edit its content, you can no more
    rely on the `IniDispatch::append_to` properties of this node's children (you
    will not make any damage, the loop will continue just fine: so if you think
-   you are going to never use the property `IniDispatch::append_to` just do it);
-   alternatively, use `strdup()`. If, instead, `IniDispatch::data` contains a
-   key name or a comment, it is granted that no other dispatch will share this
-   buffer, so feel free to edit it before it gets lost.
+   you are going to never use the property `IniDispatch::append_to` just do
+   it); alternatively, use `strndup()`. If, instead, `IniDispatch::data`
+   contains a key name or a comment, it is granted that no other dispatch will
+   share this buffer, so feel free to edit it before it gets lost.
 3. Regarding `IniDispatch::value`, if it does not represent an implicit value
    (see below), this buffer is never shared between dispatches, so feel free to
    edit it.
 4. Regarding `IniDispatch::append_to`, this buffer is likely to be shared with
-   other dispatches. Again, you would not destroy the world nor generate errors,
-   but you would make the next `IniDispatch::append_to`s useless. For this
-   reason **the buffer pointed by `IniDispatch::append_to` is passed as
+   other dispatches. Again, you would not destroy the world nor generate
+   errors, but you would make the next `IniDispatch::append_to`s useless. For
+   this reason **the buffer pointed by `IniDispatch::append_to` is passed as
    constant**. To unquote the path parts listed in this field please use
-   `strdup()`.
+   `strndup()`.
 
 Typical peaceful edits are the ones obtained by calling the functions
 `ini_array_collapse()` and `ini_string_parse()` directly on the buffer
@@ -713,25 +807,29 @@ int main () {
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+If all these rules, although thoroughly exposed, still sound confusing to you,
+use always `strndup()` on the strings dispatched and feel free to edit your own
+buffers as you wish.
+
 
 ### STRING COMPARISONS
 
 In order to perform comparisons between strings the functions
 `ini_string_match_ss()`, `ini_string_match_si()`, `ini_string_match_ii()` and
-`ini_array_match()` are available. The function `ini_string_match_ss()` compares
-two simple strings, the function `ini_string_match_si()` compares a simple
-string with an unparsed INI string, the function `ini_string_match_ii()`
-compares two unparsed INI strings, and the function `ini_array_match()` compares
-two INI arrays. INI strings are the strings typically dispatched by
+`ini_array_match()` are available. The function `ini_string_match_ss()`
+compares two simple strings, the function `ini_string_match_si()` compares a
+simple string with an unparsed INI string, the function `ini_string_match_ii()`
+compares two unparsed INI strings, and the function `ini_array_match()`
+compares two INI arrays. INI strings are the strings typically dispatched by
 `load_ini_file()`, `load_ini_path()` or `strip_ini_cache()` which may contain
 quotes and the three escape sequences `\\`, `\'`, `\"`. Simple strings are
 user-given strings or the result of `ini_string_parse()`.
 
-As a consequence, the functions `ini_string_match_si()`, `ini_string_match_ii()`
-and `ini_array_match()` do not perform literal comparisons of equality between
-strings. For example, in the following (absurd) INI file the two keys `foo` and
-`hello` belong to the same section named `this is a double quotation mark: "!`
-(after being parsed by `ini_string_parse()`).
+As a consequence, the functions `ini_string_match_si()`,
+`ini_string_match_ii()` and `ini_array_match()` do not perform literal
+comparisons of equality between strings. For example, in the following (absurd)
+INI file the two keys `foo` and `hello` belong to the same section named `this
+is a double quotation mark: "!` (after being parsed by `ini_string_parse()`).
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
 [this is a double quotation mark: \"!]
@@ -801,16 +899,16 @@ function that should be used, with `'.'` or `INI_DOT` as delimiter (see `enum`
 `#IniDelimiters`), to properly compare section paths containing more than one
 level of nesting.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 if (
-  ini_array_match("foo.bar", this->append_to, INI_DOT, this->format) &&
-  ini_string_match_si("username", this->data, this->format)
+  ini_array_match("foo.bar", disp->append_to, '.', disp->format) &&
+  ini_string_match_si("username", disp->data, disp->format)
 ) {
 
   // Do something
 
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In case of multiple comparisons you might want to use a macro:
 
@@ -840,14 +938,14 @@ if (disp->type == INI_KEY) {
 
 The four functions `ini_string_match_ss()`, `ini_string_match_si()`,
 `ini_string_match_ii()`, `ini_array_match()` perform case-sensitive or
-case-insensitive comparisons depending on the format given. UTF-8 codepoints out
-of the ASCII range are always compared case-sensitive.
+case-insensitive comparisons depending on the format given. UTF-8 codepoints
+out of the ASCII range are always compared case-sensitive.
 
-Note that, within INI strings, empty quotes and spaces out of quotes are always
+Note that within INI strings empty quotes and spaces out of quotes are always
 collapsed during comparisons. Furthermore, remember that the multi-line escape
 sequence `/\\(?:\n\r?|\r\n?)/` is _not_ considered as such in INI strings,
-since this is the only escape sequence automatically unescaped by **libconfini**
-_before_ each dispatch.
+since this is the only escape sequence automatically unescaped by
+**libconfini** _before_ each dispatch.
 
 
 ### FORMATTING THE VALUES
@@ -877,7 +975,7 @@ case you don't have `#include <stdlib.h>` in your source:
 
 ### FORMATTING THE KEY NAMES
 
-The function `ini_unquote()` might be useful for key names enclosed within
+The function `ini_unquote()` can be useful for key names enclosed within
 quotes. This function is very similar to `ini_string_parse()`, except that does
 not bother collapsing the sequences of more than one space that might result
 from removing empty quotes -- this is never necessary, since empty quotes
@@ -893,9 +991,10 @@ you would obtain the same result with a slightly bigger effort from the CPU.
 In order to retrieve the parts of a section path, the functions
 `ini_array_get_length()`, `ini_array_foreach()`, `ini_array_break()`,
 `ini_array_release()`, `ini_array_shift()` and `ini_array_split()` can be used
-with `'.'` as delimiter. Note that section paths dispatched by **libconfini**
-are _always_ collapsed arrays, therefore calling the function
-`ini_array_collapse()` on them will have no effects.
+with `'.'` or `INI_DOT` as delimiter (see `enum` `#IniDelimiters`). Note that
+section paths dispatched by **libconfini** are _always_ collapsed arrays,
+therefore calling the function `ini_array_collapse()` on them will have no
+effects.
 
 It might be required that the function `ini_unquote()` be applied to each part
 of a section path, depending on the content and the format of the INI file.
@@ -903,9 +1002,9 @@ of a section path, depending on the content and the format of the INI file.
 
 ### IMPLICIT KEYS
 
-In order to set the value to be assigned to implicit keys (i.e. keys without a
+In order to set the value to assign to implicit keys (i.e. keys without a
 delimiter and a value), please use the `ini_global_set_implicit_value()`
-function. A _zero-length `TRUE`-boolean_ is usually a good choice:
+function. A _zero-length `TRUE` boolean_ is usually a good choice:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 ini_global_set_implicit_value("YES", 0);
@@ -939,18 +1038,18 @@ int main () {
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If not defined elsewhere, these variables are initialized respectively to `NULL`
-and `0` by default.
+If not defined elsewhere, these variables are initialized respectively to
+`NULL` and `0` by default.
 
 The two variables `#INI_GLOBAL_IMPLICIT_VALUE` and `#INI_GLOBAL_IMPLICIT_V_LEN`
-may be set to any arbitrary values. In fact these will not be parsed or analyzed
-anywhere by **libconfini**, they are only used as placeholders for custom
-information accessible solely by the user.
+may be set to any arbitrary values. In fact these will not be parsed or
+analyzed anywhere by **libconfini**, they are only used as placeholders for
+custom information accessible solely by the user.
 
 After having set the value to be assigned to implicit key elements, and having
-enabled `IniFormat::implicit_is_not_empty` in the format, it is possible to test
-whether a dispatched key is implicit or not by comparing the address of its
-`value` property with the global variable `#INI_GLOBAL_IMPLICIT_VALUE`:
+enabled `IniFormat::implicit_is_not_empty` in the format, it is possible to
+test whether a dispatched key is implicit or not by comparing the address of
+its `value` property with the global variable `#INI_GLOBAL_IMPLICIT_VALUE`:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 /*  examples/topics/ini_global_set_implicit_value.c  */
@@ -1016,98 +1115,6 @@ int main () {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-## PARSING A BUFFER INSTEAD OF A FILE
-
-Starting from version 1.10.0, it is possible to parse a disposable buffer
-containing an INI file instead of a physical file (i.e., to parse a `char`
-array). The function that allows to do so is named `strip_ini_cache()`. This
-function however presents some important differences when compared to
-`load_ini_file()` and `load_ini_path()`:
-
-1. As the name suggests, the buffer passed is not left untouched, but gets
-   tokenized and rearranged instead -- if you want to keep the original buffer
-   you must pass a copy of it to `strip_ini_cache()` -- you can use `strdup()`
-   for this, or use the example below
-2. No memory is freed after the dispatching cycle: getting rid of the disposable
-   buffer is something that must be done manually
-3. The strings dispatched are tokens from the buffer passed as argument
-   (no new memory is allocated), but the existence of each token is granted only
-   for a short time, that is _until the dispatch of the next node_ (in fact the
-   latter may overwrite previous information) -- therefore, as with
-   `load_ini_file()` and `load_ini_path()`, every needed information must be
-   copied immediately with each dispatch
-4. After the dispatching cycle is over, the buffer must be regarded as
-   _unreliable information_ (portions of it might have been repeatedly
-   overwritten and corrupted by subsequent dispatches)
-
-In short, `strip_ini_cache()` works exactly like `load_ini_file()` and
-`load_ini_path()`, but with the difference that it destroys the input while
-dispatching it. And of course the input is not anymore a file, but a disposable
-buffer instead. As a matter of fact, `strip_ini_cache()` is the main parsing
-function both `load_ini_file()` and `load_ini_path()` rely on in order to
-dispatch the content of an INI file. For a sample usage, please see
-`examples/topics/strip_ini_cache.c`.
-
-If you want to automatize the process of making a copy of a read-only buffer,
-strip and parse the copy, then free the allocated memory, you can use the
-following function:
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-#include <stdio.h>
-#include <string.h>
-#include <confini.h>
-
-int load_ini_buffer (
-	const char * const ini_buffer,
-	const size_t ini_length,
-	const IniFormat format,
-	const IniStatsHandler f_init,
-	const IniDispHandler f_foreach,
-	void * const user_data
-) {
-
-  char * const ini_cache = strndup(ini_buffer, ini_length);
-
-  if (!ini_cache) {
-
-    return CONFINI_ENOMEM;
-
-  }
-
-  const int retval = strip_ini_cache(
-    ini_cache,
-    ini_length,
-    format,
-    f_init,
-    f_foreach,
-    user_data
-  );
-
-  free(ini_cache);
-
-  return retval;
-
-}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The function above can then be invoked directly on a `const` buffer:
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-load_ini_buffer(
-  my_const_buffer,
-  strlen(my_const_buffer),
-  my_format,
-  my_stats_handler,
-  my_callback,
-  my_other_data
-);
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Since in most cases _an INI buffer is a disposable buffer_ (unless one wants to
-parse the very same buffer more than once), **libconfini**'s interface does not
-include the function in the example above.
-
-
 ## CODE CONSIDERATIONS
 
 
@@ -1122,8 +1129,8 @@ returned by the caller as well.
 The functions `load_ini_file()`, `load_ini_path()` and `strip_ini_cache()`
 return a non-zero value also if the INI file, for any reason, has not been
 completely parsed (see `enum` `#ConfiniInterruptNo`). Therefore, in order to be
-able to distinguish between internal errors and user-generated interruptions the
-mask `#CONFINI_ERROR` can be used.
+able to distinguish between internal errors and user-generated interruptions
+the mask `#CONFINI_ERROR` can be used.
 
 For instance, in the following example the `f_foreach()` listener returns a
 non-zero value if a key named `password` with a value that equals `Hello world`
@@ -1197,8 +1204,8 @@ The functions `ini_unquote()`, `ini_string_parse()`, `ini_array_collapse()`,
 content of the given strings. It is important to point out that the edit is
 always performed within the lengths of the strings given.
 
-The behavior of these functions depends on the format used. In particular, using
-`ini_string_parse()` as model one obtains the following scheme:
+The behavior of these functions depends on the format used. In particular,
+using `ini_string_parse()` as a model one obtains the following scheme:
 
 1. Condition: `!format.no_single_quotes && !format.no_double_quotes &&
    format.multiline_nodes != INI_NO_MULTILINE`<br />
@@ -1227,8 +1234,9 @@ The behavior of these functions depends on the format used. In particular, using
 5. Condition: `format.no_single_quotes && format.no_double_quotes &&
    format.multiline_nodes == INI_NO_MULTILINE`<br />
    ⇒ Escape sequences: No escape sequences<br />
-   ⇒ Behavior of `ini_string_parse()`: Spaces at the beginning and at the end of
-   the string will be removed, then the new length of the string will be returned.
+   ⇒ Behavior of `ini_string_parse()`: Spaces at the beginning and at the end
+   of the string will be removed, then the new length of the string will be
+   returned.
 
 A function-like macro named `#INIFORMAT_HAS_NO_ESC()` is available in order to
 check whether a format supports escape sequences or not.
@@ -1237,8 +1245,8 @@ check whether a format supports escape sequences or not.
 ### STORING THE DISPATCHED DATA
 
 In order to be as flexible as possible, **libconfini** does not store the
-dispatched data, nor indicizes it. This gives the developer the power to deal
-with it in many different ways.
+dispatched data, nor indicizes them. This gives the developer the power to deal
+with them in many different ways.
 
 For small INI files a normal `if`/`else` chain, using `ini_array_match()` for
 comparing section paths and `ini_string_match_si()`/`ini_string_match_ii()` for
@@ -1249,22 +1257,23 @@ Sometimes however, especially in case of sizeable INI files, the most efficient
 solution would be to store the parsed data in a hash table before trying to
 access it.
 
-Some INI parsers are released with a hash table API included by default. This is
-often an unpractical solution, since fantastic free software libraries that
+Some INI parsers are released with a hash table API included by default. This
+is often an unpractical solution, since fantastic free software libraries that
 focus solely on hash tables already exist, and providing a further API for
 managing a hash function together with an INI parser only complicates the code,
 makes it harder to maintain, and does not give the user the real freedom to
 choose what suits best to each single case.
 
 When a user needs it, the data parsed by **libconfini** can still be stored in
-a third-party hash table while it is being dispatched. By doing so the resulting
-performance will equal that of an INI parser with a hash table included by
-default, since the only job of **libconfini** is that of scrolling the content
-of an INI file linearly from the beginning to the end -- and there are not more
-efficient ways to parse and indicize the content of a serialized tree.
+a third-party hash table while it is being dispatched. By doing so the
+resulting performance will equal that of an INI parser with a hash table
+included by default, since the only job of **libconfini** is that of scrolling
+the content of an INI file linearly from the beginning to the end -- and there
+are not more efficient ways to parse and indicize the content of a serialized
+tree.
 
-If you are interested in combining **libconfini** with a hash table, I have left
-a general example of how to use **GLib**'s `GHashTable` together with
+If you are interested in combining **libconfini** with a hash table, I have
+left a general example of how to use **GLib**'s `GHashTable` together with
 **libconfini** under `examples/miscellanea/glib_hash_table.c`. By keeping this
 example as a model other solutions can be easily explored as well.
 
@@ -1297,10 +1306,10 @@ static int ini_init (IniStatistics * stats, void * v_check_struct) {
 
 }
 
-static int ini_listener (IniDispatch * this, void * v_check) {
+static int ini_listener (IniDispatch * disp, void * v_check) {
 
-  ((struct size_check *) v_check)->buff_lengths += this->d_len + 1 +
-    (this->v_len ? this->v_len + 1 : 0);
+  ((struct size_check *) v_check)->buff_lengths += disp->d_len + 1 +
+    (disp->v_len ? disp->v_len + 1 : 0);
 
   return 0;
 
@@ -1368,7 +1377,7 @@ As with the other global variables, you can declare the variable
 bool INI_GLOBAL_LOWERCASE_MODE = false;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-or assign a value to it at the beginning of the `main()` function:
+or assign a value to it at the beginning of your `main()` function:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 #include <stdbool.h>
@@ -1390,11 +1399,10 @@ When the variable `#INI_GLOBAL_LOWERCASE_MODE` is set to `true`, **libconfini**
 always dispatches in lower case _all_ ASCII letters of key and section names in
 case-insensitive formats -- _even when these are enclosed within quotes_ -- but
 does **not** dispatch in lower case UTF-8 code points out of the ASCII range
-(for instance, `Ā` will not be rendered as `ā`, but will be rather rendered
-verbatim). _In general it is a good practice to use UTF-8 within values, but to
-use ASCII only within key and section names, at least in case insensitive INI
-files_ (see below). As for the dispatched values instead, their case is always
-preserved.
+(for instance, `Ā` will not be rendered as `ā`, but will be rendered verbatim).
+_In general it is a good practice to use UTF-8 within values, but to use ASCII
+only within key and section names, at least in case insensitive INI files_ (see
+below). As for the dispatched values instead, their case is always preserved.
 
 Normally `#INI_GLOBAL_LOWERCASE_MODE` does not need to be set to `true`, since
 string comparisons made by libconfini are always either case-sensitive or
@@ -1405,10 +1413,10 @@ case-insensitive depending on the format given.
 
 Comparing an ASCII upper case letter to an ASCII lower case letter is an
 invariant process. But comparing two Unicode letter cases is a process that
-depends on the locale of the machine. Consider for example the lower case letter
-`i`: in most European languages its upper case is `I`, while this is not the
-case in Turkish, where the upper case of `i` is `İ` (and the lower case of `I`
-is `ı`). Therefore for a person living in Italy or France, `i` and `I` will
+depends on the locale of the machine. Consider for example the lower case
+letter `i`: in most European languages its upper case is `I`, while this is not
+the case in Turkish, where the upper case of `i` is `İ` (and the lower case of
+`I` is `ı`). Therefore for a person living in Italy or France, `i` and `I` will
 represent the same letter, while for a person living in Turkey they will not.
 
 Key and section names of an INI file however cannot depend on the locale of the
@@ -1419,7 +1427,7 @@ you lived in Europe you could look up for such key using its lower case “ini�
 while if you lived in Turkey you would have to use the lower case “ını” to find
 it. So the only solution in this context is to consider Unicode characters out
 of the ASCII range always as case sensitive. For this reason, **libconfini**
-(and probably any senseful INI parser) will never perform a case folding of
+(and probably any senseful INI parser) will never perform case folding of
 Unicode characters out of the ASCII range within key and section names. 
 
 It must be said however that most Unicode characters do not possess a lower and
@@ -1439,10 +1447,10 @@ appropriate.
 ### THREAD SAFETY
 
 Depending on the format of the INI file, **libconfini** may use up to three
-global variables (`#INI_GLOBAL_IMPLICIT_VALUE`, `#INI_GLOBAL_IMPLICIT_V_LEN` and
-`#INI_GLOBAL_LOWERCASE_MODE`). In order to be thread-safe these three variables
-(if needed) must be defined only once (either directly, or by using their setter
-functions `ini_global_set_implicit_value()` and
+global variables (`#INI_GLOBAL_IMPLICIT_VALUE`, `#INI_GLOBAL_IMPLICIT_V_LEN`
+and `#INI_GLOBAL_LOWERCASE_MODE`). In order to be thread-safe these three
+variables (if needed) must be defined only once (either directly, or by using
+their setter functions `ini_global_set_implicit_value()` and
 `ini_global_set_lowercase_mode()`), or otherwise a mutex logic must be
 introduced.
 
@@ -1454,8 +1462,8 @@ considered thread-safe.
 ### ERROR EXCEPTIONS
 
 The philosophy of **libconfini** is to parse as much as possible without
-generating error exceptions. No parsing errors are returned once an INI file has
-been correctly allocated into the stack, with the exception of the
+generating error exceptions. No parsing errors are returned once an INI file
+has been correctly allocated into the stack, with the exception of the
 _out-of-range_ error `#CONFINI_EOOR` (see `enum` `#ConfiniInterruptNo`), whose
 meaning is that the dispatches are for unknown reasons more than expected --
 this error is possibly generated by the presence of bugs in the library's code
@@ -1463,8 +1471,8 @@ and should never be returned (please [contact me][6] if this happens).
 
 When an INI node is wrongly written in respect to the format given, it is
 dispatched verbatim as an `#INI_UNKNOWN` node -- see `enum` `#IniNodeType`.
-Empty lines, or lines containing only spaces and empty quotes (if the latter are
-supported) will be skipped.
+Empty lines, or lines containing only spaces and empty quotes (if the latter
+are supported) will be skipped.
 
 In order to avoid error exceptions, strings containing an unterminated quote
 will always be treated as if they had a virtual quote as their last + 1
@@ -1491,7 +1499,7 @@ cases is not a concern.
 One can measure the performance of the library by doing something like:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-/*  Please create an INI file large enough  */
+/*  tests/performance/performance.c  */
 
 #include <stdio.h>
 #include <confini.h>
@@ -1518,6 +1526,7 @@ int main () {
   clock_t start, end;
   start = clock();
 
+  /*  Please create an INI file large enough  */
   if (load_ini_path(
     "big_file.ini",
     INI_DEFAULT_FORMAT,
@@ -1545,7 +1554,11 @@ int main () {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 By changing the format of the INI file on the code above you may obtain
-different results.
+different results. In particular, switching disabled entry recognition off --
+by setting `IniFormat::semicolon_marker` and `IniFormat::hash_marker` to
+`#INI_ONLY_COMMENT` or `#INI_IGNORE` -- and making the format non-multi-line --
+by setting `IniFormat::multiline_nodes` to `#INI_NO_MULTILINE` -- will have a
+positive impact on the performance.
 
 On my old laptop **libconfini** seems to parse around 23 MiB per second using
 the model format `#INI_DEFAULT_FORMAT`. Whether this is enough for you or not,
@@ -1556,6 +1569,10 @@ that depends on your needs.
 Number of bytes parsed per second: 24623007.317252
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+_**Addendum:** Unfortunately that old computer broke, so now I can perform
+tests only on a newer hardware, where **libconfini** seems to parse four times
+faster. However I have left a performance test under `tests/performance`._
+
 
 ## INI SYNTAX CONSIDERATIONS
 
@@ -1563,9 +1580,9 @@ Number of bytes parsed per second: 24623007.317252
 ### COMMENT OR DISABLED ENTRY?
 
 I can hardly imagine a reason to be interested in disabled entries if not for
-writing a GUI editor for INI files. However, if this is the case and you are not
-using **libconfini** like normal people do, you might wonder how to ensure that
-disabled entries and comments be always parsed without ambiguity.
+writing a GUI editor for INI files. However, if this is the case and you are
+not using **libconfini** like normal people do, you might wonder how to ensure
+that disabled entries and comments be always parsed without ambiguity.
 
 In most of the cases **libconfini** is smart enough to distinguish a disabled
 entry from a comment. However some INI files can be tricky and might require
@@ -1658,17 +1675,18 @@ we would obtain the following result:
 #4 - TYPE: 4, DATA: 'now=Sunday April 3rd, 2016', VALUE: ''
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As we can see, all comments but `now=Sunday April 3rd, 2016` would be parsed as
-disabled entries -- which is not what the author intended. Therefore, to ensure
-that such INI file is parsed properly, we can follow two possible approaches.
+As you can see, all comments but `now=Sunday April 3rd, 2016` would be parsed
+as disabled entries -- which is not what the author intended. Therefore, to
+ensure that such INI file be parsed properly, you can follow two possible
+approaches.
 
 **1. Intervene on the INI file.** The reason why `now=Sunday April 3rd, 2016`
-has been properly parsed as a comment -- despite it really looks like a disabled
-entry -- is because it has been nested within a comment block opened by more
-than one leading comment marker (in this case the two `##`). As a general rule,
-_**libconfini** never parses a comment beginning with more than one leading
-marker as a disabled entry_, therefore this is the surest way to ensure that
-proper comments are always considered as such.
+has been properly parsed as a comment -- despite it really looks like a
+disabled entry -- is because it has been nested within a comment block opened
+by more than one leading comment marker (in this case the two `##`). As a
+general rule, _**libconfini** never parses a comment beginning with more than
+one leading marker as a disabled entry_, therefore this is the surest way to
+ensure that proper comments are always considered as such.
 
 Hence, by adding one more number sign to the first comment
 
@@ -1697,13 +1715,13 @@ we obtain the wanted result:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **2. Intervene on the format.** There are cases where the INI file is
-automatically generated by machines (comments included), or distributed as such,
-and human intervention would be required on each machine-generated realease of
-the INI file. In these cases -- and if we are sure about the expected content of
-the INI file -- we can restrict the format chosen in order to parse comments and
-disabled entries properly. In particular, the following fields of the
-`IniFormat` bitfield can have an impact on the disambiguation between comments
-and disabled entries.
+automatically generated by machines (comments included), or distributed as
+such, and human intervention would be required on each machine-generated
+realease of the INI file. In these cases -- and if we are sure about the
+expected content of the INI file -- we can restrict the format chosen in order
+to parse comments and disabled entries properly. In particular, the following
+fields of the `IniFormat` bitfield can have an impact on the disambiguation
+between comments and disabled entries.
 
 Reliable general patterns:
 
@@ -1729,14 +1747,14 @@ Temporary workarounds:
   cannot contain internal white spaces, we can set this property to `true` to
   enhance disambiguation.
 * `IniFormat::disabled_can_be_implicit` -- This property, if set to `false`,
-  forces all comments that do not contain a key-value delimiter to be never
+  forces all comments that do not contain a key-value delimiter never to be
   considered as disabled entries. Despite not having an impact on our example,
-  it has a big impact on the disambiguation algorithms used by **libconfini**.
-  Its value in `#INI_DEFAULT_FORMAT` is set to `false`.
+  it has an impact on the disambiguation algorithms used by **libconfini**. Its
+  value in `#INI_DEFAULT_FORMAT` is set to `false`.
 
 As a general rule, **libconfini** will always try to parse as a disabled entry
-whatever comment is allowed (by the format) to contain one. Only if this attempt
-fails, the block will be dispatched as a normal comment.
+whatever comment is allowed (by the format) to contain one. Only if this
+attempt fails, the block will be dispatched as a normal comment.
 
 
 [1]: https://www.gnu.org/

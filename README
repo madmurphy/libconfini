@@ -2,12 +2,12 @@ libconfini {#readme}
 ====================
 
 **libconfini** is the ultimate and most consistent INI file parser library
-written in C. It focuses on standardization and parsing exactness and is at ease
-with almost every type of file containing key/value pairs.
+written in C. It focuses on standardization and parsing exactness and is at
+ease with almost every type of file containing key/value pairs.
 
 The library is fast and suitable for embedded systems. Its algorithms are
-written from scratch and do not depend on any external library, except for the C
-standard headers **stdio.h**, **stdlib.h** and **stdint.h**.
+written from scratch and do not depend on any external library, except for the
+C standard headers **stdio.h**, **stdlib.h** and **stdint.h**.
 
 Rather than storing the parsed data, **libconfini** gives the developer the
 freedom to choose what to do with them through a custom callback invoked for
@@ -17,16 +17,16 @@ simple to use.
 With **libconfini** you will find in INI files the same serialization power you
 would normally find in other heavily structured formats (such as JSON, YAML,
 TOML), but with the advantage of using the most human-readable configuration
-format ever invented (thanks to their informal status, INI files are indeed more
-fluid and human-readable than formats explicitly designed with this purpose,
-such as YAML and TOML).
+format ever invented (thanks to their informal status, INI files are indeed
+more fluid and human-readable than formats explicitly designed with this
+purpose, such as YAML and TOML).
 
 
 Features
 --------
 
-* Typed data support (each value can be parsed as a boolean, a number, a string,
-  an array)
+* Typed data support (each value can be parsed as a boolean, a number, a
+  string, an array)
 * Single/double quotes support in _Bash single quotes style_
 * Multi-line support
 * Comment support
@@ -42,12 +42,12 @@ Features
 * Thread-safety (each parsing process is fully reentrant)
 * Highly optimized code (single memory allocation for each parsing, heuristic
   programming, optimization flags)
-* Function modularity (each public function is independent from all other public
-  functions)
+* Function modularity (each public function is independent from all other
+  public functions)
 * K.I.S.S. (no public functions are automatically invoked during the parsing --
   for example, not even single/double quotes are automatically removed from
-  values unless the developer explicitly decides to use the formatting functions
-  provided by the API)
+  values unless the developer explicitly decides to use the formatting
+  functions provided by the API)
 * Robust file access (support of all code representations of new lines -- i.e.
   Classic Mac OS' `CR`, Unix' `LF`, Windows' `CR`+`LF`, RISC OS Open's
   `LF`+`CR`; protection against null byte injection; UTF-8 support)
@@ -151,17 +151,17 @@ by running the `autogen.sh` script. By default, `autogen.sh` will also run the
 If you are using Microsoft Windows, a batch script for compiling **libconfini**
 under [MinGW][5] without Autotools is available (`mgwmake.bat`). If you are
 interested in using Autotools for compiling **libconfini** under Microsoft
-Windows, you can integrate MinGW with [MSYS][6]. Alternatively, [an unofficial
-port][7] of **libconfini** for [Cygwin][8] is available as well.
+Windows, you can integrate MinGW with [MSYS][6] or  [MSYS2][7]. Alternatively,
+[an unofficial port][8] of **libconfini** for [Cygwin][9] is available as well.
 
-For further information, see [INSTALL][9].
+For further information, see [INSTALL][10].
 
 
 Free software
 -------------
 
 This library is free software. You can redistribute it and/or modify it under
-the terms of the GPL3 license. See [COPYING][10] for details.
+the terms of the GPL3 license. See [COPYING][11] for details.
 
 
 [1]: https://madmurphy.github.io/libconfini/html/libconfini.html
@@ -170,8 +170,9 @@ the terms of the GPL3 license. See [COPYING][10] for details.
 [4]: https://github.com/madmurphy/libconfini
 [5]: http://www.mingw.org/
 [6]: http://www.mingw.org/wiki/MSYS
-[7]: https://github.com/fd00/yacp/tree/master/libconfini
-[8]: https://www.cygwin.com/
-[9]: https://github.com/madmurphy/libconfini/blob/master/INSTALL
-[10]: https://github.com/madmurphy/libconfini/blob/master/COPYING
+[7]: https://www.msys2.org/
+[8]: https://github.com/fd00/yacp/tree/master/libconfini
+[9]: https://www.cygwin.com/
+[10]: https://github.com/madmurphy/libconfini/blob/master/INSTALL
+[11]: https://github.com/madmurphy/libconfini/blob/master/COPYING
 

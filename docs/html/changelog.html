@@ -67,24 +67,34 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Record of notable changes</p>
+<h1>1.10.2 &ndash; 2019-10-03</h1>
+<p>Changes:</p>
+<ul>
+<li>Code review (<code><a class="el" href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b" title="Parses and tokenizes a buffer containing an INI file, then dispatches its content to a custom callbac...">strip_ini_cache()</a></code>)</li>
+<li>Subdirectory <code>tests</code> has been created</li>
+<li>New examples have been created (<code>examples/utilities/load_ini_buffer.h</code> and <code>examples/utilities/make_strarray.h</code>)</li>
+<li>The <code>configure</code> script has been improved with a built-in support for complete package renaming (using <code>--program-prefix=PREFIX</code>, <code>--program-suffix=SUFFX</code> and &lsquo;--program-transform-name='s/[OLDTEXT]/[NEWTEXT]/[g]&rsquo;<code>) and several new options (</code>&ndash;enable-version-info<code>and</code>&ndash;disable-version-info<code>, for enabling/disabling **libtool** versioning system;</code>&ndash;enable-extended-config<code>, for safely exporting package renamings at</code>configure<code>time, or any changes in </code>configure.ac&lt;tt&gt;, directly tosrc/winres.rc<code>and</code>package.json&lt;tt&gt;-- see INSTALL<code>and</code>./configure &ndash;help` for more information)</li>
+<li>The package tree has been re-organized &ndash; all the files needed only at build time have been moved into the <code>autostuff</code> subdirectory</li>
+<li>Documentation</li>
+</ul>
 <h1>1.10.1 &ndash; 2019-09-19</h1>
 <p>Changes:</p>
 <ul>
-<li>Code review (<code><a class="el" href="confini_8h.html#a128efa87286bb705243a2e6c4d22dce6" title="Parses and tokenizes a buffer containing an INI file, then dispatches its content to a custom callbac...">strip_ini_cache()</a></code>) &ndash; a small bug concerning <code>CR</code> + <code>LF</code> line breaks has been fixed</li>
+<li>Code review (<code><a class="el" href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b" title="Parses and tokenizes a buffer containing an INI file, then dispatches its content to a custom callbac...">strip_ini_cache()</a></code>) &ndash; a small bug concerning <code>CR</code> + <code>LF</code> line breaks has been fixed</li>
 </ul>
 <h1>1.10.0 &ndash; 2019-08-01</h1>
 <p>Changes:</p>
 <ul>
-<li>Function <code><a class="el" href="confini_8h.html#a128efa87286bb705243a2e6c4d22dce6" title="Parses and tokenizes a buffer containing an INI file, then dispatches its content to a custom callbac...">strip_ini_cache()</a></code> has been created &ndash; see issue <a href="https://github.com/madmurphy/libconfini/issues/9">#9</a> &ndash; most of the code of <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parses an INI file and dispatches its content using a FILE structure as argument.">load_ini_file()</a></code> has now been moved to <code><a class="el" href="confini_8h.html#a128efa87286bb705243a2e6c4d22dce6" title="Parses and tokenizes a buffer containing an INI file, then dispatches its content to a custom callbac...">strip_ini_cache()</a></code></li>
+<li>Function <code><a class="el" href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b" title="Parses and tokenizes a buffer containing an INI file, then dispatches its content to a custom callbac...">strip_ini_cache()</a></code> has been created &ndash; see issue <a href="https://github.com/madmurphy/libconfini/issues/9">#9</a> &ndash; most of the code of <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parses an INI file and dispatches its content using a FILE structure as argument.">load_ini_file()</a></code> has now been moved to <code><a class="el" href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b" title="Parses and tokenizes a buffer containing an INI file, then dispatches its content to a custom callbac...">strip_ini_cache()</a></code></li>
 <li>Code review (<code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parses an INI file and dispatches its content using a FILE structure as argument.">load_ini_file()</a></code> and <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parses an INI file and dispatches its content using a path as argument.">load_ini_path()</a></code>)</li>
 <li>Documentation</li>
-<li>Created new examples (see <code>examples/topics/strip_ini_cache.c</code>)</li>
+<li>New examples have been created (<code>examples/topics/strip_ini_cache.c</code>)</li>
 </ul>
 <h1>1.9.2 &ndash; 2019-04-25</h1>
 <p>Changes:</p>
 <ul>
 <li>Documentation</li>
-<li>Created new examples (see <code>examples/miscellanea/colon_as_delimiter.c</code>)</li>
+<li>New examples have been created (<code>examples/miscellanea/colon_as_delimiter.c</code>)</li>
 </ul>
 <h1>1.9.1 &ndash; 2019-03-28</h1>
 <p>Changes:</p>
@@ -159,7 +169,7 @@ $(function() {
 <li>Code review (<code><a class="el" href="confini_8h.html#af663493e17740c707d3b6a13ddde5b2e" title="Calculates the IniFormatNum of an IniFormat.">ini_fton()</a></code> and <code><a class="el" href="confini_8h.html#a6126371aef71be174ee8e1262a231ef5" title="Constructs a new IniFormat according to an IniFormatNum.">ini_ntof()</a></code>)</li>
 <li>Updated <b>Autotools</b> macros</li>
 <li>Documentation</li>
-<li>Created new examples (see <code>examples/topics/ini_array_foreach.c</code>, <code>examples/topics/ini_array_split.c</code> and <code>examples/miscellanea/stats_only.c</code>)</li>
+<li>New examples have been created (<code>examples/topics/ini_array_foreach.c</code>, <code>examples/topics/ini_array_split.c</code> and <code>examples/miscellanea/stats_only.c</code>)</li>
 </ul>
 <h1>1.7.3 &ndash; 2018-10-19</h1>
 <p>Changes:</p>
@@ -199,7 +209,7 @@ $(function() {
 <h1>1.6.2 (unstable) &ndash; 2018-05-21</h1>
 <p>Changes:</p>
 <ul>
-<li>Code review (private functions <code><a class="el" href="confini_8c.html#adaa3254a22a8b5805cc3fa8f3d11c735" title="Shifting left trim – does change the buffer.">ltrim_hh()</a></code>, <code><a class="el" href="confini_8c.html#aa139c7fd80a4a707683a45d16f527a60" title="Replaces /\\(\n\r?|\r\n?)[\t \v\f]*[#;]/ or /\\(\n\r?|\r\n?)/ with &quot;$1&quot;">unescape_cr_lf()</a></code>, <code><a class="el" href="confini_8c.html#aa17889754780149f18e417607e5ffb24" title="Sanitizes a section path.">sanitize_section_path()</a></code>, <code><a class="el" href="confini_8c.html#a0ab1c9f49e30ee6f637c213a27738d21" title="Out of quotes similar to ECMAScript ini_string.replace(/&#39;&#39;|&quot;&quot;/g, &quot;&quot;).replace(/^[\n\r]\s*|\s+/g,...">collapse_everything()</a></code>, <code><a class="el" href="confini_8c.html#a6ace46ed55f0c50e6314cb4610c536ab" title="Out of quotes similar to ECMAScript ini_string.replace(/^[\n\r]\s*|\s+/g, &quot; &quot;)">collapse_spaces()</a></code> and <code><a class="el" href="confini_8c.html#ad2abf4acb5b68e6c6930e63ecc754bbe" title="Removes all comment initializers (# and/or ;) from the beginning of each line of a comment.">uncomment()</a></code>)</li>
+<li>Code review (private functions <code><a class="el" href="confini_8c.html#adaa3254a22a8b5805cc3fa8f3d11c735" title="Shifting left trim – does change the buffer.">ltrim_hh()</a></code>, <code><a class="el" href="confini_8c.html#aa139c7fd80a4a707683a45d16f527a60" title="Replaces /\\(\n\r?|\r\n?)[\t \v\f]*[#;]/ or /\\(\n\r?|\r\n?)/ with &quot;$1&quot;">unescape_cr_lf()</a></code>, <code><a class="el" href="confini_8c.html#aa17889754780149f18e417607e5ffb24" title="Sanitizes a section path.">sanitize_section_path()</a></code>, <code><a class="el" href="confini_8c.html#a0ab1c9f49e30ee6f637c213a27738d21" title="Out of quotes similar to ECMAScript ini_string.replace(/&#39;&#39;|&quot;&quot;/g, &quot;&quot;).replace(/^[\n\r]\s*|\s+/g,...">collapse_everything()</a></code>, <code><a class="el" href="confini_8c.html#a6ace46ed55f0c50e6314cb4610c536ab" title="Out of quotes similar to ECMAScript ini_string.replace(/\s+/g, &quot; &quot;)">collapse_spaces()</a></code> and <code><a class="el" href="confini_8c.html#ad2abf4acb5b68e6c6930e63ecc754bbe" title="Removes all comment initializers (# and/or ;) from the beginning of each line of a comment.">uncomment()</a></code>)</li>
 <li>Documentation</li>
 <li>Examples</li>
 </ul>
@@ -221,7 +231,7 @@ $(function() {
 <li>Redundant function † <code>ini_get_lazy_bool()</code> has been removed</li>
 <li>The buffer pointed by <code><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></code> is now passed as <code>const</code></li>
 <li>Code review (<code><a class="el" href="confini_8h.html#af9784469081947db46d173de14fa2a2f" title="Compares two simple strings and checks if they match.">ini_string_match_ss()</a></code>, <code><a class="el" href="confini_8h.html#ad04ddad7ba1f627379ac714e656a693a" title="Compares a simple string and an INI string and and checks if they match.">ini_string_match_si()</a></code>, <code><a class="el" href="confini_8h.html#a24a43707c6c2f056615ae02b67f6d3cc" title="Compares two INI strings and checks if they match.">ini_string_match_ii()</a></code>, <code><a class="el" href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescapes \&#39;, \&quot;, and \\ and removes all unescaped quotes (if single/double quotes are considered met...">ini_string_parse()</a></code>, <code><a class="el" href="confini_8h.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array in number of members.">ini_array_get_length()</a></code>, <code><a class="el" href="confini_8h.html#a414c3b92adf45dbb966df1606b71ccdf" title="Calls a custom function for each member of a stringified INI array, without modifying the content of ...">ini_array_foreach()</a></code>, <code><a class="el" href="confini_8h.html#a04acd6a01a6a78810e7aab8e02923218" title="Splits a stringified INI array into NUL-separated members and calls a custom function for each member...">ini_array_split()</a></code>, private functions <code><a class="el" href="confini_8c.html#ad2abf4acb5b68e6c6930e63ecc754bbe" title="Removes all comment initializers (# and/or ;) from the beginning of each line of a comment.">uncomment()</a></code> and <code><a class="el" href="confini_8c.html#a28e12cde8688ade4d85ea5d8b0db31d3" title="Examines a (single-/multi- line) segment and checks whether it contains more than just one entry.">further_cuts()</a></code>)</li>
-<li>Private functions <code><a class="el" href="confini_8c.html#a93c4d8e9287f6ce56f22ce90241b77f4" title="Gets the position of the first occurence out of quotes of a given character.">get_metachar_pos()</a></code> and <code><a class="el" href="confini_8c.html#a6dfd90309965c426ac9b072d79a08601" title="Out of quotes similar to ECMAScript str.replace(/&#39;&#39;|&quot;&quot;/g, &quot;&quot;)">collapse_empty_quotes()</a></code> have been created</li>
+<li>Private functions <code><a class="el" href="confini_8c.html#a93c4d8e9287f6ce56f22ce90241b77f4" title="Gets the position of the first occurence out of quotes of a given character.">get_metachar_pos()</a></code> and <code><a class="el" href="confini_8c.html#a6dfd90309965c426ac9b072d79a08601" title="Similar to ECMAScript str.replace(/&#39;&#39;|&quot;&quot;/g, &quot;&quot;)">collapse_empty_quotes()</a></code> have been created</li>
 <li>Private functions † <code>sanitize_key_name()</code> and † <code>get_delimiter_pos()</code> have been renamed to <code><a class="el" href="confini_8c.html#a0ab1c9f49e30ee6f637c213a27738d21" title="Out of quotes similar to ECMAScript ini_string.replace(/&#39;&#39;|&quot;&quot;/g, &quot;&quot;).replace(/^[\n\r]\s*|\s+/g,...">collapse_everything()</a></code> and <code><a class="el" href="confini_8c.html#ab34de4f3cd8ff30c45ac7652457f695e" title="Gets the position of the first occurence out of quotes of a given character, stopping after a given n...">getn_metachar_pos()</a></code> (the latter now requires one more argument)</li>
 <li>Documentation</li>
 <li>Examples</li>
@@ -264,7 +274,7 @@ $(function() {
 <li><code>enum</code> tags † <code>ConfiniErrorNo</code> and † <code>IniComments</code> have been renamed to <code>ConfiniInterruptNo</code> and <code>IniCommentMarker</code></li>
 <li>Private function † <code>sanitize_section_name()</code> has been renamed to <code><a class="el" href="confini_8c.html#aa17889754780149f18e417607e5ffb24" title="Sanitizes a section path.">sanitize_section_path()</a></code></li>
 <li>Created private function † <code>sanitize_key_name()</code></li>
-<li>Code review (<code><a class="el" href="confini_8h.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array in number of members.">ini_array_get_length()</a></code>, <code><a class="el" href="confini_8h.html#ad04ddad7ba1f627379ac714e656a693a" title="Compares a simple string and an INI string and and checks if they match.">ini_string_match_si()</a></code>, <code><a class="el" href="confini_8h.html#a24a43707c6c2f056615ae02b67f6d3cc" title="Compares two INI strings and checks if they match.">ini_string_match_ii()</a></code>, private functions <code><a class="el" href="confini_8c.html#aa17889754780149f18e417607e5ffb24" title="Sanitizes a section path.">sanitize_section_path()</a></code> and <code><a class="el" href="confini_8c.html#a6ace46ed55f0c50e6314cb4610c536ab" title="Out of quotes similar to ECMAScript ini_string.replace(/^[\n\r]\s*|\s+/g, &quot; &quot;)">collapse_spaces()</a></code>)</li>
+<li>Code review (<code><a class="el" href="confini_8h.html#a312803fa24be2d7f164f3041fbfa6865" title="Gets the length of a stringified INI array in number of members.">ini_array_get_length()</a></code>, <code><a class="el" href="confini_8h.html#ad04ddad7ba1f627379ac714e656a693a" title="Compares a simple string and an INI string and and checks if they match.">ini_string_match_si()</a></code>, <code><a class="el" href="confini_8h.html#a24a43707c6c2f056615ae02b67f6d3cc" title="Compares two INI strings and checks if they match.">ini_string_match_ii()</a></code>, private functions <code><a class="el" href="confini_8c.html#aa17889754780149f18e417607e5ffb24" title="Sanitizes a section path.">sanitize_section_path()</a></code> and <code><a class="el" href="confini_8c.html#a6ace46ed55f0c50e6314cb4610c536ab" title="Out of quotes similar to ECMAScript ini_string.replace(/\s+/g, &quot; &quot;)">collapse_spaces()</a></code>)</li>
 <li>Made sure that sections appended to root as pseudo-subsections will be dispatched always without the leading dot</li>
 <li>Made sure that key and section names will always be cleaned of empty quotes in formats that support quotes (relevant for space collapsing)</li>
 <li>Removed unused internationalization support from <b>Autotools</b></li>

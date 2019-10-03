@@ -12,39 +12,38 @@ AM_CFLAGS = \
 	-g \
 	"-O$(CODE_OPTIMIZATION)"
 
-lib_LTLIBRARIES = lib@LIBRARY_DISTNAME@.la
+lib_LTLIBRARIES = lib@PROJECT_LOCALNAME@.la
 
-lib@LIBRARY_DISTNAME@_la_SOURCES = \
+lib@PROJECT_LOCALNAME@_la_SOURCES = \
 	confini.c
 
-lib@LIBRARY_DISTNAME@_la_LDFLAGS = \
+lib@PROJECT_LOCALNAME@_la_LDFLAGS = \
 	-version-info "$(INTERFACE_NUMBER):$(IMPLEMENTATION_NUMBER):$(INTERFACE_COMPATIBILITY)"
 
-lib@LIBRARY_DISTNAME@_la_LIBADD = 
+lib@PROJECT_LOCALNAME@_la_LIBADD = 
 
 
 if PLATFORM_MSWIN
 
-lib@LIBRARY_DISTNAME@_la_LDFLAGS += \
+lib@PROJECT_LOCALNAME@_la_LDFLAGS += \
 	-no-undefined
 
 
 if NATIVE_MSWIN
 
-lib@LIBRARY_DISTNAME@_la_LDFLAGS += \
-	-export-dynamic \
-	-avoid-version
+lib@PROJECT_LOCALNAME@_la_LDFLAGS += \
+	-export-dynamic
 
 endif
 
 
 if HAVE_RC
-	
+
 ## Use Microsoft UTF-8 code page (`65001`) when compiling Windows resource files
 AM_RCFLAGS = \
 	--codepage=65001
 
-lib@LIBRARY_DISTNAME@_la_SOURCES += \
+lib@PROJECT_LOCALNAME@_la_SOURCES += \
 	winres.rc
 
 .rc.lo:
@@ -56,14 +55,22 @@ endif
 endif
 
 
+if SKIP_VERSIONING
+
+lib@PROJECT_LOCALNAME@_la_LDFLAGS += \
+	-avoid-version
+
+endif
+
+
 include_HEADERS = \
 	confini.h
 
 pkgconfig_DATA = \
-	$(PACKAGE_NAME).pc
+	$(PACKAGE_LOCALNAME).pc
 
 EXTRA_DIST = \
-	$(PACKAGE_REALNAME).pc.in
+	$(PACKAGE_NAME).pc.in
 
 ## EOF
 

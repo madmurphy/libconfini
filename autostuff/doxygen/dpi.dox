@@ -80,7 +80,7 @@ This file provides the markdown source code for the \ref changelog.
 
 \mainpage	libconfini
 
-Welcome to the documentation of **libconfini**!
+Welcome to the documentation of **libconfini**.
 
 You can get started by having a look at the [README](\ref readme) and
 [the manual](\ref libconfini). Further useful resources include:
