@@ -31,15 +31,15 @@ Changes:
 
 ## 1.9.0
 
-* Added `--multiversion` option to the `autogen.sh` script for future major
+* Added † `--multiversion` option to the † `autogen.sh` script for future major
   version changes (see `INSTALL`)
 
 
 ## 1.8.0
 
-* Introduced libtool versioning system for the compiled binary (versioning
+* Introduced **libtool** versioning system for the compiled binary (versioning
   begins with current version 1.8.0, represented as `0:0:0`); note that
-  libtool versioning system does not affect the versioning of the project
+  **libtool** versioning system does not affect the versioning of the project
   currently in use, but constitutes only a means for the linker to keep track
   of incompatibilities between different releases of the library
 * New examples have been created (`examples/topics/ini_array_foreach.c`,

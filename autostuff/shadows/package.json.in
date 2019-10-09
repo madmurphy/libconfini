@@ -6,25 +6,25 @@
 	"author": "@PACKAGE_BUGREPORT@",
 	"license": "@LICENSE_SHORTNAME@",
 	"main": "@PACKAGE_CONFNAME@",
-	"repo": "@AUTHOR_NICKNAME@/@PACKAGE_NAME@",
+	"repo": "@PUBLISHER_ID@/@PACKAGE_NAME@",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/@AUTHOR_NICKNAME@/@PACKAGE_NAME@.git"
+		"url": "@GIT_HTTP_SERVER@/@PUBLISHER_ID@/@PACKAGE_NAME@.git"
 	},
 	"src": [
-		"src/confini.c",
-		"src/confini.h"
+		"src/@PROJECT_NAME@.c",
+		"src/@PROJECT_NAME@.h"
 	],
 	"bugs": {
-		"url": "https://github.com/@AUTHOR_NICKNAME@/@PACKAGE_NAME@/issues",
+		"url": "@GIT_HTTP_SERVER@/@PUBLISHER_ID@/@PACKAGE_NAME@/issues",
 		"email" : "@PACKAGE_BUGREPORT@"
 	},
 	"man" : [
-		"docs/man/man3/confini.h.3",
+		"docs/man/man3/@PROJECT_NAME@.h.3",
 		"docs/man/man3/IniDispatch.3",
 		"docs/man/man3/IniFormat.3",
 		"docs/man/man3/IniStatistics.3",
-		"docs/man/man3/libconfini.3"
+		"docs/man/man3/@PACKAGE_NAME@.3"
 	],
 	"keywords": [
 		"c",

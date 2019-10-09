@@ -67,6 +67,16 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Record of notable changes</p>
+<h1>1.10.3 &ndash; 2019-10-10</h1>
+<p>Changes:</p>
+<ul>
+<li>The † <code>autogen.sh</code> script has been renamed to <code>bootstrap</code></li>
+<li>Code review in the <b>Autotools</b> environment (fixed <code>make distcheck</code> fail; made sure that the <code>configure</code> and <code>bootstrap</code> scripts can be launched from any path; created <code>make source-image</code>, <code>make authors-suitcase</code>, <code>make source-release</code> and <code>make authors-copy</code> targets for better reproducing the content of the package as released by its authors; created <code>make binary-image</code>, <code>make binary-release</code> and <code>make install-manifest</code> targets for aiding staged installations; created a <code>make author-clean</code> target for cleaning the source directory with the same degree of fury of <code>./bootstrap --clean</code>; created a <code>make help</code> target for printing the list of commonly used targets; replaced † <code>autogen.sh --multiversion</code> with <code>./configure --with-other-versions</code> for creating a package able to coexist with other versions of itself)</li>
+<li>The <code>-Wl,--subsystem,windows</code> compiler option has been removed from <code>mgwmake.bat</code></li>
+<li>The "GPL3 version 3" license string has been replaced everywhere with "GPL
+  version 3 or any later version" (or a similar label)</li>
+<li>Documentation</li>
+</ul>
 <h1>1.10.2 &ndash; 2019-10-03</h1>
 <p>Changes:</p>
 <ul>
@@ -107,7 +117,7 @@ $(function() {
 <p>Changes:</p>
 <ul>
 <li>Improved performance of <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parses an INI file and dispatches its content using a FILE structure as argument.">load_ini_file()</a></code> (ambiguous disabled entries that have been already tested with a negative result before invoking <code>f_init()</code> will be internally marked as comments for not being tested twice &ndash; an example of such ambiguous disabled entries is <code>#[foo #bar]</code>)</li>
-<li>Added <code>--multiversion</code> option to the <code>autogen.sh</code> script for future major version changes (see <code>INSTALL</code>)</li>
+<li>Added † <code>--multiversion</code> option to the † <code>autogen.sh</code> script for future major version changes (see <code>INSTALL</code>)</li>
 <li>Added <code>--with-pkgconfigdir=DIR</code> option to the <code>configure</code> script</li>
 <li>Private function <code><a class="el" href="confini_8c.html#ac2aa1c0316cc78e3f878e1ea644b48f8" title="Soft left trim within an unparsed disabled entry (left trim of /(?:(?:^|\\?[\n\r])[ \t\v\f]*(?...">dqultrim_s()</a></code> has been created</li>
 <li>Private macros <code>_LIBCONFINI_IS_COM_MARKER_()</code> and <code>_LIBCONFINI_SC_INT_MARKER_</code> have been created</li>
@@ -131,7 +141,7 @@ $(function() {
 <h1>1.8.4 &ndash; 2019-01-08</h1>
 <p>Changes:</p>
 <ul>
-<li><code>autogen.sh</code>: replaced <code>#!/bin/sh</code> with <code>#!/bin/bash</code> &ndash; see issue <a href="https://github.com/madmurphy/libconfini/issues/7">#7</a></li>
+<li>† <code>autogen.sh</code>: replaced <code>#!/bin/sh</code> with <code>#!/bin/bash</code> &ndash; see issue <a href="https://github.com/madmurphy/libconfini/issues/7">#7</a></li>
 </ul>
 <h1>1.8.3 &ndash; 2018-11-19</h1>
 <p>Changes:</p>
@@ -146,7 +156,7 @@ $(function() {
 <li>Code review (private function <code><a class="el" href="confini_8c.html#a28e12cde8688ade4d85ea5d8b0db31d3" title="Examines a (single-/multi- line) segment and checks whether it contains more than just one entry.">further_cuts()</a></code>)</li>
 <li>Optimization flag <code>-O2</code> seems to be working better than <code>-O3</code> on Unix systems: conditionally use <code>-O2</code> or <code>-O3</code> depending on the host</li>
 <li>Use <b>libtool</b>'s <code>-avoid-version</code> only when compiling under native Microsoft Windows environment</li>
-<li>Added <code>--clean</code> option to the <code>autogen.sh</code> script</li>
+<li>Added <code>--clean</code> option to the † <code>autogen.sh</code> script</li>
 <li>Updated <b>Autotools</b> macros</li>
 <li>Documentation</li>
 <li>Examples</li>
@@ -188,7 +198,7 @@ $(function() {
 <p>Changes:</p>
 <ul>
 <li>Added <code>--disable-doc</code> and <code>--disable-examples</code> options to the <code>configure</code> script</li>
-<li>Added <code>--noconfigure</code> and <code>--help</code> options to the <code>autogen.sh</code> script</li>
+<li>Added <code>--noconfigure</code> and <code>--help</code> options to the † <code>autogen.sh</code> script</li>
 </ul>
 <h1>1.7.0 &ndash; 2018-10-06</h1>
 <p>Changes:</p>

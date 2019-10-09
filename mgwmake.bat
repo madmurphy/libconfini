@@ -6,7 +6,7 @@ REM otherwise this script won't work.
 
 SET RCCOMPILER=windres.exe
 SET CCOMPILER=gcc.exe
-SET CFLAGS=-std=c99 -pedantic -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined -Wl,--subsystem,windows
+SET CFLAGS=-std=c99 -pedantic -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined
 SET DLLOUTPUT=libconfini.dll
 SET RCFILE=src\winres.rc
 REM The following variable may contain a space-delimited list of files

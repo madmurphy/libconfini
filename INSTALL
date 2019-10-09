@@ -19,10 +19,28 @@ setting, use
 
 to list the configure options.
 
+After running the `configure` script, you can print the list of commonly used
+targets by launching `make help`.
+
 If the `configure` script is missing from your package you need to create it by
-running the `autogen.sh` script. Use the `--noconfigure` parameter to prevent
-`autogen.sh` from running automatically `configure` immediately after having
-generated it. To list different options use `autogen.sh --help`.
+running the `bootstrap` script. Use the `--noconfigure` parameter to prevent
+`bootstrap` from running automatically `configure` immediately after having
+generated it. To list different options use `bootstrap --help`.
+
+If both the `configure` and `bootstrap` scripts are missing from your package
+you can initialize the build environment by launching the following commands
+from the source directory:
+
+    libtoolize
+    aclocal
+    automake --add-missing --copy --gnu
+    autoconf
+    ./configure
+
+Or you can use a more modern approach and launch directly:
+
+    autoreconf -i
+    ./configure
 
 
 Microsoft Windows
@@ -34,12 +52,12 @@ to compile the library manually, you can run:
 
     windres.exe --codepage=65001 -i winres.rc -o winres.o
     gcc.exe -std=c99 -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined \
-        -Wl,--subsystem,windows -o libconfini.dll confini.c winres.o
+        -o libconfini.dll confini.c winres.o
 
 If you want to compile only the library without the resource file, you can run:
 
     gcc.exe -std=c99 -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined \
-        -Wl,--subsystem,windows -o libconfini.dll confini.c
+        -o libconfini.dll confini.c
 
 If you want to build (and install) **libconfini** via Autotools under Microsoft
 Windows, several options are available, such as MinGW + MSYS, MSYS2, GnuWin32
@@ -47,6 +65,26 @@ and Cygwin (for which [an unofficial port][1] of **libconfini** exists).
 
 Often a compiled DLL [is available][2] among the assets of each release of this
 package on GitHub.
+
+
+Distributing the source code
+----------------------------
+
+If you aim to re-distribute the source code of **libconfini** you should first
+make sure that the `configure` script is present, for giving the possibility to
+compile the package without having Autotools installed. If the `configure`
+script is present and you have already launched it, use `make distclean` to
+reset the configuration that this has created, or use `make source-release` to
+build a fresh archive and ignore the current configuration.
+
+
+Distributing the compiled package
+---------------------------------
+
+Use `make binary-release` or `make binary-image` to create a binary package or
+an installation image of **libconfini**. Alternatively, if you only want to
+obtain the list of the files that are going to be installed, you can use `make
+install-manifest`.
 
 
 Complex installations
@@ -60,51 +98,33 @@ installed.
 For two or more different major releases to be able to coexist, the major
 number of each version must be appended to the package name it refers to, with
 the possible exception of only one package (usually version 1.x.x). This can be
-done easily by passing the `--multiversion` option to the `autogen.sh` script:
+done easily by passing the `--with-other-versions` option to the `configure`
+(or the `bootstrap`) script:
 
-    ./autogen.sh --multiversion
+    ./configure --with-other-versions
 
 This will ensure **libconfini** X.Y.Z to be installed as **libconfiniX** X.Y.Z.
-
-If you are not using the `autogen.sh` script provided, passing the
-`--multiversion` paramenter above is equivalent to setting a
-`$MULTIVERSION_PACKAGE` environment variable to any non-empty value other than
-`no` before launching `automake`. In particular, the command above corresponds
-to
-
-    libtoolize
-    aclocal
-    MULTIVERSION_PACKAGE=yes \
-        automake --add-missing --copy --gnu
-    autoconf
-    ./configure
-
-Or, using a more modern approach,
-
-    MULTIVERSION_PACKAGE=yes \
-        autoreconf -i
-    ./configure
 
 By convention you need to append the major version number to the name of the
 package only for major version numbers greater than one.
 
 If you want to install a modified version of **libconfini** without generating
 conflicts with an original version already present in the system, or you simply
-want to install **libconfini** under a different name, you can use
-**Autoconf**'s transforming rules. In particular, to prepend a prefix to the
-library name, use `./configure --program-prefix=[PREFIX]`; to append a suffix,
-use `./configure --program-suffix=[SUFFIX]`; to perform a `sed` substitution,
-use `./configure --program-transform-name='s/[OLDTEXT]/[NEWTEXT]/[g]'`. Note
-that the `lib` prefix at the beginning of the library name is always preserved
--- for instance, `./configure --program-transform-name='s/^.*$/hello/'` will
-rename the package to "libhello". If you specify a prefix and/or a suffix
-together with a `sed` substitution, the latter will be performed after the
-former have been concatenated to the original name.
+want to install **libconfini** under a different name, you can use Autoconf
+transforming rules. In particular, to prepend a prefix to the library name, use
+`./configure --program-prefix=[PREFIX]`; to append a suffix, use `./configure
+--program-suffix=[SUFFIX]`; to perform a `sed` substitution, use `./configure
+--program-transform-name='s/[OLDTEXT]/[NEWTEXT]/[g]'`. Note that the `lib`
+prefix at the beginning of the library name is always preserved (for instance,
+`./configure --program-transform-name='s/^.*$/hello/'` will rename the package
+to "libhello"). If you specify a prefix and/or a suffix together with a `sed`
+substitution, the latter will be performed after the former have been
+concatenated to the original name.
 
-Do not use **Autoconf**'s transforming rules in place of the built-in
-`./autogen.sh --multiversion` for appending the major version number to the
-name of the package. If you do so, the header file will be installed as
-`confiniX.h`, instead of the more standard `confini-X.h`.
+Do not use Autoconf transforming rules in place of the built-in `./configure
+--with-other-versions` for appending the major version number to the name of
+the package. If you do so, the header file will be installed as `confiniX.h`,
+instead of the more standard `confini-X.h`.
 
 For any issue, drop a message at https://github.com/madmurphy/libconfini/issues.
 

@@ -5,7 +5,7 @@
     @file       confini.h
     @brief      libconfini header
     @author     Stefano Gioffr&eacute;
-    @copyright  GNU Public License v3
+    @copyright  GNU Public License version 3 or any later version
     @date       2016-2019
     @see        https://github.com/madmurphy/libconfini/
 
@@ -170,12 +170,12 @@ typedef int (* IniSubstrHandler) (
 
 
 extern int strip_ini_cache (
-	register char * const ini_source,
-	const size_t ini_length,
-	const IniFormat format,
-	const IniStatsHandler f_init,
-	const IniDispHandler f_foreach,
-	void * const user_data
+    register char * const ini_source,
+    const size_t ini_length,
+    const IniFormat format,
+    const IniStatsHandler f_init,
+    const IniDispHandler f_foreach,
+    void * const user_data
 );
 
 

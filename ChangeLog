@@ -2,6 +2,29 @@ Change Log {#changelog}
 =======================
 
 
+## 1.10.3 -- 2019-10-10
+
+Changes:
+
+* The † `autogen.sh` script has been renamed to `bootstrap`
+* Code review in the **Autotools** environment (fixed `make distcheck` fail;
+  made sure that the `configure` and `bootstrap` scripts can be launched from
+  any path; created `make source-image`, `make authors-suitcase`, `make
+  source-release` and `make authors-copy` targets for better reproducing the
+  content of the package as released by its authors; created `make binary-image`,
+  `make binary-release` and `make install-manifest` targets for aiding staged
+  installations; created a `make author-clean` target for cleaning the source
+  directory with the same degree of fury of `./bootstrap --clean`; created a
+  `make help` target for printing the list of commonly used targets; replaced
+  † `autogen.sh --multiversion` with `./configure --with-other-versions` for
+  creating a package able to coexist with other versions of itself)
+* The `-Wl,--subsystem,windows` compiler option has been removed from
+  `mgwmake.bat`
+* The "GPL3 version 3" license string has been replaced everywhere with "GPL
+  version 3 or any later version" (or a similar label)
+* Documentation
+
+
 ## 1.10.2 -- 2019-10-03
 
 Changes:
@@ -71,7 +94,7 @@ Changes:
   have been already tested with a negative result before invoking `f_init()`
   will be internally marked as comments for not being tested twice -- an
   example of such ambiguous disabled entries is `#[foo #bar]`)
-* Added `--multiversion` option to the `autogen.sh` script for future major
+* Added † `--multiversion` option to the † `autogen.sh` script for future major
   version changes (see `INSTALL`)
 * Added `--with-pkgconfigdir=DIR` option to the `configure` script
 * Private function `dqultrim_s()` has been created
@@ -106,7 +129,7 @@ Changes:
 
 Changes:
 
-* `autogen.sh`: replaced `#!/bin/sh` with `#!/bin/bash` -- see issue
+* † `autogen.sh`: replaced `#!/bin/sh` with `#!/bin/bash` -- see issue
   [#7](https://github.com/madmurphy/libconfini/issues/7)
 
 
@@ -129,7 +152,7 @@ Changes:
   systems: conditionally use `-O2` or `-O3` depending on the host
 * Use **libtool**'s `-avoid-version` only when compiling under native Microsoft
   Windows environment
-* Added `--clean` option to the `autogen.sh` script
+* Added `--clean` option to the † `autogen.sh` script
 * Updated **Autotools** macros
 * Documentation
 * Examples
@@ -203,7 +226,7 @@ Changes:
 
 * Added `--disable-doc` and `--disable-examples` options to the `configure`
   script
-* Added `--noconfigure` and `--help` options to the `autogen.sh` script
+* Added `--noconfigure` and `--help` options to the † `autogen.sh` script
 
 
 ## 1.7.0 -- 2018-10-06

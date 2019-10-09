@@ -54,6 +54,19 @@ m4_define([n4_case_in],
 			[$4])])
 
 
+dnl  n4_mem([macro-name1[, macro-name2[, ... macro-nameN]]], value)
+dnl  **************************************************************************
+dnl
+dnl  Expands to `value` after this has been stored into one or more macros
+dnl
+dnl  From: not-autotools/m4/not-m4sugar.m4
+dnl
+m4_define([n4_mem],
+	[m4_if([$#], [0], [],
+		[$#], [1], [$1],
+		[m4_define([$1], [$2])n4_mem(m4_shift($@))])])
+
+
 dnl  n4_charcode(character)
 dnl  **************************************************************************
 dnl
@@ -125,29 +138,6 @@ AC_DEFUN([NA_SANITIZE_VARNAME],
 		[__________________________________])])
 
 
-dnl  NM_SET_VERSION_ENVIRONMENT(project_name, majver, minver, revver)
-dnl  **************************************************************************
-dnl
-dnl  Gets the version environment for this package and sets the versioning
-dnl  macros accordingly
-dnl
-dnl  From: not-autotools/m4/not-misc.m4
-dnl
-AC_DEFUN_ONCE([NM_SET_VERSION_ENVIRONMENT], [
-	m4_define([NM_PROJECT_NAME], [$1])
-	m4_define([NM_PROJECT_MAJVER], [$2])
-	m4_define([NM_PROJECT_MINVER], [$3])
-	m4_define([NM_PROJECT_REVVER], [$4])
-	m4_define([NM_IF_MULTIVERSION],
-		m4_esyscmd_s([test "x${MULTIVERSION_PACKAGE}" = x \
-			-o "x${MULTIVERSION_PACKAGE}" = xno && \
-			echo '[$][2]' || echo '[$][1]']))
-	m4_define([NM_PROJECT_DISTNAME],
-		NM_IF_MULTIVERSION(NM_PROJECT_NAME[]NM_PROJECT_MAJVER,
-			NM_PROJECT_NAME))
-])
-
-
 dnl  NS_UNSET(var1[, var2[, var3[, ... varN]]])
 dnl  **************************************************************************
 dnl
@@ -156,7 +146,7 @@ dnl
 dnl  From: not-autotools/m4/not-autoshell.m4
 dnl
 AC_DEFUN([NS_UNSET],
-	[m4_ifnblank([$1], [AS_UNSET([$1]);])m4_if([$#], [1], [], [NS_UNSET(m4_shift($@))])])
+	[m4_ifnblank([$1], [AS_UNSET(m4_quote(m4_normalize([$1])));])m4_if([$#], [1], [], [NS_UNSET(m4_shift($@))])])
 
 
 dnl  NC_MSG_WARNBOX(problem-description)
@@ -197,8 +187,9 @@ AC_DEFUN_ONCE([NC_CONFIG_SHADOW_DIR], [
 			changes only and not on the state of this machine; possible values
 			for MODE are: omitted or "merge" for updating these files
 			immediately, "sandbox" for safely putting their updated version
-			into the "]NC_CONFNEW_DIR[" subdirectory without modifying the
-			package tree, or "no" for doing nothing @<:@default=no@:>@])],
+			into the "]m4_quote(NC_CONFNEW_DIR)[" subdirectory without
+			modifying the package tree, or "no" for doing nothing
+			@<:@default=no@:>@])],
 			[AS_IF([test "x${enableval}" = x -o "x${enableval}" = xyes],
 					[AS_VAR_SET([enable_extended_config], ['merge'])],
 				[test "x${enableval}" != xsandbox -a "x${enableval}" != xmerge], [
@@ -209,34 +200,38 @@ AC_DEFUN_ONCE([NC_CONFIG_SHADOW_DIR], [
 
 	AM_CONDITIONAL([HAVE_EXTENDED_CONFIG], [test "x${enable_extended_config}" != xno])
 	AM_CONDITIONAL([HAVE_UPDATES], [test "x${enable_extended_config}" = xsandbox])
-	AM_COND_IF([HAVE_EXTENDED_CONFIG], [AS_MKDIR_P(NC_CONFNEW_DIR)])
+	AM_COND_IF([HAVE_EXTENDED_CONFIG], [AS_MKDIR_P(["${srcdir}/]m4_quote(NC_CONFNEW_DIR)["])])
 
 	AC_DEFUN([NC_THREATEN_FILES], [
-		AM_COND_IF([HAVE_EXTENDED_CONFIG],
-			[AC_CONFIG_FILES([
-				]]n4_lambda([n4_case_in(m4_quote(][$][1][), m4_quote(NC_THREATENED_LIST),
-					[m4_define([NC_SHADOW_REDEF],
-						m4_ifset([NC_SHADOW_REDEF],
-							m4_dquote(m4_dquote(NC_SHADOW_REDEF,[ ]]]m4_dquote(m4_dquote([$][1]))[[)),
-							m4_dquote(m4_dquote(]]m4_dquote(m4_dquote([$][1]))[[))))],
+		AM_COND_IF([HAVE_EXTENDED_CONFIG], [
+			AC_CONFIG_FILES(m4_foreach([_F_ITER_], m4_dquote(]m4_dquote(][$][@][)[),
+				[n4_case_in(m4_quote(_F_ITER_), m4_quote(NC_THREATENED_LIST),
+					[n4_case_in(m4_quote(_F_ITER_), m4_quote(NC_SHADOW_REDEF), [],
+						[m4_define([NC_SHADOW_REDEF],
+							m4_ifset([NC_SHADOW_REDEF],
+								[m4_dquote(NC_SHADOW_REDEF,[ ]_F_ITER_)],
+								[m4_dquote(_F_ITER_)]))])],
 					[m4_define([NC_THREATENED_LIST],
 						m4_ifset([NC_THREATENED_LIST],
-							m4_dquote(m4_dquote(NC_THREATENED_LIST, ]]m4_dquote(m4_dquote([$][1]))[[)), m4_dquote(m4_dquote(]]m4_dquote(m4_dquote([$][1]))[[))))NC_CONFNEW_DIR[[/]]]m4_dquote(m4_dquote(][$][1][))[[[:]]NC_SHADOW_DIR[[/]]]m4_dquote(m4_dquote(][$][1][))[[[.in
-				]]])m4_if(m4_eval(][$][#][ > 1), [1],
-					[n4_anon(m4_shift(]m4_dquote(][$][@][)[))])])(][$][@][)[)
+								[m4_dquote(NC_THREATENED_LIST, _F_ITER_)],
+								[m4_dquote(_F_ITER_)]))
+					m4_quote([${srcdir}/]NC_CONFNEW_DIR[/]_F_ITER_[:]NC_SHADOW_DIR[/]_F_ITER_[.in])])]))
 		])
-		m4_ifdef([NC_SHADOW_REDEF], [m4_warn([syntax], [redefined configure files ]m4_quote(NC_SHADOW_REDEF)[ - skip])])
+
+		m4_ifdef([NC_SHADOW_REDEF],
+			[m4_warn([syntax], [redefined threatened files ]m4_quote(NC_SHADOW_REDEF)[ - skip])])
 	])
 
 	AC_DEFUN_ONCE([NC_THREATEN_BLINDLY],
-		[NC_THREATEN_FILES(m4_shift(m4_bpatsubst(m4_quote(m4_esyscmd([find ']NC_SHADOW_DIR[' -type f -name '*.in' -printf ", [[%P{/@/}]]"])), [\.in{/@/}], [])))])
+		[NC_THREATEN_FILES(m4_shift(m4_bpatsubst(m4_quote(m4_esyscmd([find ']m4_quote(NC_SHADOW_DIR)[' -type f -name '*.in' -printf ", [[%P{/@/}]]"])), [\.in{/@/}], [])))])
 
 	AC_DEFUN_ONCE([NC_SHADOW_MAYBE_OUTPUT], [
 		m4_ifset([NC_THREATENED_LIST], [
 			AM_COND_IF([HAVE_UPDATES],
-				[AC_MSG_NOTICE([extended configuration has been saved in ./]NC_CONFNEW_DIR[.])],
+				[AC_MSG_NOTICE([extended configuration has been saved in ${srcdir}/]m4_quote(NC_CONFNEW_DIR)[.])],
 				[AM_COND_IF([HAVE_EXTENDED_CONFIG], [
-					cp -rf NC_CONFNEW_DIR/* ./ && rm -rf NC_CONFNEW_DIR
+					cp -rf "${srcdir}/]m4_quote(NC_CONFNEW_DIR)["/* "${srcdir}"/ && \
+						rm -rf "${srcdir}/]m4_quote(NC_CONFNEW_DIR)["
 					AC_MSG_NOTICE([extended configuration has been merged with the package tree.])
 				])])
 		], [
@@ -266,6 +261,22 @@ AC_DEFUN([NC_REQ_PROGS], [
 	])
 	m4_if(m4_eval([$# > 2]), [1], [NC_REQ_PROGS(m4_shift2($@))])
 ])
+
+
+dnl  NA_HELP_STRINGS(list1, help1[, list2, help2[, ... listN, helpN]])
+dnl  **************************************************************************
+dnl
+dnl  Similar to `AS_HELP_STRING()`, but with support for multiple strings, each
+dnl  one associated with one or more options
+dnl
+dnl  From: not-autotools/m4/not-autotools.m4
+dnl
+m4_define([NA_HELP_STRINGS],
+	[m4_if(m4_count($1), [1],
+		[m4_if([$#], [0], [], [$#], [1],
+			[m4_text_wrap($1, [  ])],
+			[AS_HELP_STRING(m4_normalize($1), [$2])m4_if([$#], [2], [], [m4_newline()NA_HELP_STRINGS(m4_shift2($@))])])],
+		[m4_text_wrap(m4_argn(1, $1)[,], [  ])m4_newline()NA_HELP_STRINGS(m4_dquote(m4_shift($1))m4_if([$#], [1], [], [, m4_shift($@)]))])])
 
 
 dnl  NC_SET_GLOBALLY(name1, [value1][, name2, [value2][, ... nameN, [valueN]]])

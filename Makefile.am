@@ -7,10 +7,9 @@ SUBDIRS = src
 EXTRA_DIST = \
 	ChangeLog.md \
 	MANUAL.md \
-	RATIONALE.md \
 	README.md \
-	autogen.sh \
 	autostuff \
+	bootstrap \
 	docs \
 	mgwmake.bat \
 	package.json \
@@ -22,17 +21,22 @@ dist_doc_DATA = \
 
 # Create `$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h` and
 # `$(PROJECT_CONFNAME)-$(PROJECT_MAJVER).h`
-include_insthook_1 = \
-	mv "$(DESTDIR)$(includedir)/$(PROJECT_NAME).h" "$(DESTDIR)$(includedir)/$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h" && \
-	(cd "$(DESTDIR)$(includedir)" && $(LN_S) "$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h" "$(PROJECT_CONFNAME)-$(PROJECT_MAJVER).h")
+header_insthook_1 = \
+	mv '$(DESTDIR)$(includedir)/$(PROJECT_NAME).h' \
+	'$(DESTDIR)$(includedir)/$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h' && \
+	(cd '$(DESTDIR)$(includedir)' && \
+	$(LN_S) '$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h' \
+	'$(PROJECT_CONFNAME)-$(PROJECT_MAJVER).h')
 
 
-if THIS_IS_THE_ONLY_VERSION
+if !MULTIVERSION
 
 # Create `$(PROJECT_CONFNAME).h` only when the package must *not* coexist with
 # other major versions of itself
-include_insthook_2 = \
-	(cd "$(DESTDIR)$(includedir)" && $(LN_S) "$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h" "$(PROJECT_CONFNAME).h")
+header_insthook_2 = \
+	(cd '$(DESTDIR)$(includedir)' && \
+	$(LN_S) '$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h' \
+	'$(PROJECT_CONFNAME).h')
 
 endif
 
@@ -44,7 +48,7 @@ dist_doc_DATA += docs/manual.html \
 	NEWS \
 	README
 
-# Currently it's not possible to do `notrans_man_MANS = $(MANPAGE_LIST)`,
+# Currently it is not possible to do `notrans_man_MANS = $(MANPAGE_LIST)`,
 # because although the variable gets correctly assigned, it results still empty
 # when Automake creates the rules, so no rules for man pages will be created. A
 # workaround is to make Automake see at least one random file, and then re-set
@@ -105,40 +109,31 @@ dist_exampleutils_DATA = \
 	examples/utilities/make_strarray.h
 
 
-if RENAME_PACKAGE
+if HAVE_TRANSFORMATIONS
 
-# Edit example files if the package has been renamed
-examples_insthook_1 = \
-	$(SED) -i "s/-l$(PROJECT_NAME)/-l$(PROJECT_LOCALNAME)/g" "$(DESTDIR)$(examplesdir)/run_example.sh" && \
-	$(FIND) "$(DESTDIR)$(examplesdir)" -type f -name '*.c' | $(XARGS) $(SED) -i 's/<$(PROJECT_NAME).h>/<$(PROJECT_LOCALNAME).h>/g'
-
-else
-
-
-if !THIS_IS_THE_ONLY_VERSION
-
-# Edit example files if the package must coexist with other major versions of
+# Update example files if the package must coexist with other major versions of
 # itself
 examples_insthook_1 = \
-	$(SED) -i "s/-l$(PROJECT_NAME)/-l$(PROJECT_DISTNAME)/g" "$(DESTDIR)$(examplesdir)/run_example.sh" && \
-	$(FIND) "$(DESTDIR)$(examplesdir)" -type f -name '*.c' | $(XARGS) $(SED) -i 's/<$(PROJECT_NAME).h>/<$(PROJECT_NAME)-$(PROJECT_MAJVER).h>/g'
-
-endif
-
+	$(SED) -i 's/-l$(PROJECT_NAME)/-l$(PROJECT_LOCALNAME)/g' \
+	'$(DESTDIR)$(examplesdir)/run_example.sh' && \
+	$(FIND) '$(DESTDIR)$(examplesdir)' -type f -name '*.c' | \
+	$(XARGS) $(SED) -i 's/<$(PROJECT_NAME).h>/<$(LIBRARY_HEADERNAME).h>/g'
 
 endif
 
 
 # Make examples script executable
 examples_insthook_2 = \
-	chmod +x "$(DESTDIR)$(examplesdir)/run_example.sh"
+	chmod +x '$(DESTDIR)$(examplesdir)/run_example.sh'
 
 endif
 
 
+# Primary targets
+
 install-exec-hook:
-	$(include_insthook_1)
-	$(include_insthook_2)
+	$(header_insthook_1)
+	$(header_insthook_2)
 
 install-data-hook:
 	$(man_insthook)
@@ -146,19 +141,81 @@ install-data-hook:
 	$(examples_insthook_2)
 
 uninstall-local:
-	-rm -rf "$(docdir)"
-	-rm -f "$(includedir)/$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h" \
-		"$(includedir)/$(PROJECT_CONFNAME)-$(PROJECT_MAJVER).h"
+	-rm -f '$(DESTDIR)$(includedir)/$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h' \
+	'$(DESTDIR)$(includedir)/$(PROJECT_CONFNAME)-$(PROJECT_MAJVER).h'
+	-rm -rf '$(DESTDIR)$(docdir)'
 
 clean-local:
 	$(renaming_cleanhook)
-	-rm -rf 'no-dist' "$(CONFNEW_DIR)"
+	-rm -rf 'no-dist' '$(CONFNEW_DIR)'
 
+distclean-local:
+	-rm -f 'make-targets.txt'
+
+.PHONY: synch
 synch:
-	$(synch_actions)
+	$(AM_V_GEN)$(synch_actions)
 
 dist-hook:
 	$(renaming_disthook)
+
+.PHONY: author-clean
+author-clean: maintainer-clean
+	rm -rf '$(srcdir)/autom4te.cache' '$(srcdir)/m4' \
+	'$(srcdir)/build-aux' `find '$(srcdir)' -type d -name .deps` `find . -type d -name .deps`
+	rm -f '$(srcdir)/aclocal.m4' '$(srcdir)'/config.* config.* '$(srcdir)/configure' \
+	'$(srcdir)/libtool' 'libtool' '$(srcdir)/ltmain.sh' 'ltmain.sh' `find '$(srcdir)' -name 'Makefile.in'`
+
+
+# Secondary targets
+
+.PHONY: binary-image
+binary-image:
+	_DSTDIR_="`pwd`/$(PACKAGE_LOCALNAME)-$(PACKAGE_VERSION)-$(build)-pkg/" && \
+	rm -rf "$$_DSTDIR_" && $(MAKE) DESTDIR="$$_DSTDIR_" install
+
+.PHONY: source-image
+source-image: distdir
+	rm -f '$(distdir)/ChangeLog.md' '$(distdir)/README.md' && \
+	(cd '$(distdir)' && $(LN_S) 'ChangeLog' 'ChangeLog.md' && \
+	$(LN_S) 'README' 'README.md')
+
+.PHONY: authors-suitcase
+authors-suitcase: source-image
+	(cd '$(distdir)' && rm -rf build-aux m4 && rm -f aclocal.m4 \
+	'configure' `find . -name Makefile.in`) && \
+	mv '$(distdir)' '$(distdir)-dev'
+
+.PHONY: binary-release
+binary-release: binary-image
+	(cd '$(PACKAGE_LOCALNAME)-$(PACKAGE_VERSION)-$(build)-pkg' && \
+	$(AMTAR) -cJf '../$(PACKAGE_LOCALNAME)-$(PACKAGE_VERSION)-$(build).pkg.tar.xz' *) && \
+	rm -rf '$(PACKAGE_LOCALNAME)-$(PACKAGE_VERSION)-$(build)-pkg'
+
+.PHONY: source-release
+source-release: source-image
+	$(AMTAR) -czf '$(distdir).tar.gz' '$(distdir)' && rm -rf '$(distdir)'
+
+.PHONY: authors-copy
+authors-copy: authors-suitcase
+	$(AMTAR) -czf '$(distdir)-dev.tar.gz' '$(distdir)-dev' && \
+	rm -rf '$(distdir)-dev'
+
+.PHONY: install-manifest
+install-manifest: binary-image
+	(cd '$(PACKAGE_LOCALNAME)-$(PACKAGE_VERSION)-$(build)-pkg' && \
+	$(FIND) * -type f,l -printf '/%p\n' > \
+	'../$(PACKAGE_LOCALNAME)-$(PACKAGE_VERSION)-$(build).manifest') && \
+	rm -rf '$(PACKAGE_LOCALNAME)-$(PACKAGE_VERSION)-$(build)-pkg'
+
+.PHONY: clobber
+clobber: uninstall clean
+
+.PHONY: help
+help:
+	$(AM_V_GEN)cat 'make-targets.txt' && \
+	echo 'This package is currently configured for a $(host_cpu) $(host_vendor) running $(host_os).' || \
+	echo 'Please launch `$(srcdir)/configure` again.'
 
 
 ## EOF

@@ -143,10 +143,10 @@ For a minimum installation without man pages and examples, use `./configure
 --disable-man --disable-examples`.
 
 If the `configure` script is missing from your package you need to generate it
-by running the `autogen.sh` script. By default, `autogen.sh` will also run the
+by running the `bootstrap` script. By default, `bootstrap` will also run the
 `configure` script immediately after having generated it, so you may type the
-`make` command directly after `autogen.sh`. To list different options use
-`autogen.sh --help`.
+`make` command directly after `bootstrap`. To list different options use
+`bootstrap --help`.
 
 If you are using Microsoft Windows, a batch script for compiling **libconfini**
 under [MinGW][5] without Autotools is available (`mgwmake.bat`). If you are
@@ -161,7 +161,8 @@ Free software
 -------------
 
 This library is free software. You can redistribute it and/or modify it under
-the terms of the GPL3 license. See [COPYING][11] for details.
+the terms of the GPL license version 3 or any later version. See [COPYING][11]
+for details.
 
 
 [1]: https://madmurphy.github.io/libconfini/html/libconfini.html

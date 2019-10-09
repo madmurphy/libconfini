@@ -6,7 +6,7 @@
 	@file		confini.c
 	@brief		libconfini functions
 	@author		Stefano Gioffr&eacute;
-	@copyright	GNU Public License v3
+	@copyright	GNU Public License version 3 or any later version
 	@date		2016-2019
 	@see		https://github.com/madmurphy/libconfini/
 
