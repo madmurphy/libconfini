@@ -34,7 +34,7 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 int main () {
 
   if (load_ini_path(
-    "ini_files/typed_ini.conf",
+    "../ini_files/typed_ini.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     my_ini_listener,

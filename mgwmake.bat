@@ -6,6 +6,7 @@ REM otherwise this script won't work.
 
 SET RCCOMPILER=windres.exe
 SET CCOMPILER=gcc.exe
+SET STRIPCMD=strip.exe
 SET CFLAGS=-std=c99 -pedantic -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined
 SET DLLOUTPUT=libconfini.dll
 SET RCFILE=src\winres.rc
@@ -15,7 +16,7 @@ SET SRCFILES=src\confini.c
 WHERE %CCOMPILER% >nul 2>nul
 
 IF %ERRORLEVEL% NEQ 0 (
-	@ECHO Program %CCOMPILER% was not found.
+	@ECHO Program %CCOMPILER% has not been found. Abort.
 	EXIT /B 1
 )
 
@@ -24,7 +25,7 @@ SET /A __WINDRESERR__=%ERRORLEVEL%
 SET __TMP_RSO__=winres.o
 
 IF %__WINDRESERR__% NEQ 0 (
-	@ECHO Program %RCCOMPILER% was not found. Proceeding without resource file.
+	@ECHO Program %RCCOMPILER% has not been found. Proceeding without resource file.
 	GOTO COMPILE_DLL
 )
 
@@ -50,8 +51,27 @@ SET /A __GCCERR__=%ERRORLEVEL%
 
 IF %__WINDRESERR__% EQU 0 DEL %__TMP_RSO__%
 
-IF %__GCCERR__% EQU 0 @ECHO Done.
+IF %__GCCERR__% NEQ 0 (
+	EXIT /B %__GCCERR__%
+)
 
-EXIT /B %__GCCERR__%
+WHERE %STRIPCMD% >nul 2>nul
+SET /A __STRIPCMDERR__=%ERRORLEVEL%
+
+IF %__STRIPCMDERR__% EQU 0 (
+	@ECHO Stripping %DLLOUTPUT%...
+) ELSE (
+	@ECHO Program %STRIPCMD% has not been found. The dll has not been stripped.
+	EXIT /B 0
+)
+
+%STRIPCMD% %DLLOUTPUT%
+SET /A __STRIPPROGERR__=%ERRORLEVEL%
+
+IF %__STRIPPROGERR__% EQU 0 (
+	@ECHO Done.
+)
+
+EXIT /B %__STRIPPROGERR__%
 
 ENDLOCAL

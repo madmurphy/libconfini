@@ -17,7 +17,7 @@ static int my_callback (IniDispatch * dispatch, void * v_null) {
 int main () {
 
   if (load_ini_path(
-    "ini_files/delivery.conf",
+    "../ini_files/delivery.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     my_callback,

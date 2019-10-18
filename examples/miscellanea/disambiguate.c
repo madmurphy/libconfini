@@ -50,7 +50,7 @@ int main () {
   printf(":: Content of \"ambiguous.conf\" ::\n\n");
 
   if (load_ini_path(
-    "ini_files/ambiguous.conf",
+    "../ini_files/ambiguous.conf",
     my_format,
     NULL,
     ini_listener,

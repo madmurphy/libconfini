@@ -273,7 +273,7 @@ $(function() {
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main () {</div>
 <div class="line"> </div>
-<div class="line">  FILE * <span class="keyword">const</span> ini_file = fopen(<span class="stringliteral">&quot;ini_files/delivery.conf&quot;</span>, <span class="stringliteral">&quot;rb&quot;</span>);</div>
+<div class="line">  FILE * <span class="keyword">const</span> ini_file = fopen(<span class="stringliteral">&quot;../ini_files/delivery.conf&quot;</span>, <span class="stringliteral">&quot;rb&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (ini_file == NULL) {</div>
 <div class="line"> </div>
@@ -320,7 +320,7 @@ $(function() {
 <div class="line"><span class="keywordtype">int</span> main () {</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17">load_ini_path</a>(</div>
-<div class="line">    <span class="stringliteral">&quot;ini_files/delivery.conf&quot;</span>,</div>
+<div class="line">    <span class="stringliteral">&quot;../ini_files/delivery.conf&quot;</span>,</div>
 <div class="line">    <a class="code" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a>,</div>
 <div class="line">    NULL,</div>
 <div class="line">    my_callback,</div>
@@ -519,7 +519,7 @@ $(function() {
 <div class="line"><span class="keywordtype">int</span> main () {</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17">load_ini_path</a>(</div>
-<div class="line">    <span class="stringliteral">&quot;ini_files/self_explaining.conf&quot;</span>,</div>
+<div class="line">    <span class="stringliteral">&quot;../ini_files/self_explaining.conf&quot;</span>,</div>
 <div class="line">    <a class="code" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a>,</div>
 <div class="line">    NULL,</div>
 <div class="line">    ini_listener,</div>
@@ -717,7 +717,7 @@ $(function() {
 <div class="line">  my_format.<a class="code" href="structIniFormat.html#ae5722efd535f1d27c624a927eea622c3">implicit_is_not_empty</a> = YES;</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17">load_ini_path</a>(</div>
-<div class="line">    <span class="stringliteral">&quot;ini_files/unix-like.conf&quot;</span>,</div>
+<div class="line">    <span class="stringliteral">&quot;../ini_files/unix-like.conf&quot;</span>,</div>
 <div class="line">    my_format,</div>
 <div class="line">    NULL,</div>
 <div class="line">    ini_listener,</div>
@@ -763,7 +763,7 @@ $(function() {
 <div class="line"> </div>
 <div class="line">  <span class="comment">/*  Load INI file  */</span></div>
 <div class="line">  <span class="keywordtype">int</span> retval = <a class="code" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17">load_ini_path</a>(</div>
-<div class="line">    <span class="stringliteral">&quot;ini_files/self_explaining.conf&quot;</span>,</div>
+<div class="line">    <span class="stringliteral">&quot;../ini_files/self_explaining.conf&quot;</span>,</div>
 <div class="line">    <a class="code" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a>,</div>
 <div class="line">    NULL,</div>
 <div class="line">    passfinder,</div>
@@ -849,7 +849,7 @@ $(function() {
 <div class="line">  <span class="keyword">struct </span>size_check check;</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17">load_ini_path</a>(</div>
-<div class="line">    <span class="stringliteral">&quot;ini_files/example.conf&quot;</span>,</div>
+<div class="line">    <span class="stringliteral">&quot;examples/ini_files/example.conf&quot;</span>,</div>
 <div class="line">    <a class="code" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a>,</div>
 <div class="line">    ini_init,</div>
 <div class="line">    ini_listener,</div>
@@ -1036,7 +1036,7 @@ $(function() {
 <div class="line">  printf(<span class="stringliteral">&quot;:: Content of &#39;ambiguous.conf&#39; ::\n\n&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17">load_ini_path</a>(</div>
-<div class="line">    <span class="stringliteral">&quot;ini_files/ambiguous.conf&quot;</span>,</div>
+<div class="line">    <span class="stringliteral">&quot;examples/ini_files/ambiguous.conf&quot;</span>,</div>
 <div class="line">    my_format,</div>
 <div class="line">    NULL,</div>
 <div class="line">    ini_listener,</div>

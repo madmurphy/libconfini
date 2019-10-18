@@ -91,7 +91,7 @@ int main () {
   ini_global_set_implicit_value("YES", 0);
 
   my_other.my_date = "Thursday September 22th, 2016";
-  my_other.my_ini_file = "ini_files/self_explaining.conf";
+  my_other.my_ini_file = "../ini_files/self_explaining.conf";
 
   /*  Use the default format as model for the new format  */
   my_format = INI_DEFAULT_FORMAT;

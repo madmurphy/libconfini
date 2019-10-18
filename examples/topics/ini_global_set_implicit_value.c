@@ -45,7 +45,7 @@ int main () {
   my_format.implicit_is_not_empty = YES;
 
   if (load_ini_path(
-    "ini_files/unix-like.conf",
+    "../ini_files/unix-like.conf",
     my_format,
     NULL,
     ini_listener,

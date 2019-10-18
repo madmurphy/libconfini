@@ -25,7 +25,7 @@ targets by launching `make help`.
 If the `configure` script is missing from your package you need to create it by
 running the `bootstrap` script. Use the `--noconfigure` parameter to prevent
 `bootstrap` from running automatically `configure` immediately after having
-generated it. To list different options use `bootstrap --help`.
+generated it. To list different options use `./bootstrap --help`.
 
 If both the `configure` and `bootstrap` scripts are missing from your package
 you can initialize the build environment by launching the following commands
@@ -53,11 +53,13 @@ to compile the library manually, you can run:
     windres.exe --codepage=65001 -i winres.rc -o winres.o
     gcc.exe -std=c99 -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined \
         -o libconfini.dll confini.c winres.o
+    strip.exe libconfini.dll
 
 If you want to compile only the library without the resource file, you can run:
 
     gcc.exe -std=c99 -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined \
         -o libconfini.dll confini.c
+    strip.exe libconfini.dll
 
 If you want to build (and install) **libconfini** via Autotools under Microsoft
 Windows, several options are available, such as MinGW + MSYS, MSYS2, GnuWin32
@@ -81,10 +83,9 @@ build a fresh archive and ignore the current configuration.
 Distributing the compiled package
 ---------------------------------
 
-Use `make binary-release` or `make binary-image` to create a binary package or
-an installation image of **libconfini**. Alternatively, if you only want to
-obtain the list of the files that are going to be installed, you can use `make
-install-manifest`.
+Use `make binary-release` to create a binary package of **libconfini**.
+Alternatively, if you only want to obtain the list of the files that are going
+to be installed, use `make manifest`.
 
 
 Complex installations
@@ -97,9 +98,9 @@ installed.
 
 For two or more different major releases to be able to coexist, the major
 number of each version must be appended to the package name it refers to, with
-the possible exception of only one package (usually version 1.x.x). This can be
+the possible exception of only one package (usually version 1.X.X). This can be
 done easily by passing the `--with-other-versions` option to the `configure`
-(or the `bootstrap`) script:
+script:
 
     ./configure --with-other-versions
 

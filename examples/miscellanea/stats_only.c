@@ -24,7 +24,7 @@ static int my_stats_handler (IniStatistics * statistics, void * user_data) {
 int main () {
 
   if (load_ini_path(
-    "ini_files/self_explaining.conf",
+    "../ini_files/self_explaining.conf",
     INI_DEFAULT_FORMAT,
     my_stats_handler,
     NULL,

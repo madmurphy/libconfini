@@ -15,7 +15,7 @@ dnl  **************************************************************************
 
 
 dnl  **************************************************************************
-dnl  Note:  This is only a selection of macros from the Not Autotools project
+dnl  NOTE:  This is only a selection of macros from the Not Autotools project
 dnl         without documentation. For the entire collection and the
 dnl         documentation please refer to the project's website.
 dnl  **************************************************************************
@@ -70,7 +70,7 @@ m4_define([n4_mem],
 dnl  n4_charcode(character)
 dnl  **************************************************************************
 dnl
-dnl  Returns the numeric value of a single code unit
+dnl  Expands to the numeric value of a single code unit
 dnl
 dnl  Requires: `n4_lambda()`
 dnl  From: not-autotools/m4/not-utf8.m4
@@ -82,8 +82,8 @@ m4_define([n4_charcode],
 dnl  n4_codeunit_at(string[, index])
 dnl  **************************************************************************
 dnl
-dnl  Returns the numeric value of the code unit at index `index` in the string
-dnl  `string`
+dnl  Expands to the numeric value of the code unit at index `index` in the
+dnl  string `string`
 dnl
 dnl  Requires: `n4_charcode()`
 dnl  From: not-autotools/m4/not-utf8.m4
@@ -149,6 +149,29 @@ AC_DEFUN([NS_UNSET],
 	[m4_ifnblank([$1], [AS_UNSET(m4_quote(m4_normalize([$1])));])m4_if([$#], [1], [], [NS_UNSET(m4_shift($@))])])
 
 
+dnl  NS_FOR(initialization, statement)
+dnl  **************************************************************************
+dnl
+dnl  M4 sugar to create a shell "for" loop
+dnl
+dnl  From: not-autotools/m4/not-autoshell.m4
+dnl
+AC_DEFUN([NS_FOR],
+	[{ for $1; do[]m4_newline()$2[]m4_newline()done }])
+
+
+dnl  NS_MOVEVAR(destination, source)
+dnl  **************************************************************************
+dnl
+dnl  Copies the value of `source` into the shell variable `destination`, then
+dnl  unsets `source` if this was set
+dnl
+dnl  From: not-autotools/m4/not-autoshell.m4
+dnl
+AC_DEFUN([NS_MOVEVAR],
+	[{ AS_VAR_COPY([$1], [$2]); AS_UNSET([$2]); }])
+
+
 dnl  NC_MSG_WARNBOX(problem-description)
 dnl  **************************************************************************
 dnl
@@ -176,18 +199,18 @@ dnl
 AC_DEFUN_ONCE([NC_CONFIG_SHADOW_DIR], [
 
 	m4_define([NC_SHADOW_DIR], [$1])
-	m4_define([NC_CONFNEW_DIR], [confnew])
+	m4_define([NC_CONFNEW_SUBDIR], [confnew])
 	m4_define([NC_THREATENED_LIST], [])
-	AC_SUBST([CONFNEW_DIR], ['$(srcdir)/]NC_CONFNEW_DIR['])
+	AC_SUBST([confnewdir], ['@S|@@{:@srcdir@:}@/]NC_CONFNEW_SUBDIR['])
 
 	AC_ARG_ENABLE([extended-config],
 		[AS_HELP_STRING([--enable-extended-config@<:@=MODE@:>@],
 			[extend the configure process to files that normally do not need
 			to be re-configured, as their final content depends on upstream
 			changes only and not on the state of this machine; possible values
-			for MODE are: omitted or "merge" for updating these files
+			for MODE are: omitted or "yes" or "merge" for updating these files
 			immediately, "sandbox" for safely putting their updated version
-			into the "]m4_quote(NC_CONFNEW_DIR)[" subdirectory without
+			into the <srcdir>/]m4_quote(NC_CONFNEW_SUBDIR)[ directory without
 			modifying the package tree, or "no" for doing nothing
 			@<:@default=no@:>@])],
 			[AS_IF([test "x${enableval}" = x -o "x${enableval}" = xyes],
@@ -200,7 +223,7 @@ AC_DEFUN_ONCE([NC_CONFIG_SHADOW_DIR], [
 
 	AM_CONDITIONAL([HAVE_EXTENDED_CONFIG], [test "x${enable_extended_config}" != xno])
 	AM_CONDITIONAL([HAVE_UPDATES], [test "x${enable_extended_config}" = xsandbox])
-	AM_COND_IF([HAVE_EXTENDED_CONFIG], [AS_MKDIR_P(["${srcdir}/]m4_quote(NC_CONFNEW_DIR)["])])
+	AM_COND_IF([HAVE_EXTENDED_CONFIG], [AS_MKDIR_P(["${srcdir}/]m4_quote(NC_CONFNEW_SUBDIR)["])])
 
 	AC_DEFUN([NC_THREATEN_FILES], [
 		AM_COND_IF([HAVE_EXTENDED_CONFIG], [
@@ -215,7 +238,7 @@ AC_DEFUN_ONCE([NC_CONFIG_SHADOW_DIR], [
 						m4_ifset([NC_THREATENED_LIST],
 								[m4_dquote(NC_THREATENED_LIST, _F_ITER_)],
 								[m4_dquote(_F_ITER_)]))
-					m4_quote([${srcdir}/]NC_CONFNEW_DIR[/]_F_ITER_[:]NC_SHADOW_DIR[/]_F_ITER_[.in])])]))
+					m4_quote([${srcdir}/]NC_CONFNEW_SUBDIR[/]_F_ITER_[:]NC_SHADOW_DIR[/]_F_ITER_[.in])])]))
 		])
 
 		m4_ifdef([NC_SHADOW_REDEF],
@@ -228,10 +251,10 @@ AC_DEFUN_ONCE([NC_CONFIG_SHADOW_DIR], [
 	AC_DEFUN_ONCE([NC_SHADOW_MAYBE_OUTPUT], [
 		m4_ifset([NC_THREATENED_LIST], [
 			AM_COND_IF([HAVE_UPDATES],
-				[AC_MSG_NOTICE([extended configuration has been saved in ${srcdir}/]m4_quote(NC_CONFNEW_DIR)[.])],
+				[AC_MSG_NOTICE([extended configuration has been saved in ${srcdir}/]m4_quote(NC_CONFNEW_SUBDIR)[.])],
 				[AM_COND_IF([HAVE_EXTENDED_CONFIG], [
-					cp -rf "${srcdir}/]m4_quote(NC_CONFNEW_DIR)["/* "${srcdir}"/ && \
-						rm -rf "${srcdir}/]m4_quote(NC_CONFNEW_DIR)["
+					cp -rf "${srcdir}/]m4_quote(NC_CONFNEW_SUBDIR)["/* "${srcdir}"/ && \
+						rm -rf "${srcdir}/]m4_quote(NC_CONFNEW_SUBDIR)["
 					AC_MSG_NOTICE([extended configuration has been merged with the package tree.])
 				])])
 		], [
@@ -283,8 +306,9 @@ dnl  NC_SET_GLOBALLY(name1, [value1][, name2, [value2][, ... nameN, [valueN]]])
 dnl  **************************************************************************
 dnl
 dnl  For each `nameN`-`valueN` pair, creates a new argumentless macro named
-dnl  `[GL_]nameN` (where the `GL_` prefix stands for "Global Literal") and a new
-dnl  output substitution named `nameN`, both expanding to `valueN` when invoked
+dnl  `[GL_]nameN` (where the `GL_` prefix stands for "Global Literal") and a
+dnl  new output substitution named `nameN`, both expanding to `valueN` when
+dnl  invoked
 dnl
 dnl  Requires: `NA_SANITIZE_VARNAME()`
 dnl  From: not-autotools/m4/not-autotools.m4
@@ -298,7 +322,7 @@ AC_DEFUN([NC_SET_GLOBALLY], [
 
 
 dnl  **************************************************************************
-dnl     Note:  The `GL_` prefix (which stands for "Global Literal"), the `NA_`
+dnl     NOTE:  The `GL_` prefix (which stands for "Global Literal"), the `NA_`
 dnl            prefix (which stands for "Not Autotools"), the `NC_` prefix
 dnl            (which stands for "Not autoConf"), the `NM_` prefix (which
 dnl            stands for "Not autoMake"), the `NS_` prefix (which stands for

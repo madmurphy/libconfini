@@ -6,8 +6,8 @@ CLEANONLY=0
 NOCONFIGURE=0
 CONFIGURE_ARGS=()
 
-for __AG_ARG__; do
-	case "${__AG_ARG__}" in
+for __BS_ARG__; do
+	case "${__BS_ARG__}" in
 		-h|--help)
 			echo "Usage: ${0##*/} [OPTION]"
 			echo
@@ -35,7 +35,7 @@ for __AG_ARG__; do
 			CLEANONLY=1
 			;;
 		*)
-			CONFIGURE_ARGS+=("${__AG_ARG__}")
+			CONFIGURE_ARGS+=("${__BS_ARG__}")
 			;;
 	esac
 done

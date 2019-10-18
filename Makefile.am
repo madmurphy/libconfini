@@ -1,8 +1,18 @@
 ## Process this file with automake to produce Makefile.in
 
+
+###############################################################################
+##    V A R I A B L E S   A N D   G E N E R A L   S E T T I N G S
+###############################################################################
+
+# Upper case variables may be freely overridden by the user, while lower case
+# variables, especially those beginning with an underscore, are for internal
+# use only
+
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src
+SUBDIRS = \
+	src
 
 EXTRA_DIST = \
 	ChangeLog.md \
@@ -19,34 +29,43 @@ dist_doc_DATA = \
 	AUTHORS \
 	COPYING
 
+
+if WANT_DEVEL
+
 # Create `$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h` and
 # `$(PROJECT_CONFNAME)-$(PROJECT_MAJVER).h`
-header_insthook_1 = \
-	mv '$(DESTDIR)$(includedir)/$(PROJECT_NAME).h' \
-	'$(DESTDIR)$(includedir)/$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h' && \
+_header_insthook_1_ = \
+	mv '$(DESTDIR)$(includedir)/@PROJECT_NAME@.h' \
+	'$(DESTDIR)$(includedir)/@PROJECT_CONFNAME@-@PROJECT_EFFVER@.h' && \
 	(cd '$(DESTDIR)$(includedir)' && \
-	$(LN_S) '$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h' \
-	'$(PROJECT_CONFNAME)-$(PROJECT_MAJVER).h')
+	$(LN_S) '@PROJECT_CONFNAME@-@PROJECT_EFFVER@.h' \
+	'@PROJECT_CONFNAME@-@PROJECT_MAJVER@.h');
 
 
 if !MULTIVERSION
 
 # Create `$(PROJECT_CONFNAME).h` only when the package must *not* coexist with
 # other major versions of itself
-header_insthook_2 = \
+_header_insthook_2_ = \
 	(cd '$(DESTDIR)$(includedir)' && \
-	$(LN_S) '$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h' \
-	'$(PROJECT_CONFNAME).h')
+	$(LN_S) '@PROJECT_CONFNAME@-@PROJECT_EFFVER@.h' \
+	'@PROJECT_CONFNAME@.h');
 
-endif
+endif !MULTIVERSION
 
 
-if INCLUDE_DOC
+_header_uninsthook_ = \
+	-rm -f '$(DESTDIR)$(includedir)/@PROJECT_CONFNAME@-@PROJECT_EFFVER@.h' \
+	'$(DESTDIR)$(includedir)/@PROJECT_CONFNAME@-@PROJECT_MAJVER@.h';
+
+
+if WANT_DOC
 
 dist_doc_DATA += docs/manual.html \
 	ChangeLog \
 	NEWS \
 	README
+
 
 # Currently it is not possible to do `notrans_man_MANS = $(MANPAGE_LIST)`,
 # because although the variable gets correctly assigned, it results still empty
@@ -54,13 +73,16 @@ dist_doc_DATA += docs/manual.html \
 # workaround is to make Automake see at least one random file, and then re-set
 # the variable properly immediately afterwards, in a way that Automake cannot
 # see.
-notrans_man_MANS = docs/man/man3/libconfini.3
+
+notrans_man_MANS = \
+	docs/man/man3/libconfini.3
+
 @POPULATE_MANPAGE_LIST@
 
-endif
+endif WANT_DOC
 
 
-if INCLUDE_EXAMPLES
+if WANT_EXAMPLES
 
 examplesdir = $(docdir)/examples
 dist_examples_DATA = \
@@ -78,8 +100,8 @@ dist_examplesinifiles_DATA = \
 	examples/ini_files/typed_ini.conf \
 	examples/ini_files/unix-like.conf
 
-examplesotherdir = $(examplesdir)/miscellanea
-dist_examplesother_DATA = \
+examplesmiscdir = $(examplesdir)/miscellanea
+dist_examplesmisc_DATA = \
 	examples/miscellanea/colon_as_delimiter.c \
 	examples/miscellanea/disambiguate.c \
 	examples/miscellanea/dispatch_everything.c \
@@ -112,110 +134,338 @@ dist_exampleutils_DATA = \
 if HAVE_TRANSFORMATIONS
 
 # Update example files if the package must coexist with other major versions of
-# itself
-examples_insthook_1 = \
-	$(SED) -i 's/-l$(PROJECT_NAME)/-l$(PROJECT_LOCALNAME)/g' \
+# itself or if it has been renamed
+_examples_insthook_1_ = \
+	$(SED) -i 's/-l@PROJECT_NAME@/-l@PROJECT_LOCALNAME@/g' \
 	'$(DESTDIR)$(examplesdir)/run_example.sh' && \
-	$(FIND) '$(DESTDIR)$(examplesdir)' -type f -name '*.c' | \
-	$(XARGS) $(SED) -i 's/<$(PROJECT_NAME).h>/<$(LIBRARY_HEADERNAME).h>/g'
+	$(FIND) '$(DESTDIR)$(examplesdir)' -type f -name '*.c' | $(XARGS) \
+	$(SED) -i 's/<@PROJECT_NAME@.h>/<@library_headername@.h>/g';
 
-endif
+endif HAVE_TRANSFORMATIONS
 
 
 # Make examples script executable
-examples_insthook_2 = \
-	chmod +x '$(DESTDIR)$(examplesdir)/run_example.sh'
+_examples_insthook_2_ = \
+	chmod +x '$(DESTDIR)$(examplesdir)/run_example.sh';
 
-endif
+endif WANT_EXAMPLES
 
 
-# Primary targets
+endif WANT_DEVEL
 
-install-exec-hook:
-	$(header_insthook_1)
-	$(header_insthook_2)
+
+# File/directory names erased by `make clean`
+
+RUNPATH = volatile
+
+
+# File/directory names erased by `make oblivion-clean`
+
+BINPATH = @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-pkg
+
+PTBPATH = @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-builds
+
+SRCPATH = @PACKAGE_TARNAME@-@PACKAGE_VERSION@-src
+
+DEVPATH = @PACKAGE_TARNAME@-@PACKAGE_VERSION@-dev
+
+
+# Default compression format
+ZIPTYPE = tar.gz
+
+# Shell expansion is supported here
+_authorclean_files_ = \
+	'aclocal.m4' \
+	'config'.* \
+	'configure' \
+	'libtool' \
+	'ltmain.sh' \
+	`$(FIND) . -type f -name 'Makefile.in'`
+
+# Shell expansion is supported here
+_authorclean_dirs_ = \
+	'build-aux' \
+	'autom4te.cache' \
+	'm4' \
+	`$(FIND) . -type d -name .deps`
+
+
+###############################################################################
+##    R E C I P E S   P A R T   I :   D E V E L O P M E N T   A N D   U S E
+###############################################################################
+
+# Supplementary targets for GNU Automake
 
 install-data-hook:
-	$(man_insthook)
-	$(examples_insthook_1)
-	$(examples_insthook_2)
+	$(_header_insthook_1_)
+	$(_header_insthook_2_)
+	$(_examples_insthook_1_)
+	$(_examples_insthook_2_)
 
 uninstall-local:
-	-rm -f '$(DESTDIR)$(includedir)/$(PROJECT_CONFNAME)-$(PROJECT_EFFVER).h' \
-	'$(DESTDIR)$(includedir)/$(PROJECT_CONFNAME)-$(PROJECT_MAJVER).h'
-	-rm -rf '$(DESTDIR)$(docdir)'
+	$(_header_uninsthook_)
+	-rm -rf '$(DESTDIR)$(docdir)';
 
 clean-local:
-	$(renaming_cleanhook)
-	-rm -rf 'no-dist' '$(CONFNEW_DIR)'
+	@renaming_clean_cmds@
+	-rm -rf '$(RUNPATH)';
+	-rm -f '$(RUNPATH).lst' '$(RUNPATH).tar.gz' \
+	'$(RUNPATH).tgz' '$(RUNPATH).tar.xz' '$(RUNPATH).txz' \
+	'$(RUNPATH).zip';
 
 distclean-local:
-	-rm -f 'make-targets.txt'
-
-.PHONY: synch
-synch:
-	$(AM_V_GEN)$(synch_actions)
+	@renaming_distclean_cmds@
+	-rm -rf 'no-dist' '@confnewdir@';
+	-rm -f 'make-targets.txt';
 
 dist-hook:
-	$(renaming_disthook)
+	@renaming_dist_cmds@
 
+
+# Novel targets
+
+.PHONY: install-exec-strip
+install-exec-strip:
+	test -z '$(STRIP)' && $(MAKE) $(AM_MAKEFLAGS) \
+	INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
+	install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
+	install-exec || $(MAKE) $(AM_MAKEFLAGS) \
+	INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
+	install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
+	"INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install-exec;
+
+# Make the source directory depend on Autotools and a `bootstrap` script
 .PHONY: author-clean
 author-clean: maintainer-clean
-	rm -rf '$(srcdir)/autom4te.cache' '$(srcdir)/m4' \
-	'$(srcdir)/build-aux' `find '$(srcdir)' -type d -name .deps` `find . -type d -name .deps`
-	rm -f '$(srcdir)/aclocal.m4' '$(srcdir)'/config.* config.* '$(srcdir)/configure' \
-	'$(srcdir)/libtool' 'libtool' '$(srcdir)/ltmain.sh' 'ltmain.sh' `find '$(srcdir)' -name 'Makefile.in'`
+	rm -rf $(_authorclean_dirs_) && rm -f $(_authorclean_files_) && \
+	(cd '$(srcdir)' && rm -rf $(_authorclean_dirs_) && \
+	rm -f $(_authorclean_files_));
 
+# Merge the files created by `./configure --enable-extended-config=sandbox`
+.PHONY: synch
+synch:
+	$(AM_V_GEN)@synch_cmds@
 
-# Secondary targets
-
-.PHONY: binary-image
-binary-image:
-	_DSTDIR_="`pwd`/$(PACKAGE_LOCALNAME)-$(PACKAGE_VERSION)-$(build)-pkg/" && \
-	rm -rf "$$_DSTDIR_" && $(MAKE) DESTDIR="$$_DSTDIR_" install
-
-.PHONY: source-image
-source-image: distdir
-	rm -f '$(distdir)/ChangeLog.md' '$(distdir)/README.md' && \
-	(cd '$(distdir)' && $(LN_S) 'ChangeLog' 'ChangeLog.md' && \
-	$(LN_S) 'README' 'README.md')
-
-.PHONY: authors-suitcase
-authors-suitcase: source-image
-	(cd '$(distdir)' && rm -rf build-aux m4 && rm -f aclocal.m4 \
-	'configure' `find . -name Makefile.in`) && \
-	mv '$(distdir)' '$(distdir)-dev'
-
-.PHONY: binary-release
-binary-release: binary-image
-	(cd '$(PACKAGE_LOCALNAME)-$(PACKAGE_VERSION)-$(build)-pkg' && \
-	$(AMTAR) -cJf '../$(PACKAGE_LOCALNAME)-$(PACKAGE_VERSION)-$(build).pkg.tar.xz' *) && \
-	rm -rf '$(PACKAGE_LOCALNAME)-$(PACKAGE_VERSION)-$(build)-pkg'
-
-.PHONY: source-release
-source-release: source-image
-	$(AMTAR) -czf '$(distdir).tar.gz' '$(distdir)' && rm -rf '$(distdir)'
-
-.PHONY: authors-copy
-authors-copy: authors-suitcase
-	$(AMTAR) -czf '$(distdir)-dev.tar.gz' '$(distdir)-dev' && \
-	rm -rf '$(distdir)-dev'
-
-.PHONY: install-manifest
-install-manifest: binary-image
-	(cd '$(PACKAGE_LOCALNAME)-$(PACKAGE_VERSION)-$(build)-pkg' && \
-	$(FIND) * -type f,l -printf '/%p\n' > \
-	'../$(PACKAGE_LOCALNAME)-$(PACKAGE_VERSION)-$(build).manifest') && \
-	rm -rf '$(PACKAGE_LOCALNAME)-$(PACKAGE_VERSION)-$(build)-pkg'
-
+# Uninstall what `make install` has created, then clean the source directory
 .PHONY: clobber
 clobber: uninstall clean
 
+# Call `make author-clean`, then remove all the releases created
+.PHONY: oblivion-clean
+oblivion-clean: author-clean
+	rm -rf '$(BINPATH)' '$(PTBPATH)' '$(SRCPATH)' '$(DEVPATH)' && \
+	rm -f '$(BINPATH).lst' '$(BINPATH).tar.gz' '$(BINPATH).tgz' \
+	'$(BINPATH).tar.xz' '$(BINPATH).txz' '$(BINPATH).zip' \
+	'$(PTBPATH).tar.gz' '$(PTBPATH).tgz' '$(PTBPATH).tar.xz' \
+	'$(PTBPATH).txz' '$(PTBPATH).zip' '$(SRCPATH).tar.gz' \
+	'$(SRCPATH).tgz' '$(SRCPATH).tar.xz' '$(SRCPATH).txz' '$(SRCPATH).zip' \
+	'$(DEVPATH).tar.gz' '$(DEVPATH).tgz' '$(DEVPATH).tar.xz' '$(DEVPATH).txz' \
+	'$(DEVPATH).zip';
+
+# Print the list of common targets
 .PHONY: help
 help:
-	$(AM_V_GEN)cat 'make-targets.txt' && \
-	echo 'This package is currently configured for a $(host_cpu) $(host_vendor) running $(host_os).' || \
-	echo 'Please launch `$(srcdir)/configure` again.'
+	$(AM_V_GEN)echo && cat 'make-targets.txt' && \
+	echo 'This package is currently configured for a @host_cpu@ @host_vendor@ running @host_os@.' || \
+	echo 'Please launch `$(srcdir)/configure` again.';
+
+
+###############################################################################
+##    R E C I P E S   P A R T   I I:   A N A L Y S I S
+###############################################################################
+
+# Various `dryrun-*` phony targets... Each of them must erase and rebuild the
+# `volatile` directory (or an alternative directory if a `RUNPATH` variable
+# is passed to `make` - as in `make RUNPATH='man-pkg' dryrun-install-man`).
+
+# For internal use they serve several purposes, while for public use they are
+# mostly sugar targets for invoking `make install*` with a relative path as
+# `DESTDIR` (by using a `RUNPATH` variable), or unpacking the various
+# distribution targets in a volatile directory.
+
+.PHONY: dryrun-install
+dryrun-install:	
+	rm -rf '$(RUNPATH)' && $(MKDIR_P) '$(RUNPATH)' && \
+	_FULLPATH_="$$(cd '$(RUNPATH)' && pwd)" && \
+	$(MAKE) DESTDIR="$${_FULLPATH_}" install$(_install_suffix_);
+
+.PHONY: dryrun-install-strip dryrun-binary-release
+dryrun-install-strip dryrun-binary-release:
+	@$(MAKE) _install_suffix_='-strip' dryrun-install;
+
+.PHONY: dryrun-install-exec
+dryrun-install-exec:
+	@$(MAKE) _install_suffix_='-exec' dryrun-install;
+
+.PHONY: dryrun-install-exec-strip
+dryrun-install-exec-strip:
+	@$(MAKE) _install_suffix_='-exec-strip' dryrun-install;
+
+.PHONY: dryrun-install-man
+dryrun-install-man:
+	@$(MAKE) _install_suffix_='-man' dryrun-install;
+
+.PHONY: dryrun-install-data
+dryrun-install-data:
+	@$(MAKE) _install_suffix_='-data' dryrun-install;
+
+.PHONY: dryrun-portable-builds
+dryrun-portable-builds:
+	$(MAKE) RUNPATH='_excfiles_' dryrun-install-exec-strip && \
+	rm -rf '$(RUNPATH)' && $(MKDIR_P) '$(RUNPATH)' && \
+	$(FIND) -L '_excfiles_' -type f | $(XARGS) -I _files_ mv _files_ \
+	'$(RUNPATH)/' && cp '$(srcdir)/COPYING' '$(RUNPATH)/COPYING' && \
+	cp '$(srcdir)/src/@PROJECT_NAME@.h' '$(RUNPATH)/@PROJECT_NAME@.h' && \
+	rm -rf '_excfiles_';
+
+.PHONY: dryrun-dist
+dryrun-dist:
+	rm -rf '$(RUNPATH)' '_dstfiles_' && $(MAKE) distdir='_dstfiles_' \
+	distdir && mv '_dstfiles_' '$(RUNPATH)';
+
+.PHONY: dryrun-source-release
+dryrun-source-release: dryrun-dist
+	(cd '$(RUNPATH)' && rm -f 'ChangeLog.md' 'README.md' && \
+	$(LN_S) 'ChangeLog' 'ChangeLog.md' && $(LN_S) 'README' 'README.md');
+
+.PHONY: dryrun-authors-copy
+dryrun-authors-copy: dryrun-source-release
+	(cd '$(RUNPATH)' && rm -rf $(_authorclean_dirs_) && \
+	rm -f $(_authorclean_files_));
+
+.PHONY: dryrun-nothing
+dryrun-nothing: ;
+
+# Non-phony targets with names editable on the fly (mostly for internal use,
+# but nothing forbids invoking them)
+
+# Default `dryrun-*` target for `make volatile*`
+RUNJOB = install-strip
+
+# Defaults to `make volatile` (directory)
+$(RUNPATH): dryrun-$(RUNJOB)
+
+# Defaults to `make volatile.tar.xz` and `make volatile.txz`
+$(RUNPATH).tar.xz $(RUNPATH).txz: $(RUNPATH)
+	rm -rf '$@' && (cd '$(RUNPATH)' && $(AMTAR) -cJf '../$(@F)' *);
+
+# Defaults to `make volatile.tar.gz` and `make volatile.tgz`
+$(RUNPATH).tar.gz $(RUNPATH).tgz: $(RUNPATH)
+	rm -rf '$@' && (cd '$(RUNPATH)' && $(AMTAR) -czf '../$(@F)' *);
+
+# Defaults to `make volatile.zip`
+$(RUNPATH).zip: $(RUNPATH)
+	rm -rf '$@' && (cd '$(RUNPATH)' && zip -rqy '../$(@F)' *);
+
+# Defaults to `make volatile.lst` (optionally supports a `LISTPREFIX` variable)
+$(RUNPATH).lst: $(RUNPATH)
+	rm -rf '$@' && (cd '$(RUNPATH)' && $(FIND) -L * -type f -printf \
+	'$(LISTPREFIX)%p\n' > '../$(@F)');
+
+
+###############################################################################
+##    R E C I P E S   P A R T   I I I:   D I S T R I B U T I O N
+###############################################################################
+
+# Non-phony targets with names editable on the fly (mostly for internal use,
+# but nothing forbids invoking them)
+
+# Defaults to `make @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-pkg`
+# (directory)
+$(BINPATH):
+	$(MAKE) RUNJOB='install-strip' RUNPATH='_binfiles_' '_binfiles_' && \
+	mv '_binfiles_' '$@';
+
+# Defaults to `make @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-builds`
+# (directory)
+$(PTBPATH):
+	$(MAKE) RUNJOB='portable-builds' RUNPATH='_ptbfiles_' '_ptbfiles_' && \
+	mv '_ptbfiles_' '$@';
+
+# Defaults to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-src` (directory)
+$(SRCPATH):
+	$(MAKE) RUNJOB='source-release' RUNPATH='_srcfiles_' '_srcfiles_' && \
+	mv '_srcfiles_' '$@';
+
+# Defaults to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-dev` (directory)
+$(DEVPATH):
+	$(MAKE) RUNJOB='authors-copy' RUNPATH='_devfiles_' '_devfiles_' && \
+	mv '_devfiles_' '$@';	
+
+# Default to
+# `make @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-pkg.lst` and
+# `make @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-pkg.{...EXT...}`
+$(BINPATH).lst $(BINPATH).tar.gz $(BINPATH).tgz $(BINPATH).tar.xz $(BINPATH).txz $(BINPATH).zip:
+	_STEM_="$$(basename '$(BINPATH)')" && $(MAKE) RUNJOB='install-strip' \
+	RUNPATH="_tmp-$${_STEM_}" '_tmp-$(@F)' && mv '_tmp-$(@F)' '$@' && \
+	rm -rf "_tmp-$${_STEM_}";
+
+# Default to
+# `make @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-builds.{...EXT...}`
+$(PTBPATH).tar.gz $(PTBPATH).tgz $(PTBPATH).tar.xz $(PTBPATH).txz $(PTBPATH).zip:
+	_STEM_="$$(basename '$(PTBPATH)')" && $(MAKE) \
+	RUNJOB='portable-builds' RUNPATH="_tmp-$${_STEM_}" '_tmp-$(@F)' && \
+	mv '_tmp-$(@F)' '$@' && rm -rf "_tmp-$${_STEM_}";
+
+# Default to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-src.{...EXT...}`
+$(SRCPATH).tar.gz $(SRCPATH).tgz $(SRCPATH).tar.xz $(SRCPATH).txz $(SRCPATH).zip:
+	_STEM_="$$(basename '$(SRCPATH)')" && $(MKDIR_P) "_tmp-$${_STEM_}" && \
+	$(MAKE) RUNPATH="_tmp-$${_STEM_}/$${_STEM_}" dryrun-source-release && \
+	$(MAKE) RUNJOB='nothing' RUNPATH="_tmp-$${_STEM_}" '_tmp-$(@F)' && \
+	mv '_tmp-$(@F)' '$@' && rm -rf "_tmp-$${_STEM_}";
+
+# Default to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-dev.{...EXT...}`
+$(DEVPATH).tar.gz $(DEVPATH).tgz $(DEVPATH).tar.xz $(DEVPATH).txz $(DEVPATH).zip:
+	_STEM_="$$(basename '$(DEVPATH)')" && $(MKDIR_P) "_tmp-$${_STEM_}" && \
+	$(MAKE) RUNPATH="_tmp-$${_STEM_}/$${_STEM_}" dryrun-authors-copy && \
+	$(MAKE) RUNJOB='nothing' RUNPATH="_tmp-$${_STEM_}" '_tmp-$(@F)' && \
+	mv '_tmp-$(@F)' '$@' && rm -rf "_tmp-$${_STEM_}";
+
+
+# Phony targets
+
+# File extensions for which archive targets exist (regular expression)
+_re_archive_allow_ = \.tar\.gz$$\|\.tar\.xz$$\|\.tgz$$\|\.txz$$\|\.zip$$
+
+# Build an installation image ready to be distributed or installed
+.PHONY: binary-release
+binary-release:
+	@test 'x$(DEST)' != x && (rm -rf '$(DEST)' && $(MAKE) "$$(expr \
+	'BINPATH=$(DEST)' : '\(.*\)\($(_re_archive_allow_)\)' || \
+	echo BINPATH='$(DEST)')" '$(DEST)') || \
+	(rm -rf '$(BINPATH).$(ZIPTYPE)' && $(MAKE) '$(BINPATH).$(ZIPTYPE)');
+
+# Build a package with only the compiled binaries and without directories
+.PHONY: portable-builds
+portable-builds:
+	@test 'x$(DEST)' != x && (rm -rf '$(DEST)' && $(MAKE) "$$(expr \
+	'PTBPATH=$(DEST)' : '\(.*\)\($(_re_archive_allow_)\)' || \
+	echo PTBPATH='$(DEST)')" '$(DEST)') || \
+	(rm -rf '$(PTBPATH).$(ZIPTYPE)' && $(MAKE) '$(PTBPATH).$(ZIPTYPE)');
+
+# Build a source release ready to be distributed
+.PHONY: source-release
+source-release:
+	@test 'x$(DEST)' != x && (rm -rf '$(DEST)' && $(MAKE) "$$(expr \
+	'SRCPATH=$(DEST)' : '\(.*\)\($(_re_archive_allow_)\)' || \
+	echo SRCPATH='$(DEST)')" '$(DEST)') || \
+	(rm -rf '$(SRCPATH).$(ZIPTYPE)' && $(MAKE) '$(SRCPATH).$(ZIPTYPE)');
+
+# Build a source release that needs Autotools and a `bootstrap` script
+.PHONY: authors-copy
+authors-copy:
+	@test 'x$(DEST)' != x && (rm -rf '$(DEST)' && $(MAKE) "$$(expr \
+	'DEVPATH=$(DEST)' : '\(.*\)\($(_re_archive_allow_)\)' || \
+	echo DEVPATH='$(DEST)')" '$(DEST)') || \
+	(rm -rf '$(DEVPATH).$(ZIPTYPE)' && $(MAKE) '$(DEVPATH).$(ZIPTYPE)');
+
+# Create a list of the files that will be installed by `make-install`
+.PHONY: manifest
+manifest:
+	@rm -rf '_tmp_.lst'; $(MAKE) RUNJOB='install' RUNPATH='_tmp_' \
+	LISTPREFIX='/' '_tmp_.lst' && (test 'x$(DEST)' != x && (rm -rf \
+	'$(DEST)' && mv '_tmp_.lst' '$(DEST)') || (rm -rf '$(BINPATH).lst' && \
+	mv '_tmp_.lst' '$(BINPATH).lst')) && rm -rf '_tmp_';
 
 
 ## EOF

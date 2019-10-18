@@ -67,11 +67,18 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Record of notable changes</p>
+<h1>1.10.4 &ndash; 2019-10-19</h1>
+<p>Changes:</p>
+<ul>
+<li>Paths of the INI files in the C examples have been changed in order to match real locations</li>
+<li>Code review in the <code>configure</code> script (made sure not to overwrite the user-given <code>--docdir=[DIR]</code> argument; created a <code>--disable-devel</code> option for generating binary-only installations &ndash; i.e. without installing headers, static libraries, documentation, examples, etc.) and in the <b>GNU Make</b> environment (<code>Makefile.am</code>: removed † <code>make binary-image</code>, † <code>make source-image</code> and † <code>make authors-suitcase</code> targets, renamed † <code>make install-manifest</code> target to <code>make manifest</code>, created <code>make portable-builds</code> and <code>make oblivion-clean</code> targets, improved <code>install-data-hook</code> and all the helper targets; <code>src/Makefile.am</code>: moved the <code>CFLAGS</code> automatically guessed by <code>AC_PROG_CC_C99</code> to <code>AM_CFLAGS</code>)</li>
+<li>Added call to <code>strip.exe</code> to the <code>mgwmake.bat</code> script</li>
+</ul>
 <h1>1.10.3 &ndash; 2019-10-10</h1>
 <p>Changes:</p>
 <ul>
 <li>The † <code>autogen.sh</code> script has been renamed to <code>bootstrap</code></li>
-<li>Code review in the <b>Autotools</b> environment (fixed <code>make distcheck</code> fail; made sure that the <code>configure</code> and <code>bootstrap</code> scripts can be launched from any path; created <code>make source-image</code>, <code>make authors-suitcase</code>, <code>make source-release</code> and <code>make authors-copy</code> targets for better reproducing the content of the package as released by its authors; created <code>make binary-image</code>, <code>make binary-release</code> and <code>make install-manifest</code> targets for aiding staged installations; created a <code>make author-clean</code> target for cleaning the source directory with the same degree of fury of <code>./bootstrap --clean</code>; created a <code>make help</code> target for printing the list of commonly used targets; replaced † <code>autogen.sh --multiversion</code> with <code>./configure --with-other-versions</code> for creating a package able to coexist with other versions of itself)</li>
+<li>Code review in the <b>Autotools</b> environment (fixed <code>make distcheck</code> fail; made sure that the <code>configure</code> and <code>bootstrap</code> scripts can be launched from any path; created † <code>make source-image</code>, † <code>make authors-suitcase</code>, <code>make source-release</code> and <code>make authors-copy</code> targets for better reproducing the content of the package as released by its authors; created † <code>make binary-image</code>, <code>make binary-release</code> and † <code>make install-manifest</code> targets for aiding staged installations; created a <code>make author-clean</code> target for cleaning the source directory with the same degree of fury of <code>./bootstrap --clean</code>; created a <code>make help</code> target for printing the list of commonly used targets; replaced † <code>autogen.sh --multiversion</code> with <code>./configure --with-other-versions</code> for creating a package able to coexist with other versions of itself)</li>
 <li>The <code>-Wl,--subsystem,windows</code> compiler option has been removed from <code>mgwmake.bat</code></li>
 <li>The "GPL3 version 3" license string has been replaced everywhere with "GPL
   version 3 or any later version" (or a similar label)</li>

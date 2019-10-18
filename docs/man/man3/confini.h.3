@@ -1,4 +1,4 @@
-.TH "confini.h" 3 "Thu Oct 10 2019" "libconfini" \" -*- nroff -*-
+.TH "confini.h" 3 "Sat Oct 19 2019" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -606,7 +606,7 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 int main () {
 
   if (load_ini_path(
-    "ini_files/typed_ini\&.conf",
+    "\&.\&./ini_files/typed_ini\&.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     my_ini_listener,
@@ -777,7 +777,7 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 int main () {
 
   if (load_ini_path(
-    "ini_files/typed_ini\&.conf",
+    "\&.\&./ini_files/typed_ini\&.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     my_ini_listener,
@@ -1008,7 +1008,7 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 int main () {
 
   if (load_ini_path(
-    "ini_files/typed_ini\&.conf",
+    "\&.\&./ini_files/typed_ini\&.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     my_ini_listener,
@@ -1096,7 +1096,7 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 int main () {
 
   if (load_ini_path(
-    "ini_files/typed_ini\&.conf",
+    "\&.\&./ini_files/typed_ini\&.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     my_ini_listener,
@@ -1401,7 +1401,7 @@ int main () {
   my_format\&.implicit_is_not_empty = true;
 
   if (load_ini_path(
-    "ini_files/typed_ini\&.conf",
+    "\&.\&./ini_files/typed_ini\&.conf",
     my_format,
     my_init,
     my_handler,
@@ -1505,7 +1505,7 @@ int main () {
   my_format\&.implicit_is_not_empty = YES;
 
   if (load_ini_path(
-    "ini_files/unix-like\&.conf",
+    "\&.\&./ini_files/unix-like\&.conf",
     my_format,
     NULL,
     ini_listener,
@@ -1726,7 +1726,7 @@ int main () {
 
   /*  Load INI file  */
   int retval = load_ini_path(
-    "ini_files/self_explaining\&.conf",
+    "\&.\&./ini_files/self_explaining\&.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     passfinder,
@@ -1854,7 +1854,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
 int main () {
 
   if (load_ini_path(
-    "ini_files/self_explaining\&.conf",
+    "\&.\&./ini_files/self_explaining\&.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     ini_listener,
@@ -1938,7 +1938,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
 int main () {
 
   if (load_ini_path(
-    "ini_files/self_explaining\&.conf",
+    "\&.\&./ini_files/self_explaining\&.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     ini_listener,
@@ -2021,7 +2021,7 @@ static int my_callback (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-  FILE * const ini_file = fopen("ini_files/delivery\&.conf", "rb");
+  FILE * const ini_file = fopen("\&.\&./ini_files/delivery\&.conf", "rb");
 
   if (ini_file == NULL) {
 
@@ -2107,7 +2107,7 @@ static int my_callback (IniDispatch * dispatch, void * v_null) {
 int main () {
 
   if (load_ini_path(
-    "ini_files/delivery\&.conf",
+    "\&.\&./ini_files/delivery\&.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     my_callback,

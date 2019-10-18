@@ -173,7 +173,7 @@ int main () {
   my_format.implicit_is_not_empty = true;
 
   if (load_ini_path(
-    "ini_files/typed_ini.conf",
+    "../ini_files/typed_ini.conf",
     my_format,
     my_init,
     my_handler,

@@ -184,7 +184,7 @@ int main () {
   my_format.semicolon_marker = my_format.hash_marker = INI_IGNORE;
   /*  All other parameters of the INI format may be set freely  */
 
-  if (load_ini_path("ini_files/hash_table.conf", my_format, NULL, populate_hash_table, my_hash_table)) {
+  if (load_ini_path("../ini_files/hash_table.conf", my_format, NULL, populate_hash_table, my_hash_table)) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;

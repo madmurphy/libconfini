@@ -367,7 +367,7 @@ INI file has been completely dispatched, non-zero otherwise.
 
 \#1:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 /*  examples/topics/load_ini_file.c  */
 
 #include <stdio.h>
@@ -386,7 +386,7 @@ static int my_callback (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-  FILE * const ini_file = fopen("ini_files/delivery.conf", "rb");
+  FILE * const ini_file = fopen("../ini_files/delivery.conf", "rb");
 
   if (ini_file == NULL) {
 
@@ -413,7 +413,7 @@ int main () {
   return 0;
 
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 \#2:
 
@@ -437,7 +437,7 @@ static int my_callback (IniDispatch * dispatch, void * v_null) {
 int main () {
 
   if (load_ini_path(
-    "ini_files/delivery.conf",
+    "../ini_files/delivery.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     my_callback,
@@ -790,7 +790,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
 int main () {
 
   if (load_ini_path(
-    "ini_files/self_explaining.conf",
+    "../ini_files/self_explaining.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     ini_listener,
@@ -1099,7 +1099,7 @@ int main () {
   my_format.implicit_is_not_empty = YES;
 
   if (load_ini_path(
-    "ini_files/unix-like.conf",
+    "../ini_files/unix-like.conf",
     my_format,
     NULL,
     ini_listener,
@@ -1167,7 +1167,7 @@ int main () {
 
   /*  Load INI file  */
   int retval = load_ini_path(
-    "ini_files/self_explaining.conf",
+    "../ini_files/self_explaining.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     passfinder,
@@ -1320,7 +1320,7 @@ int main () {
   struct size_check check;
 
   if (load_ini_path(
-    "ini_files/example.conf",
+    "examples/ini_files/example.conf",
     INI_DEFAULT_FORMAT,
     ini_init,
     ini_listener,
@@ -1646,7 +1646,7 @@ int main () {
   printf(":: Content of 'ambiguous.conf' ::\n\n");
 
   if (load_ini_path(
-    "ini_files/ambiguous.conf",
+    "examples/ini_files/ambiguous.conf",
     my_format,
     NULL,
     ini_listener,

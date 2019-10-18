@@ -91,7 +91,7 @@ while [[ "${_DONE_}" -eq 0 ]]; do
 			echo
 			echo -e "${_COL_BYELLOW_}-----------------[${_COL_BCYAN_}${_CHOSEN_SHORT_}${_COL_BYELLOW_}]-----------------${_COL_DEFAULT_}"
 			echo
-			( cd "${_THIS_PATH_}"; "${_COMPILE_TO_}" )
+			( cd "$(dirname "${_CHOSEN_LONG_}")"; "${_COMPILE_TO_}" )
 			_EXIT_CODE_="$?"
 			echo
 			echo -ne "${_COL_BYELLOW_}------------------"

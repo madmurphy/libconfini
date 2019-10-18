@@ -26,7 +26,7 @@ int main () {
 
   /*  Load INI file  */
   int retval = load_ini_path(
-    "ini_files/self_explaining.conf",
+    "../ini_files/self_explaining.conf",
     INI_DEFAULT_FORMAT,
     NULL,
     passfinder,

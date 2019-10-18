@@ -1,16 +1,18 @@
 ## Process this file with automake to produce Makefile.in
 
 AM_CPPFLAGS = \
-	"-DPACKAGE_LOCALE_DIR=\"$(localedir)\"" \
-	"-DPACKAGE_SRC_DIR=\"$(srcdir)\"" \
-	"-DPACKAGE_DATA_DIR=\"$(pkgdatadir)\""
+	"-DPACKAGE_LOCALE_DIR='$(localedir)'" \
+	"-DPACKAGE_SRC_DIR='$(srcdir)'" \
+	"-DPACKAGE_DATA_DIR='$(pkgdatadir)'"
 
 AM_CFLAGS = \
+	@guessed_am_cflags@ \
 	-Wall \
 	-pedantic \
 	-std=c99 \
-	-g \
-	'-O$(CODE_OPTIMIZATION)'
+	-O@default_optimization@
+
+LTVERSIONINFO = @INTERFACE_NUMBER@:@IMPLEMENTATION_NUMBER@:@INTERFACE_COMPATIBILITY@
 
 lib_LTLIBRARIES = lib@PROJECT_LOCALNAME@.la
 
@@ -18,9 +20,9 @@ lib@PROJECT_LOCALNAME@_la_SOURCES = \
 	confini.c
 
 lib@PROJECT_LOCALNAME@_la_LDFLAGS = \
-	-version-info '$(INTERFACE_NUMBER):$(IMPLEMENTATION_NUMBER):$(INTERFACE_COMPATIBILITY)'
+	-version-info '$(LTVERSIONINFO)'
 
-lib@PROJECT_LOCALNAME@_la_LIBADD = 
+lib@PROJECT_LOCALNAME@_la_LIBADD =
 
 
 if PLATFORM_MSWIN
@@ -34,7 +36,7 @@ if NATIVE_MSWIN
 lib@PROJECT_LOCALNAME@_la_LDFLAGS += \
 	-export-dynamic
 
-endif
+endif NATIVE_MSWIN
 
 
 if HAVE_RC
@@ -49,10 +51,10 @@ lib@PROJECT_LOCALNAME@_la_SOURCES += \
 .rc.lo:
 	$(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --tag=RC --mode=compile $(RC) $(AM_RCFLAGS) $(RCFLAGS) $< -o $@
 
-endif
+endif HAVE_RC
 
 
-endif
+endif PLATFORM_MSWIN
 
 
 if SKIP_VERSIONING
@@ -60,17 +62,23 @@ if SKIP_VERSIONING
 lib@PROJECT_LOCALNAME@_la_LDFLAGS += \
 	-avoid-version
 
-endif
+endif SKIP_VERSIONING
 
+
+if WANT_DEVEL
 
 include_HEADERS = \
-	confini.h
+	@PROJECT_NAME@.h
 
 pkgconfig_DATA = \
-	$(PACKAGE_LOCALNAME).pc
+	@PACKAGE_LOCALNAME@.pc
+
+endif WANT_DEVEL
+
 
 EXTRA_DIST = \
-	$(PACKAGE_NAME).pc.in
+	@PACKAGE_TARNAME@.pc.in
+
 
 ## EOF
 

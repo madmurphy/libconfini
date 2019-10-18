@@ -42,7 +42,7 @@ int main () {
   #undef ON
 
   if (load_ini_path(
-    "ini_files/colon_as_delimiter.conf",
+    "../ini_files/colon_as_delimiter.conf",
     my_format,
     NULL,
     ini_listener,

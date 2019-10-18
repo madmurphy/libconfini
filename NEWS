@@ -2,9 +2,15 @@ NEWS
 ====
 
 
-## 1.10.2
+## 1.10.4
 
-Changes:
+* Added a `--disable-devel` option to the `configure` script for generating
+  binary-only installations -- i.e. without installing headers, static
+  libraries, documentation, examples, etc.)
+* Added call to `strip.exe` to the `mgwmake.bat` script
+
+
+## 1.10.2
 
 * New examples have been created (`examples/utilities/load_ini_buffer.h` and
   `examples/utilities/make_strarray.h`)
