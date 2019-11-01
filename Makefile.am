@@ -23,7 +23,8 @@ EXTRA_DIST = \
 	docs \
 	mgwmake.bat \
 	package.json \
-	tests
+	tests \
+	.editorconfig
 
 dist_doc_DATA = \
 	AUTHORS \
@@ -61,10 +62,11 @@ _header_uninsthook_ = \
 
 if WANT_DOC
 
-dist_doc_DATA += docs/manual.html \
+dist_doc_DATA += \
 	ChangeLog \
 	NEWS \
-	README
+	README \
+	docs/manual.html
 
 
 # Currently it is not possible to do `notrans_man_MANS = $(MANPAGE_LIST)`,
@@ -154,12 +156,12 @@ endif WANT_EXAMPLES
 endif WANT_DEVEL
 
 
-# File/directory names erased by `make clean`
+# Files/directories erased by `make clean`
 
 RUNPATH = volatile
 
 
-# File/directory names erased by `make oblivion-clean`
+# Files/directories erased by `make oblivion-clean`
 
 BINPATH = @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-pkg
 
@@ -169,6 +171,10 @@ SRCPATH = @PACKAGE_TARNAME@-@PACKAGE_VERSION@-src
 
 DEVPATH = @PACKAGE_TARNAME@-@PACKAGE_VERSION@-dev
 
+GITPATH = @PACKAGE_TARNAME@-git
+
+
+# Other settings
 
 # Default compression format
 ZIPTYPE = tar.gz
@@ -208,7 +214,7 @@ uninstall-local:
 
 clean-local:
 	@renaming_clean_cmds@
-	-rm -rf '$(RUNPATH)';
+	-rm -rf '$(RUNPATH)' '._'*;
 	-rm -f '$(RUNPATH).lst' '$(RUNPATH).tar.gz' \
 	'$(RUNPATH).tgz' '$(RUNPATH).tar.xz' '$(RUNPATH).txz' \
 	'$(RUNPATH).zip';
@@ -250,18 +256,6 @@ synch:
 .PHONY: clobber
 clobber: uninstall clean
 
-# Call `make author-clean`, then remove all the releases created
-.PHONY: oblivion-clean
-oblivion-clean: author-clean
-	rm -rf '$(BINPATH)' '$(PTBPATH)' '$(SRCPATH)' '$(DEVPATH)' && \
-	rm -f '$(BINPATH).lst' '$(BINPATH).tar.gz' '$(BINPATH).tgz' \
-	'$(BINPATH).tar.xz' '$(BINPATH).txz' '$(BINPATH).zip' \
-	'$(PTBPATH).tar.gz' '$(PTBPATH).tgz' '$(PTBPATH).tar.xz' \
-	'$(PTBPATH).txz' '$(PTBPATH).zip' '$(SRCPATH).tar.gz' \
-	'$(SRCPATH).tgz' '$(SRCPATH).tar.xz' '$(SRCPATH).txz' '$(SRCPATH).zip' \
-	'$(DEVPATH).tar.gz' '$(DEVPATH).tgz' '$(DEVPATH).tar.xz' '$(DEVPATH).txz' \
-	'$(DEVPATH).zip';
-
 # Print the list of common targets
 .PHONY: help
 help:
@@ -284,10 +278,10 @@ help:
 # distribution targets in a volatile directory.
 
 .PHONY: dryrun-install
-dryrun-install:	
+dryrun-install:
 	rm -rf '$(RUNPATH)' && $(MKDIR_P) '$(RUNPATH)' && \
-	_FULLPATH_="$$(cd '$(RUNPATH)' && pwd)" && \
-	$(MAKE) DESTDIR="$${_FULLPATH_}" install$(_install_suffix_);
+	_FULLPATH="$$(cd '$(RUNPATH)' && pwd)" && \
+	$(MAKE) DESTDIR="$${_FULLPATH}" install$(_install_suffix_);
 
 .PHONY: dryrun-install-strip dryrun-binary-release
 dryrun-install-strip dryrun-binary-release:
@@ -311,17 +305,17 @@ dryrun-install-data:
 
 .PHONY: dryrun-portable-builds
 dryrun-portable-builds:
-	$(MAKE) RUNPATH='_excfiles_' dryrun-install-exec-strip && \
+	$(MAKE) RUNPATH='._excfiles_' dryrun-install-exec-strip && \
 	rm -rf '$(RUNPATH)' && $(MKDIR_P) '$(RUNPATH)' && \
-	$(FIND) -L '_excfiles_' -type f | $(XARGS) -I _files_ mv _files_ \
+	$(FIND) -L '._excfiles_' -type f | $(XARGS) -I _files_ mv _files_ \
 	'$(RUNPATH)/' && cp '$(srcdir)/COPYING' '$(RUNPATH)/COPYING' && \
 	cp '$(srcdir)/src/@PROJECT_NAME@.h' '$(RUNPATH)/@PROJECT_NAME@.h' && \
-	rm -rf '_excfiles_';
+	rm -rf '._excfiles_';
 
 .PHONY: dryrun-dist
 dryrun-dist:
-	rm -rf '$(RUNPATH)' '_dstfiles_' && $(MAKE) distdir='_dstfiles_' \
-	distdir && mv '_dstfiles_' '$(RUNPATH)';
+	rm -rf '$(RUNPATH)' '._dstfiles_' && $(MAKE) distdir='._dstfiles_' \
+	distdir && mv '._dstfiles_' '$(RUNPATH)';
 
 .PHONY: dryrun-source-release
 dryrun-source-release: dryrun-dist
@@ -333,6 +327,11 @@ dryrun-authors-copy: dryrun-source-release
 	(cd '$(RUNPATH)' && rm -rf $(_authorclean_dirs_) && \
 	rm -f $(_authorclean_files_));
 
+.PHONY: dryrun-git-clone
+dryrun-git-clone:
+	@rm -rf '$(RUNPATH)' && git clone --quiet --progress \
+	'@GIT_HTTP_SERVER@/@PUBLISHER_ID@/@PACKAGE_TARNAME@.git' '$(RUNPATH)';
+
 .PHONY: dryrun-nothing
 dryrun-nothing: ;
 
@@ -340,7 +339,7 @@ dryrun-nothing: ;
 # but nothing forbids invoking them)
 
 # Default `dryrun-*` target for `make volatile*`
-RUNJOB = install-strip
+RUNJOB = binary-release
 
 # Defaults to `make volatile` (directory)
 $(RUNPATH): dryrun-$(RUNJOB)
@@ -373,59 +372,79 @@ $(RUNPATH).lst: $(RUNPATH)
 # Defaults to `make @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-pkg`
 # (directory)
 $(BINPATH):
-	$(MAKE) RUNJOB='install-strip' RUNPATH='_binfiles_' '_binfiles_' && \
-	mv '_binfiles_' '$@';
+	@$(MAKE) RUNJOB='binary-release' RUNPATH='._binfiles_' \
+	'._binfiles_' && mv '._binfiles_' '$@';
 
 # Defaults to `make @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-builds`
 # (directory)
 $(PTBPATH):
-	$(MAKE) RUNJOB='portable-builds' RUNPATH='_ptbfiles_' '_ptbfiles_' && \
-	mv '_ptbfiles_' '$@';
+	@$(MAKE) RUNJOB='portable-builds' RUNPATH='._ptbfiles_' \
+	'._ptbfiles_' && mv '._ptbfiles_' '$@';
 
 # Defaults to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-src` (directory)
 $(SRCPATH):
-	$(MAKE) RUNJOB='source-release' RUNPATH='_srcfiles_' '_srcfiles_' && \
-	mv '_srcfiles_' '$@';
+	@$(MAKE) RUNJOB='source-release' RUNPATH='._srcfiles_' \
+	'._srcfiles_' && mv '._srcfiles_' '$@';
 
 # Defaults to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-dev` (directory)
 $(DEVPATH):
-	$(MAKE) RUNJOB='authors-copy' RUNPATH='_devfiles_' '_devfiles_' && \
-	mv '_devfiles_' '$@';	
+	@$(MAKE) RUNJOB='authors-copy' RUNPATH='._devfiles_' \
+	'._devfiles_' && mv '._devfiles_' '$@';
+
+# Defaults to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-git` (directory)
+$(GITPATH):
+	@$(MAKE) RUNJOB='git-clone' RUNPATH='._gitfiles_' '._gitfiles_' && \
+	mv '._gitfiles_' '$@';
 
 # Default to
 # `make @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-pkg.lst` and
 # `make @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-pkg.{...EXT...}`
 $(BINPATH).lst $(BINPATH).tar.gz $(BINPATH).tgz $(BINPATH).tar.xz $(BINPATH).txz $(BINPATH).zip:
-	_STEM_="$$(basename '$(BINPATH)')" && $(MAKE) RUNJOB='install-strip' \
-	RUNPATH="_tmp-$${_STEM_}" '_tmp-$(@F)' && mv '_tmp-$(@F)' '$@' && \
-	rm -rf "_tmp-$${_STEM_}";
+	@_STEM="$$(basename '$(BINPATH)')" && $(MAKE) \
+	RUNJOB='binary-release' RUNPATH="._tmp-$${_STEM}" '._tmp-$(@F)' && \
+	mv '._tmp-$(@F)' '$@' && rm -rf "._tmp-$${_STEM}";
 
 # Default to
 # `make @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-builds.{...EXT...}`
 $(PTBPATH).tar.gz $(PTBPATH).tgz $(PTBPATH).tar.xz $(PTBPATH).txz $(PTBPATH).zip:
-	_STEM_="$$(basename '$(PTBPATH)')" && $(MAKE) \
-	RUNJOB='portable-builds' RUNPATH="_tmp-$${_STEM_}" '_tmp-$(@F)' && \
-	mv '_tmp-$(@F)' '$@' && rm -rf "_tmp-$${_STEM_}";
+	@_STEM="$$(basename '$(PTBPATH)')" && $(MAKE) \
+	RUNJOB='portable-builds' RUNPATH="._tmp-$${_STEM}" '._tmp-$(@F)' && \
+	mv '._tmp-$(@F)' '$@' && rm -rf "._tmp-$${_STEM}";
 
 # Default to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-src.{...EXT...}`
 $(SRCPATH).tar.gz $(SRCPATH).tgz $(SRCPATH).tar.xz $(SRCPATH).txz $(SRCPATH).zip:
-	_STEM_="$$(basename '$(SRCPATH)')" && $(MKDIR_P) "_tmp-$${_STEM_}" && \
-	$(MAKE) RUNPATH="_tmp-$${_STEM_}/$${_STEM_}" dryrun-source-release && \
-	$(MAKE) RUNJOB='nothing' RUNPATH="_tmp-$${_STEM_}" '_tmp-$(@F)' && \
-	mv '_tmp-$(@F)' '$@' && rm -rf "_tmp-$${_STEM_}";
+	@_STEM="$$(basename '$(SRCPATH)')" && $(MKDIR_P) "._tmp-$${_STEM}" && \
+	$(MAKE) RUNPATH="._tmp-$${_STEM}/$${_STEM}" dryrun-source-release && \
+	$(MAKE) RUNJOB='nothing' RUNPATH="._tmp-$${_STEM}" '._tmp-$(@F)' && \
+	mv '._tmp-$(@F)' '$@' && rm -rf "._tmp-$${_STEM}";
 
 # Default to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-dev.{...EXT...}`
 $(DEVPATH).tar.gz $(DEVPATH).tgz $(DEVPATH).tar.xz $(DEVPATH).txz $(DEVPATH).zip:
-	_STEM_="$$(basename '$(DEVPATH)')" && $(MKDIR_P) "_tmp-$${_STEM_}" && \
-	$(MAKE) RUNPATH="_tmp-$${_STEM_}/$${_STEM_}" dryrun-authors-copy && \
-	$(MAKE) RUNJOB='nothing' RUNPATH="_tmp-$${_STEM_}" '_tmp-$(@F)' && \
-	mv '_tmp-$(@F)' '$@' && rm -rf "_tmp-$${_STEM_}";
+	@_STEM="$$(basename '$(DEVPATH)')" && $(MKDIR_P) "._tmp-$${_STEM}" && \
+	$(MAKE) RUNPATH="._tmp-$${_STEM}/$${_STEM}" dryrun-authors-copy && \
+	$(MAKE) RUNJOB='nothing' RUNPATH="._tmp-$${_STEM}" '._tmp-$(@F)' && \
+	mv '._tmp-$(@F)' '$@' && rm -rf "._tmp-$${_STEM}";
+
+# Default to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-git.{...EXT...}`
+$(GITPATH).tar.gz $(GITPATH).tgz $(GITPATH).tar.xz $(GITPATH).txz $(GITPATH).zip:
+	@_STEM="$$(basename '$(GITPATH)')" && $(MKDIR_P) "._tmp-$${_STEM}" && \
+	$(MAKE) RUNPATH="._tmp-$${_STEM}/$${_STEM}" dryrun-git-clone && \
+	$(MAKE) RUNJOB='nothing' RUNPATH="._tmp-$${_STEM}" '._tmp-$(@F)' && \
+	mv '._tmp-$(@F)' '$@' && rm -rf "._tmp-$${_STEM}";
 
 
 # Phony targets
 
 # File extensions for which archive targets exist (regular expression)
 _re_archive_allow_ = \.tar\.gz$$\|\.tar\.xz$$\|\.tgz$$\|\.txz$$\|\.zip$$
+
+# Build a source release that needs Autotools and a `bootstrap` script
+.PHONY: authors-copy
+authors-copy:
+	@test 'x$(DEST)' != x && (rm -rf '$(DEST)' && $(MAKE) "$$(expr \
+	'DEVPATH=$(DEST)' : '\(.*\)\($(_re_archive_allow_)\)' || \
+	echo DEVPATH='$(DEST)')" '$(DEST)') || \
+	(rm -rf '$(DEVPATH).$(ZIPTYPE)' && $(MAKE) '$(DEVPATH).$(ZIPTYPE)');
 
 # Build an installation image ready to be distributed or installed
 .PHONY: binary-release
@@ -434,6 +453,22 @@ binary-release:
 	'BINPATH=$(DEST)' : '\(.*\)\($(_re_archive_allow_)\)' || \
 	echo BINPATH='$(DEST)')" '$(DEST)') || \
 	(rm -rf '$(BINPATH).$(ZIPTYPE)' && $(MAKE) '$(BINPATH).$(ZIPTYPE)');
+
+# Clone the latest revision from the Git server (requires `git`)
+.PHONY: git-clone
+git-clone:
+	@test 'x$(DEST)' != x && (rm -rf '$(DEST)' && $(MAKE) "$$(expr \
+	'GITPATH=$(DEST)' : '\(.*\)\($(_re_archive_allow_)\)' || \
+	echo GITPATH='$(DEST)')" '$(DEST)') || \
+	(rm -rf '$(GITPATH).$(ZIPTYPE)' && $(MAKE) '$(GITPATH).$(ZIPTYPE)');
+
+# Create a list of the files that will be installed by `make-install`
+.PHONY: manifest
+manifest:
+	@rm -rf '._tmp_.lst'; $(MAKE) RUNJOB='install' RUNPATH='._tmp_' \
+	LISTPREFIX='/' '._tmp_.lst' && (test 'x$(DEST)' != x && (rm -rf \
+	'$(DEST)' && mv '._tmp_.lst' '$(DEST)') || (rm -rf '$(BINPATH).lst' \
+	&& mv '._tmp_.lst' '$(BINPATH).lst')) && rm -rf '._tmp_';
 
 # Build a package with only the compiled binaries and without directories
 .PHONY: portable-builds
@@ -451,21 +486,19 @@ source-release:
 	echo SRCPATH='$(DEST)')" '$(DEST)') || \
 	(rm -rf '$(SRCPATH).$(ZIPTYPE)' && $(MAKE) '$(SRCPATH).$(ZIPTYPE)');
 
-# Build a source release that needs Autotools and a `bootstrap` script
-.PHONY: authors-copy
-authors-copy:
-	@test 'x$(DEST)' != x && (rm -rf '$(DEST)' && $(MAKE) "$$(expr \
-	'DEVPATH=$(DEST)' : '\(.*\)\($(_re_archive_allow_)\)' || \
-	echo DEVPATH='$(DEST)')" '$(DEST)') || \
-	(rm -rf '$(DEVPATH).$(ZIPTYPE)' && $(MAKE) '$(DEVPATH).$(ZIPTYPE)');
-
-# Create a list of the files that will be installed by `make-install`
-.PHONY: manifest
-manifest:
-	@rm -rf '_tmp_.lst'; $(MAKE) RUNJOB='install' RUNPATH='_tmp_' \
-	LISTPREFIX='/' '_tmp_.lst' && (test 'x$(DEST)' != x && (rm -rf \
-	'$(DEST)' && mv '_tmp_.lst' '$(DEST)') || (rm -rf '$(BINPATH).lst' && \
-	mv '_tmp_.lst' '$(BINPATH).lst')) && rm -rf '_tmp_';
+# Call `make author-clean`, then remove all the releases created
+.PHONY: oblivion-clean
+oblivion-clean: author-clean
+	rm -rf '$(BINPATH)' '$(PTBPATH)' '$(SRCPATH)' '$(DEVPATH)' \
+	'$(GITPATH)' && rm -f '$(BINPATH).lst' '$(BINPATH).tar.gz' \
+	'$(BINPATH).tar.xz' '$(BINPATH).tgz' '$(BINPATH).txz' \
+	'$(BINPATH).zip' '$(PTBPATH).tar.gz' '$(PTBPATH).tar.xz' \
+	'$(PTBPATH).tgz' '$(PTBPATH).txz' '$(PTBPATH).zip' \
+	'$(SRCPATH).tar.gz' '$(SRCPATH).tar.xz' '$(SRCPATH).tgz' \
+	'$(SRCPATH).txz' '$(SRCPATH).zip' '$(DEVPATH).tar.gz' \
+	'$(DEVPATH).tar.xz' '$(DEVPATH).tgz' '$(DEVPATH).txz' \
+	'$(DEVPATH).zip' '$(GITPATH).tar.gz' '$(GITPATH).tar.xz' \
+	'$(GITPATH).tgz' '$(GITPATH).txz' '$(GITPATH).zip';
 
 
 ## EOF

@@ -48,9 +48,10 @@ Features
   for example, not even single/double quotes are automatically removed from
   values unless the developer explicitly decides to use the formatting
   functions provided by the API)
-* Robust file access (support of all code representations of new lines -- i.e.
-  Classic Mac OS' `CR`, Unix' `LF`, Windows' `CR`+`LF`, RISC OS Open's
-  `LF`+`CR`; protection against null byte injection; UTF-8 support)
+* Robust and cross-platform file access (UTF-8 support; protection against null
+  byte injection; support of all code representations of new lines -- i.e.
+  ubiquitous support of Classic Mac OS' `CR`, Unix' `LF`, Windows' `CR`+`LF`,
+  RISC OS Open's `LF`+`CR`)
 
 
 Sample usage
@@ -58,22 +59,22 @@ Sample usage
 
 log.ini:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ini}
+``````````````````````````````````````ini
 [users]
 have_visited = ronnie, lilly82, robrob
 
 [last_update]
 date = 12.03.2017
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``````````````````````````````````````
 
 example.c:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+```````````````````````````````````````````````````````````````````````````c
 #include <confini.h>
 
 static int callback (IniDispatch * disp, void * v_other) {
 
-  #define IS_KEY(SECTION,KEY) \
+  #define IS_KEY(SECTION, KEY) \
     (ini_array_match(SECTION, disp->append_to, '.', disp->format) && \
     ini_string_match_ii(KEY, disp->data, disp->format))
 
@@ -89,6 +90,7 @@ static int callback (IniDispatch * disp, void * v_other) {
       printf("Last update: %s\n", disp->value);
 
     }
+
   }
 
   #undef IS_KEY
@@ -109,14 +111,14 @@ int main () {
   return 0;
 
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```````````````````````````````````````````````````````````````````````````
 
 Output:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+````````````````````````````````````````````````
 People who have visited: ronnie, lilly82, robrob
 Last update: 12.03.2017
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+````````````````````````````````````````````````
 
 For more details, please read the [Library Functions Manual][1]
 (`man libconfini` -- a standalone HTML version is available [here][2]) and the
@@ -128,40 +130,46 @@ Installation
 ------------
 
 Despite the small footprint, **libconfini** has been conceived as a shared
-library (but it may be used as a static library as well).
+library (but it may be used as a static library as well). An automatic list of
+the distributions that ship the library already compiled is available [here][5].
 
-On most Unix-like systems, it is possible to install **libconfini** using the
-following common steps:
+If a pre-compiled package for your platform is not available, on most Unix-like
+systems it is possible to install **libconfini** using the following common
+steps:
 
-~~~~~~~~~~~~
+``````````````````sh
 ./configure
 make
-make install
-~~~~~~~~~~~~
+make install-strip
+``````````````````
 
-For a minimum installation without man pages and examples, use `./configure
---disable-man --disable-examples`.
+If the `strip` utility is not available on your machine, use `make install`
+instead (it will produce larger binaries)
+
+For a minimum installation without development files (i.e. static libraries,
+headers, documentation, examples, etc.) use `./configure --disable-devel`.
 
 If the `configure` script is missing from your package you need to generate it
 by running the `bootstrap` script. By default, `bootstrap` will also run the
 `configure` script immediately after having generated it, so you may type the
 `make` command directly after `bootstrap`. To list different options use
-`bootstrap --help`.
+`./bootstrap --help`.
 
 If you are using Microsoft Windows, a batch script for compiling **libconfini**
-under [MinGW][5] without Autotools is available (`mgwmake.bat`). If you are
+under [MinGW][6] without Autotools is available (`mgwmake.bat`). If you are
 interested in using Autotools for compiling **libconfini** under Microsoft
-Windows, you can integrate MinGW with [MSYS][6] or  [MSYS2][7]. Alternatively,
-[an unofficial port][8] of **libconfini** for [Cygwin][9] is available as well.
+Windows, you can integrate MinGW with [MSYS][7], or you can directly use
+[MSYS2][8]. Alternatively, [an unofficial port][9] of **libconfini** for
+[Cygwin][10] is available as well.
 
-For further information, see [INSTALL][10].
+For further information, see [INSTALL][11].
 
 
 Free software
 -------------
 
 This library is free software. You can redistribute it and/or modify it under
-the terms of the GPL license version 3 or any later version. See [COPYING][11]
+the terms of the GPL license version 3 or any later version. See [COPYING][12]
 for details.
 
 
@@ -169,11 +177,12 @@ for details.
 [2]: https://madmurphy.github.io/libconfini/manual.html
 [3]: https://github.com/
 [4]: https://github.com/madmurphy/libconfini
-[5]: http://www.mingw.org/
-[6]: http://www.mingw.org/wiki/MSYS
-[7]: https://www.msys2.org/
-[8]: https://github.com/fd00/yacp/tree/master/libconfini
-[9]: https://www.cygwin.com/
-[10]: https://github.com/madmurphy/libconfini/blob/master/INSTALL
-[11]: https://github.com/madmurphy/libconfini/blob/master/COPYING
+[5]: https://repology.org/project/libconfini/versions
+[6]: http://www.mingw.org/
+[7]: http://www.mingw.org/wiki/MSYS
+[8]: https://www.msys2.org/
+[9]: https://github.com/fd00/yacp/tree/master/libconfini
+[10]: https://www.cygwin.com/
+[11]: https://github.com/madmurphy/libconfini/blob/master/INSTALL
+[12]: https://github.com/madmurphy/libconfini/blob/master/COPYING
 

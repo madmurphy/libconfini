@@ -22,7 +22,7 @@ BEGIN
 			VALUE "FileDescription", "@PROJECT_DESCRIPTION@"
 			VALUE "FileVersion", "@PACKAGE_VERSION@"
 			VALUE "InternalName", "@PACKAGE_CONFNAME@"
-			VALUE "LegalCopyright", "@LICENSE_LONGNAME@"
+			VALUE "LegalCopyright", "@LICENSE_NAME@"
 			VALUE "OriginalFilename", "@PACKAGE_TARNAME@.dll"
 			VALUE "ProductName", "@PACKAGE_CONFNAME@"
 			VALUE "ProductVersion", "@PACKAGE_VERSION@"

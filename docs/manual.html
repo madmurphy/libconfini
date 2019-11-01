@@ -149,8 +149,8 @@ home    Champ de Mars, 5 Avenue Anatole
 city    Paris
 </code></pre>
 
-<p>This library has been born as a general INI parser for <a href="https://www.gnu.org/">GNU</a>, so the support
-of most part of INI dialects has been implemented within it.</p>
+<p><strong>libconfini</strong> has been born as a general INI parser for <strong>GNU</strong>, so the
+support of most part of INI dialects has been implemented within it.</p>
 
 <p>Especially in Microsoft Windows a more radical syntax variation has been
 implemented: the use of semicolon, instead of new lines, as delimiter between
@@ -225,8 +225,8 @@ my_array = Asia, Africa, 'North America', South America, \
 
 <h3 id="SECTIONS">SECTIONS</h3>
 
-<p>A <strong>section</strong> might be imagined like a directory. A <strong>section path</strong> is
-identified as the string <code>"$1"</code> in the regular expression
+<p>A <strong>section</strong> can be imagined as a directory. A <strong>section path</strong> is identified
+as the string <code>"$1"</code> in the regular expression
 <code>/(?:^|\n|\r)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\][ \t\v\f]*(?:\n|\r|$)/</code>
 globally applied to an INI file. A section path expresses nesting using the
 &ldquo;dot&rdquo; character, as in the following example:</p>
@@ -506,15 +506,24 @@ int main () {
 }
 </code></pre>
 
+<p><em><strong>Note:</strong> On some platforms, such as Microsoft Windows, it
+might be needed to add the binary specifier (<code>"b"</code>) to the mode string of the
+<code>FILE</code> handle passed to <code>load_ini_file()</code> in order to prevent discrepancies
+between the physical size and the computed size of the file:</em></p>
+
+<pre><code class="{.c}">FILE * ini_file = fopen("example.conf", "rb");
+</code></pre>
+
 <h3 id="HOW-IT-WORKS">HOW IT WORKS</h3>
 
 <p>The function <code>load_ini_path()</code> is a clone of <code>load_ini_file()</code> that requires a
 path instead of a <code>FILE</code> handle.</p>
 
-<p>The function <code>load_ini_file()</code> dynamically allocates at once the whole INI file
-into the heap, and the two structures <code>IniStatistics</code> and <code>IniDispatch</code> into
-the stack. All members of the INI file are then dispatched to the custom
-listener <code>f_foreach()</code>. Finally the allocated memory gets automatically freed.</p>
+<p>Both functions <code>load_ini_file()</code> and <code>load_ini_path()</code> dynamically allocate at
+once the whole INI file into the heap, and the two structures <code>IniStatistics</code>
+and <code>IniDispatch</code> into the stack. All members of the INI file are then
+dispatched to the custom listener <code>f_foreach()</code>. Finally the allocated memory
+gets automatically freed.</p>
 
 <p>Because of this mechanism <em>it is very important that all the dispatched data be
 <strong>immediately</strong> copied by the user (when needed), and no pointers to the passed
@@ -954,8 +963,8 @@ level of nesting.</p>
 
 <pre><code class="{.c}">if (disp-&gt;type == INI_KEY) {
 
-  #define IS_KEY(SECTION,KEY)\
-    (ini_array_match(SECTION, disp-&gt;append_to, '.', disp-&gt;format) &amp;&amp;\
+  #define IS_KEY(SECTION, KEY) \
+    (ini_array_match(SECTION, disp-&gt;append_to, '.', disp-&gt;format) &amp;&amp; \
     ini_string_match_ii(KEY, disp-&gt;data, disp-&gt;format))
 
   if (IS_KEY("europe.madrid", "have_visited")) {
@@ -971,6 +980,8 @@ level of nesting.</p>
     // etc.
 
   }
+
+  #undef IS_KEY
 
 }
 </code></pre>
@@ -1353,7 +1364,7 @@ int main () {
   struct size_check check;
 
   if (load_ini_path(
-    "examples/ini_files/example.conf",
+    "example.conf",
     INI_DEFAULT_FORMAT,
     ini_init,
     ini_listener,
@@ -1593,7 +1604,43 @@ Number of bytes parsed per second: 24623007.317252
 
 <p><em><strong>Addendum:</strong> Unfortunately that old computer broke, so now I can perform
 tests only on a newer hardware, where <strong>libconfini</strong> seems to parse four times
-faster. However I have left a performance test under <code>tests/performance</code>.</em></p>
+as fast. But if you are interested in testing yourself the performance of this
+library on a particular hardware, I have left a performance test under
+<code>tests/performance</code>.</em></p>
+
+<h3 id="COMPILING-FOR-EXTREME-PLATFORMS">COMPILING FOR EXTREME PLATFORMS</h3>
+
+<p>This library has nearly everything implemented from scratch, with the only
+notable exception of the I/O functions <code>load_ini_file()</code> and <code>load_ini_path()</code>,
+which rely on C standard libraries. On some platforms, however, only a rather
+exotic I/O API is available, while for some other platforms the C Standard
+Library is simply too heavy or just not implementable.</p>
+
+<p>The official build environment of <strong>libconfini</strong> does not offer shortcuts for
+facing this kind of situations. But fortunately, thanks to the modularity of
+the source code, it is very simple to get rid of every tie with the C Standard
+Library and compile <strong>libconfini</strong> as &ldquo;bare metal&rdquo;, with <code>strip_ini_cache()</code> as
+the only parsing function (as this relies only on a buffer for its input) &ndash;
+i.e. without <code>load_ini_file()</code> and <code>load_ini_path()</code>, and without any header at
+all.</p>
+
+<p>To do so, follow these simple steps:</p>
+
+<ol>
+<li>Remove <code>include &lt;stdio.h&gt;</code> and <code>include &lt;stdint.h&gt;</code> from <code>confini.h</code></li>
+<li>Remove <code>include &lt;stdlib.h&gt;</code> from <code>confini.c</code></li>
+<li>Remove the functions <code>load_ini_file()</code> and <code>load_ini_path()</code> from both
+<code>confini.h</code> and <code>confini.c</code></li>
+<li>Remove the function pointers <code>ini_get_int</code>, <code>ini_get_lint</code>, <code>ini_get_llint</code>
+and <code>ini_get_float</code> from both <code>confini.h</code> and <code>confini.c</code> (from now on you
+will have to provide your own functions for converting strings to numbers)</li>
+<li>Create a <code>typedef</code> in <code>confini.h</code> for each of the following data types:
+<code>size_t</code>, <code>int8_t</code>, <code>uint8_t</code>, <code>uint16_t</code> and <code>uint32_t</code></li>
+<li>Leave everything else as it is</li>
+</ol>
+
+
+<p>After doing so <strong>libconfini</strong> will work even without a kernel.</p>
 
 <h2 id="INI-SYNTAX-CONSIDERATIONS">INI SYNTAX CONSIDERATIONS</h2>
 
@@ -1780,7 +1827,7 @@ attempt fails, the block will be dispatched as a normal comment.</p>
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'>Stefano Gioffr&eacute;</li>
-    <li class='tc'>October 2019</li>
+    <li class='tc'>November 2019</li>
     <li class='tr'>libconfini(3)</li>
   </ol>
 

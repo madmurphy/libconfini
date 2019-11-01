@@ -1,4 +1,4 @@
-.TH "confini.h" 3 "Sat Oct 19 2019" "libconfini" \" -*- nroff -*-
+.TH "confini.h" 3 "Fri Nov 1 2019" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -84,7 +84,7 @@ confini.h \- libconfini header
 
 .in +1c
 .ti -1c
-.RI "enum \fBConfiniInterruptNo\fP { \fBCONFINI_SUCCESS\fP = 0, \fBCONFINI_IINTR\fP = 1, \fBCONFINI_FEINTR\fP = 2, \fBCONFINI_ENOENT\fP = 4, \fBCONFINI_ENOMEM\fP = 5, \fBCONFINI_EIO\fP = 6, \fBCONFINI_EOOR\fP = 7 }"
+.RI "enum \fBConfiniInterruptNo\fP { \fBCONFINI_SUCCESS\fP = 0, \fBCONFINI_IINTR\fP = 1, \fBCONFINI_FEINTR\fP = 2, \fBCONFINI_ENOENT\fP = 4, \fBCONFINI_ENOMEM\fP = 5, \fBCONFINI_EIO\fP = 6, \fBCONFINI_EOOR\fP = 7, \fBCONFINI_EBADF\fP = 8, \fBCONFINI_EFBIG\fP = 9 }"
 .br
 .RI "Error codes\&. "
 .ti -1c
@@ -428,6 +428,12 @@ Error reading the file [value=6]
 .TP
 \fB\fICONFINI_EOOR \fP\fP
 Out-of-range error: callbacks are more than expected [value=7] 
+.TP
+\fB\fICONFINI_EBADF \fP\fP
+The stream specified is not a seekable stream [value=8] 
+.TP
+\fB\fICONFINI_EFBIG \fP\fP
+File too large [value=9] 
 .SS "enum \fBIniCommentMarker\fP"
 
 .PP
@@ -497,28 +503,28 @@ INI node types\&.
 .in +1c
 .TP
 \fB\fIINI_UNKNOWN \fP\fP
-Node impossible to categorize [value=0] 
+This is a node impossible to categorize [value=0] 
 .TP
 \fB\fIINI_VALUE \fP\fP
-Not used here (values are dispatched together with keys) – but available for user's implementations [value=1] 
+Not used by \fBlibconfini\fP (values are dispatched together with keys) – but available for user's implementations [value=1] 
 .TP
 \fB\fIINI_KEY \fP\fP
-Key [value=2] 
+This is a key [value=2] 
 .TP
 \fB\fIINI_SECTION \fP\fP
-Section path [value=3] 
+This is a section or a section path [value=3] 
 .TP
 \fB\fIINI_COMMENT \fP\fP
-Comment [value=4] 
+This is a comment [value=4] 
 .TP
 \fB\fIINI_INLINE_COMMENT \fP\fP
-Inline comment [value=5] 
+This is an inline comment [value=5] 
 .TP
 \fB\fIINI_DISABLED_KEY \fP\fP
-Disabled key [value=6] 
+This is a disabled key [value=6] 
 .TP
 \fB\fIINI_DISABLED_SECTION \fP\fP
-Disabled section path [value=7] 
+This is a disabled section path [value=7] 
 .SS "enum \fBIniSectionPaths\fP"
 
 .PP
@@ -1980,7 +1986,7 @@ Parses an INI file and dispatches its content using a \fCFILE\fP structure as ar
 Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\fP)
 .RE
 .PP
-The \fCini_file\fP parameter must be a \fCFILE\fP handle with read privileges\&. In some platforms, such as Microsoft Windows, it might be needed to add the binary specifier to the mode string (\fC'b'\fP) in order to prevent discrepancies between the physical size of the file and its computed size:
+The \fCini_file\fP parameter must be a \fCFILE\fP handle with read privileges\&. On some platforms, such as Microsoft Windows, it might be needed to add the binary specifier to the mode string (\fC'b'\fP) in order to prevent discrepancies between the physical size of the file and its computed size:
 .PP
 .PP
 .nf

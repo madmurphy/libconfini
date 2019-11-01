@@ -4,19 +4,19 @@
 	"description": "@PROJECT_DESCRIPTION@",
 	"homepage": "@PACKAGE_URL@",
 	"author": "@PACKAGE_BUGREPORT@",
-	"license": "@LICENSE_SHORTNAME@",
+	"license": "@LICENSE_ID@",
 	"main": "@PACKAGE_CONFNAME@",
-	"repo": "@PUBLISHER_ID@/@PACKAGE_NAME@",
+	"repo": "@PUBLISHER_ID@/@PACKAGE_TARNAME@",
 	"repository": {
 		"type": "git",
-		"url": "@GIT_HTTP_SERVER@/@PUBLISHER_ID@/@PACKAGE_NAME@.git"
+		"url": "@GIT_HTTP_SERVER@/@PUBLISHER_ID@/@PACKAGE_TARNAME@.git"
 	},
 	"src": [
 		"src/@PROJECT_NAME@.c",
 		"src/@PROJECT_NAME@.h"
 	],
 	"bugs": {
-		"url": "@GIT_HTTP_SERVER@/@PUBLISHER_ID@/@PACKAGE_NAME@/issues",
+		"url": "@GIT_HTTP_SERVER@/@PUBLISHER_ID@/@PACKAGE_TARNAME@/issues",
 		"email" : "@PACKAGE_BUGREPORT@"
 	},
 	"man" : [
@@ -24,7 +24,7 @@
 		"docs/man/man3/IniDispatch.3",
 		"docs/man/man3/IniFormat.3",
 		"docs/man/man3/IniStatistics.3",
-		"docs/man/man3/@PACKAGE_NAME@.3"
+		"docs/man/man3/@PACKAGE_TARNAME@.3"
 	],
 	"keywords": [
 		"c",

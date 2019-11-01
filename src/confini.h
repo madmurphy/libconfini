@@ -85,7 +85,8 @@
 
 
 /**
-    @brief  24-bit bitfield representing the format of an INI file (INI dialect)
+    @brief  24-bit bitfield representing the format of an INI file (INI
+            dialect)
 **/
 typedef _LIBCONFINI_INIFORMAT_TYPE_ IniFormat;
 
@@ -365,8 +366,11 @@ enum ConfiniInterruptNo {
     CONFINI_ENOENT = 4,     /**< File inaccessible [value=4] **/
     CONFINI_ENOMEM = 5,     /**< Error allocating virtual memory [value=5] **/
     CONFINI_EIO = 6,        /**< Error reading the file [value=6] **/
-    CONFINI_EOOR = 7        /**< Out-of-range error: callbacks are more than
+    CONFINI_EOOR = 7,       /**< Out-of-range error: callbacks are more than
                                  expected [value=7] **/
+    CONFINI_EBADF = 8,      /**< The stream specified is not a seekable stream
+                                 [value=8] **/
+    CONFINI_EFBIG = 9       /**< File too large [value=9] **/
 };
 
 
@@ -374,16 +378,20 @@ enum ConfiniInterruptNo {
     @brief  INI node types
 **/
 enum IniNodeType {
-    INI_UNKNOWN = 0,            /**< Node impossible to categorize [value=0] **/
-    INI_VALUE = 1,              /**< Not used here (values are dispatched
-                                     together with keys) -- but available for
-                                     user's implementations [value=1] **/
-    INI_KEY = 2,                /**< Key [value=2] **/
-    INI_SECTION = 3,            /**< Section path [value=3] **/
-    INI_COMMENT = 4,            /**< Comment [value=4] **/
-    INI_INLINE_COMMENT = 5,     /**< Inline comment [value=5] **/
-    INI_DISABLED_KEY = 6,       /**< Disabled key [value=6] **/
-    INI_DISABLED_SECTION = 7    /**< Disabled section path [value=7] **/
+    INI_UNKNOWN = 0,            /**< This is a node impossible to categorize
+                                     [value=0] **/
+    INI_VALUE = 1,              /**< Not used by **libconfini** (values are
+                                     dispatched together with keys) -- but
+                                     available for user's implementations
+                                     [value=1] **/
+    INI_KEY = 2,                /**< This is a key [value=2] **/
+    INI_SECTION = 3,            /**< This is a section or a section path
+                                     [value=3] **/
+    INI_COMMENT = 4,            /**< This is a comment [value=4] **/
+    INI_INLINE_COMMENT = 5,     /**< This is an inline comment [value=5] **/
+    INI_DISABLED_KEY = 6,       /**< This is a disabled key [value=6] **/
+    INI_DISABLED_SECTION = 7    /**< This is a disabled section path
+                                     [value=7] **/
 };
 
 
@@ -441,9 +449,9 @@ enum IniSectionPaths {
     @brief  Possible values of #IniFormat::multiline_nodes
 **/
 enum IniMultiline {
-    INI_MULTILINE_EVERYWHERE = 0,       /**< Comments, section paths and keys --
-                                             disabled or not -- are allowed to
-                                             be multi-line **/
+    INI_MULTILINE_EVERYWHERE = 0,       /**< Comments, section paths and keys
+                                             -- disabled or not -- are allowed
+                                             to be multi-line **/
     INI_BUT_COMMENTS = 1,               /**< Only section paths and keys --
                                              disabled or not -- are allowed to
                                              be multi-line **/
@@ -465,7 +473,7 @@ static const IniFormat INI_DEFAULT_FORMAT = _LIBCONFINI_DEFAULT_FORMAT_;
     @brief  A model format for Unix-like .conf files (where space characters
             are delimiters between keys and values)
 **/
-/*  All properties are set to `0` here.  */
+/*  All fields are set to `0` here.  */
 static const IniFormat INI_UNIXLIKE_FORMAT = _LIBCONFINI_UNIXLIKE_FORMAT_;
 
 

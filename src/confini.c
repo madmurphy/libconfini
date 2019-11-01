@@ -24,10 +24,6 @@
 
 
 
-#include <stdlib.h>
-#include "confini.h"
-
-
 /**
 
 
@@ -232,13 +228,98 @@
 
 
 
+		/*  PREPROCESSOR PREAMBLE  */
+
+
+/*  String concatenation facilities  */
+#define __PP_CAT__(STR1, STR2) STR1##STR2
+#define __PP_UCAT__(STR1, STR2) STR1##_##STR2
+#define __PP_EVALCAT__(STR1, STR2) __PP_CAT__(STR1, STR2)
+#define __PP_EVALUCAT__(STR1, STR2) __PP_UCAT__(STR1, STR2)
+
+
+
+		/*  PREPROCESSOR ENVIRONMENT  */
+
+
+#ifndef CONFINI_IO_FLAVOR
+/**
+
+	@brief			The I/O API to use (possibly overridden via
+					`-DCONFINI_IO_FLAVOR=[FLAVOR]`)
+
+	Possible values are `CONFINI_STANDARD` and `CONFINI_POSIX`
+
+**/
+#define CONFINI_IO_FLAVOR CONFINI_STANDARD
+#endif
+
+
+
+		/*  PREPROCESSOR GLUE  */
+
+
+#define _LIBCONFINI_PRIVATE_ITEM_(GROUP, ITEM) \
+	__PP_EVALUCAT__(__PP_EVALCAT__(_LIB, GROUP), __PP_EVALCAT__(ITEM, _))
+#define _LIBCONFINI_CURRENT_FLAVOR_GET_(NAME) \
+	_LIBCONFINI_PRIVATE_ITEM_(CONFINI_IO_FLAVOR, NAME)
+#define _LIBCONFINI_IS_FLAVOR_(NAME) \
+	_LIBCONFINI_PRIVATE_ITEM_(CONFINI_IO_FLAVOR, FLAVOR) == \
+		_LIBCONFINI_PRIVATE_ITEM_(NAME, FLAVOR)
+
+
+
+		/*  AVAILABLE I/O FLAVORS  */
+
+
+/*  `-DCONFINI_IO_FLAVOR=CONFINI_STANDARD` (C99 Standard, default, REQUIRED)  */
+#define _LIBCONFINI_STANDARD_SEOF_FN_(FILEPTR) fseek(FILEPTR, 0, SEEK_END)
+#define _LIBCONFINI_STANDARD_FT_FN_(FILEPTR) ftell(FILEPTR)
+#define _LIBCONFINI_STANDARD_FT_T_ long signed int
+/*  Any unique non-zero integer to identify this I/O API  */
+#define _LIBCONFINI_STANDARD_FLAVOR_ 1
+
+/*  `-DCONFINI_IO_FLAVOR=CONFINI_POSIX`  */
+#define _LIBCONFINI_POSIX_SEOF_FN_(FILEPTR) fseeko(FILEPTR, 0, SEEK_END)
+#define _LIBCONFINI_POSIX_FT_FN_(FILEPTR) ftello(FILEPTR)
+#define _LIBCONFINI_POSIX_FT_T_ off_t
+/*  Any unique non-zero integer to identify this I/O API  */
+#define _LIBCONFINI_POSIX_FLAVOR_ 2
+
+/*  Define `_POSIX_C_SOURCE` macro when `CONFINI_IO_FLAVOR == CONFINI_POSIX`  */
+#if _LIBCONFINI_IS_FLAVOR_(CONFINI_POSIX)
+#ifndef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 200809L
+#endif
+#endif
+
+/*  It is possible to add other I/O APIs here. Feel	free to contribute!  */
+
+
+
+		/*  CHECKS  */
+
+
+#if _LIBCONFINI_PRIVATE_ITEM_(CONFINI_IO_FLAVOR, FLAVOR) == 0
+#error Unsupported I/O flavor defined in macro CONFINI_IO_FLAVOR
+#endif
+
+
+
+		/*  HEADERS  */
+
+#include <stdlib.h>
+#include "confini.h"
+
+
+
 		/*  ALIASES  */
 
 
 #define _LIBCONFINI_FALSE_ 0
 #define _LIBCONFINI_TRUE_ 1
 #define _LIBCONFINI_BOOL_ unsigned char
-#define _LIBCONFINI_SIMPLE_SPACE_ 32
+#define _LIBCONFINI_SIMPLE_SPACE_ ' '
 #define _LIBCONFINI_HT_ '\t'
 #define _LIBCONFINI_FF_ '\f'
 #define _LIBCONFINI_VT_ '\v'
@@ -252,6 +333,12 @@
 #define _LIBCONFINI_HASH_ '#'
 #define _LIBCONFINI_DOUBLE_QUOTES_ '"'
 #define _LIBCONFINI_SINGLE_QUOTES_ '\''
+#define _LIBCONFINI_SEEK_EOF_(FILEPTR) \
+	_LIBCONFINI_CURRENT_FLAVOR_GET_(SEOF_FN)(FILEPTR)
+#define _LIBCONFINI_FTELL_(FILEPTR) \
+	_LIBCONFINI_CURRENT_FLAVOR_GET_(FT_FN)(FILEPTR)
+#define _LIBCONFINI_OFF_T_ \
+	_LIBCONFINI_CURRENT_FLAVOR_GET_(FT_T)
 
 
 
@@ -268,9 +355,9 @@
 	leading spaces work pretty well as metacharacters...
 
 */
-/*  Simple comment internal marker  */
+/*  Internal marker of standard comments  */
 #define _LIBCONFINI_SC_INT_MARKER_ _LIBCONFINI_SIMPLE_SPACE_
-/*  Inline comment internal marker  */
+/*  Internal marker of inline comments  */
 #define _LIBCONFINI_IC_INT_MARKER_ _LIBCONFINI_HT_
 
 
@@ -392,7 +479,7 @@ static const char _LIBCONFINI_SPACES_[_LIBCONFINI_SPALEN_] = {
 
 /**
 
-	@brief	A list of possible string representations of boolean pairs
+	@brief			A list of possible string representations of boolean pairs
 
 	There may be infinite pairs here. Each pair must be organized according to the
 	following order:
@@ -1528,7 +1615,8 @@ static uint8_t get_type_as_active (
 
 			Scan for possible non-space characters following the CLOSE_SECTION
 			character: if found the node cannot represent a section path (but it can
-			possibly represent a key). Empty quotes will be tolerated.
+			possibly represent a key). Empty quotes surrounded by spaces will be
+			tolerated.
 
 		*/
 
@@ -1668,7 +1756,7 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 	/*
 
-	Setting constant or shared flags of mask `abcd` (8 bits used):
+	Shared flags of mask `abcd` (8 bits used):
 
 		FLAG_1		Single quotes are not metacharacters (const)
 		FLAG_2		Double quotes are not metacharacters (const)
@@ -1755,9 +1843,9 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 						segment, but the entry that preceded it had been checked and
 						did not seem to represent a valid disabled entry
 
-			Note:	For FLAG_1-FLAG_128 see the beginning of the function. For
+			NOTE:	For FLAG_1-FLAG_128 see the beginning of the function. For
 					FLAG_1-FLAG_16 I keep the values already assigned at the
-					beginning of the function; all other flags have been set to
+					beginning of the function; all other flags are already set to
 					zero.
 
 		*/
@@ -1850,7 +1938,7 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 				/*
 
 					No case break here, keep it like this! `case /[ \t\v\f]/` must
-					follow.
+					follow (switch case fallthrough).
 
 				*/
 
@@ -1964,9 +2052,9 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 			FLAG_512	This was neither a hash nor a semicolon character
 			FLAG_1024	This was not a space
 
-		Note:	For FLAG_1-FLAG_128 see the beginning of the function. For
+		NOTE:	For FLAG_1-FLAG_128 see the beginning of the function. For
 				FLAG_1-FLAG_16 I keep the values already assigned at the beginning
-				of the function; all other flags have been already set to zero (see
+				of the function; all other flags are already set to zero (see
 				previous usage of `abcd` within this function), with the only
 				exception of FLAG_2048, which I am going to overwrite immediately.
 
@@ -2388,7 +2476,8 @@ int strip_ini_cache (
 					/*
 
 						No case break here, keep it like this!
-						`case _LIBCONFINI_SC_INT_MARKER_` must follow.
+						`case _LIBCONFINI_SC_INT_MARKER_` must follow
+						(switch case fallthrough).
 
 					*/
 
@@ -2637,7 +2726,7 @@ int strip_ini_cache (
 	@return			Zero for success, otherwise an error code (see `enum`
 					#ConfiniInterruptNo)
 
-	The @p ini_file parameter must be a `FILE` handle with read privileges. In some
+	The @p ini_file parameter must be a `FILE` handle with read privileges. On some
 	platforms, such as Microsoft Windows, it might be needed to add the binary
 	specifier to the mode string (`"b"`) in order to prevent discrepancies between
 	the physical size of the file and its computed size:
@@ -2681,10 +2770,21 @@ int load_ini_file (
 	void * const user_data
 ) {
 
-	fseek(ini_file, 0, SEEK_END);
+	_LIBCONFINI_OFF_T_ file_size;
 
-	const size_t file_size = ftell(ini_file);
-	char * const cache = (char *) malloc(file_size + 1);
+	if (_LIBCONFINI_SEEK_EOF_(ini_file) || (file_size = _LIBCONFINI_FTELL_(ini_file)) < 0) {
+
+		return CONFINI_EBADF;
+
+	}
+
+	if (file_size > SIZE_MAX) {
+
+		return CONFINI_EFBIG;
+
+	}
+
+	char * const cache = (char *) malloc((size_t) file_size + 1);
 
 	if (!cache) {
 
@@ -2694,14 +2794,14 @@ int load_ini_file (
 
 	rewind(ini_file);
 
-	if (fread(cache, 1, file_size, ini_file) < file_size) {
+	if (fread(cache, 1, (size_t) file_size, ini_file) < file_size) {
 
 		free(cache);
 		return CONFINI_EIO;
 
 	}
 
-	const int return_value = strip_ini_cache(cache, file_size, format, f_init, f_foreach, user_data);
+	const int return_value = strip_ini_cache(cache, (size_t) file_size, format, f_init, f_foreach, user_data);
 
 	free(cache);
 	return return_value;
@@ -2757,10 +2857,21 @@ int load_ini_path (
 
 	}
 
-	fseek(ini_file, 0, SEEK_END);
+	_LIBCONFINI_OFF_T_ file_size;
 
-	const size_t file_size = ftell(ini_file);
-	char * const cache = (char *) malloc(file_size + 1);
+	if (_LIBCONFINI_SEEK_EOF_(ini_file) || (file_size = _LIBCONFINI_FTELL_(ini_file)) < 0) {
+
+		return CONFINI_EBADF;
+
+	}
+
+	if (file_size > SIZE_MAX) {
+
+		return CONFINI_EFBIG;
+
+	}
+
+	char * const cache = (char *) malloc((size_t) file_size + 1);
 
 	if (!cache) {
 
@@ -2770,14 +2881,17 @@ int load_ini_path (
 
 	rewind(ini_file);
 
-	if (fread(cache, 1, file_size, ini_file) < file_size) {
+	if (fread(cache, 1, (size_t) file_size, ini_file) < file_size) {
 
 		free(cache);
 		return CONFINI_EIO;
 
 	}
 
-	const int return_value = strip_ini_cache(cache, file_size, format, f_init, f_foreach, user_data);
+	/*  No checks here, as there is nothing we can do about it  */
+	fclose(ini_file);
+
+	const int return_value = strip_ini_cache(cache, (size_t) file_size, format, f_init, f_foreach, user_data);
 
 	free(cache);
 	return return_value;
@@ -3643,7 +3757,7 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 				/*
 
-					There are no escape sequences but spaces might still need to
+					There are no escape sequences, but spaces might still need to
 					be collapsed.
 
 				*/

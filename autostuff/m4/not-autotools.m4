@@ -160,6 +160,18 @@ AC_DEFUN([NS_FOR],
 	[{ for $1; do[]m4_newline()$2[]m4_newline()done }])
 
 
+dnl  NS_BREAK
+dnl  **************************************************************************
+dnl
+dnl  M4 sugar that expands to to a shell "break" command, to be used within
+dnl  loops
+dnl
+dnl  From: not-autotools/m4/not-autoshell.m4
+dnl
+AC_DEFUN([NS_BREAK],
+	[m4_newline()break;m4_newline()])
+
+
 dnl  NS_MOVEVAR(destination, source)
 dnl  **************************************************************************
 dnl
@@ -185,6 +197,33 @@ AC_DEFUN([NC_MSG_WARNBOX],
 		[         | ],
 		[-----------------------------------------------------------],
 		[79])])])
+
+
+dnl  NC_IF_HAVE_POSIX([if-have-posix], [if-dont-have-posix], [posix-version]])
+dnl  **************************************************************************
+dnl
+dnl  Checks whether the POSIX API is available
+dnl
+dnl  From: not-autotools/m4/not-autotools.m4
+dnl
+AC_DEFUN([NC_IF_HAVE_POSIX], [
+	AC_MSG_CHECKING([whether we have POSIX]m4_ifnblank([$3], [ (]m4_dquote(m4_normalize([$3]))[)]))
+	AC_EGREP_CPP([posix_supported], [
+		#define _POSIX_C_SOURCE ]m4_ifnblank([$3], m4_dquote(m4_normalize([$3])), [200809L])[
+		#include <unistd.h>
+		#ifdef _POSIX_VERSION
+		]m4_ifnblank([$3], [[#]if _POSIX_VERSION == ]m4_dquote(m4_normalize([$3])))[
+		posix_supported
+		]m4_ifnblank([$3], [[#]endif])[
+		#endif
+	], [
+		AC_MSG_RESULT([yes])
+		$1
+	], [
+		AC_MSG_RESULT([no])
+		$2
+	])
+])
 
 
 dnl  NC_CONFIG_SHADOW_DIR(subdir)

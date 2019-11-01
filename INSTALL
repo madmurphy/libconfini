@@ -10,7 +10,15 @@ the following common steps:
 
     ./configure
     make
-    make install
+    make install-strip
+
+If the `strip` utility is not available on your machine, use `make install`
+instead (it will produce larger binaries)
+
+For a minimum installation without development files (i.e. static libraries,
+headers, documentation, examples, etc.) use `./configure --disable-devel`. If
+you only want to leave out man pages and examples, use `./configure
+--disable-man --disable-examples`.
 
 If you need to customize the target directories, or otherwise adjust the build
 setting, use
@@ -19,7 +27,7 @@ setting, use
 
 to list the configure options.
 
-After running the `configure` script, you can print the list of commonly used
+After running the `configure` script you can print the list of commonly used
 targets by launching `make help`.
 
 If the `configure` script is missing from your package you need to create it by
@@ -83,9 +91,9 @@ build a fresh archive and ignore the current configuration.
 Distributing the compiled package
 ---------------------------------
 
-Use `make binary-release` to create a binary package of **libconfini**.
-Alternatively, if you only want to obtain the list of the files that are going
-to be installed, use `make manifest`.
+Use `make binary-release` to create a binary package of **libconfini**. If you
+only want to obtain the list of the files that are going to be installed, use
+`make manifest`.
 
 
 Complex installations

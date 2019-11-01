@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "LIBCONFINI" "3" "October 2019" "Stefano Gioffré" "Library Functions Manual"
+.TH "LIBCONFINI" "3" "November 2019" "Stefano Gioffré" "Library Functions Manual"
 .
 .SH "NAME"
 \fBlibconfini\fR
@@ -95,7 +95,7 @@ city    Paris
 .IP "" 0
 .
 .P
-This library has been born as a general INI parser for GNU \fIhttps://www\.gnu\.org/\fR, so the support of most part of INI dialects has been implemented within it\.
+\fBlibconfini\fR has been born as a general INI parser for \fBGNU\fR, so the support of most part of INI dialects has been implemented within it\.
 .
 .P
 Especially in Microsoft Windows a more radical syntax variation has been implemented: the use of semicolon, instead of new lines, as delimiter between nodes, as in the following example:
@@ -180,7 +180,7 @@ my_array = Asia, Africa, \'North America\', South America, \e
 .IP "" 0
 .
 .SS "SECTIONS"
-A \fBsection\fR might be imagined like a directory\. A \fBsection path\fR is identified as the string \fB"$1"\fR in the regular expression \fB/(?:^|\en|\er)[ \et\ev\ef]*\e[[ \et\ev\ef]*([^\e]]*)[ \et\ev\ef]*\e][ \et\ev\ef]*(?:\en|\er|$)/\fR globally applied to an INI file\. A section path expresses nesting using the “dot” character, as in the following example:
+A \fBsection\fR can be imagined as a directory\. A \fBsection path\fR is identified as the string \fB"$1"\fR in the regular expression \fB/(?:^|\en|\er)[ \et\ev\ef]*\e[[ \et\ev\ef]*([^\e]]*)[ \et\ev\ef]*\e][ \et\ev\ef]*(?:\en|\er|$)/\fR globally applied to an INI file\. A section path expresses nesting using the “dot” character, as in the following example:
 .
 .IP "" 4
 .
@@ -542,11 +542,24 @@ int main () {
 .
 .IP "" 0
 .
+.P
+\fI\fBNote:\fR On some platforms, such as Microsoft Windows, it might be needed to add the binary specifier (\fB"b"\fR) to the mode string of the \fBFILE\fR handle passed to \fBload_ini_file()\fR in order to prevent discrepancies between the physical size and the computed size of the file:\fR
+.
+.IP "" 4
+.
+.nf
+
+FILE * ini_file = fopen("example\.conf", "rb");
+.
+.fi
+.
+.IP "" 0
+.
 .SS "HOW IT WORKS"
 The function \fBload_ini_path()\fR is a clone of \fBload_ini_file()\fR that requires a path instead of a \fBFILE\fR handle\.
 .
 .P
-The function \fBload_ini_file()\fR dynamically allocates at once the whole INI file into the heap, and the two structures \fBIniStatistics\fR and \fBIniDispatch\fR into the stack\. All members of the INI file are then dispatched to the custom listener \fBf_foreach()\fR\. Finally the allocated memory gets automatically freed\.
+Both functions \fBload_ini_file()\fR and \fBload_ini_path()\fR dynamically allocate at once the whole INI file into the heap, and the two structures \fBIniStatistics\fR and \fBIniDispatch\fR into the stack\. All members of the INI file are then dispatched to the custom listener \fBf_foreach()\fR\. Finally the allocated memory gets automatically freed\.
 .
 .P
 Because of this mechanism \fIit is very important that all the dispatched data be \fBimmediately\fR copied by the user (when needed), and no pointers to the passed data be saved\fR: after the end of the functions \fBload_ini_file()\fR / \fBload_ini_path()\fR all the allocated data will be destroyed indeed, and each dispatch might furthermore overwrite data from previous dispatches\.
@@ -1009,8 +1022,8 @@ In case of multiple comparisons you might want to use a macro:
 
 if (disp\->type == INI_KEY) {
 
-  #define IS_KEY(SECTION,KEY)\e
-    (ini_array_match(SECTION, disp\->append_to, \'\.\', disp\->format) &&\e
+  #define IS_KEY(SECTION, KEY) \e
+    (ini_array_match(SECTION, disp\->append_to, \'\.\', disp\->format) && \e
     ini_string_match_ii(KEY, disp\->data, disp\->format))
 
   if (IS_KEY("europe\.madrid", "have_visited")) {
@@ -1026,6 +1039,8 @@ if (disp\->type == INI_KEY) {
     // etc\.
 
   }
+
+  #undef IS_KEY
 
 }
 .
@@ -1414,7 +1429,7 @@ int main () {
   struct size_check check;
 
   if (load_ini_path(
-    "examples/ini_files/example\.conf",
+    "example\.conf",
     INI_DEFAULT_FORMAT,
     ini_init,
     ini_listener,
@@ -1641,7 +1656,39 @@ Number of bytes parsed per second: 24623007\.317252
 .IP "" 0
 .
 .P
-\fI\fBAddendum:\fR Unfortunately that old computer broke, so now I can perform tests only on a newer hardware, where \fBlibconfini\fR seems to parse four times faster\. However I have left a performance test under \fBtests/performance\fR\.\fR
+\fI\fBAddendum:\fR Unfortunately that old computer broke, so now I can perform tests only on a newer hardware, where \fBlibconfini\fR seems to parse four times as fast\. But if you are interested in testing yourself the performance of this library on a particular hardware, I have left a performance test under \fBtests/performance\fR\.\fR
+.
+.SS "COMPILING FOR EXTREME PLATFORMS"
+This library has nearly everything implemented from scratch, with the only notable exception of the I/O functions \fBload_ini_file()\fR and \fBload_ini_path()\fR, which rely on C standard libraries\. On some platforms, however, only a rather exotic I/O API is available, while for some other platforms the C Standard Library is simply too heavy or just not implementable\.
+.
+.P
+The official build environment of \fBlibconfini\fR does not offer shortcuts for facing this kind of situations\. But fortunately, thanks to the modularity of the source code, it is very simple to get rid of every tie with the C Standard Library and compile \fBlibconfini\fR as “bare metal”, with \fBstrip_ini_cache()\fR as the only parsing function (as this relies only on a buffer for its input) – i\.e\. without \fBload_ini_file()\fR and \fBload_ini_path()\fR, and without any header at all\.
+.
+.P
+To do so, follow these simple steps:
+.
+.IP "1." 4
+Remove \fBinclude <stdio\.h>\fR and \fBinclude <stdint\.h>\fR from \fBconfini\.h\fR
+.
+.IP "2." 4
+Remove \fBinclude <stdlib\.h>\fR from \fBconfini\.c\fR
+.
+.IP "3." 4
+Remove the functions \fBload_ini_file()\fR and \fBload_ini_path()\fR from both \fBconfini\.h\fR and \fBconfini\.c\fR
+.
+.IP "4." 4
+Remove the function pointers \fBini_get_int\fR, \fBini_get_lint\fR, \fBini_get_llint\fR and \fBini_get_float\fR from both \fBconfini\.h\fR and \fBconfini\.c\fR (from now on you will have to provide your own functions for converting strings to numbers)
+.
+.IP "5." 4
+Create a \fBtypedef\fR in \fBconfini\.h\fR for each of the following data types: \fBsize_t\fR, \fBint8_t\fR, \fBuint8_t\fR, \fBuint16_t\fR and \fBuint32_t\fR
+.
+.IP "6." 4
+Leave everything else as it is
+.
+.IP "" 0
+.
+.P
+After doing so \fBlibconfini\fR will work even without a kernel\.
 .
 .SH "INI SYNTAX CONSIDERATIONS"
 .

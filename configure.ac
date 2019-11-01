@@ -24,19 +24,19 @@ dnl  **************************************************************************
 
 AC_INIT([lib]n4_mem([GL_PROJECT_NAME], [confini]),
 	n4_mem([GL_PROJECT_MAJVER], [1])[.]n4_mem([GL_PROJECT_MINVER],
-		[10])[.]n4_mem([GL_PROJECT_REVVER], [4]),
+		[11])[.]n4_mem([GL_PROJECT_REVVER], [0]),
 	[madmurphy333@gmail.com],
 	[lib]GL_PROJECT_NAME,
 	[https://madmurphy.github.io/libconfini])
 
 NC_SET_GLOBALLY(
-	[INTERFACE_NUMBER],			[1],
-	[IMPLEMENTATION_NUMBER],	[2],
-	[INTERFACE_COMPATIBILITY],	[1],
+	[INTERFACE_NUMBER],			[2],
+	[IMPLEMENTATION_NUMBER],	[0],
+	[INTERFACE_COMPATIBILITY],	[2],
 	[PROJECT_DESCRIPTION],		[Yet another INI parser],
-	[LICENSE_LONGNAME],			[GNU General Public License, version 3 or any
+	[LICENSE_NAME],				[GNU General Public License, version 3 or any
 								later version],
-	[LICENSE_SHORTNAME],		[GPL3+],
+	[LICENSE_ID],				[GPL-3.0-or-later],
 	[PUBLISHER_NAME],			[Stefano Gioffré],
 	[PUBLISHER_ID],				[madmurphy],
 	[GIT_HTTP_SERVER],			[https://github.com]
@@ -88,7 +88,7 @@ AM_COND_IF([MULTIVERSION], [
 ])
 
 AM_COND_IF([RENAME_PACKAGE],
-	[AC_MSG_NOTICE([renaming ]AC_PACKAGE_NAME[ to ${PACKAGE_CONFNAME}...])])
+	[AC_MSG_NOTICE([renaming ]AC_PACKAGE_TARNAME[ to ${PACKAGE_CONFNAME}...])])
 
 AC_SUBST([PROJECT_LOCALNAME], ["${PROJECT_CONFNAME}${na_tmpvsuff}"])
 
@@ -98,7 +98,7 @@ AC_SUBST([library_headername], ["${PROJECT_CONFNAME}${na_tmphvsuff}"])
 
 NS_FOR([na_tmp_arg],
 	[AS_CASE([${na_tmp_arg}], [--docdir=*],
-		[AS_VAR_SET([na_auto_docdir], [no])])])
+		[AS_VAR_SET([na_auto_docdir], [no])[]NS_BREAK])])
 
 AM_COND_IF([HAVE_TRANSFORMATIONS],
 	[AS_IF([test "x${na_auto_docdir}" != xno],
@@ -165,6 +165,47 @@ AC_TYPE_UINT32_T
 AC_TYPE_UINT8_T
 
 AC_FUNC_MALLOC
+
+AS_VAR_SET([na_tmp_ioflavor], ['check'])
+
+AC_ARG_WITH([io_api],
+	[AS_HELP_STRING([--with-io-api=API],
+		[build this package with a specific I/O API; possible values for API
+		are: "standard" for using the C Standard I/O API, "posix" for using the
+		POSIX I/O API, or "check" for automatically selecting the best I/O API
+		supported by this machine @<:@default=check@:>@])],
+	[AS_IF([test "x${withval}" = x -o "x${with_io_api}" = xyes],
+		[AC_MSG_ERROR([an API value must be specified for option --with-io-api=API])],
+		[AS_IF([test "x${with_io_api}" = xno],
+			[AC_MSG_WARN([unrecognized option: --without-io-api])],
+			[AS_VAR_COPY([na_tmp_ioflavor], [withval])])])],
+	[:])
+
+AS_CASE([${na_tmp_ioflavor}],
+	[standard], [],
+	[posix], [
+		NC_IF_HAVE_POSIX([], [
+			NC_MSG_WARNBOX([The POSIX I/O API is not supported on this machine
+			(--with-io-api=posix). The C Standard I/O API will be used
+			instead.])
+			AS_VAR_SET([na_tmp_ioflavor], ['standard'])
+		])
+	],
+	[check], [
+		NC_IF_HAVE_POSIX(
+			[AS_VAR_SET([na_tmp_ioflavor], ['posix'])],
+			[AS_VAR_SET([na_tmp_ioflavor], ['standard'])]
+		)
+	],
+	[*], [
+		AC_MSG_ERROR([unrecognized option: --with-io-api=${na_tmp_ioflavor}])
+	])
+
+AC_SUBST([c_source_io_flavor],
+	["-DCONFINI_IO_FLAVOR=CONFINI_$(echo "${na_tmp_ioflavor}" | \
+		tr '[a-z]' '[A-Z]')"])
+
+AS_UNSET([na_tmp_ioflavor])
 
 AC_ARG_VAR([RC], [Microsoft Windows resource compiler command])
 
@@ -288,7 +329,7 @@ dnl            and `-O3` under more conditions...
 dnl  **************************************************************************
 
 dnl  Optimization `-O3` seems to be working better than `-O2` when compiling
-dnl  under native Microsoft Windows. In all other cases use `-O2`. Users can
+dnl  under native Microsoft Windows, in all other cases use `-O2`. Users can
 dnl  always override the default value by passing a `CFLAGS` variable.
 AM_COND_IF([NATIVE_MSWIN],
 	[AS_VAR_SET([default_optimization], [3])],
@@ -303,7 +344,7 @@ dnl  **************************************************************************
 
 AC_CONFIG_FILES([
 	Makefile
-	src/${PACKAGE_LOCALNAME}.pc:src/]AC_PACKAGE_NAME[.pc.in
+	src/${PACKAGE_LOCALNAME}.pc:src/]AC_PACKAGE_TARNAME[.pc.in
 	src/Makefile
 ])
 
@@ -344,7 +385,7 @@ AC_DEFUN_ONCE([PREPARE_MANPAGES], [
 dnl  Man pages go here, each page accompanied by a safe cohabitation renaming
 dnl  and expected to be found in `${srcdir}/docs/man/man3`
 PREPARE_MANPAGES(
-	AC_PACKAGE_NAME[.3],	[${PACKAGE_LOCALNAME}.3],
+	AC_PACKAGE_TARNAME[.3],	[${PACKAGE_LOCALNAME}.3],
 	GL_PROJECT_NAME[.h.3],	[${library_headername}.h.3],
 	[IniStatistics.3],		[${PACKAGE_LOCALNAME}-IniStatistics.3],
 	[IniFormat.3],			[${PACKAGE_LOCALNAME}-IniFormat.3],
@@ -385,9 +426,8 @@ AM_COND_IF([RENAME_PACKAGE], [
 				]])[']))
 		], [
 			m4_foreach([_iter_], [NC_THREATENED_LIST],
-				[test -f "${srcdir}/]_iter_.dist[" ||
-				cp "${srcdir}/]_iter_[" "${srcdir}/]_iter_[.dist" ||
-				echo "File ${srcdir}/]NC_CONFNEW_SUBDIR[/]_iter_[ not found.";])
+				[test -f "${srcdir}/]_iter_[.dist" || \
+					cp "${srcdir}/]_iter_[" "${srcdir}/]_iter_[.dist";])
 			AS_VAR_SET([synch_cmds],
 				m4_normalize(['echo '\''Launch `$(srcdir)/configure @<:@...@:>@
 					--enable-extended-config=sandbox` to use `make
@@ -405,14 +445,14 @@ AM_COND_IF([RENAME_PACKAGE], [
 ], [
 	AM_COND_IF([HAVE_UPDATES],
 		[AS_VAR_SET([synch_cmds],
-			[']m4_foreach([_iter_], [NC_THREATENED_LIST], [[
+			m4_normalize([']m4_foreach([_iter_], [NC_THREATENED_LIST], [[
 				test -f '\''$(confnewdir)/'"]_iter_["\'' &&
 					cp '\''$(confnewdir)/'"]_iter_["\''
 					'\''$(srcdir)/'"]_iter_["\'' &&
 					echo '\''File $(srcdir)/'"]_iter_["' successfully
 					updated.'\'' || echo '\''File $(confnewdir)/'"]_iter_["'
 					not found.'\'';
-			]])['])],
+			]])[']))],
 		[AS_VAR_SET([synch_cmds],
 				m4_normalize(['echo '\''Launch `$(srcdir)/configure @<:@...@:>@
 					--enable-extended-config=sandbox` to use `make synch`.'\']))
@@ -497,7 +537,11 @@ NA_HELP_STRINGS(
 		author-clean` and `make oblivion-clean`],
 	[[make distcheck]],
 		[create a redistributable package and check that everything in it
-		works as it is supposed to work]
+		works as it is supposed to work],
+	[[make git-clone]],
+		[download the latest revision of ]AC_PACKAGE_NAME[ from the Git server
+		(the `git` utility is required); note that this might not be an
+		official release yet]
 )
 
 Optional variables:
@@ -511,26 +555,26 @@ NA_HELP_STRINGS(
 		about these variables],
 	[[DESTDIR]],
 		[Supported by the `make install(-*)` and `make uninstall(-*)` targets,
-		it allows to change the final installation path, independently of how
-		the package has been configured; this variable can contain absolute
-		paths only and defaults to `DESTDIR='/'` when omitted],
+		the `DESTDIR` variable allows to change the final installation path,
+		independently of how the package has been configured; this variable can
+		contain absolute paths only and defaults to `/` when omitted],
 	[[ZIPTYPE]],
 		[Supported by `make authors-copy`, `make binary-release`, `make
-		portable-builds` and `make source-release`, it allows to change the
-		compression format of the archives created; possible values are:
-		`tar.gz`, `tar.xz`, `tgz`, `txz`, `zip`],
+		git-clone`, `make portable-builds` and `make source-release`, this
+		variable allows to change the compression format of the archives
+		created; possible values are: `tar.gz`, `tar.xz`, `tgz`, `txz`, `zip`],
 	[[DEST]],
 		[Supported by `make authors-copy`, `make binary-release`, `make
-		manifest`, `make portable-builds` and `make source-release`, it allows
-		to change the destination and possibly the compression format of the
-		archives created (in the last case with the exception of `make
-		manifest`, as this never produces archives); for example: `make
-		DEST=']AC_PACKAGE_TARNAME[-edited.zip' portable-builds` creates a zip
-		archive named `]AC_PACKAGE_TARNAME[-edited` instead of the default
-		`.tar.xz` archive; if no recognizable extension is present, a directory
-		will be created instead; archive formats supported are: `tar.gz`,
-		`tar.xz`, `tgz`, `txz`, `zip`; this variable always overrides
-		`ZIPTYPE`]
+		git-clone`, `make manifest`, `make portable-builds` and `make
+		source-release`, the `DEST` variable allows to change the destination
+		and possibly the compression format of the archives created (in the
+		last case with the exception of `make manifest`, as this never produces
+		archives); for example: `make DEST=']AC_PACKAGE_TARNAME[-edited.zip'
+		portable-builds` creates a zip archive named
+		`]AC_PACKAGE_TARNAME[-edited` instead of the default `.tar.xz` archive;
+		if no recognizable extension is present, a directory will be created
+		instead; archive formats supported are: `tar.gz`, `tar.xz`, `tgz`,
+		`txz`, `zip`; this variable always overrides `ZIPTYPE`]
 )
 
 For further options, please refer to the documentation of GNU Automake.

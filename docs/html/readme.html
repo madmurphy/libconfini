@@ -86,7 +86,7 @@ $(function() {
 <li>Highly optimized code (single memory allocation for each parsing, heuristic programming, optimization flags)</li>
 <li>Function modularity (each public function is independent from all other public functions)</li>
 <li>K.I.S.S. (no public functions are automatically invoked during the parsing &ndash; for example, not even single/double quotes are automatically removed from values unless the developer explicitly decides to use the formatting functions provided by the API)</li>
-<li>Robust file access (support of all code representations of new lines &ndash; i.e. Classic Mac OS' <code>CR</code>, Unix' <code>LF</code>, Windows' <code>CR</code>+<code>LF</code>, RISC OS Open's <code>LF</code>+<code>CR</code>; protection against null byte injection; UTF-8 support)</li>
+<li>Robust and cross-platform file access (UTF-8 support; protection against null byte injection; support of all code representations of new lines &ndash; i.e. ubiquitous support of Classic Mac OS' <code>CR</code>, Unix' <code>LF</code>, Windows' <code>CR</code>+<code>LF</code>, RISC OS Open's <code>LF</code>+<code>CR</code>)</li>
 </ul>
 <h1>Sample usage </h1>
 <p>log.ini:</p>
@@ -100,7 +100,7 @@ $(function() {
 <div class="line"> </div>
 <div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> callback (<a class="code" href="structIniDispatch.html">IniDispatch</a> * disp, <span class="keywordtype">void</span> * v_other) {</div>
 <div class="line"> </div>
-<div class="line"><span class="preprocessor">  #define IS_KEY(SECTION,KEY) \</span></div>
+<div class="line"><span class="preprocessor">  #define IS_KEY(SECTION, KEY) \</span></div>
 <div class="line"><span class="preprocessor">    (ini_array_match(SECTION, disp-&gt;append_to, &#39;.&#39;, disp-&gt;format) &amp;&amp; \</span></div>
 <div class="line"><span class="preprocessor">    ini_string_match_ii(KEY, disp-&gt;data, disp-&gt;format))</span></div>
 <div class="line"> </div>
@@ -116,6 +116,7 @@ $(function() {
 <div class="line">      printf(<span class="stringliteral">&quot;Last update: %s\n&quot;</span>, disp-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a>);</div>
 <div class="line"> </div>
 <div class="line">    }</div>
+<div class="line"> </div>
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line"><span class="preprocessor">  #undef IS_KEY</span></div>
@@ -141,26 +142,27 @@ $(function() {
 <div class="line">Last update: 12.03.2017</div>
 </div><!-- fragment --><p>For more details, please read the <a href="https://madmurphy.github.io/libconfini/html/libconfini.html">Library Functions Manual</a> (<code>man libconfini</code> &ndash; a standalone HTML version is available <a href="https://madmurphy.github.io/libconfini/manual.html">here</a>) and the manual of the header file (<code>man <a class="el" href="confini_8h.html" title="libconfini header">confini.h</a></code>). The code is available on <a href="https://github.com/">GitHub</a> under <a href="https://github.com/madmurphy/libconfini">madmurphy/libconfini</a>).</p>
 <h1>Installation </h1>
-<p>Despite the small footprint, <b>libconfini</b> has been conceived as a shared library (but it may be used as a static library as well).</p>
-<p>On most Unix-like systems, it is possible to install <b>libconfini</b> using the following common steps:</p>
+<p>Despite the small footprint, <b>libconfini</b> has been conceived as a shared library (but it may be used as a static library as well). An automatic list of the distributions that ship the library already compiled is available <a href="https://repology.org/project/libconfini/versions">here</a>.</p>
+<p>If a pre-compiled package for your platform is not available, on most Unix-like systems it is possible to install <b>libconfini</b> using the following common steps:</p>
 <div class="fragment"><div class="line">./configure</div>
 <div class="line">make</div>
-<div class="line">make install</div>
-</div><!-- fragment --><p>For a minimum installation without man pages and examples, use <code>./configure --disable-man --disable-examples</code>.</p>
-<p>If the <code>configure</code> script is missing from your package you need to generate it by running the <code>bootstrap</code> script. By default, <code>bootstrap</code> will also run the <code>configure</code> script immediately after having generated it, so you may type the <code>make</code> command directly after <code>bootstrap</code>. To list different options use <code>bootstrap --help</code>.</p>
-<p>If you are using Microsoft Windows, a batch script for compiling <b>libconfini</b> under <a href="http://www.mingw.org/">MinGW</a> without Autotools is available (<code>mgwmake.bat</code>). If you are interested in using Autotools for compiling <b>libconfini</b> under Microsoft Windows, you can integrate MinGW with <a href="http://www.mingw.org/wiki/MSYS">MSYS</a> or <a href="https://www.msys2.org/">MSYS2</a>. Alternatively, <a href="https://github.com/fd00/yacp/tree/master/libconfini">an unofficial port</a> of <b>libconfini</b> for <a href="https://www.cygwin.com/">Cygwin</a> is available as well.</p>
+<div class="line">make install-strip</div>
+</div><!-- fragment --><p>If the <code>strip</code> utility is not available on your machine, use <code>make install</code> instead (it will produce larger binaries)</p>
+<p>For a minimum installation without development files (i.e. static libraries, headers, documentation, examples, etc.) use <code>./configure --disable-devel</code>.</p>
+<p>If the <code>configure</code> script is missing from your package you need to generate it by running the <code>bootstrap</code> script. By default, <code>bootstrap</code> will also run the <code>configure</code> script immediately after having generated it, so you may type the <code>make</code> command directly after <code>bootstrap</code>. To list different options use <code>./bootstrap --help</code>.</p>
+<p>If you are using Microsoft Windows, a batch script for compiling <b>libconfini</b> under <a href="http://www.mingw.org/">MinGW</a> without Autotools is available (<code>mgwmake.bat</code>). If you are interested in using Autotools for compiling <b>libconfini</b> under Microsoft Windows, you can integrate MinGW with <a href="http://www.mingw.org/wiki/MSYS">MSYS</a>, or you can directly use <a href="https://www.msys2.org/">MSYS2</a>. Alternatively, <a href="https://github.com/fd00/yacp/tree/master/libconfini">an unofficial port</a> of <b>libconfini</b> for <a href="https://www.cygwin.com/">Cygwin</a> is available as well.</p>
 <p>For further information, see <a href="https://github.com/madmurphy/libconfini/blob/master/INSTALL">INSTALL</a>.</p>
 <h1>Free software </h1>
 <p>This library is free software. You can redistribute it and/or modify it under the terms of the GPL license version 3 or any later version. See <a href="https://github.com/madmurphy/libconfini/blob/master/COPYING">COPYING</a> for details. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
-<div class="ttc" id="astructIniDispatch_html"><div class="ttname"><a href="structIniDispatch.html">IniDispatch</a></div><div class="ttdoc">Dispatch of a single INI node.</div><div class="ttdef"><b>Definition:</b> confini.h:106</div></div>
-<div class="ttc" id="astructIniDispatch_html_a8d7eb3387ff5ecb79900fae717234d16"><div class="ttname"><a href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></div><div class="ttdeci">char * value</div><div class="ttdef"><b>Definition:</b> confini.h:110</div></div>
+<div class="ttc" id="astructIniDispatch_html"><div class="ttname"><a href="structIniDispatch.html">IniDispatch</a></div><div class="ttdoc">Dispatch of a single INI node.</div><div class="ttdef"><b>Definition:</b> confini.h:107</div></div>
+<div class="ttc" id="astructIniDispatch_html_a8d7eb3387ff5ecb79900fae717234d16"><div class="ttname"><a href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></div><div class="ttdeci">char * value</div><div class="ttdef"><b>Definition:</b> confini.h:111</div></div>
 <div class="ttc" id="aconfini_8h_html"><div class="ttname"><a href="confini_8h.html">confini.h</a></div><div class="ttdoc">libconfini header</div></div>
-<div class="ttc" id="aconfini_8h_html_a4e394db479f56eaa830ade09c907461ba97333d01dfff8f9a9c690fc559751b45"><div class="ttname"><a href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba97333d01dfff8f9a9c690fc559751b45">INI_KEY</a></div><div class="ttdef"><b>Definition:</b> confini.h:381</div></div>
-<div class="ttc" id="astructIniDispatch_html_a7f6ebc6713aae413c4157ce68008a8a8"><div class="ttname"><a href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">IniDispatch::type</a></div><div class="ttdeci">uint8_t type</div><div class="ttdef"><b>Definition:</b> confini.h:108</div></div>
-<div class="ttc" id="aconfini_8h_html_a54be108d26619db3066ce1c000dc8a17"><div class="ttname"><a href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17">load_ini_path</a></div><div class="ttdeci">int load_ini_path(const char *const path, const IniFormat format, const IniStatsHandler f_init, const IniDispHandler f_foreach, void *const user_data)</div><div class="ttdoc">Parses an INI file and dispatches its content using a path as argument.</div><div class="ttdef"><b>Definition:</b> confini.c:2744</div></div>
-<div class="ttc" id="aconfini_8h_html_aafa50d590c715f37b74fa5938a35a56f"><div class="ttname"><a href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a></div><div class="ttdeci">static const IniFormat INI_DEFAULT_FORMAT</div><div class="ttdoc">A model format for standard INI files.</div><div class="ttdef"><b>Definition:</b> confini.h:461</div></div>
+<div class="ttc" id="aconfini_8h_html_a4e394db479f56eaa830ade09c907461ba97333d01dfff8f9a9c690fc559751b45"><div class="ttname"><a href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba97333d01dfff8f9a9c690fc559751b45">INI_KEY</a></div><div class="ttdef"><b>Definition:</b> confini.h:387</div></div>
+<div class="ttc" id="astructIniDispatch_html_a7f6ebc6713aae413c4157ce68008a8a8"><div class="ttname"><a href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">IniDispatch::type</a></div><div class="ttdeci">uint8_t type</div><div class="ttdef"><b>Definition:</b> confini.h:109</div></div>
+<div class="ttc" id="aconfini_8h_html_a54be108d26619db3066ce1c000dc8a17"><div class="ttname"><a href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17">load_ini_path</a></div><div class="ttdeci">int load_ini_path(const char *const path, const IniFormat format, const IniStatsHandler f_init, const IniDispHandler f_foreach, void *const user_data)</div><div class="ttdoc">Parses an INI file and dispatches its content using a path as argument.</div><div class="ttdef"><b>Definition:</b> confini.c:2844</div></div>
+<div class="ttc" id="aconfini_8h_html_aafa50d590c715f37b74fa5938a35a56f"><div class="ttname"><a href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a></div><div class="ttdeci">static const IniFormat INI_DEFAULT_FORMAT</div><div class="ttdoc">A model format for standard INI files.</div><div class="ttdef"><b>Definition:</b> confini.h:469</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

@@ -67,6 +67,14 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Record of notable changes</p>
+<h1>1.11.0 &ndash; 2019-11-01</h1>
+<p>Changes:</p>
+<ul>
+<li>Integer constants <code>CONFINI_EBADF</code> and <code>CONFINI_EFBIG</code> have been added to the <code>ConfiniInterruptNo</code> <code>enum</code></li>
+<li>Code review in the I/O functions <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parses an INI file and dispatches its content using a FILE structure as argument.">load_ini_file()</a></code> and <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parses an INI file and dispatches its content using a path as argument.">load_ini_path()</a></code> (made the POSIX I/O API available and made sure that all I/O failure checks are performed)</li>
+<li>Code review in the <code>configure</code> script (created a <code>--with-io-api=API</code> option for manually selecting the I/O API to use) and in the <b>GNU Make</b> environment (general review; created a <code>make git-clone</code> target)</li>
+<li>Documentation</li>
+</ul>
 <h1>1.10.4 &ndash; 2019-10-19</h1>
 <p>Changes:</p>
 <ul>

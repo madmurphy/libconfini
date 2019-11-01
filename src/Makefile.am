@@ -1,9 +1,10 @@
 ## Process this file with automake to produce Makefile.in
 
 AM_CPPFLAGS = \
-	"-DPACKAGE_LOCALE_DIR='$(localedir)'" \
-	"-DPACKAGE_SRC_DIR='$(srcdir)'" \
-	"-DPACKAGE_DATA_DIR='$(pkgdatadir)'"
+	@c_source_io_flavor@ \
+	'-DPACKAGE_LOCALE_DIR="$(localedir)"' \
+	'-DPACKAGE_SRC_DIR="$(srcdir)"' \
+	'-DPACKAGE_DATA_DIR="$(pkgdatadir)"'
 
 AM_CFLAGS = \
 	@guessed_am_cflags@ \

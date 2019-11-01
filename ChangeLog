@@ -2,6 +2,21 @@ Change Log {#changelog}
 =======================
 
 
+## 1.11.0 -- 2019-11-01
+
+Changes:
+
+* Integer constants `CONFINI_EBADF` and `CONFINI_EFBIG` have been added to the
+  `ConfiniInterruptNo` `enum`
+* Code review in the I/O functions `load_ini_file()` and `load_ini_path()`
+  (made the POSIX I/O API available and made sure that all I/O failure checks
+  are performed)
+* Code review in the `configure` script (created a `--with-io-api=API` option
+  for manually selecting the I/O API to use) and in the **GNU Make**
+  environment (general review; created a `make git-clone` target)
+* Documentation
+
+
 ## 1.10.4 -- 2019-10-19
 
 Changes:

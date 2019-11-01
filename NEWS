@@ -2,6 +2,15 @@ NEWS
 ====
 
 
+## 1.11.0
+
+* Literal constants `CONFINI_EBADF` and `CONFINI_EFBIG` have been added to
+  the `ConfiniInterruptNo` `enum`
+* POSIX I/O API is now preferably used when available
+* A `--with-io-api=API` option has been added to the `configure` script for
+  selecting the I/O API to use) 
+
+
 ## 1.10.4
 
 * Added a `--disable-devel` option to the `configure` script for generating
