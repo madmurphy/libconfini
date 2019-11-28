@@ -130,7 +130,7 @@ Installation
 ------------
 
 Despite the small footprint, **libconfini** has been conceived as a shared
-library (but it may be used as a static library as well). An automatic list of
+library (but it can be used as a static library as well). An automatic list of
 the distributions that ship the library already compiled is available [here][5].
 
 If a pre-compiled package for your platform is not available, on most Unix-like
@@ -155,12 +155,12 @@ by running the `bootstrap` script. By default, `bootstrap` will also run the
 `make` command directly after `bootstrap`. To list different options use
 `./bootstrap --help`.
 
-If you are using Microsoft Windows, a batch script for compiling **libconfini**
-under [MinGW][6] without Autotools is available (`mgwmake.bat`). If you are
-interested in using Autotools for compiling **libconfini** under Microsoft
+If you are using **Microsoft Windows**, a batch script for compiling
+**libconfini** with [MinGW][6] without Bash is available (`mgwmake.bat`). If you
+are interested in using Autotools for compiling **libconfini** under Microsoft
 Windows, you can integrate MinGW with [MSYS][7], or you can directly use
 [MSYS2][8]. Alternatively, [an unofficial port][9] of **libconfini** for
-[Cygwin][10] is available as well.
+[Cygwin][10] is available.
 
 For further information, see [INSTALL][11].
 

@@ -26,7 +26,7 @@ for __BS_ARG__; do
 			;;
 		-u|--update)
 			# Private/unadvertised option for exporting version changes
-			# from `configure.ac` (maintainers only)
+			# from `configure.ac` (authors only)
 			"${0}" --clean && "${0}" --enable-extended-config && "${0}" --clean
 			echo 'Package has been updated.'
 			exit 0

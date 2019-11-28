@@ -29,6 +29,12 @@
 
 
 
+\page		hacking	Hacking libconfini
+
+\brief		Code snippets and replacements
+
+
+
 \page		fnoverview	Function Overview
 
 \brief		Complete list of functions
@@ -47,19 +53,6 @@ exceptions of `ini_string_match_ii()`, required by `ini_array_match()`, and
 
 
 
-\file		dpi.dox
-
-This file is used by Doxygen to indicize the pages and provide further
-documentation not available in the code.
-
-
-
-\file		RATIONALE.md
-
-This file provides the markdown source code for the \ref rationale.
-
-
-
 \file		README.md
 
 This file provides the markdown source code for the \ref readme.
@@ -75,6 +68,25 @@ This file provides the markdown source code for the \ref libconfini.
 \file		ChangeLog.md
 
 This file provides the markdown source code for the \ref changelog.
+
+
+
+\file		dpi.dox
+
+This file is used by Doxygen to indicize the pages and provide further
+documentation not available in the code.
+
+
+
+\file		rationale.md
+
+This file provides the markdown source code for the \ref rationale.
+
+
+
+\file		hacking.md
+
+This file provides the markdown source code for the page \ref hacking.
 
 
 

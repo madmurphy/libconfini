@@ -1,4 +1,4 @@
-.TH "confini.h" 3 "Fri Nov 1 2019" "libconfini" \" -*- nroff -*-
+.TH "confini.h" 3 "Fri Nov 29 2019" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -62,7 +62,7 @@ confini.h \- libconfini header
 .ti -1c
 .RI "typedef uint32_t \fBIniFormatNum\fP"
 .br
-.RI "The unique ID number of an INI format (24-bit maximum) "
+.RI "The unique ID of an INI format (24-bit maximum) "
 .ti -1c
 .RI "typedef int(* \fBIniStatsHandler\fP) (\fBIniStatistics\fP *statistics, void *user_data)"
 .br
@@ -74,7 +74,7 @@ confini.h \- libconfini header
 .ti -1c
 .RI "typedef int(* \fBIniStrHandler\fP) (char *ini_string, size_t string_length, size_t string_num, \fBIniFormat\fP format, void *user_data)"
 .br
-.RI "Callback function for handling an INI string\&. "
+.RI "Callback function for handling an INI string belonging to a sequence of INI strings\&. "
 .ti -1c
 .RI "typedef int(* \fBIniSubstrHandler\fP) (const char *ini_string, size_t fragm_offset, size_t fragm_length, size_t fragm_num, \fBIniFormat\fP format, void *user_data)"
 .br
@@ -168,7 +168,7 @@ confini.h \- libconfini header
 .br
 .RI "Replaces the first delimiter found (together with the spaces that surround it) with \fC\\0\fP "
 .ti -1c
-.RI "char * \fBini_array_release\fP (char **ini_strptr, const char delimiter, const \fBIniFormat\fP format)"
+.RI "char * \fBini_array_release\fP (char **const ini_strptr, const char delimiter, const \fBIniFormat\fP format)"
 .br
 .RI "Replaces the first delimiter found (together with the spaces that surround it) with \fC\\0\fP, then shifts the location pointed by \fCini_strptr\fP to the next member of the INI array, or to \fCNULL\fP if the INI array has no more members\&. "
 .ti -1c
@@ -212,7 +212,7 @@ confini.h \- libconfini header
 .br
 .RI "Link to \fC\fCatoll()\fP\fP "
 .ti -1c
-.RI "double(*const \fBini_get_float\fP )(const char *ini_string)"
+.RI "double(*const \fBini_get_double\fP )(const char *ini_string)"
 .br
 .RI "Link to \fC\fCatof()\fP\fP "
 .ti -1c
@@ -340,7 +340,7 @@ Callback function for handling an \fBIniDispatch\fP structure\&.
 .SS "typedef uint32_t \fBIniFormatNum\fP"
 
 .PP
-The unique ID number of an INI format (24-bit maximum) 
+The unique ID of an INI format (24-bit maximum) 
 .SS "typedef struct \fBIniStatistics\fP  \fBIniStatistics\fP"
 
 .PP
@@ -361,7 +361,7 @@ Callback function for handling an \fBIniStatistics\fP structure\&.
 .SS "int(* IniStrHandler)(char *ini_string, size_t string_length, size_t string_num, \fBIniFormat\fP format, void *user_data)"
 
 .PP
-Callback function for handling an INI string\&. 
+Callback function for handling an INI string belonging to a sequence of INI strings\&. 
 .PP
 \fBParameters\fP
 .RS 4
@@ -671,7 +671,7 @@ The \fCformat\fP argument is used for the following fields:
 Examples:
 .PP
 .IP "1." 4
-Using the comma as delimiter:
+Using comma as delimiter:
 .IP "  \(bu" 4
 Before: \fC first   ,    second   ,   third   ,  etc\&.  \fP
 .IP "  \(bu" 4
@@ -1750,7 +1750,7 @@ int main () {
   /*  Check if parsing has been interrupted by `passfinder()`  */
   retval  ==  CONFINI_FEINTR ?
                 printf(
-                  "We found it! It's the INI element number #%zu!\n",
+                  "We found it! It's the INI node number #%zu!\n",
                   membid
                 )
               :
@@ -2005,7 +2005,7 @@ The user given function \fCf_init\fP (see \fBIniStatsHandler\fP data type) will 
 .PP
 The user given function \fCf_foreach\fP (see \fBIniDispHandler\fP data type) will be invoked with two arguments: \fCdispatch\fP (a pointer to an \fBIniDispatch\fP structure containing the parsed member of the INI file) and \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the caller function will be interrupted\&.
 .PP
-Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFINI_FEINTR\fP, \fBCONFINI_ENOMEM\fP, \fBCONFINI_EIO\fP, \fBCONFINI_EOOR\fP\&.
+Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFINI_FEINTR\fP, \fBCONFINI_ENOMEM\fP, \fBCONFINI_EIO\fP, \fBCONFINI_EOOR\fP, \fBCONFINI_EBADF\fP, \fBCONFINI_EFBIG\fP\&.
 .PP
 .PP
 .nf
@@ -2090,7 +2090,7 @@ In order to be null-byte-injection safe, \fCNUL\fP characters, if present in the
 .PP
 For the two parameters \fCf_init\fP and \fCf_foreach\fP see function \fBload_ini_file()\fP\&.
 .PP
-Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFINI_FEINTR\fP, \fBCONFINI_ENOENT\fP, \fBCONFINI_ENOMEM\fP, \fBCONFINI_EIO\fP, \fBCONFINI_EOOR\fP\&.
+Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFINI_FEINTR\fP, \fBCONFINI_ENOENT\fP, \fBCONFINI_ENOMEM\fP, \fBCONFINI_EIO\fP, \fBCONFINI_EOOR\fP, \fBCONFINI_EBADF\fP, \fBCONFINI_EFBIG\fP\&.
 .PP
 .PP
 .nf
@@ -2157,9 +2157,13 @@ Parses and tokenizes a buffer containing an INI file, then dispatches its conten
 Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\fP)
 .RE
 .PP
-The \fCini_source\fP parameter must be a valid pointer to a buffer of size \fCini_length\fP + 1 and cannot be \fCNULL\fP\&. The \fCini_source\fP string does not need to be NUL-terminated (although for portability it should, since this might become a requirement in the future), but \fIit does need one extra byte where to append a NUL terminator\fP – in fact, as soon as this function is invoked, \fCini_source[ini_length]\fP will be immediately set to \fC\\0\fP\&. In most cases, as when using \fCstrlen()\fP for computing \fCini_length\fP, this is not a concern, since \fCini_source[ini_length]\fP will always be \fC\\0\fP by the very definition of \fCstrlen()\fP, and will only get overwritten with the same value\&. However, if you are passing a substring of a string, for example the fragment \fCfoo=bar\fP of the string \fCfoo=barracuda\fP, you must expect the string to be immediately truncated into \fCfoo=bar\\0acuda\fP\&. In other words, \fCini_source\fP must point to a memory location where at least \fCini_length + 1\fP bytes are freely usable\&.
+The \fCini_source\fP parameter must be a valid pointer to a buffer of size \fCini_length\fP + 1 and cannot be \fCNULL\fP\&. The \fCini_source\fP string does not need to be NUL-terminated (although for portability it should, since this might become a requirement in the future), but \fIit does need one extra byte where to append a NUL terminator\fP – in fact, as soon as this function is invoked, \fCini_source[ini_length]\fP will be immediately set to \fC\\0\fP\&.
 .PP
-After invoking \fC\fBstrip_ini_cache()\fP\fP, the buffer pointed by the \fCini_source\fP parameter must be considered as a corrupted buffer and should be freed or overwritten\&.
+In most cases, as when using \fCstrlen()\fP for computing \fCini_length\fP, this is not a concern, since \fCini_source[ini_length]\fP will always be \fC\\0\fP by the very definition of \fCstrlen()\fP, and will only get overwritten with the same value\&. However, if you are passing a substring of a string, for example the fragment \fCfoo=bar\fP of the string \fCfoo=barracuda\fP, you must expect the string to be immediately truncated into \fCfoo=bar\\0acuda\fP\&.
+.PP
+In other words, \fCini_source\fP must point to a memory location where at least \fCini_length + 1\fP bytes are freely usable\&.
+.PP
+After invoking \fC\fBstrip_ini_cache()\fP\fP, the buffer pointed by the \fCini_source\fP parameter must be considered as a \fIcorrupted buffer\fP and should be freed or overwritten\&.
 .PP
 For more information about this function, please refer to the \fBLibrary Functions Manual\fP\&.
 .PP
@@ -2269,7 +2273,7 @@ int main () {
 
 .PP
 A model format for standard INI files\&. 
-.SS "ini_get_float"
+.SS "ini_get_double"
 
 .PP
 Link to \fC\fCatof()\fP\fP 

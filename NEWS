@@ -2,6 +2,12 @@ NEWS
 ====
 
 
+## 1.12.0
+
+* Function `ini_get_float()` has been marked as deprecated for parsing a
+  `double` data type: use `ini_get_double()` instead
+
+
 ## 1.11.0
 
 * Literal constants `CONFINI_EBADF` and `CONFINI_EFBIG` have been added to

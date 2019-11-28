@@ -77,6 +77,21 @@ Often a compiled DLL [is available][2] among the assets of each release of this
 package on GitHub.
 
 
+Bare Metal
+----------
+
+This library has nearly everything implemented from scratch, with the only
+notable exception of the I/O functions `load_ini_file()` and `load_ini_path()`,
+which rely on C standard libraries. On some platforms, however, only a rather
+exotic I/O API is available, while for some other platforms the C Standard
+Library is simply too heavy or just not implementable.
+
+In these situations it will be needed to get rid of every tie with the C
+Standard Library and compile **libconfini** as "bare metal". For further
+information about how to proceed, please read the paragraph **Compiling for
+extreme platforms** in the **Library Functions Manual**.
+
+
 Distributing the source code
 ----------------------------
 
@@ -91,9 +106,10 @@ build a fresh archive and ignore the current configuration.
 Distributing the compiled package
 ---------------------------------
 
-Use `make binary-release` to create a binary package of **libconfini**. If you
-only want to obtain the list of the files that are going to be installed, use
-`make manifest`.
+Use `make binary-release` to create a binary package of **libconfini**.
+
+**Note:** If you only want to obtain the list of the files that are going to be
+installed, use `make manifest` instead.
 
 
 Complex installations

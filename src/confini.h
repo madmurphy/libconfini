@@ -118,7 +118,7 @@ typedef struct IniDispatch {
 
 
 /**
-    @brief  The unique ID number of an INI format (24-bit maximum)
+    @brief  The unique ID of an INI format (24-bit maximum)
 **/
 typedef uint32_t IniFormatNum;
 
@@ -142,7 +142,8 @@ typedef int (* IniDispHandler) (
 
 
 /**
-    @brief  Callback function for handling an INI string
+    @brief  Callback function for handling an INI string belonging to a
+            sequence of INI strings
 **/
 typedef int (* IniStrHandler) (
     char * ini_string,
@@ -277,7 +278,7 @@ extern char * ini_array_break (
 
 
 extern char * ini_array_release (
-    char ** ini_strptr,
+    char ** const ini_strptr,
     const char delimiter,
     const IniFormat format
 );
@@ -338,9 +339,18 @@ extern long long int (* const ini_get_llint) (
 );
 
 
-extern double (* const ini_get_float) (
+extern double (* const ini_get_double) (
     const char * ini_string
 );
+
+
+/**
+    @brief  Legacy support, soon to be replaced with a `float` data type --
+            please **do not use `ini_get_float()`!**
+**/
+#define ini_get_float \
+    _Pragma("GCC warning \"function `ini_get_float()` is deprecated for parsing a `double` data type; use `ini_get_double()` instead\"") \
+    ini_get_double
 
 
 

@@ -47,7 +47,7 @@ email = mario.rossi@example.com
 
 ## SUPPORTED SYNTAXES
 
-During the years several interpretations of INI files appeared. In some
+During the years several interpretations of INI files have appeared. In some
 implementations the colon character (`:`) has been adopted as delimiter between
 keys and values instead of the classic equals sign (a typical example under
 GNU/Linux is `/etc/nsswitch.conf`); in other implementations, under the
@@ -750,7 +750,7 @@ before being copied or analyzed they can be edited, **with some precautions**_:
    share this buffer. In this case, if you edit its content, you can no more
    rely on the `IniDispatch::append_to` properties of this node's children (you
    will not make any damage, the loop will continue just fine: so if you think
-   you are going to never use the property `IniDispatch::append_to` just do
+   you are never going to use the property `IniDispatch::append_to` just do
    it); alternatively, use `strndup()`. If, instead, `IniDispatch::data`
    contains a key name or a comment, it is granted that no other dispatch will
    share this buffer, so feel free to edit it before it gets lost.
@@ -982,7 +982,7 @@ case you don't have `#include <stdlib.h>` in your source:
 * `ini_get_int()` = [`atoi()`][1]
 * `ini_get_lint()` = [`atol()`][2]
 * `ini_get_llint()` = [`atoll()`][3]
-* `ini_get_float()` = [`atof()`][4]
+* `ini_get_double()` = [`atof()`][4]
 
 
 ### FORMATTING THE KEY NAMES
@@ -1611,8 +1611,9 @@ To do so, follow these simple steps:
 3. Remove the functions `load_ini_file()` and `load_ini_path()` from both
    `confini.h` and `confini.c`
 4. Remove the function pointers `ini_get_int`, `ini_get_lint`, `ini_get_llint`
-   and `ini_get_float` from both `confini.h` and `confini.c` (from now on you
-   will have to provide your own functions for converting strings to numbers)
+   and `ini_get_double` from both `confini.h` and `confini.c` (from now on you
+   will have to provide your own functions for converting strings to numbers --
+   for possible replacements please see: @ref hacking)
 5. Create a `typedef` in `confini.h` for each of the following data types:
    `size_t`, `int8_t`, `uint8_t`, `uint16_t` and `uint32_t`
 6. Leave everything else as it is

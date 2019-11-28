@@ -5,9 +5,9 @@
 ##    V A R I A B L E S   A N D   G E N E R A L   S E T T I N G S
 ###############################################################################
 
-# Upper case variables may be freely overridden by the user, while lower case
-# variables, especially those beginning with an underscore, are for internal
-# use only
+# NOTE:  Upper case variables may be freely overridden by the user, while lower
+#        case variables, especially those beginning with an underscore, are for
+#        internal use only.
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -274,8 +274,8 @@ help:
 
 # For internal use they serve several purposes, while for public use they are
 # mostly sugar targets for invoking `make install*` with a relative path as
-# `DESTDIR` (by using a `RUNPATH` variable), or unpacking the various
-# distribution targets in a volatile directory.
+# `DESTDIR` (by passing a `RUNPATH` variable), or unpacking the various
+# distribution targets into a volatile directory.
 
 .PHONY: dryrun-install
 dryrun-install:

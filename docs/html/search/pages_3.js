@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['rationale_283',['Rationale',['../rationale.html',1,'']]],
-  ['readme_284',['README',['../readme.html',1,'']]]
+  ['libconfini_285',['libconfini',['../index.html',1,'']]],
+  ['library_20functions_20manual_286',['Library Functions Manual',['../libconfini.html',1,'']]]
 ];

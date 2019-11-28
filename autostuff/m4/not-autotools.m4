@@ -163,8 +163,7 @@ AC_DEFUN([NS_FOR],
 dnl  NS_BREAK
 dnl  **************************************************************************
 dnl
-dnl  M4 sugar that expands to to a shell "break" command, to be used within
-dnl  loops
+dnl  M4 sugar that expands to a shell "break" command, to be used within loops
 dnl
 dnl  From: not-autotools/m4/not-autoshell.m4
 dnl
@@ -199,14 +198,14 @@ AC_DEFUN([NC_MSG_WARNBOX],
 		[79])])])
 
 
-dnl  NC_IF_HAVE_POSIX([if-have-posix], [if-dont-have-posix], [posix-version]])
+dnl  NC_IF_HAVE_POSIX_C([if-have-posix], [if-dont-have-posix], [posix-version]])
 dnl  **************************************************************************
 dnl
-dnl  Checks whether the POSIX API is available
+dnl  Checks whether the POSIX C API is available
 dnl
 dnl  From: not-autotools/m4/not-autotools.m4
 dnl
-AC_DEFUN([NC_IF_HAVE_POSIX], [
+AC_DEFUN([NC_IF_HAVE_POSIX_C], [
 	AC_MSG_CHECKING([whether we have POSIX]m4_ifnblank([$3], [ (]m4_dquote(m4_normalize([$3]))[)]))
 	AC_EGREP_CPP([posix_supported], [
 		#define _POSIX_C_SOURCE ]m4_ifnblank([$3], m4_dquote(m4_normalize([$3])), [200809L])[

@@ -24,15 +24,15 @@ dnl  **************************************************************************
 
 AC_INIT([lib]n4_mem([GL_PROJECT_NAME], [confini]),
 	n4_mem([GL_PROJECT_MAJVER], [1])[.]n4_mem([GL_PROJECT_MINVER],
-		[11])[.]n4_mem([GL_PROJECT_REVVER], [0]),
+		[12])[.]n4_mem([GL_PROJECT_REVVER], [0]),
 	[madmurphy333@gmail.com],
 	[lib]GL_PROJECT_NAME,
 	[https://madmurphy.github.io/libconfini])
 
 NC_SET_GLOBALLY(
-	[INTERFACE_NUMBER],			[2],
+	[INTERFACE_NUMBER],			[3],
 	[IMPLEMENTATION_NUMBER],	[0],
-	[INTERFACE_COMPATIBILITY],	[2],
+	[INTERFACE_COMPATIBILITY],	[3],
 	[PROJECT_DESCRIPTION],		[Yet another INI parser],
 	[LICENSE_NAME],				[GNU General Public License, version 3 or any
 								later version],
@@ -130,6 +130,7 @@ AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_AUX_DIR([build-aux])
 
+dnl  Add a `--with-io-api=API` option to the `configure` script
 NC_CONFIG_SHADOW_DIR([autostuff/shadows])
 
 AM_INIT_AUTOMAKE
@@ -168,6 +169,7 @@ AC_FUNC_MALLOC
 
 AS_VAR_SET([na_tmp_ioflavor], ['check'])
 
+dnl  Add a `--with-io-api=API` option to the `configure` script
 AC_ARG_WITH([io_api],
 	[AS_HELP_STRING([--with-io-api=API],
 		[build this package with a specific I/O API; possible values for API
@@ -184,7 +186,7 @@ AC_ARG_WITH([io_api],
 AS_CASE([${na_tmp_ioflavor}],
 	[standard], [],
 	[posix], [
-		NC_IF_HAVE_POSIX([], [
+		NC_IF_HAVE_POSIX_C([], [
 			NC_MSG_WARNBOX([The POSIX I/O API is not supported on this machine
 			(--with-io-api=posix). The C Standard I/O API will be used
 			instead.])
@@ -192,7 +194,7 @@ AS_CASE([${na_tmp_ioflavor}],
 		])
 	],
 	[check], [
-		NC_IF_HAVE_POSIX(
+		NC_IF_HAVE_POSIX_C(
 			[AS_VAR_SET([na_tmp_ioflavor], ['posix'])],
 			[AS_VAR_SET([na_tmp_ioflavor], ['standard'])]
 		)
@@ -219,6 +221,7 @@ NC_REQ_PROGS(
 AS_IF([test "x${pkgconfigdir}" = x],
 	[AS_VAR_SET([pkgconfigdir], ['$(libdir)/pkgconfig'])])
 
+dnl  Add a `--with-pkgconfigdir=API` option to the `configure` script
 AC_ARG_WITH([pkgconfigdir],
 	[AS_HELP_STRING([--with-pkgconfigdir=DIR],
 		[pkg-config installation directory
@@ -232,6 +235,8 @@ AC_ARG_WITH([pkgconfigdir],
 
 AC_SUBST([pkgconfigdir])
 
+dnl  Add `--enable-version-info` and `--disable-version-info` options to the
+dnl  `configure` script
 AC_ARG_ENABLE([version-info],
 	[NA_HELP_STRINGS([[--enable-version-info], [--disable-version-info]],
 		[enable/disable libtool versioning system
@@ -239,6 +244,7 @@ AC_ARG_ENABLE([version-info],
 	[:],
 	[AS_VAR_SET([enable_version_info], ['check'])])
 
+dnl  Add a `--disable-devel` option to the `configure` script
 AC_ARG_ENABLE([devel],
 	[AS_HELP_STRING([--disable-devel],
 		[don't install development files (headers, static libraries,
@@ -251,6 +257,7 @@ AC_ARG_ENABLE([devel],
 		])])],
 	[AS_VAR_SET([enable_devel], ['yes'])])
 
+dnl  Add a `--disable-doc` option to the `configure` script
 AC_ARG_ENABLE([doc],
 	[AS_HELP_STRING([--disable-doc],
 		[don't generate any documentation @<:@default=<disable devel>@:>@])],
@@ -260,6 +267,8 @@ AC_ARG_ENABLE([doc],
 	])],
 	[AS_VAR_COPY([enable_doc], [enable_devel])])
 
+dnl  Add `--enable-examples` and `--disable-examples` options to the
+dnl  `configure` script
 AC_ARG_ENABLE([examples],
 	[AS_HELP_STRING([--disable-examples],
 		[don't generate examples @<:@default=<disable doc>@:>@])],

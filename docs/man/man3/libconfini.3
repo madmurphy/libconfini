@@ -44,7 +44,7 @@ email = mario\.rossi@example\.com
 .IP "" 0
 .
 .SH "SUPPORTED SYNTAXES"
-During the years several interpretations of INI files appeared\. In some implementations the colon character (\fB:\fR) has been adopted as delimiter between keys and values instead of the classic equals sign (a typical example under GNU/Linux is \fB/etc/nsswitch\.conf\fR); in other implementations, under the influence of Unix standard configuration files, a sequence of one or more spaces (\fB/[ \et\ev\ef]+/\fR or \fB/(?:\e\e(?:\en\er?|\er\en?)|[\et \ev\ef])+/\fR) has been used instead (see for example \fB/etc/host\.conf\fR)\.
+During the years several interpretations of INI files have appeared\. In some implementations the colon character (\fB:\fR) has been adopted as delimiter between keys and values instead of the classic equals sign (a typical example under GNU/Linux is \fB/etc/nsswitch\.conf\fR); in other implementations, under the influence of Unix standard configuration files, a sequence of one or more spaces (\fB/[ \et\ev\ef]+/\fR or \fB/(?:\e\e(?:\en\er?|\er\en?)|[\et \ev\ef])+/\fR) has been used instead (see for example \fB/etc/host\.conf\fR)\.
 .
 .P
 Equals sign used as delimiter between keys and values:
@@ -835,7 +835,7 @@ The strings dispatched, as already said, must not be freed\. \fINevertheless, be
 Be sure that your edit remains within the buffer lengths given (see \fBIniDispatch::d_len\fR and \fBIniDispatch::v_len\fR)\.
 .
 .IP "2." 4
-If you want to edit the content of \fBIniDispatch::data\fR and this contains a section path, the \fBIniDispatch::append_to\fR properties of its children may share this buffer\. In this case, if you edit its content, you can no more rely on the \fBIniDispatch::append_to\fR properties of this node\'s children (you will not make any damage, the loop will continue just fine: so if you think you are going to never use the property \fBIniDispatch::append_to\fR just do it); alternatively, use \fBstrndup()\fR\. If, instead, \fBIniDispatch::data\fR contains a key name or a comment, it is granted that no other dispatch will share this buffer, so feel free to edit it before it gets lost\.
+If you want to edit the content of \fBIniDispatch::data\fR and this contains a section path, the \fBIniDispatch::append_to\fR properties of its children may share this buffer\. In this case, if you edit its content, you can no more rely on the \fBIniDispatch::append_to\fR properties of this node\'s children (you will not make any damage, the loop will continue just fine: so if you think you are never going to use the property \fBIniDispatch::append_to\fR just do it); alternatively, use \fBstrndup()\fR\. If, instead, \fBIniDispatch::data\fR contains a key name or a comment, it is granted that no other dispatch will share this buffer, so feel free to edit it before it gets lost\.
 .
 .IP "3." 4
 Regarding \fBIniDispatch::value\fR, if it does not represent an implicit value (see below), this buffer is never shared between dispatches, so feel free to edit it\.
@@ -1099,7 +1099,7 @@ Together with the functions listed above the following links are available, in c
 \fBini_get_llint()\fR = \fBatoll()\fR \fIhttp://www\.gnu\.org/software/libc/manual/html_node/Parsing\-of\-Integers\.html#index\-atoll\fR
 .
 .IP "\(bu" 4
-\fBini_get_float()\fR = \fBatof()\fR \fIhttp://www\.gnu\.org/software/libc/manual/html_node/Parsing\-of\-Integers\.html#index\-atof\fR
+\fBini_get_double()\fR = \fBatof()\fR \fIhttp://www\.gnu\.org/software/libc/manual/html_node/Parsing\-of\-Integers\.html#index\-atof\fR
 .
 .IP "" 0
 .
@@ -1677,7 +1677,7 @@ Remove \fBinclude <stdlib\.h>\fR from \fBconfini\.c\fR
 Remove the functions \fBload_ini_file()\fR and \fBload_ini_path()\fR from both \fBconfini\.h\fR and \fBconfini\.c\fR
 .
 .IP "4." 4
-Remove the function pointers \fBini_get_int\fR, \fBini_get_lint\fR, \fBini_get_llint\fR and \fBini_get_float\fR from both \fBconfini\.h\fR and \fBconfini\.c\fR (from now on you will have to provide your own functions for converting strings to numbers)
+Remove the function pointers \fBini_get_int\fR, \fBini_get_lint\fR, \fBini_get_llint\fR and \fBini_get_double\fR from both \fBconfini\.h\fR and \fBconfini\.c\fR (from now on you will have to provide your own functions for converting strings to numbers – for possible replacements please see: @ref hacking)
 .
 .IP "5." 4
 Create a \fBtypedef\fR in \fBconfini\.h\fR for each of the following data types: \fBsize_t\fR, \fBint8_t\fR, \fBuint8_t\fR, \fBuint16_t\fR and \fBuint32_t\fR

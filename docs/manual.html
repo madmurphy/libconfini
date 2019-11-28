@@ -117,7 +117,7 @@ email = mario.rossi@example.com
 
 <h2 id="SUPPORTED-SYNTAXES">SUPPORTED SYNTAXES</h2>
 
-<p>During the years several interpretations of INI files appeared. In some
+<p>During the years several interpretations of INI files have appeared. In some
 implementations the colon character (<code>:</code>) has been adopted as delimiter between
 keys and values instead of the classic equals sign (a typical example under
 GNU/Linux is <code>/etc/nsswitch.conf</code>); in other implementations, under the
@@ -793,7 +793,7 @@ section path, the <code>IniDispatch::append_to</code> properties of its children
 share this buffer. In this case, if you edit its content, you can no more
 rely on the <code>IniDispatch::append_to</code> properties of this node's children (you
 will not make any damage, the loop will continue just fine: so if you think
-you are going to never use the property <code>IniDispatch::append_to</code> just do
+you are never going to use the property <code>IniDispatch::append_to</code> just do
 it); alternatively, use <code>strndup()</code>. If, instead, <code>IniDispatch::data</code>
 contains a key name or a comment, it is granted that no other dispatch will
 share this buffer, so feel free to edit it before it gets lost.</li>
@@ -1023,7 +1023,7 @@ case you don't have <code>include &lt;stdlib.h&gt;</code> in your source:</p>
 <li><code>ini_get_int()</code> = <a href="http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoi"><code>atoi()</code></a></li>
 <li><code>ini_get_lint()</code> = <a href="http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atol"><code>atol()</code></a></li>
 <li><code>ini_get_llint()</code> = <a href="http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoll"><code>atoll()</code></a></li>
-<li><code>ini_get_float()</code> = <a href="http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atof"><code>atof()</code></a></li>
+<li><code>ini_get_double()</code> = <a href="http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atof"><code>atof()</code></a></li>
 </ul>
 
 
@@ -1632,8 +1632,9 @@ all.</p>
 <li>Remove the functions <code>load_ini_file()</code> and <code>load_ini_path()</code> from both
 <code>confini.h</code> and <code>confini.c</code></li>
 <li>Remove the function pointers <code>ini_get_int</code>, <code>ini_get_lint</code>, <code>ini_get_llint</code>
-and <code>ini_get_float</code> from both <code>confini.h</code> and <code>confini.c</code> (from now on you
-will have to provide your own functions for converting strings to numbers)</li>
+and <code>ini_get_double</code> from both <code>confini.h</code> and <code>confini.c</code> (from now on you
+will have to provide your own functions for converting strings to numbers &ndash;
+for possible replacements please see: @ref hacking)</li>
 <li>Create a <code>typedef</code> in <code>confini.h</code> for each of the following data types:
 <code>size_t</code>, <code>int8_t</code>, <code>uint8_t</code>, <code>uint16_t</code> and <code>uint32_t</code></li>
 <li>Leave everything else as it is</li>

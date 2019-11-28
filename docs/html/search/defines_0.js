@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['confini_5ferror_275',['CONFINI_ERROR',['../confini_8h.html#a0b9dcb5c0711475ea78b065b0322bde1',1,'confini.h']]],
-  ['confini_5fio_5fflavor_276',['CONFINI_IO_FLAVOR',['../confini_8c.html#aff2761409196287c45bb8876c8613aae',1,'confini.c']]]
+  ['confini_5ferror_278',['CONFINI_ERROR',['../confini_8h.html#a0b9dcb5c0711475ea78b065b0322bde1',1,'confini.h']]],
+  ['confini_5fio_5fflavor_279',['CONFINI_IO_FLAVOR',['../confini_8c.html#aff2761409196287c45bb8876c8613aae',1,'confini.c']]]
 ];

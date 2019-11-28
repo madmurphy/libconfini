@@ -2,6 +2,17 @@ Change Log {#changelog}
 =======================
 
 
+## 1.12.0 -- 2019-11-29
+
+Changes:
+
+* Function `ini_get_float()` has been marked as deprecated for parsing a
+  `double` data type: use `ini_get_double()` instead
+* Small typo in `confini.h` has been fixed
+* Documentation
+* General review
+
+
 ## 1.11.0 -- 2019-11-01
 
 Changes:

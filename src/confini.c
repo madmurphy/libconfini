@@ -301,7 +301,7 @@
 
 
 #if _LIBCONFINI_PRIVATE_ITEM_(CONFINI_IO_FLAVOR, FLAVOR) == 0
-#error Unsupported I/O flavor defined in macro CONFINI_IO_FLAVOR
+#error Unsupported I/O API defined in macro CONFINI_IO_FLAVOR
 #endif
 
 
@@ -434,7 +434,7 @@
 /*
 
 	Maybe in the future there will be support for UTF-8 casefold (although probably
-	not -- see Code Considerations in the Manual), but for now only ASCII...
+	not -- see "Code considerations" in the Manual), but for now only ASCII...
 
 */
 #define _LIBCONFINI_CHR_CASEFOLD_(CHR) (CHR > 0x40 && CHR < 0x5b ? CHR | 0x60 : CHR)
@@ -1512,7 +1512,7 @@ static uint8_t get_type_as_active (
 
 			/*
 
-				Search for the CLOSE_SECTION character and possible spaces in names
+				Search for the CLOSE SECTION character and possible spaces in names
 				-- i.e., ECMAScript `/[^\.\s]\s+[^\.\s]/g.test(srcstr)`. The
 				algorithm is made more complex by the fact that LF and CR characters
 				are still escaped at this stage.
@@ -1613,7 +1613,7 @@ static uint8_t get_type_as_active (
 
 		/*
 
-			Scan for possible non-space characters following the CLOSE_SECTION
+			Scan for possible non-space characters following the CLOSE SECTION
 			character: if found the node cannot represent a section path (but it can
 			possibly represent a key). Empty quotes surrounded by spaces will be
 			tolerated.
@@ -1744,7 +1744,7 @@ static uint8_t get_type_as_active (
 
 /**
 
-	@brief			Examines a (single-/multi- line) segment and checks whether
+	@brief			Examines a (single-/multi-line) segment and checks whether
 					it contains more than just one entry
 	@param			srcstr			Segment to examine (it may contain multi-line
 									escape sequences)
@@ -1824,7 +1824,7 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 		/*
 
 			Node starts with `/[;#]/` and can be a disabled entry in any format, or
-			a simple comment or a block that must be ignored in multiline formats
+			a simple comment or a block that must be ignored in multi-line formats
 
 		*/
 
@@ -2027,7 +2027,7 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 		/*
 
-			Node starts with `/[;#]/` but cannot be multi-line nor represent a
+			Node starts with `/[;#]/` but cannot be multi-line or represent a
 			disabled entry
 
 		*/
@@ -2223,17 +2223,20 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 	to be NUL-terminated (although for portability it should, since this might
 	become a requirement in the future), but _it does need one extra byte where to
 	append a NUL terminator_ -- in fact, as soon as this function is invoked,
-	`ini_source[ini_length]` will be immediately set to `\0`. In most cases, as when
-	using `strlen()` for computing @p ini_length, this is not a concern, since
-	`ini_source[ini_length]` will always be `\0` by the very definition of
-	`strlen()`, and will only get overwritten with the same value. However, if you
-	are passing a substring of a string, for example the fragment `foo=bar` of the
-	string `foo=barracuda`, you must expect the string to be immediately truncated
-	into `foo=bar\0acuda`. In other words, @p ini_source must point to a memory
-	location where at least `ini_length + 1` bytes are freely usable.
+	`ini_source[ini_length]` will be immediately set to `\0`.
+
+	In most cases, as when using `strlen()` for computing @p ini_length, this is not
+	a concern, since `ini_source[ini_length]` will always be `\0` by the very
+	definition of `strlen()`, and will only get overwritten with the same value.
+	However, if you are passing a substring of a string, for example the fragment
+	`foo=bar` of the string `foo=barracuda`, you must expect the string to be
+	immediately truncated into `foo=bar\0acuda`.
+
+	In other words, @p ini_source must point to a memory location where at least
+	`ini_length + 1` bytes are freely usable.
 
 	After invoking `strip_ini_cache()`, the buffer pointed by the @p ini_source
-	parameter must be considered as a corrupted buffer and should be freed or
+	parameter must be considered as a _corrupted buffer_ and should be freed or
 	overwritten.
 
 	For more information about this function, please refer to the @ref libconfini.
@@ -2757,7 +2760,7 @@ int strip_ini_cache (
 	value the caller function will be interrupted.
 
 	Possible return values are: #CONFINI_SUCCESS, #CONFINI_IINTR, #CONFINI_FEINTR,
-	#CONFINI_ENOMEM, #CONFINI_EIO, #CONFINI_EOOR.
+	#CONFINI_ENOMEM, #CONFINI_EIO, #CONFINI_EOOR, #CONFINI_EBADF, #CONFINI_EFBIG.
 
 	@include topics/load_ini_file.c
 
@@ -2836,7 +2839,8 @@ int load_ini_file (
 	For the two parameters @p f_init and @p f_foreach see function #load_ini_file().
 
 	Possible return values are: #CONFINI_SUCCESS, #CONFINI_IINTR, #CONFINI_FEINTR,
-	#CONFINI_ENOENT, #CONFINI_ENOMEM, #CONFINI_EIO, #CONFINI_EOOR.
+	#CONFINI_ENOENT, #CONFINI_ENOMEM, #CONFINI_EIO, #CONFINI_EOOR, #CONFINI_EBADF,
+	#CONFINI_EFBIG.
 
 	@include topics/load_ini_path.c
 
@@ -2918,7 +2922,11 @@ int load_ini_path (
 	- `format.case_sensitive`
 
 **/
-_Bool ini_string_match_ss (const char * const simple_string_a, const char * const simple_string_b, const IniFormat format) {
+_Bool ini_string_match_ss (
+	const char * const simple_string_a,
+	const char * const simple_string_b,
+	const IniFormat format
+) {
 
 	register size_t idx = 0;
 
@@ -2967,7 +2975,7 @@ _Bool ini_string_match_ss (const char * const simple_string_a, const char * cons
 	This function grants that the result of the comparison between a simple string
 	and an INI string
 
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 	printf(
 		"%s\n",
 		ini_string_match_si(my_simple_string, my_ini_string, format) ?
@@ -2975,13 +2983,13 @@ _Bool ini_string_match_ss (const char * const simple_string_a, const char * cons
 		:
 			"They don't match"
 	);
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	will always match the result of the _literal_ comparison between the simple
 	string and the INI string after the latter has been parsed by
 	#ini_string_parse() when `format.do_not_collapse_values` is set to `false`.
 
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 	ini_string_parse(my_ini_string, format);
 
 	printf(
@@ -2991,7 +2999,7 @@ _Bool ini_string_match_ss (const char * const simple_string_a, const char * cons
 		:
 			"They don't match"
 	);
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	INI strings are the strings typically dispatched by #load_ini_file(),
 	#load_ini_path() or #strip_ini_cache(), which may contain quotes and the three
@@ -3012,7 +3020,11 @@ _Bool ini_string_match_ss (const char * const simple_string_a, const char * cons
 	@include topics/ini_string_match_si.c
 
 **/
-_Bool ini_string_match_si (const char * const simple_string, const char * const ini_string, const IniFormat format) {
+_Bool ini_string_match_si (
+	const char * const simple_string,
+	const char * const ini_string,
+	const IniFormat format
+) {
 
 	/*
 
@@ -3148,7 +3160,7 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 	INI strings after these have been parsed by #ini_string_parse() when
 	`format.do_not_collapse_values` is set to `false`.
 
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 	ini_string_parse(my_ini_string_1, format);
 	ini_string_parse(my_ini_string_2, format);
 
@@ -3158,7 +3170,7 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 		:
 			"They don't match"
 	);
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	INI strings are the strings typically dispatched by #load_ini_file(),
 	#load_ini_path() or #strip_ini_cache(), which may contain quotes and the three
@@ -3176,7 +3188,11 @@ _Bool ini_string_match_si (const char * const simple_string, const char * const 
 	- `format.multiline_nodes`
 
 **/
-_Bool ini_string_match_ii (const char * const ini_string_a, const char * const ini_string_b, const IniFormat format) {
+_Bool ini_string_match_ii (
+	const char * const ini_string_a,
+	const char * const ini_string_b,
+	const IniFormat format
+) {
 
 	const _LIBCONFINI_BOOL_ has_escape = !INIFORMAT_HAS_NO_ESC(format);
 	register uint8_t side = 1;
@@ -3606,7 +3622,7 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 		/*
 
 			There are no escape sequences... I will just return the length of the
-			string.
+			string...
 
 		*/
 
@@ -3810,7 +3826,7 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 	/*
 
-		There might be escape sequences
+		There might be escape sequences...
 
 	*/
 
@@ -4222,7 +4238,7 @@ size_t ini_array_shift (const char ** const ini_strptr, const char delimiter, co
 
 	Examples:
 
-	1. Using the comma as delimiter:
+	1. Using comma as delimiter:
 	   - Before: `&nbsp;first&nbsp;&nbsp; ,&nbsp;&nbsp;&nbsp; second&nbsp;&nbsp;
 	     ,&nbsp;&nbsp; third&nbsp;&nbsp; ,&nbsp; etc.&nbsp;&nbsp;`
 	   - After: `first,second,third,etc.`
@@ -4849,7 +4865,7 @@ int ini_get_bool (const char * const ini_string, const int return_value) {
 		Link to [`atol()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atol)
 	@alias{ini_get_llint}
 		Link to [`atoll()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoll)
-	@alias{ini_get_float}
+	@alias{ini_get_double}
 		Link to [`atof()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atof)
 
 **/
@@ -4860,6 +4876,12 @@ long int (* const ini_get_lint) (const char * ini_string) = &atol;
 
 long long int (* const ini_get_llint) (const char * ini_string) = &atoll;
 
+double (* const ini_get_double) (const char * ini_string) = &atof;
+
+/*  Legacy support -- please **do not use it**!  */
+#ifdef ini_get_float
+#undef ini_get_float
+#endif
 double (* const ini_get_float) (const char * ini_string) = &atof;
 
 
