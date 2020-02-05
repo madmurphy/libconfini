@@ -1,4 +1,4 @@
-.TH "confini.h" 3 "Fri Nov 29 2019" "libconfini" \" -*- nroff -*-
+.TH "confini.h" 3 "Wed Feb 5 2020" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,6 +8,8 @@ confini.h \- libconfini header
 .br
 .PP
 \fC#include <stdio\&.h>\fP
+.br
+\fC#include <stdbool\&.h>\fP
 .br
 \fC#include <stdint\&.h>\fP
 .br
@@ -48,7 +50,7 @@ confini.h \- libconfini header
 
 .in +1c
 .ti -1c
-.RI "typedef struct \fBIniFormat\fP \fBIniFormat\fP"
+.RI "typedef struct \fBIniFormat\fP \fBIIniFormat\fP"
 .br
 .RI "24-bit bitfield representing the format of an INI file (INI dialect) "
 .ti -1c
@@ -94,11 +96,11 @@ confini.h \- libconfini header
 .ti -1c
 .RI "enum \fBIniDelimiters\fP { \fBINI_ANY_SPACE\fP = 0, \fBINI_EQUALS\fP = '=', \fBINI_COLON\fP = ':', \fBINI_DOT\fP = '\&.', \fBINI_COMMA\fP = ',' }"
 .br
-.RI "Most used key-value and array delimiters (but a delimiter may also be any other ASCII character) "
+.RI "Most used array and key-value delimiters (but a delimiter may also be any other ASCII character not present in this list) "
 .ti -1c
 .RI "enum \fBIniCommentMarker\fP { \fBINI_DISABLED_OR_COMMENT\fP = 0, \fBINI_ONLY_COMMENT\fP = 1, \fBINI_IGNORE\fP = 2, \fBINI_IS_NOT_A_MARKER\fP = 3 }"
 .br
-.RI "Possible values of \fBIniFormat::semicolon_marker\fP and \fBIniFormat::hash_marker\fP (i\&.e\&., meaning of \fC/\\s+[#;]/\fP in respect to a format) "
+.RI "Possible values of \fBIniFormat::semicolon_marker\fP and \fBIniFormat::hash_marker\fP (i\&.e\&., meaning of \fC/\\s+;/\fP and \fC/\\s+#/\fP in respect to a format) "
 .ti -1c
 .RI "enum \fBIniSectionPaths\fP { \fBINI_ABSOLUTE_AND_RELATIVE\fP = 0, \fBINI_ABSOLUTE_ONLY\fP = 1, \fBINI_ONE_LEVEL_ONLY\fP = 2, \fBINI_NO_SECTIONS\fP = 3 }"
 .br
@@ -124,19 +126,19 @@ confini.h \- libconfini header
 .br
 .RI "Parses an INI file and dispatches its content using a path as argument\&. "
 .ti -1c
-.RI "_Bool \fBini_string_match_ss\fP (const char *const simple_string_a, const char *const simple_string_b, const \fBIniFormat\fP format)"
+.RI "bool \fBini_string_match_ss\fP (const char *const simple_string_a, const char *const simple_string_b, const \fBIniFormat\fP format)"
 .br
 .RI "Compares two simple strings and checks if they match\&. "
 .ti -1c
-.RI "_Bool \fBini_string_match_si\fP (const char *const simple_string, const char *const ini_string, const \fBIniFormat\fP format)"
+.RI "bool \fBini_string_match_si\fP (const char *const simple_string, const char *const ini_string, const \fBIniFormat\fP format)"
 .br
 .RI "Compares a simple string and an INI string and and checks if they match\&. "
 .ti -1c
-.RI "_Bool \fBini_string_match_ii\fP (const char *const ini_string_a, const char *const ini_string_b, const \fBIniFormat\fP format)"
+.RI "bool \fBini_string_match_ii\fP (const char *const ini_string_a, const char *const ini_string_b, const \fBIniFormat\fP format)"
 .br
 .RI "Compares two INI strings and checks if they match\&. "
 .ti -1c
-.RI "_Bool \fBini_array_match\fP (const char *const ini_string_a, const char *const ini_string_b, const char delimiter, const \fBIniFormat\fP format)"
+.RI "bool \fBini_array_match\fP (const char *const ini_string_a, const char *const ini_string_b, const char delimiter, const \fBIniFormat\fP format)"
 .br
 .RI "Compares two INI arrays and checks if they match\&. "
 .ti -1c
@@ -162,7 +164,7 @@ confini.h \- libconfini header
 .ti -1c
 .RI "size_t \fBini_array_collapse\fP (char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 .br
-.RI "Compresses the distribution of the data of a stringified INI array by removing all the white spaces that surround its delimiters, empty quotes, collapsable spaces, etc\&. "
+.RI "Compresses the distribution of the data in a stringified INI array by removing all the white spaces that surround its delimiters, empty quotes, collapsable spaces, etc\&. "
 .ti -1c
 .RI "char * \fBini_array_break\fP (char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 .br
@@ -176,7 +178,7 @@ confini.h \- libconfini header
 .br
 .RI "Splits a stringified INI array into NUL-separated members and calls a custom function for each member\&. "
 .ti -1c
-.RI "void \fBini_global_set_lowercase_mode\fP (_Bool lowercase)"
+.RI "void \fBini_global_set_lowercase_mode\fP (const bool lowercase)"
 .br
 .RI "Sets the value of the global variable \fBINI_GLOBAL_LOWERCASE_MODE\fP\&. "
 .ti -1c
@@ -188,7 +190,7 @@ confini.h \- libconfini header
 .br
 .RI "Calculates the \fBIniFormatNum\fP of an \fBIniFormat\fP\&. "
 .ti -1c
-.RI "\fBIniFormat\fP \fBini_ntof\fP (\fBIniFormatNum\fP format_id)"
+.RI "\fBIniFormat\fP \fBini_ntof\fP (const \fBIniFormatNum\fP format_id)"
 .br
 .RI "Constructs a new \fBIniFormat\fP according to an \fBIniFormatNum\fP\&. "
 .ti -1c
@@ -202,19 +204,19 @@ confini.h \- libconfini header
 .ti -1c
 .RI "int(*const \fBini_get_int\fP )(const char *ini_string)"
 .br
-.RI "Link to \fC\fCatoi()\fP\fP "
+.RI "Pointer to \fC\fCatoi()\fP\fP "
 .ti -1c
 .RI "long int(*const \fBini_get_lint\fP )(const char *ini_string)"
 .br
-.RI "Link to \fC\fCatol()\fP\fP "
+.RI "Pointer to \fC\fCatol()\fP\fP "
 .ti -1c
 .RI "long long int(*const \fBini_get_llint\fP )(const char *ini_string)"
 .br
-.RI "Link to \fC\fCatoll()\fP\fP "
+.RI "Pointer to \fC\fCatoll()\fP\fP "
 .ti -1c
 .RI "double(*const \fBini_get_double\fP )(const char *ini_string)"
 .br
-.RI "Link to \fC\fCatof()\fP\fP "
+.RI "Pointer to \fC\fCatof()\fP\fP "
 .ti -1c
 .RI "static const \fBIniFormat\fP \fBINI_DEFAULT_FORMAT\fP = { \fBINI_EQUALS\fP , 0 , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_ABSOLUTE_AND_RELATIVE\fP , \fBINI_MULTILINE_EVERYWHERE\fP , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }"
 .br
@@ -224,7 +226,7 @@ confini.h \- libconfini header
 .br
 .RI "A model format for Unix-like \&.conf files (where space characters are delimiters between keys and values) "
 .ti -1c
-.RI "_Bool \fBINI_GLOBAL_LOWERCASE_MODE\fP"
+.RI "bool \fBINI_GLOBAL_LOWERCASE_MODE\fP"
 .br
 .RI "If set to \fCtrue\fP, key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: \fCfalse\fP) "
 .ti -1c
@@ -249,17 +251,22 @@ Stefano Gioffre\*(`
 .PP
 \fBCopyright\fP
 .RS 4
-GNU Public License version 3 or any later version 
+GNU General Public License, version 3 or any later version 
+.RE
+.PP
+\fBVersion\fP
+.RS 4
+1\&.13\&.0 
 .RE
 .PP
 \fBDate\fP
 .RS 4
-2016-2019 
+2016-2020 
 .RE
 .PP
 \fBSee also\fP
 .RS 4
-https://github.com/madmurphy/libconfini/ 
+https://madmurphy.github.io/libconfini 
 .RE
 .PP
 
@@ -273,7 +280,7 @@ Error mask (flags not present in user-generated interruptions)
 \fBValue:\fP
 .PP
 .nf
-(FORMAT\&.multiline_nodes == INI_NO_MULTILINE && \e
+    (FORMAT\&.multiline_nodes == INI_NO_MULTILINE && \e
     FORMAT\&.no_double_quotes && FORMAT\&.no_single_quotes)
 .fi
 .PP
@@ -316,7 +323,11 @@ Bits 23-24: Human syntax (disabled entries)
 
 .SH "Typedef Documentation"
 .PP 
-.SS "typedef struct \fBIniDispatch\fP  \fBIniDispatch\fP"
+.SS "typedef struct \fBIniFormat\fP \fBIIniFormat\fP"
+
+.PP
+24-bit bitfield representing the format of an INI file (INI dialect) 
+.SS "typedef struct \fBIniDispatch\fP \fBIniDispatch\fP"
 
 .PP
 Dispatch of a single INI node\&. 
@@ -333,15 +344,11 @@ Callback function for handling an \fBIniDispatch\fP structure\&.
 .RE
 .PP
 
-.SS "typedef struct \fBIniFormat\fP   \fBIniFormat\fP"
-
-.PP
-24-bit bitfield representing the format of an INI file (INI dialect) 
 .SS "typedef uint32_t \fBIniFormatNum\fP"
 
 .PP
 The unique ID of an INI format (24-bit maximum) 
-.SS "typedef struct \fBIniStatistics\fP  \fBIniStatistics\fP"
+.SS "typedef struct \fBIniStatistics\fP \fBIniStatistics\fP"
 
 .PP
 Global statistics about an INI file\&. 
@@ -437,7 +444,7 @@ File too large [value=9]
 .SS "enum \fBIniCommentMarker\fP"
 
 .PP
-Possible values of \fBIniFormat::semicolon_marker\fP and \fBIniFormat::hash_marker\fP (i\&.e\&., meaning of \fC/\\s+[#;]/\fP in respect to a format) 
+Possible values of \fBIniFormat::semicolon_marker\fP and \fBIniFormat::hash_marker\fP (i\&.e\&., meaning of \fC/\\s+;/\fP and \fC/\\s+#/\fP in respect to a format) 
 .PP
 \fBEnumerator\fP
 .in +1c
@@ -456,7 +463,7 @@ This is not a marker at all, but a normal character instead
 .SS "enum \fBIniDelimiters\fP"
 
 .PP
-Most used key-value and array delimiters (but a delimiter may also be any other ASCII character) 
+Most used array and key-value delimiters (but a delimiter may also be any other ASCII character not present in this list) 
 .PP
 \fBEnumerator\fP
 .in +1c
@@ -634,7 +641,7 @@ int main () {
 .SS "size_t ini_array_collapse (char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 
 .PP
-Compresses the distribution of the data of a stringified INI array by removing all the white spaces that surround its delimiters, empty quotes, collapsable spaces, etc\&. 
+Compresses the distribution of the data in a stringified INI array by removing all the white spaces that surround its delimiters, empty quotes, collapsable spaces, etc\&. 
 .PP
 \fBParameters\fP
 .RS 4
@@ -906,7 +913,7 @@ If \fCdelimiter\fP matches a metacharacter within the format given (\fC'\\\\'\fP
 .RE
 .PP
 
-.SS "_Bool ini_array_match (const char *const ini_string_a, const char *const ini_string_b, const char delimiter, const \fBIniFormat\fP format)"
+.SS "bool ini_array_match (const char *const ini_string_a, const char *const ini_string_b, const char delimiter, const \fBIniFormat\fP format)"
 
 .PP
 Compares two INI arrays and checks if they match\&. 
@@ -1528,7 +1535,7 @@ int main () {
 .fi
 .PP
  
-.SS "void ini_global_set_lowercase_mode (_Bool lowercase)"
+.SS "void ini_global_set_lowercase_mode (const bool lowercase)"
 
 .PP
 Sets the value of the global variable \fBINI_GLOBAL_LOWERCASE_MODE\fP\&. 
@@ -1551,7 +1558,7 @@ This function changes the value of one or more global variables\&. In order to b
 .RE
 .PP
 
-.SS "\fBIniFormat\fP ini_ntof (\fBIniFormatNum\fP format_num)"
+.SS "\fBIniFormat\fP ini_ntof (const \fBIniFormatNum\fP format_num)"
 
 .PP
 Constructs a new \fBIniFormat\fP according to an \fBIniFormatNum\fP\&. 
@@ -1572,7 +1579,7 @@ If \fCformat_num\fP \fC>\fP \fC16777215\fP it will be truncated to 24 bits\&.
 .RE
 .PP
 
-.SS "_Bool ini_string_match_ii (const char *const ini_string_a, const char *const ini_string_b, const \fBIniFormat\fP format)"
+.SS "bool ini_string_match_ii (const char *const ini_string_a, const char *const ini_string_b, const \fBIniFormat\fP format)"
 
 .PP
 Compares two INI strings and checks if they match\&. 
@@ -1637,7 +1644,7 @@ The \fCformat\fP argument is used for the following fields:
 \fCformat\&.multiline_nodes\fP 
 .PP
 
-.SS "_Bool ini_string_match_si (const char *const simple_string, const char *const ini_string, const \fBIniFormat\fP format)"
+.SS "bool ini_string_match_si (const char *const simple_string, const char *const ini_string, const \fBIniFormat\fP format)"
 
 .PP
 Compares a simple string and an INI string and and checks if they match\&. 
@@ -1763,7 +1770,7 @@ int main () {
 .fi
 .PP
  
-.SS "_Bool ini_string_match_ss (const char *const simple_string_a, const char *const simple_string_b, const \fBIniFormat\fP format)"
+.SS "bool ini_string_match_ss (const char *const simple_string_a, const char *const simple_string_b, const \fBIniFormat\fP format)"
 
 .PP
 Compares two simple strings and checks if they match\&. 
@@ -1805,7 +1812,7 @@ Unescapes \fC\\'\fP, \fC\\"\fP, and \fC\\\\\fP and removes all unescaped quotes 
 The new length of the string
 .RE
 .PP
-This function is meant to be used to parse values\&. In order to parse key and section names please use \fBini_unquote()\fP instead\&.
+This function is meant to be used to parse values\&. In order to parse key and section names please use \fBini_unquote()\fP\&.
 .PP
 If you only need to compare \fCini_string\fP with another string, consider to use \fBini_string_match_si()\fP and \fBini_string_match_ii()\fP instead of parsing the former and perform a simple comparison afterwards\&. These two functions are in fact able to check directly for equality between unparsed INI strings without actually modifying them\&.
 .PP
@@ -1896,7 +1903,7 @@ Unescapes \fC\\'\fP, \fC\\"\fP, and \fC\\\\\fP and removes all unescaped quotes 
 The new length of the string
 .RE
 .PP
-This function is very similar to \fBini_string_parse()\fP, except that does not bother collapsing the sequences of more than one space that might result from removing empty quotes\&. Its purpose is to be used to parse key and section names, since these are always dispatched as already collapsed\&. In order to parse values, or array parts listed in values, please use \fBini_string_parse()\fP instead\&.
+This function is very similar to \fBini_string_parse()\fP, except that does not bother collapsing the sequences of more than one space that might result from removing empty quotes\&. Its purpose is to be used to parse key and section names, since these are always dispatched as already collapsed\&. In order to parse values, or array parts listed in values, please use \fBini_string_parse()\fP\&.
 .PP
 If you only need to compare \fCini_string\fP with another string, consider to use \fBini_string_match_si()\fP and \fBini_string_match_ii()\fP instead of parsing the former and perform a simple comparison afterwards\&. These two functions are in fact able to check directly for equality between unparsed INI strings without actually modifiyng them\&.
 .PP
@@ -1986,6 +1993,11 @@ Parses an INI file and dispatches its content using a \fCFILE\fP structure as ar
 Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\fP)
 .RE
 .PP
+\fBNote\fP
+.RS 4
+This function is absent if the \fC--without-io-api\fP option was passed to the \fCconfigure\fP script when the library was compiled
+.RE
+.PP
 The \fCini_file\fP parameter must be a \fCFILE\fP handle with read privileges\&. On some platforms, such as Microsoft Windows, it might be needed to add the binary specifier to the mode string (\fC'b'\fP) in order to prevent discrepancies between the physical size of the file and its computed size:
 .PP
 .PP
@@ -1994,16 +2006,14 @@ FILE * my_file = fopen("example\&.conf", "rb");
 .fi
 .PP
 .PP
+For the two parameters \fCf_init\fP and \fCf_foreach\fP see function \fBstrip_ini_cache()\fP\&.
+.PP
 The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP refer to the same code points they refer to in ASCII (as they do, for example, in UTF-8 and ISO-8859-1), independently of platform-specific conventions\&.
 .PP
 \fBNote\fP
 .RS 4
 In order to be null-byte-injection safe, \fCNUL\fP characters, if present in the file, will be removed from the dispatched strings\&.
 .RE
-.PP
-The user given function \fCf_init\fP (see \fBIniStatsHandler\fP data type) will be invoked with two arguments: \fCstatistics\fP (a pointer to an \fBIniStatistics\fP structure containing some properties about the file read) and \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_init\fP returns a non-zero value the caller function will be interrupted\&.
-.PP
-The user given function \fCf_foreach\fP (see \fBIniDispHandler\fP data type) will be invoked with two arguments: \fCdispatch\fP (a pointer to an \fBIniDispatch\fP structure containing the parsed member of the INI file) and \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the caller function will be interrupted\&.
 .PP
 Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFINI_FEINTR\fP, \fBCONFINI_ENOMEM\fP, \fBCONFINI_EIO\fP, \fBCONFINI_EOOR\fP, \fBCONFINI_EBADF\fP, \fBCONFINI_EFBIG\fP\&.
 .PP
@@ -2081,14 +2091,19 @@ Parses an INI file and dispatches its content using a path as argument\&.
 Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\fP)
 .RE
 .PP
+\fBNote\fP
+.RS 4
+This function is absent if the \fC--without-io-api\fP option was passed to the \fCconfigure\fP script when the library was compiled
+.RE
+.PP
+For the two parameters \fCf_init\fP and \fCf_foreach\fP see function \fBstrip_ini_cache()\fP\&.
+.PP
 The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP refer to the same code points they refer to in ASCII (as they do, for example, in UTF-8 and ISO-8859-1), independently of platform-specific conventions\&.
 .PP
 \fBNote\fP
 .RS 4
 In order to be null-byte-injection safe, \fCNUL\fP characters, if present in the file, will be removed from the dispatched strings\&.
 .RE
-.PP
-For the two parameters \fCf_init\fP and \fCf_foreach\fP see function \fBload_ini_file()\fP\&.
 .PP
 Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFINI_FEINTR\fP, \fBCONFINI_ENOENT\fP, \fBCONFINI_ENOMEM\fP, \fBCONFINI_EIO\fP, \fBCONFINI_EOOR\fP, \fBCONFINI_EBADF\fP, \fBCONFINI_EFBIG\fP\&.
 .PP
@@ -2157,24 +2172,24 @@ Parses and tokenizes a buffer containing an INI file, then dispatches its conten
 Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\fP)
 .RE
 .PP
-The \fCini_source\fP parameter must be a valid pointer to a buffer of size \fCini_length\fP + 1 and cannot be \fCNULL\fP\&. The \fCini_source\fP string does not need to be NUL-terminated (although for portability it should, since this might become a requirement in the future), but \fIit does need one extra byte where to append a NUL terminator\fP – in fact, as soon as this function is invoked, \fCini_source[ini_length]\fP will be immediately set to \fC\\0\fP\&.
+The \fCini_source\fP parameter must be a valid pointer to a buffer of size \fCini_length\fP + 1 and cannot be \fCNULL\fP\&. The \fCini_source\fP string does not need to be NUL-terminated, but \fIit does need one extra byte where to append a NUL terminator\fP – in fact, as soon as this function is invoked, \fCini_source[ini_length]\fP will be immediately set to \fC\\0\fP\&.
 .PP
 In most cases, as when using \fCstrlen()\fP for computing \fCini_length\fP, this is not a concern, since \fCini_source[ini_length]\fP will always be \fC\\0\fP by the very definition of \fCstrlen()\fP, and will only get overwritten with the same value\&. However, if you are passing a substring of a string, for example the fragment \fCfoo=bar\fP of the string \fCfoo=barracuda\fP, you must expect the string to be immediately truncated into \fCfoo=bar\\0acuda\fP\&.
 .PP
 In other words, \fCini_source\fP must point to a memory location where at least \fCini_length + 1\fP bytes are freely usable\&.
 .PP
-After invoking \fC\fBstrip_ini_cache()\fP\fP, the buffer pointed by the \fCini_source\fP parameter must be considered as a \fIcorrupted buffer\fP and should be freed or overwritten\&.
+The user given function \fCf_init\fP (see \fBIniStatsHandler\fP data type) will be invoked with two arguments: \fCstatistics\fP (a pointer to an \fBIniStatistics\fP structure containing some properties about the file read) and \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_init\fP returns a non-zero value the caller function will be interrupted\&.
 .PP
-For more information about this function, please refer to the \fBLibrary Functions Manual\fP\&.
+The user given function \fCf_foreach\fP (see \fBIniDispHandler\fP data type) will be invoked with two arguments: \fCdispatch\fP (a pointer to an \fBIniDispatch\fP structure containing the parsed member of the INI file) and \fCuser_data\fP (the custom argument \fCuser_data\fP previously passed)\&. If \fCf_foreach\fP returns a non-zero value the caller function will be interrupted\&.
+.PP
+After invoking \fC\fBstrip_ini_cache()\fP\fP, the buffer pointed by the \fCini_source\fP parameter must be considered as a \fIcorrupted buffer\fP and should be freed or overwritten\&. For more information about this function, please refer to the \fBLibrary Functions Manual\fP\&.
 .PP
 The parsing algorithms used by \fBlibconfini\fP are able to parse any type of file encoded in 8-bit code units, as long as the characters that match the regular expression \fC/[\\s\\[\\]\\\&.\\\\;#"']/\fP refer to the same code points they refer to in ASCII (as they do, for example, in UTF-8 and ISO-8859-1), independently of platform-specific conventions\&.
 .PP
 \fBNote\fP
 .RS 4
-In order to be null-byte-injection-safe, the \fCNUL\fP characters possibly present in the buffer, except the last one, will be stripped from it before the dispatching begins\&.
+In order to be null-byte-injection-safe, this function will strip all \fCNUL\fP characters possibly present in the buffer, with the exception of the last one, before dispatching the parsed content\&.
 .RE
-.PP
-For the two parameters \fCf_init\fP and \fCf_foreach\fP see function \fBload_ini_file()\fP\&.
 .PP
 Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFINI_FEINTR\fP, \fBCONFINI_EOOR\fP\&.
 .PP
@@ -2276,19 +2291,19 @@ A model format for standard INI files\&.
 .SS "ini_get_double"
 
 .PP
-Link to \fC\fCatof()\fP\fP 
+Pointer to \fC\fCatof()\fP\fP 
 .SS "ini_get_int"
 
 .PP
-Link to \fC\fCatoi()\fP\fP 
+Pointer to \fC\fCatoi()\fP\fP 
 .SS "ini_get_lint"
 
 .PP
-Link to \fC\fCatol()\fP\fP 
+Pointer to \fC\fCatol()\fP\fP 
 .SS "ini_get_llint"
 
 .PP
-Link to \fC\fCatoll()\fP\fP 
+Pointer to \fC\fCatoll()\fP\fP 
 .SS "size_t INI_GLOBAL_IMPLICIT_V_LEN"
 
 .PP
@@ -2297,7 +2312,7 @@ Length of the value assigned to implicit keys – this may be any unsigned numbe
 
 .PP
 Value to be assigned to implicit keys (default value: \fCNULL\fP) 
-.SS "_Bool INI_GLOBAL_LOWERCASE_MODE"
+.SS "bool INI_GLOBAL_LOWERCASE_MODE"
 
 .PP
 If set to \fCtrue\fP, key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: \fCfalse\fP) 

@@ -8,12 +8,13 @@ indent_size = 2
 indent_style = tab
 indent_size = 4
 
-[src/confini.c]
+[{src/confini.c,dev/marked-sources/confini-marked.c}]
 charset = utf-8
 indent_style = tab
 indent_size = 4
 
-[src/confini.h]
+[{src/confini.h,dev/marked-sources/confini-marked.h}]
 charset = utf-8
 indent_style = space
 indent_size = 4
+

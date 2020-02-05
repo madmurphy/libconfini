@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['hacking_20libconfini_284',['Hacking libconfini',['../hacking.html',1,'']]]
+  ['get_20involved_291',['Get involved',['../develop.html',1,'']]]
 ];

@@ -1,6 +1,10 @@
+/*  UTF-8 support  */
+#pragma code_page(65001)
+
+/*  Headers  */
 #include <windows.h>
 
-// Windows DLL version information
+/*  Windows DLL version information  */
 VS_VERSION_INFO		VERSIONINFO
 FILEVERSION		@PROJECT_MAJVER@,@PROJECT_MINVER@,@PROJECT_REVVER@,0
 PRODUCTVERSION		@PROJECT_MAJVER@,@PROJECT_MINVER@,@PROJECT_REVVER@,0
@@ -18,12 +22,12 @@ BEGIN
 	BEGIN
 		BLOCK "040904b0"
 		BEGIN
-			VALUE "CompanyName", "@PUBLISHER_UTF8ESC_NAME@"
+			VALUE "CompanyName", "@PUBLISHER_NAME@"
 			VALUE "FileDescription", "@PROJECT_DESCRIPTION@"
 			VALUE "FileVersion", "@PACKAGE_VERSION@"
 			VALUE "InternalName", "@PACKAGE_CONFNAME@"
-			VALUE "LegalCopyright", "@LICENSE_NAME@"
-			VALUE "OriginalFilename", "@PACKAGE_TARNAME@.dll"
+			VALUE "LegalCopyright", "@LICENSE_STRING@"
+			VALUE "OriginalFilename", "@PACKAGE_LOCALNAME@.dll"
 			VALUE "ProductName", "@PACKAGE_CONFNAME@"
 			VALUE "ProductVersion", "@PACKAGE_VERSION@"
 			VALUE "Comments", "@PACKAGE_URL@"

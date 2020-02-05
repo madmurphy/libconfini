@@ -7,7 +7,9 @@ ease with almost every type of file containing key/value pairs.
 
 The library is fast and suitable for embedded systems. Its algorithms are
 written from scratch and do not depend on any external library, except for the
-C standard headers **stdio.h**, **stdlib.h** and **stdint.h**.
+C standard headers **stdio.h**, **stdlib.h**, **stdbool.h** and **stdint.h**
+(and for extreme platforms the code can be also compiled as “bare metal”, with
+few or no strings attached to the C Standard Library).
 
 Rather than storing the parsed data, **libconfini** gives the developer the
 freedom to choose what to do with them through a custom callback invoked for
@@ -59,7 +61,7 @@ Sample usage
 
 log.ini:
 
-``````````````````````````````````````ini
+`````````````````````````````````````` ini
 [users]
 have_visited = ronnie, lilly82, robrob
 
@@ -69,7 +71,7 @@ date = 12.03.2017
 
 example.c:
 
-```````````````````````````````````````````````````````````````````````````c
+``````````````````````````````````````````````````````````````````````````` c
 #include <confini.h>
 
 static int callback (IniDispatch * disp, void * v_other) {
@@ -137,7 +139,7 @@ If a pre-compiled package for your platform is not available, on most Unix-like
 systems it is possible to install **libconfini** using the following common
 steps:
 
-``````````````````sh
+`````````````````` sh
 ./configure
 make
 make install-strip
@@ -185,4 +187,3 @@ for details.
 [10]: https://www.cygwin.com/
 [11]: https://github.com/madmurphy/libconfini/blob/master/INSTALL
 [12]: https://github.com/madmurphy/libconfini/blob/master/COPYING
-

@@ -27,31 +27,29 @@ int main () {
   #define NO 0
   #define YES 1
 
-  IniFormat my_format = {
-    .delimiter_symbol = INI_EQUALS,
-    .case_sensitive = NO,
-    .semicolon_marker = INI_DISABLED_OR_COMMENT,
-    .hash_marker = INI_ONLY_COMMENT,
-    .section_paths = INI_ABSOLUTE_AND_RELATIVE,
-    .multiline_nodes = INI_MULTILINE_EVERYWHERE,
-    .no_single_quotes = NO,
-    .no_double_quotes = NO,
-    .no_spaces_in_names = NO,
-    .implicit_is_not_empty = YES,
-    .do_not_collapse_values = NO,
-    .preserve_empty_quotes = NO,
-    .disabled_after_space = NO,
-    .disabled_can_be_implicit = YES
-  };
-
-  #undef NO
-  #undef YES
+  #define MY_FORMAT \
+    ((IniFormat) { \
+      .delimiter_symbol = INI_EQUALS, \
+      .case_sensitive = NO, \
+      .semicolon_marker = INI_DISABLED_OR_COMMENT, \
+      .hash_marker = INI_ONLY_COMMENT, \
+      .section_paths = INI_ABSOLUTE_AND_RELATIVE, \
+      .multiline_nodes = INI_MULTILINE_EVERYWHERE, \
+      .no_single_quotes = NO, \
+      .no_double_quotes = NO, \
+      .no_spaces_in_names = NO, \
+      .implicit_is_not_empty = YES, \
+      .do_not_collapse_values = NO, \
+      .preserve_empty_quotes = NO, \
+      .disabled_after_space = NO, \
+      .disabled_can_be_implicit = YES \
+    })
 
   printf(":: Content of \"ambiguous.conf\" ::\n\n");
 
   if (load_ini_path(
     "../ini_files/ambiguous.conf",
-    my_format,
+    MY_FORMAT,
     NULL,
     ini_listener,
     NULL
@@ -63,6 +61,9 @@ int main () {
   }
 
   return 0;
+
+  #undef NO
+  #undef YES
 
 }
 

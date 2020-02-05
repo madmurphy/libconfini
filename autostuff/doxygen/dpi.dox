@@ -29,9 +29,15 @@
 
 
 
-\page		hacking	Hacking libconfini
+\page		develop	Get involved
 
-\brief		Code snippets and replacements
+\brief		Developing **libconfini**
+
+
+
+\page		baremetal	Compiling without the C Standard Library
+
+\brief		What `./configure --without-io-api` does
 
 
 
@@ -39,9 +45,9 @@
 
 \brief		Complete list of functions
 
-What follows is the list of public functions available with **libconfini**.
-Almost each of them is independent, hence if you are compiling this library you
-may decide to remove the function listed below from the code, with the only
+What follows here is the list of public functions available with **libconfini**.
+Almost each of them is independent, hence if you are compiling the library you
+may decide to remove the functions listed below from the code, with the only
 exceptions of `ini_string_match_ii()`, required by `ini_array_match()`, and
 `strip_ini_cache()`, required by both `load_ini_file()` and `load_ini_path()`.
 
@@ -50,6 +56,12 @@ exceptions of `ini_string_match_ii()`, required by `ini_array_match()`, and
 \page		changelog	ChangeLog
 
 \brief		Record of notable changes
+
+
+
+\file		ChangeLog.md
+
+This file provides the markdown source code for the \ref changelog.
 
 
 
@@ -65,46 +77,34 @@ This file provides the markdown source code for the \ref libconfini.
 
 
 
-\file		ChangeLog.md
+\file		dev/docs/mainpage.md
 
-This file provides the markdown source code for the \ref changelog.
-
-
-
-\file		dpi.dox
-
-This file is used by Doxygen to indicize the pages and provide further
-documentation not available in the code.
+This file provides the markdown source code for the main page.
 
 
 
-\file		rationale.md
+\file		dev/docs/rationale.md
 
 This file provides the markdown source code for the \ref rationale.
 
 
 
-\file		hacking.md
+\file		dev/docs/develop.md
 
-This file provides the markdown source code for the page \ref hacking.
+This file provides the markdown source code for the page \ref develop.
 
 
 
-\mainpage	libconfini
+\file		dev/docs/baremetal.md
 
-Welcome to the documentation of **libconfini**.
+This file provides the markdown source code for the page \ref baremetal.
 
-You can get started by having a look at the [README](\ref readme) and
-[the manual](\ref libconfini). Further useful resources include:
 
-- [**Source Code**](https://github.com/madmurphy/libconfini)
-- [**Releases**](https://github.com/madmurphy/libconfini/releases)
-- \ref fnoverview
-- [Complete Reference Book](\ref confini.h)
-- \ref rationale
-- `IniFormat`
-- `IniStatistics`
-- `IniDispatch`
+
+\file		autostuff/doxygen/dpi.dox
+
+This file is used by Doxygen to indicize the pages and provide further
+documentation not available in the code.
 
 
 

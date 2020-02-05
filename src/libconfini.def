@@ -1,0 +1,30 @@
+EXPORTS
+	INI_GLOBAL_IMPLICIT_VALUE @ 1 DATA
+	INI_GLOBAL_IMPLICIT_V_LEN @ 2 DATA
+	INI_GLOBAL_LOWERCASE_MODE @ 3 DATA
+	ini_array_break @ 4
+	ini_array_collapse @ 5
+	ini_array_foreach @ 6
+	ini_array_get_length @ 7
+	ini_array_match @ 8
+	ini_array_release @ 9
+	ini_array_shift @ 10
+	ini_array_split @ 11
+	ini_fton @ 12
+	ini_get_bool @ 13
+	ini_get_double @ 14 DATA
+	ini_get_float @ 15 DATA
+	ini_get_int @ 16 DATA
+	ini_get_lint @ 17 DATA
+	ini_get_llint @ 18 DATA
+	ini_global_set_implicit_value @ 19
+	ini_global_set_lowercase_mode @ 20
+	ini_ntof @ 21
+	ini_string_match_ii @ 22
+	ini_string_match_si @ 23
+	ini_string_match_ss @ 24
+	ini_string_parse @ 25
+	ini_unquote @ 26
+	load_ini_file @ 27
+	load_ini_path @ 28
+	strip_ini_cache @ 29

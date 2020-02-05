@@ -5,9 +5,10 @@
     @file       confini.h
     @brief      libconfini header
     @author     Stefano Gioffr&eacute;
-    @copyright  GNU Public License version 3 or any later version
-    @date       2016-2019
-    @see        https://github.com/madmurphy/libconfini/
+    @copyright  GNU General Public License, version 3 or any later version
+    @version    1.13.0
+    @date       2016-2020
+    @see        https://madmurphy.github.io/libconfini
 
 **/
 
@@ -18,7 +19,14 @@
 
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdint.h>
+
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 
@@ -199,28 +207,28 @@ extern int load_ini_path (
 );
 
 
-extern _Bool ini_string_match_ss (
+extern bool ini_string_match_ss (
     const char * const simple_string_a,
     const char * const simple_string_b,
     const IniFormat format
 );
 
 
-extern _Bool ini_string_match_si (
+extern bool ini_string_match_si (
     const char * const simple_string,
     const char * const ini_string,
     const IniFormat format
 );
 
 
-extern _Bool ini_string_match_ii (
+extern bool ini_string_match_ii (
     const char * const ini_string_a,
     const char * const ini_string_b,
     const IniFormat format
 );
 
 
-extern _Bool ini_array_match (
+extern bool ini_array_match (
     const char * const ini_string_a,
     const char * const ini_string_b,
     const char delimiter,
@@ -294,7 +302,7 @@ extern int ini_array_split (
 
 
 extern void ini_global_set_lowercase_mode (
-    _Bool lowercase
+    const bool lowercase
 );
 
 
@@ -310,7 +318,7 @@ extern IniFormatNum ini_fton (
 
 
 extern IniFormat ini_ntof (
-    IniFormatNum format_id
+    const IniFormatNum format_id
 );
 
 
@@ -406,8 +414,8 @@ enum IniNodeType {
 
 
 /**
-    @brief  Most used key-value and array delimiters (but a delimiter may also
-            be any other ASCII character)
+    @brief  Most used array and key-value delimiters (but a delimiter may also
+            be any other ASCII character not present in this list)
 **/
 enum IniDelimiters {
     INI_ANY_SPACE = 0,  /**< In multi-line INIs:
@@ -422,8 +430,8 @@ enum IniDelimiters {
 
 /**
     @brief  Possible values of #IniFormat::semicolon_marker and
-            #IniFormat::hash_marker (i.e., meaning of `/\s+[#;]/` in respect to
-            a format)
+            #IniFormat::hash_marker (i.e., meaning of `/\s+;/` and `/\s+#/` in
+            respect to a format)
 **/
 enum IniCommentMarker {
     INI_DISABLED_OR_COMMENT = 0,    /**< This marker opens a comment or a
@@ -492,7 +500,7 @@ static const IniFormat INI_UNIXLIKE_FORMAT = _LIBCONFINI_UNIXLIKE_FORMAT_;
             formats will be dispatched lowercase, verbatim otherwise (default
             value: `false`)
 **/
-extern _Bool INI_GLOBAL_LOWERCASE_MODE;
+extern bool INI_GLOBAL_LOWERCASE_MODE;
 
 
 /**
@@ -513,7 +521,7 @@ extern size_t INI_GLOBAL_IMPLICIT_V_LEN;
 /*  CLEAN THE PRIVATE ENVIRONMENT  */
 
 
-#undef _LIBCONFINI_UNIXLIKE_FORMAT_ 
+#undef _LIBCONFINI_UNIXLIKE_FORMAT_
 #undef _LIBCONFINI_DEFAULT_FORMAT_
 #undef _LIBCONFINI_INIFORMAT_TYPE_
 #undef _LIBCONFINI_UNIXLIKE_FMT_DESCR_
@@ -523,6 +531,11 @@ extern size_t INI_GLOBAL_IMPLICIT_V_LEN;
 
 
 /*  END OF `_LIBCONFINI_HEADER_`  */
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

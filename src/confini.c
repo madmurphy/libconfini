@@ -6,9 +6,10 @@
 	@file		confini.c
 	@brief		libconfini functions
 	@author		Stefano Gioffr&eacute;
-	@copyright	GNU Public License version 3 or any later version
-	@date		2016-2019
-	@see		https://github.com/madmurphy/libconfini/
+	@copyright	GNU General Public License, version 3 or any later version
+	@version	1.13.0
+	@date		2016-2020
+	@see		https://madmurphy.github.io/libconfini
 
 **/
 
@@ -234,7 +235,6 @@
 /*  String concatenation facilities  */
 #define __PP_CAT__(STR1, STR2) STR1##STR2
 #define __PP_UCAT__(STR1, STR2) STR1##_##STR2
-#define __PP_EVALCAT__(STR1, STR2) __PP_CAT__(STR1, STR2)
 #define __PP_EVALUCAT__(STR1, STR2) __PP_UCAT__(STR1, STR2)
 
 
@@ -260,7 +260,7 @@
 
 
 #define _LIBCONFINI_PRIVATE_ITEM_(GROUP, ITEM) \
-	__PP_EVALUCAT__(__PP_EVALCAT__(_LIB, GROUP), __PP_EVALCAT__(ITEM, _))
+	__PP_EVALUCAT__(__PP_CAT__(_LIB, GROUP), __PP_CAT__(ITEM, _))
 #define _LIBCONFINI_CURRENT_FLAVOR_GET_(NAME) \
 	_LIBCONFINI_PRIVATE_ITEM_(CONFINI_IO_FLAVOR, NAME)
 #define _LIBCONFINI_IS_FLAVOR_(NAME) \
@@ -318,7 +318,7 @@
 
 #define _LIBCONFINI_FALSE_ 0
 #define _LIBCONFINI_TRUE_ 1
-#define _LIBCONFINI_BOOL_ unsigned char
+#define _LIBCONFINI_CHARBOOL_ unsigned char
 #define _LIBCONFINI_SIMPLE_SPACE_ ' '
 #define _LIBCONFINI_HT_ '\t'
 #define _LIBCONFINI_FF_ '\f'
@@ -391,8 +391,8 @@
 
 /*
 
-	Checks whether a character represents any marker that dos not mark a block that
-	must be ignored within a given format
+	Checks whether a character represents any marker except `INI_IGNORE` within a
+	given format
 
 */
 #define _LIBCONFINI_IS_COM_MARKER_(CHR, FMT) ( \
@@ -405,8 +405,8 @@
 
 /*
 
-	Checks whether a character marks a block containing a comment or a disabled
-	entry within a given format
+	Checks whether a character represents a marker of type `INI_DISABLED_OR_COMMENT`
+	within a given format
 
 */
 #define _LIBCONFINI_IS_DIS_MARKER_(CHR, FMT) ( \
@@ -419,8 +419,8 @@
 
 /*
 
-	Checks whether a character marks a block that must be ignored within a given
-	format
+	Checks whether a character represents a marker of type `INI_IGNORE` within a
+	given format
 
 */
 #define _LIBCONFINI_IS_IGN_MARKER_(CHR, FMT) ( \
@@ -511,7 +511,7 @@ static const char * const INI_BOOLEANS[][2] = {
 	@return			A boolean: `true` if the character matches, `false` otherwise
 
 **/
-static inline _LIBCONFINI_BOOL_ is_some_space (const char chr, const int8_t depth) {
+static inline _LIBCONFINI_CHARBOOL_ is_some_space (const char chr, const int8_t depth) {
 	register int8_t idx = depth;
 	while (++idx < _LIBCONFINI_SPALEN_ && chr != _LIBCONFINI_SPACES_[idx]);
 	return idx < _LIBCONFINI_SPALEN_;
@@ -722,11 +722,11 @@ static inline size_t qultrim_h (char * const srcstr, const size_t offs, const In
 
 	for (; abcd & 128; idx++) {
 
-		abcd	= 	!(abcd & 28) && is_some_space(srcstr[idx], _LIBCONFINI_NO_EOL_) ?
+		abcd	=	!(abcd & 28) && is_some_space(srcstr[idx], _LIBCONFINI_NO_EOL_) ?
 						(abcd & 207) | 64
 					: !(abcd & 12) && (srcstr[idx] == _LIBCONFINI_LF_ || srcstr[idx] == _LIBCONFINI_CR_) ?
 						(
-							 abcd & 16 ?
+							abcd & 16 ?
 								(abcd & 239) | 96
 							:
 								abcd | 64
@@ -947,11 +947,11 @@ static inline size_t get_metachar_pos (const char * const str, const char chr, c
 	@return			The new length of the string
 
 **/
-static size_t unescape_cr_lf (char * const srcstr, const size_t len, const _LIBCONFINI_BOOL_ is_disabled, const IniFormat format) {
+static size_t unescape_cr_lf (char * const srcstr, const size_t len, const _LIBCONFINI_CHARBOOL_ is_disabled, const IniFormat format) {
 
 	register size_t idx_s = 0, idx_d = 0;
 	register uint8_t eol_i = _LIBCONFINI_EOL_IDX_;
-	register _LIBCONFINI_BOOL_ is_escaped = _LIBCONFINI_FALSE_;
+	register _LIBCONFINI_CHARBOOL_ is_escaped = _LIBCONFINI_FALSE_;
 	size_t probe;
 
 	while (idx_s < len) {
@@ -1487,11 +1487,11 @@ static size_t uncomment (char * const srcstr, size_t len, const IniFormat format
 static uint8_t get_type_as_active (
 	const char * const srcstr,
 	const size_t len,
-	const _LIBCONFINI_BOOL_ allow_implicit,
+	const _LIBCONFINI_CHARBOOL_ allow_implicit,
 	const IniFormat format
 ) {
 
-	const _LIBCONFINI_BOOL_ invalid_delimiter = _LIBCONFINI_IS_ESC_CHAR_(format.delimiter_symbol, format);
+	const _LIBCONFINI_CHARBOOL_ invalid_delimiter = _LIBCONFINI_IS_ESC_CHAR_(format.delimiter_symbol, format);
 
 	if (
 		!len || _LIBCONFINI_IS_ANY_MARKER_(*srcstr, format) || (
@@ -1745,7 +1745,7 @@ static uint8_t get_type_as_active (
 /**
 
 	@brief			Examines a (single-/multi-line) segment and checks whether
-					it contains more than just one entry
+					it contains more than just one node
 	@param			srcstr			Segment to examine (it may contain multi-line
 									escape sequences)
 	@param			format			The format of the INI file
@@ -1843,10 +1843,10 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 						segment, but the entry that preceded it had been checked and
 						did not seem to represent a valid disabled entry
 
-			NOTE:	For FLAG_1-FLAG_128 see the beginning of the function. For
-					FLAG_1-FLAG_16 I keep the values already assigned at the
-					beginning of the function; all other flags are already set to
-					zero.
+			NOTE:	For FLAG_1-FLAG_16 I will keep the values already assigned at
+					the beginning of the function; all other flags are already set
+					to zero. For the meaning of flags FLAG_1-FLAG_128 see the
+					beginning of the function.
 
 		*/
 
@@ -2052,11 +2052,12 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 			FLAG_512	This was neither a hash nor a semicolon character
 			FLAG_1024	This was not a space
 
-		NOTE:	For FLAG_1-FLAG_128 see the beginning of the function. For
-				FLAG_1-FLAG_16 I keep the values already assigned at the beginning
-				of the function; all other flags are already set to zero (see
-				previous usage of `abcd` within this function), with the only
+		NOTE:	For FLAG_1-FLAG_16 I will keep the values already assigned at the
+				beginning of the function; all other flags are already set to zero
+				(see previous usage of `abcd` within this function), with the only
 				exception of FLAG_2048, which I am going to overwrite immediately.
+				For the meaning of flags FLAG_1-FLAG_128 see the beginning of the
+				function.
 
 		*/
 
@@ -2220,9 +2221,8 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 	The @p ini_source parameter must be a valid pointer to a buffer of size
 	@p ini_length + 1 and cannot be `NULL`. The @p ini_source string does not need
-	to be NUL-terminated (although for portability it should, since this might
-	become a requirement in the future), but _it does need one extra byte where to
-	append a NUL terminator_ -- in fact, as soon as this function is invoked,
+	to be NUL-terminated, but _it does need one extra byte where to append a NUL
+	terminator_ -- in fact, as soon as this function is invoked,
 	`ini_source[ini_length]` will be immediately set to `\0`.
 
 	In most cases, as when using `strlen()` for computing @p ini_length, this is not
@@ -2235,11 +2235,22 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 	In other words, @p ini_source must point to a memory location where at least
 	`ini_length + 1` bytes are freely usable.
 
+	The user given function @p f_init (see #IniStatsHandler data type) will be
+	invoked with two arguments: `statistics` (a pointer to an #IniStatistics
+	structure containing some properties about the file read) and `user_data` (the
+	custom argument @p user_data previously passed). If @p f_init returns a non-zero
+	value the caller function will be interrupted.
+
+	The user given function @p f_foreach (see #IniDispHandler data type) will be
+	invoked with two arguments: `dispatch` (a pointer to an #IniDispatch structure
+	containing the parsed member of the INI file) and `user_data` (the custom
+	argument @p user_data previously passed). If @p f_foreach returns a non-zero
+	value the caller function will be interrupted.
+
 	After invoking `strip_ini_cache()`, the buffer pointed by the @p ini_source
 	parameter must be considered as a _corrupted buffer_ and should be freed or
-	overwritten.
-
-	For more information about this function, please refer to the @ref libconfini.
+	overwritten. For more information about this function, please refer to the
+	@ref libconfini.
 
 	The parsing algorithms used by **libconfini** are able to parse any type of file
 	encoded in 8-bit code units, as long as the characters that match the regular
@@ -2247,11 +2258,9 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 	ASCII (as they do, for example, in UTF-8 and ISO-8859-1), independently of
 	platform-specific conventions.
 
-	@note	In order to be null-byte-injection-safe, the `NUL` characters possibly
-			present in the buffer, except the last one, will be stripped from it
-			before the dispatching begins.
-
-	For the two parameters @p f_init and @p f_foreach see function #load_ini_file().
+	@note	In order to be null-byte-injection-safe, this function will strip all
+			`NUL` characters possibly present in the buffer, with the exception of
+			the last one, before dispatching the parsed content.
 
 	Possible return values are: #CONFINI_SUCCESS, #CONFINI_IINTR, #CONFINI_FEINTR,
 	#CONFINI_EOOR.
@@ -2268,8 +2277,8 @@ int strip_ini_cache (
 	void * const user_data
 ) {
 
-	const _LIBCONFINI_BOOL_ valid_delimiter = !_LIBCONFINI_IS_ESC_CHAR_(format.delimiter_symbol, format);
-	_LIBCONFINI_BOOL_ tmp_bool;
+	const _LIBCONFINI_CHARBOOL_ valid_delimiter = !_LIBCONFINI_IS_ESC_CHAR_(format.delimiter_symbol, format);
+	_LIBCONFINI_CHARBOOL_ tmp_bool;
 	register size_t idx, tmp_fast_size_t_1, tmp_fast_size_t_2;
 	size_t tmp_size_t_1, tmp_size_t_2;
 
@@ -2729,6 +2738,9 @@ int strip_ini_cache (
 	@return			Zero for success, otherwise an error code (see `enum`
 					#ConfiniInterruptNo)
 
+	@note	This function is absent if the `--without-io-api` option was passed to
+			the `configure` script when the library was compiled
+
 	The @p ini_file parameter must be a `FILE` handle with read privileges. On some
 	platforms, such as Microsoft Windows, it might be needed to add the binary
 	specifier to the mode string (`"b"`) in order to prevent discrepancies between
@@ -2738,6 +2750,9 @@ int strip_ini_cache (
 	FILE * my_file = fopen("example.conf", "rb");
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+	For the two parameters @p f_init and @p f_foreach see function
+	#strip_ini_cache().
+
 	The parsing algorithms used by **libconfini** are able to parse any type of file
 	encoded in 8-bit code units, as long as the characters that match the regular
 	expression `/[\s\[\]\.\\;#"']/` refer to the same code points they refer to in
@@ -2746,18 +2761,6 @@ int strip_ini_cache (
 
 	@note	In order to be null-byte-injection safe, `NUL` characters, if present in
 			the file, will be removed from the dispatched strings.
-
-	The user given function @p f_init (see #IniStatsHandler data type) will be
-	invoked with two arguments: `statistics` (a pointer to an #IniStatistics
-	structure containing some properties about the file read) and `user_data` (the
-	custom argument @p user_data previously passed). If @p f_init returns a non-zero
-	value the caller function will be interrupted.
-
-	The user given function @p f_foreach (see #IniDispHandler data type) will be
-	invoked with two arguments: `dispatch` (a pointer to an #IniDispatch structure
-	containing the parsed member of the INI file) and `user_data` (the custom
-	argument @p user_data previously passed). If @p f_foreach returns a non-zero
-	value the caller function will be interrupted.
 
 	Possible return values are: #CONFINI_SUCCESS, #CONFINI_IINTR, #CONFINI_FEINTR,
 	#CONFINI_ENOMEM, #CONFINI_EIO, #CONFINI_EOOR, #CONFINI_EBADF, #CONFINI_EFBIG.
@@ -2827,6 +2830,12 @@ int load_ini_file (
 	@return			Zero for success, otherwise an error code (see `enum`
 					#ConfiniInterruptNo)
 
+	@note	This function is absent if the `--without-io-api` option was passed to
+			the `configure` script when the library was compiled
+
+	For the two parameters @p f_init and @p f_foreach see function
+	#strip_ini_cache().
+
 	The parsing algorithms used by **libconfini** are able to parse any type of file
 	encoded in 8-bit code units, as long as the characters that match the regular
 	expression `/[\s\[\]\.\\;#"']/` refer to the same code points they refer to in
@@ -2835,8 +2844,6 @@ int load_ini_file (
 
 	@note	In order to be null-byte-injection safe, `NUL` characters, if present in
 			the file, will be removed from the dispatched strings.
-
-	For the two parameters @p f_init and @p f_foreach see function #load_ini_file().
 
 	Possible return values are: #CONFINI_SUCCESS, #CONFINI_IINTR, #CONFINI_FEINTR,
 	#CONFINI_ENOENT, #CONFINI_ENOMEM, #CONFINI_EIO, #CONFINI_EOOR, #CONFINI_EBADF,
@@ -2922,7 +2929,7 @@ int load_ini_path (
 	- `format.case_sensitive`
 
 **/
-_Bool ini_string_match_ss (
+bool ini_string_match_ss (
 	const char * const simple_string_a,
 	const char * const simple_string_b,
 	const IniFormat format
@@ -3020,7 +3027,7 @@ _Bool ini_string_match_ss (
 	@include topics/ini_string_match_si.c
 
 **/
-_Bool ini_string_match_si (
+bool ini_string_match_si (
 	const char * const simple_string,
 	const char * const ini_string,
 	const IniFormat format
@@ -3188,15 +3195,15 @@ _Bool ini_string_match_si (
 	- `format.multiline_nodes`
 
 **/
-_Bool ini_string_match_ii (
+bool ini_string_match_ii (
 	const char * const ini_string_a,
 	const char * const ini_string_b,
 	const IniFormat format
 ) {
 
-	const _LIBCONFINI_BOOL_ has_escape = !INIFORMAT_HAS_NO_ESC(format);
+	const _LIBCONFINI_CHARBOOL_ has_escape = !INIFORMAT_HAS_NO_ESC(format);
 	register uint8_t side = 1;
-	register _LIBCONFINI_BOOL_ turn_allowed = _LIBCONFINI_TRUE_;
+	register _LIBCONFINI_CHARBOOL_ turn_allowed = _LIBCONFINI_TRUE_;
 	uint8_t abcd_pair[2];
 	const char * chrptr_pair[2] = { ini_string_a, ini_string_b };
 	size_t nbacksl_pair[2];
@@ -3382,7 +3389,7 @@ _Bool ini_string_match_ii (
 	- `format.multiline_nodes`
 
 **/
-_Bool ini_array_match (
+bool ini_array_match (
 	const char * const ini_string_a,
 	const char * const ini_string_b,
 	const char delimiter,
@@ -3401,9 +3408,9 @@ _Bool ini_array_match (
 
 	}
 
-	const _LIBCONFINI_BOOL_ has_escape = !INIFORMAT_HAS_NO_ESC(format);
+	const _LIBCONFINI_CHARBOOL_ has_escape = !INIFORMAT_HAS_NO_ESC(format);
 	register uint8_t side = 1;
-	register _LIBCONFINI_BOOL_ turn_allowed = _LIBCONFINI_TRUE_;
+	register _LIBCONFINI_CHARBOOL_ turn_allowed = _LIBCONFINI_TRUE_;
 	uint8_t abcd_pair[2];
 	size_t nbacksl_pair[2];
 	const char * chrptr_pair[2] = {
@@ -3592,7 +3599,7 @@ _Bool ini_array_match (
 	bother collapsing the sequences of more than one space that might result from
 	removing empty quotes. Its purpose is to be used to parse key and section names,
 	since these are always dispatched as already collapsed. In order to parse
-	values, or array parts listed in values, please use #ini_string_parse() instead.
+	values, or array parts listed in values, please use #ini_string_parse().
 
 	If you only need to compare @p ini_string with another string, consider to use
 	#ini_string_match_si() and #ini_string_match_ii() instead of parsing the former
@@ -3713,7 +3720,7 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 	@return			The new length of the string
 
 	This function is meant to be used to parse values. In order to parse key and
-	section names please use #ini_unquote() instead.
+	section names please use #ini_unquote().
 
 	If you only need to compare @p ini_string with another string, consider to use
 	#ini_string_match_si() and #ini_string_match_ii() instead of parsing the former
@@ -3769,7 +3776,7 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 		switch (abcd) {
 
-			case 67:
+			case 64 | 2 | 1 :
 
 				/*
 
@@ -3809,7 +3816,7 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 				return idx - lshift;
 
-			case 71:
+			case 64 | 4 | 2 | 1 :
 
 				/*
 
@@ -4207,7 +4214,7 @@ size_t ini_array_shift (const char ** const ini_strptr, const char delimiter, co
 												/** @utility{ini_array_collapse} **/
 /**
 
-	@brief			Compresses the distribution of the data of a stringified INI
+	@brief			Compresses the distribution of the data in a stringified INI
 					array by removing all the white spaces that surround its
 					delimiters, empty quotes, collapsable spaces, etc
 	@param			ini_string		The stringified array
@@ -4716,7 +4723,7 @@ int ini_array_split (
 				introduced.
 
 **/
-void ini_global_set_lowercase_mode (_Bool lowercase) {
+void ini_global_set_lowercase_mode (const bool lowercase) {
 
 	INI_GLOBAL_LOWERCASE_MODE = lowercase;
 
@@ -4778,7 +4785,7 @@ IniFormatNum ini_fton (const IniFormat source) {
 	@note	If @p format_num `>` `16777215` it will be truncated to 24 bits.
 
 **/
-IniFormat ini_ntof (IniFormatNum format_num) {
+IniFormat ini_ntof (const IniFormatNum format_num) {
 
 	#define __MAX_1_BITS__ 1
 	#define __MAX_2_BITS__ 3
@@ -4860,25 +4867,29 @@ int ini_get_bool (const char * const ini_string, const int return_value) {
 /**
 
 	@alias{ini_get_int}
-		Link to [`atoi()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoi)
+		Pointer to
+		[`atoi()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoi)
 	@alias{ini_get_lint}
-		Link to [`atol()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atol)
+		Pointer to
+		[`atol()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atol)
 	@alias{ini_get_llint}
-		Link to [`atoll()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoll)
+		Pointer to
+		[`atoll()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoll)
 	@alias{ini_get_double}
-		Link to [`atof()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atof)
+		Pointer to
+		[`atof()`](http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atof)
 
 **/
 
-int (* const ini_get_int) (const char * ini_string) = &atoi;
+int (* const ini_get_int) (const char * ini_string) = atoi;
 
-long int (* const ini_get_lint) (const char * ini_string) = &atol;
+long int (* const ini_get_lint) (const char * ini_string) = atol;
 
-long long int (* const ini_get_llint) (const char * ini_string) = &atoll;
+long long int (* const ini_get_llint) (const char * ini_string) = atoll;
 
-double (* const ini_get_double) (const char * ini_string) = &atof;
+double (* const ini_get_double) (const char * ini_string) = atof;
 
-/*  Legacy support -- please **do not use it**!  */
+/*  Legacy support -- please **do not use this**!  */
 #ifdef ini_get_float
 #undef ini_get_float
 #endif
@@ -4889,7 +4900,7 @@ double (* const ini_get_float) (const char * ini_string) = &atof;
 		/*  GLOBAL VARIABLES  */
 
 
-_Bool INI_GLOBAL_LOWERCASE_MODE = _LIBCONFINI_FALSE_;
+bool INI_GLOBAL_LOWERCASE_MODE = _LIBCONFINI_FALSE_;
 
 char * INI_GLOBAL_IMPLICIT_VALUE = (char *) 0;
 

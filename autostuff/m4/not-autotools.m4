@@ -22,18 +22,6 @@ dnl  **************************************************************************
 
 
 
-dnl  n4_lambda(macro_body)
-dnl  **************************************************************************
-dnl
-dnl  Creates an anonymous macro on the fly, able to be passed as a callback
-dnl  argument
-dnl
-dnl  From: not-autotools/m4/not-m4sugar.m4
-dnl
-m4_define([n4_lambda],
-	[m4_pushdef([n4_anon], [$1])[]m4_pushdef([n4_anon], [m4_popdef([n4_anon])[]$1[]m4_popdef([n4_anon])])[]n4_anon])
-
-
 dnl  n4_case_in(text, list1, if-found1[, ... listN, if-foundN], [if-not-found])
 dnl  **************************************************************************
 dnl
@@ -67,73 +55,15 @@ m4_define([n4_mem],
 		[m4_define([$1], [$2])n4_mem(m4_shift($@))])])
 
 
-dnl  n4_charcode(character)
-dnl  **************************************************************************
-dnl
-dnl  Expands to the numeric value of a single code unit
-dnl
-dnl  Requires: `n4_lambda()`
-dnl  From: not-autotools/m4/not-utf8.m4
-dnl
-m4_define([n4_charcode],
-	[m4_changecom()m4_changequote()m4_changequote(<:, :>)m4_if(m4_len(<:$*:>), 0, 0, m4_incr(m4_index(<:]m4_quote(n4_lambda([m4_if(m4_eval([$1 > 0]), [1], [$0(m4_decr([$1]))m4_changecom()m4_changequote(<:, :>)m4_format(<:%c:>, <:$*:>)<::>m4_changequote([, ])m4_changecom([#])])])(255))[:>, <:$*:>)))m4_changequote([, ])m4_changecom([#])])
-
-
-dnl  n4_codeunit_at(string[, index])
-dnl  **************************************************************************
-dnl
-dnl  Expands to the numeric value of the code unit at index `index` in the
-dnl  string `string`
-dnl
-dnl  Requires: `n4_charcode()`
-dnl  From: not-autotools/m4/not-utf8.m4
-dnl
-m4_define([n4_codeunit_at],
-	[m4_if(m4_index([[$1]], [[(]]), m4_default([$2], [0]),
-			[40],
-		m4_index([[$1]], [[)]]), m4_default([$2], [0]),
-			[41],
-			[n4_charcode(m4_quote(m4_substr([$1], m4_default([$2], [0]), [1])))])])
-
-
-dnl  n4_codepoint_to_ascii(unsigned-number[, escape-format-when-not-ascii])
-dnl  **************************************************************************
-dnl
-dnl  Expands to the ASCII character whose codepoint is `unsigned-number` if the
-dnl  latter is a 7-bit number, or to the string `\x[hex]` (where `[hex]` is the
-dnl  hexadecimal representation of `unsigned-number`) if this is larger than
-dnl  seven bits
-dnl
-dnl  From: not-autotools/m4/not-utf8.m4
-dnl
-m4_define([n4_codepoint_to_ascii],
-	[m4_format(m4_if(m4_eval([$1 < 128]), [1], [%c], m4_default_quoted([$2], [\x%x])), [$1])])
-
-
-dnl  n4_escape_non_ascii(string[, escape-format])
-dnl  **************************************************************************
-dnl
-dnl  Replaces non-ASCII code points in `string` with their escaped hexadecimal
-dnl  representation
-dnl
-dnl  Requires: `n4_codeunit_at()` and `n4_codepoint_to_ascii()`
-dnl  From: not-autotools/m4/not-utf8.m4
-dnl
-m4_define([n4_escape_non_ascii],
-	[m4_if(m4_eval(m4_len([$1])[ > 0]), [1],
-		[n4_codepoint_to_ascii(n4_codeunit_at([$1], 0), [$2])])[]m4_if(m4_eval(m4_len([$1])[ > 1]), [1],
-			[n4_escape_non_ascii(m4_quote(m4_substr([$1], 1)), [$2])])])
-
-
 dnl  NA_SANITIZE_VARNAME(string)
 dnl  **************************************************************************
 dnl
-dnl  Replaces `/\W/g,` with `'_'` and `/^\d/` with `V\0`
+dnl  Replaces `/\W/g,` with `'_'` and `/^\d/` with `_\0`
 dnl
 dnl  From: not-autotools/m4/not-autotools.m4
 dnl
 AC_DEFUN([NA_SANITIZE_VARNAME],
-	[m4_if(m4_bregexp(m4_normalize([$1]), [[0-9]]), [0], [V])[]m4_translit(m4_normalize([$1]),
+	[m4_if(m4_bregexp(m4_normalize([$1]), [[0-9]]), [0], [_])[]m4_translit(m4_normalize([$1]),
 		[ !"#$%&\'()*+,-./:;<=>?@[\\]^`{|}~],
 		[__________________________________])])
 
@@ -198,30 +128,111 @@ AC_DEFUN([NC_MSG_WARNBOX],
 		[79])])])
 
 
-dnl  NC_IF_HAVE_POSIX_C([if-have-posix], [if-dont-have-posix], [posix-version]])
+dnl  NC_CC_CHECK_POSIX([posix-version])
 dnl  **************************************************************************
 dnl
 dnl  Checks whether the POSIX C API is available
 dnl
 dnl  From: not-autotools/m4/not-autotools.m4
 dnl
-AC_DEFUN([NC_IF_HAVE_POSIX_C], [
-	AC_MSG_CHECKING([whether we have POSIX]m4_ifnblank([$3], [ (]m4_dquote(m4_normalize([$3]))[)]))
-	AC_EGREP_CPP([posix_supported], [
-		#define _POSIX_C_SOURCE ]m4_ifnblank([$3], m4_dquote(m4_normalize([$3])), [200809L])[
-		#include <unistd.h>
-		#ifdef _POSIX_VERSION
-		]m4_ifnblank([$3], [[#]if _POSIX_VERSION == ]m4_dquote(m4_normalize([$3])))[
-		posix_supported
-		]m4_ifnblank([$3], [[#]endif])[
-		#endif
-	], [
-		AC_MSG_RESULT([yes])
-		$1
-	], [
-		AC_MSG_RESULT([no])
-		$2
+AC_DEFUN([NC_CC_CHECK_POSIX], [
+	AC_MSG_CHECKING([whether we have POSIX]m4_ifnblank([$1],
+		[[ @{:@$1@:}@]]))
+	AC_CACHE_VAL([ac_cv_have_posix]m4_ifnblank([$1], [[_$1]])[_c], [
+		AC_EGREP_CPP([posix_supported], [
+			@%:@define _POSIX_C_SOURCE ]m4_ifnblank([$1],
+				[[$1]], [[200809L]])[
+			@%:@include <unistd.h>
+			@%:@ifdef _POSIX_VERSION
+			]m4_ifnblank([$1],
+				[[@%:@if _POSIX_VERSION == $1]])[
+			posix_supported
+			]m4_ifnblank([$1], [@%:@endif])[
+			@%:@endif
+		], [
+			AS_VAR_SET([ac_cv_have_posix]m4_ifnblank([$1], [[_$1]])[_c],
+				['yes'])
+		], [
+			AS_VAR_SET([ac_cv_have_posix]m4_ifnblank([$1], [[_$1]])[_c],
+				['no'])
+		])
 	])
+	AC_MSG_RESULT([${ac_cv_have_posix]m4_ifnblank([$1], [[_$1]])[_c}])
+])
+
+
+dnl  NC_CC_CHECK_SIZEOF(data-type[, headers[, store-as[, extra-sizes]]])
+dnl  **************************************************************************
+dnl
+dnl  Checks for the size of `data-type` using **compile checks**, not run
+dnl  checks.
+dnl
+dnl  From: not-autotools/m4/not-cc.m4
+dnl
+dnl  **************************************************************************
+AC_DEFUN([NC_CC_CHECK_SIZEOF], [
+	m4_pushdef([__label__],
+		NA_SANITIZE_VARNAME([sizeof_]m4_tolower(m4_ifblank([$3],
+			[[$1]], [[$3]]))))
+	AC_MSG_CHECKING([size of `$1`])
+	AC_CACHE_VAL([ac_cv_]__label__, [
+		# List sizes in rough order of prevalence.
+		for nc_sizeof in 4 8 1 2 16 m4_normalize([$4]) ; do
+			AC_COMPILE_IFELSE([
+				AC_LANG_PROGRAM([[$2]], [[
+					switch (0) {
+						case 0:
+						case (sizeof ($1) ==
+							${nc_sizeof}):;
+					}
+				]])
+			],
+				[AS_VAR_COPY([ac_cv_]__label__, [nc_sizeof])])
+			AS_IF([test "x${ac_cv_]__label__[}" != x], [break;])
+		done
+	])
+	AS_IF([test "x${ac_cv_]__label__[}" = x], [
+		AC_MSG_RESULT([unknown])
+		AC_MSG_ERROR([cannot determine a size for $1])
+	])
+	AC_MSG_RESULT([${ac_cv_]__label__[}])
+	AC_DEFINE_UNQUOTED(m4_toupper(m4_quote(__label__)),
+		[${ac_cv_]__label__[}],
+		[The number of bytes in type $1])
+	m4_ifnblank([$3],
+		[AS_VAR_COPY([na_]m4_quote(m4_tolower([$3])), [nc_sizeof])])
+	m4_popdef([__label__])
+])
+
+
+dnl  NC_CC_CHECK_CHAR_BIT
+dnl  **************************************************************************
+dnl
+dnl  Calculates the size in bits of the `char` data type using compile checks
+dnl
+dnl  From: not-autotools/m4/not-cc.m4
+dnl
+dnl  **************************************************************************
+AC_DEFUN([NC_CC_CHECK_CHAR_BIT], [
+	AC_MSG_CHECKING([size of `char` in bits])
+	AC_CACHE_VAL([ac_cv_char_bit], [
+		# Minimum size in bits for `char` is guaranteed to be 8
+		for nc_char_bit in {8..64}; do
+			AC_COMPILE_IFELSE([
+				AC_LANG_PROGRAM(, [[
+					switch (0) {
+						case 0: case ((unsigned char)
+						(1 << ${nc_char_bit})):;
+					}
+				]])
+			], [], [break])
+		done
+		AS_VAR_COPY([ac_cv_char_bit], [nc_char_bit])
+	])
+	AC_MSG_RESULT([${ac_cv_char_bit}])
+	AC_DEFINE_UNQUOTED([COMPUTED_CHAR_BIT],
+		[${ac_cv_char_bit}],
+		[The number of bits in `char`])
 ])
 
 
@@ -231,7 +242,7 @@ dnl
 dnl  Creates an extended configuration mode for files that rarely need to be
 dnl  re-configured
 dnl
-dnl  Requires: `n4_lambda()` and `n4_case_in()`
+dnl  Requires: `n4_case_in()`
 dnl  From: not-autotools/m4/not-extended-config.m4
 dnl
 AC_DEFUN_ONCE([NC_CONFIG_SHADOW_DIR], [
@@ -265,18 +276,19 @@ AC_DEFUN_ONCE([NC_CONFIG_SHADOW_DIR], [
 
 	AC_DEFUN([NC_THREATEN_FILES], [
 		AM_COND_IF([HAVE_EXTENDED_CONFIG], [
-			AC_CONFIG_FILES(m4_foreach([_F_ITER_], m4_dquote(]m4_dquote(][$][@][)[),
-				[n4_case_in(m4_quote(_F_ITER_), m4_quote(NC_THREATENED_LIST),
-					[n4_case_in(m4_quote(_F_ITER_), m4_quote(NC_SHADOW_REDEF), [],
-						[m4_define([NC_SHADOW_REDEF],
-							m4_ifset([NC_SHADOW_REDEF],
-								[m4_dquote(NC_SHADOW_REDEF,[ ]_F_ITER_)],
-								[m4_dquote(_F_ITER_)]))])],
-					[m4_define([NC_THREATENED_LIST],
-						m4_ifset([NC_THREATENED_LIST],
-								[m4_dquote(NC_THREATENED_LIST, _F_ITER_)],
-								[m4_dquote(_F_ITER_)]))
-					m4_quote([${srcdir}/]NC_CONFNEW_SUBDIR[/]_F_ITER_[:]NC_SHADOW_DIR[/]_F_ITER_[.in])])]))
+			AC_CONFIG_FILES(m4_foreach([_F_ITER_], m4_dquote(]m4_dquote(m4_map_args_sep([m4_normalize(], [)], [,], ][$][@][))[),
+				[m4_ifnblank(m4_quote(_F_ITER_),
+					[n4_case_in(m4_quote(_F_ITER_), m4_quote(NC_THREATENED_LIST),
+						[n4_case_in(m4_quote(_F_ITER_), m4_quote(NC_SHADOW_REDEF), [],
+							[m4_define([NC_SHADOW_REDEF],
+								m4_ifset([NC_SHADOW_REDEF],
+									[m4_dquote(NC_SHADOW_REDEF,[ ]_F_ITER_)],
+									[m4_dquote(_F_ITER_)]))])],
+						[m4_define([NC_THREATENED_LIST],
+							m4_ifset([NC_THREATENED_LIST],
+									[m4_dquote(NC_THREATENED_LIST, _F_ITER_)],
+									[m4_dquote(_F_ITER_)]))
+						m4_quote([${srcdir}/]NC_CONFNEW_SUBDIR[/]_F_ITER_[:]NC_SHADOW_DIR[/]_F_ITER_[.in])])])]))
 		])
 
 		m4_ifdef([NC_SHADOW_REDEF],
@@ -340,21 +352,104 @@ m4_define([NA_HELP_STRINGS],
 		[m4_text_wrap(m4_argn(1, $1)[,], [  ])m4_newline()NA_HELP_STRINGS(m4_dquote(m4_shift($1))m4_if([$#], [1], [], [, m4_shift($@)]))])])
 
 
-dnl  NC_SET_GLOBALLY(name1, [value1][, name2, [value2][, ... nameN, [valueN]]])
+dnl  NA_ESC_APOS(string)
 dnl  **************************************************************************
 dnl
-dnl  For each `nameN`-`valueN` pair, creates a new argumentless macro named
-dnl  `[GL_]nameN` (where the `GL_` prefix stands for "Global Literal") and a
-dnl  new output substitution named `nameN`, both expanding to `valueN` when
-dnl  invoked
+dnl  Escapes all the occurrences of the apostrophe character in `string`
 dnl
-dnl  Requires: `NA_SANITIZE_VARNAME()`
+dnl  Requires: nothing
 dnl  From: not-autotools/m4/not-autotools.m4
 dnl
-AC_DEFUN([NC_SET_GLOBALLY], [
+AC_DEFUN([NA_ESC_APOS],
+	[m4_bpatsubst([$@], ['], ['\\''])])
+
+
+dnl  NA_DOUBLE_DOLLAR(string)
+dnl  **************************************************************************
+dnl
+dnl  Replaces all the occurrences of the dollar character in `string` with two
+dnl  dollar characters (Makefile escaping)
+dnl
+dnl  Requires: nothing
+dnl  From: not-autotools/m4/not-autotools.m4
+dnl
+AC_DEFUN([NA_DOUBLE_DOLLAR],
+	[m4_bpatsubst([$@], [\$\|@S|@], [@S|@@S|@])])
+
+
+dnl  NA_TRIANGLE_BRACKETS_TO_MAKE_VARS(string)
+dnl  **************************************************************************
+dnl
+dnl  Replaces all variables enclosed within triangle brackets with Makefile
+dnl  syntax for variables
+dnl
+dnl  Requires: nothing
+dnl  From: not-autotools/m4/not-autotools.m4
+dnl
+AC_DEFUN([NA_TRIANGLE_BRACKETS_TO_MAKE_VARS],
+	[m4_bpatsubst([$*], [<\([A-Za-z0-9_@*%<?^+|]+\)>],
+		[m4_if(m4_len([\1]), [1],
+			[@S|@\1],
+			[@S|@@{:@\1@:}@])])])
+
+
+dnl  NA_AMENDMENTS_SED_EXPR([amendment1[, amendment2[, ... amendmentN]]])
+dnl  **************************************************************************
+dnl
+dnl  Creates a `sed` expression using all the "exception[-replacement_file]"
+dnl  pairs passed as arguments ("amendments")
+dnl
+dnl  Requires: nothing
+dnl  From: not-autotools/m4/not-autotools.m4
+dnl
+m4_define([NA_AMENDMENTS_SED_EXPR],
+	[m4_ifblank([$1],
+		['/!\s*START_EXCEPTION\s*@{:@@<:@^@:}@@:>@*@:}@\s*!/{d};/!\s*END_EXCEPTION\s*@{:@@<:@^@:}@@:>@*@:}@\s*!/{d};/!\s*ENTRY_POINT\s*@{:@@<:@^@:}@@:>@*@:}@\s*!/{d};/!\s*START_OMISSION\s*!/,/!\s*END_OMISSION\s*!/{d}'],
+		['m4_ifnblank(m4_normalize(m4_argn([2], $1)), [/!\s*END_EXCEPTION\s*@{:@m4_normalize(m4_argn([1], $1))@:}@\s*!/{r '"m4_normalize(m4_argn([2], $1))"$'\n};/!\s*ENTRY_POINT\s*@{:@m4_normalize(m4_argn([1], $1))@:}@\s*!/{r '"m4_normalize(m4_argn([2], $1))"@S|@'\n};])/!\s*START_EXCEPTION\s*@{:@m4_normalize(m4_argn([1], $1))@:}@\s*!/,/!\s*END_EXCEPTION\s*@{:@m4_normalize(m4_argn([1], $1))@:}@\s*!/{d};/!\s*START_EXCEPTION\s*@{:@m4_normalize(m4_argn([1], $1))@:}@\s*!/{d};'NA_AMENDMENTS_SED_EXPR(m4_shift($@))])])
+
+
+dnl  NA_AMEND(output-file, amendable-file[, ... amendmentN])
+dnl  **************************************************************************
+dnl
+dnl  Creates a new file, amending a model with the content of one or more files
+dnl
+dnl  Requires: `NA_AMENDMENTS_SED_EXPR()`
+dnl  From: not-autotools/m4/not-autotools.m4
+dnl
+AC_DEFUN([NA_AMEND],
+	[{ echo 'Creating $1...'; sed NA_AMENDMENTS_SED_EXPR(m4_shift2($@)) "$2" > "$1"; }])
+
+
+dnl  NC_SUBST_NOTMAKE(var[, value])
+dnl  **************************************************************************
+dnl
+dnl  Calls `AC_SUBST(var[, value])` immediately followed by
+dnl  `AM_SUBST_NOTMAKE(var)`
+dnl
+dnl  Requires: nothing
+dnl  From: not-autotools/m4/not-autotools.m4
+dnl
+AC_DEFUN([NC_SUBST_NOTMAKE], [
+	AC_SUBST([$1][]m4_if(m4_eval([$# > 1]), [1], [, [$2]]))
+	AM_SUBST_NOTMAKE([$1])
+])
+
+
+dnl  NC_GLOBAL_LITERALS(name1, [val1][, name2, [val2][, ... nameN, [valN]]])
+dnl  **************************************************************************
+dnl
+dnl  For each `nameN`-`valN` pair, creates a new argumentless macro named
+dnl  `[GL_]nameN` (where the `GL_` prefix stands for "Global Literal") and a
+dnl  new output substitution named `nameN`, both expanding to `valN` when
+dnl  invoked
+dnl
+dnl  Requires: `NA_SANITIZE_VARNAME()` and `NA_ESC_APOS()`
+dnl  From: not-autotools/m4/not-autotools.m4
+dnl
+AC_DEFUN([NC_GLOBAL_LITERALS], [
 	m4_define([GL_]NA_SANITIZE_VARNAME([$1]), m4_normalize([$2]))
-	AC_SUBST(NA_SANITIZE_VARNAME([$1]), ['m4_bpatsubst(m4_normalize([$2]), ['], ['\\''])'])
-	m4_if(m4_eval([$# > 2]), [1], [NC_SET_GLOBALLY(m4_shift2($@))])
+	AC_SUBST(NA_SANITIZE_VARNAME([$1]), ['NA_ESC_APOS(m4_normalize([$2]))'])
+	m4_if(m4_eval([$# > 2]), [1], [NC_GLOBAL_LITERALS(m4_shift2($@))])
 ])
 
 

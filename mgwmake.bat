@@ -1,13 +1,13 @@
 @ECHO OFF
 SETLOCAL
 
-REM Don't forget to add C:\MinGW\bin to your %Path% environment variable,
-REM otherwise this script won't work.
+REM Do not forget to add C:\MinGW\bin to your %Path% environment variable, or
+REM otherwise this script will not work!
 
 SET RCCOMPILER=windres.exe
 SET CCOMPILER=gcc.exe
 SET STRIPCMD=strip.exe
-SET CFLAGS=-std=c99 -pedantic -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined
+SET CFLAGS=-std=c99 -pedantic -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined -Wl,-out-implib,libconfini.lib
 SET DLLOUTPUT=libconfini.dll
 SET RCFILE=src\winres.rc
 REM The following variable may contain a space-delimited list of files
@@ -30,7 +30,7 @@ IF %__WINDRESERR__% NEQ 0 (
 )
 
 @ECHO Loading resource file...
-%RCCOMPILER% --codepage=65001 -i %RCFILE% -o %__TMP_RSO__%
+%RCCOMPILER% -i %RCFILE% -o %__TMP_RSO__%
 SET /A __WINDRESERR__=%ERRORLEVEL%
 
 IF %__WINDRESERR__% NEQ 0 (
@@ -75,3 +75,4 @@ IF %__STRIPPROGERR__% EQU 0 (
 EXIT /B %__STRIPPROGERR__%
 
 ENDLOCAL
+

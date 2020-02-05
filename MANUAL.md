@@ -10,11 +10,12 @@ not store the data read from an INI file, but rather dispatches it, formatted,
 to a custom listener.
 
 The code is written in C (C99) and does not depend on any particular library,
-except for the C standard headers **stdio.h**, **stdlib.h** and **stdint.h**.
+except for the C standard headers **stdio.h**, **stdlib.h**, **stdbool.h** and
+**stdint.h**.
 
-If you want to start to learn directly from the code, you can find partially
+If you want to start learning directly from the code, you can find partially
 self-documented sample usages of **libconfini** under
-`/usr/share/doc/libconfini/examples/`.
+`/usr/local/share/doc/libconfini/examples`.
 
 
 ## WHAT IS AN INI FILE?
@@ -120,8 +121,8 @@ foo = 'bar'
 "artist" = "Pablo Picasso"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The **key part** can contain any character, except the delimiter (which may be
-enclosed within quotes for not beeing considered as such). In multi-line
+The **key part** can contain any character, except the delimiter (although this
+may be enclosed within quotes for not beeing considered as such). In multi-line
 formats internal new line sequences must be escaped (`/\\(?:\n\r?|\r\n?)/`).
 
 If the **key part** part is missing **libconfini** considers the element of
@@ -301,6 +302,25 @@ value
 ~~~~~~~~~~~
 
 
+## GETTING STARTED
+
+The API is contained in one single public header named `confini.h`.
+
+~~~~~~~~~~~~~~~~~~~~{.c}
+#include <confini.h>
+~~~~~~~~~~~~~~~~~~~~
+
+When **libconfini** is used as a shared library, it might be wiser to include
+the _versioned header_ (with only the major version number appended to the file
+name), in order to ensure that the code will compile correctly even when
+different major versions of the library cohabitate in the same machine. This
+can apply also to version 1.X.X:
+
+~~~~~~~~~~~~~~~~~~~~~~{.c}
+#include <confini-1.h>
+~~~~~~~~~~~~~~~~~~~~~~
+
+
 ## READING AN INI FILE
 
 The syntax of **libconfini**'s parsing functions is:
@@ -454,15 +474,6 @@ int main () {
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-<em><strong>Note:</strong> On some platforms, such as Microsoft Windows, it
-might be needed to add the binary specifier (`"b"`) to the mode string of the
-`FILE` handle passed to `load_ini_file()` in order to prevent discrepancies
-between the physical size and the computed size of the file:</em>
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-FILE * ini_file = fopen("example.conf", "rb");
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 ### HOW IT WORKS
 
@@ -478,12 +489,21 @@ gets automatically freed.
 Because of this mechanism _it is very important that all the dispatched data be
 **immediately** copied by the user (when needed), and no pointers to the passed
 data be saved_: after the end of the functions `load_ini_file()` /
-`load_ini_path()` all the allocated data will be destroyed indeed, and each
-dispatch might furthermore overwrite data from previous dispatches.
+`load_ini_path()` all the allocated data will be destroyed indeed, and moreover
+each dispatch might overwrite data from previous dispatches.
 
 Within a dispatching cycle, the structure containing each dispatch
 (`IniDispatch * dispatch`) is always the same `struct` that gets constantly
 updated with new information.
+
+<em><strong>Note:</strong> On some platforms, such as Microsoft Windows, it
+might be needed to add the binary specifier (`"b"`) to the mode string of the
+`FILE` handle passed to `load_ini_file()` in order to prevent discrepancies
+between the physical size and the computed size of the file:</em>
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+FILE * ini_file = fopen("example.conf", "rb");
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ### PARSING A BUFFER INSTEAD OF A FILE
@@ -591,6 +611,39 @@ INI file is parsed it is parsed according to a particular format. The
 implemented as a 24-bit bitfield. Its small size (3 bytes) allows it to be
 passed by value to the functions that require it.
 
+Since no function requires as argument a pointer to an `IniFormat` data
+type, a preprocessor macro can be a very good place where to store a custom
+format:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+#define OFF 0
+#define ON 1
+
+#define MY_FORMAT \
+  ((IniFormat) { \
+    .delimiter_symbol = INI_EQUALS, \
+    .case_sensitive = OFF, \
+    .semicolon_marker = INI_IGNORE, \
+    .hash_marker = INI_IGNORE, \
+    .section_paths = INI_ABSOLUTE_AND_RELATIVE, \
+    .multiline_nodes = INI_MULTILINE_EVERYWHERE, \
+    .no_single_quotes = OFF, \
+    .no_double_quotes = OFF, \
+    .no_spaces_in_names = OFF, \
+    .implicit_is_not_empty = OFF, \
+    .do_not_collapse_values = OFF, \
+    .preserve_empty_quotes = OFF, \
+    .disabled_after_space = OFF, \
+    .disabled_can_be_implicit = OFF \
+  })
+
+if (load_ini_path("example.conf", MY_FORMAT, NULL, my_callback, NULL)) {
+
+  fprintf(stderr, "Sorry, something went wrong :-(\n");
+  return 1;
+
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ### THE MODEL FORMATS
 
@@ -655,7 +708,7 @@ printf(
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-### THE `#IniFormatNum` DATA TYPE
+## THE `#IniFormatNum` DATA TYPE
 
 Each format can be represented also as a univocal 24-bit unsigned integer. In
 order to convert an `IniFormat` to an unsigned integer and vice versa the
@@ -691,7 +744,7 @@ printf("Format No. %u\n", my_format_num); // "Format No. 56637"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The function `ini_fton()` tells us that this format is univocally the format
-No. 56637. The function `ini_ntof()` gives us then a shortcut to construct the
+No. 56637. The function `ini_ntof()` then gives us a shortcut to construct the
 very same format using its format number. Hence, the code above corresponds to:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
@@ -699,7 +752,7 @@ IniFormat my_format = ini_ntof(56637);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 _Please be aware that the same INI format might have different format numbers
-in different versions of this library._
+in old versions of this library._
 
 
 ## THE `IniStatistics` AND `IniDispatch` STRUCTURES
@@ -817,7 +870,7 @@ int main () {
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If all these rules, although thoroughly exposed, still sound confusing to you,
+If all these rules, although thoroughly exposed, sound still confusing to you,
 use always `strndup()` on the strings dispatched and feel free to edit your own
 buffers as you wish.
 
@@ -1511,7 +1564,7 @@ cases is not a concern.
 One can measure the performance of the library by doing something like:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-/*  tests/performance/performance.c  */
+/*  dev/tests/performance/performance.c  */
 
 #include <stdio.h>
 #include <confini.h>
@@ -1585,40 +1638,7 @@ _**Addendum:** Unfortunately that old computer broke, so now I can perform
 tests only on a newer hardware, where **libconfini** seems to parse four times
 as fast. But if you are interested in testing yourself the performance of this
 library on a particular hardware, I have left a performance test under
-`tests/performance`._
-
-
-### COMPILING FOR EXTREME PLATFORMS
-
-This library has nearly everything implemented from scratch, with the only
-notable exception of the I/O functions `load_ini_file()` and `load_ini_path()`,
-which rely on C standard libraries. On some platforms, however, only a rather
-exotic I/O API is available, while for some other platforms the C Standard
-Library is simply too heavy or just not implementable.
-
-The official build environment of **libconfini** does not offer shortcuts for
-facing this kind of situations. But fortunately, thanks to the modularity of
-the source code, it is very simple to get rid of every tie with the C Standard
-Library and compile **libconfini** as “bare metal”, with `strip_ini_cache()` as
-the only parsing function (as this relies only on a buffer for its input) --
-i.e. without `load_ini_file()` and `load_ini_path()`, and without any header at
-all.
-
-To do so, follow these simple steps:
-
-1. Remove `#include <stdio.h>` and `#include <stdint.h>` from `confini.h`
-2. Remove `#include <stdlib.h>` from `confini.c`
-3. Remove the functions `load_ini_file()` and `load_ini_path()` from both
-   `confini.h` and `confini.c`
-4. Remove the function pointers `ini_get_int`, `ini_get_lint`, `ini_get_llint`
-   and `ini_get_double` from both `confini.h` and `confini.c` (from now on you
-   will have to provide your own functions for converting strings to numbers --
-   for possible replacements please see: @ref hacking)
-5. Create a `typedef` in `confini.h` for each of the following data types:
-   `size_t`, `int8_t`, `uint8_t`, `uint16_t` and `uint32_t`
-6. Leave everything else as it is
-
-After doing so **libconfini** will work even without a kernel.
+`dev/tests/performance`._
 
 
 ## INI SYNTAX CONSIDERATIONS

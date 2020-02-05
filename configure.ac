@@ -1,16 +1,16 @@
 ##  -*- Mode: M4; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*-
 ##  Process this file with autoconf to produce a configure script.
 
-dnl
-dnl        /|/|
-dnl       (_|_)      _ _ _                      __ _       _
-dnl                 | (_) |__   ___ ___  _ __  / _(_)_ __ (_)
-dnl                 | | | '_ \ / __/ _ \| '_ \| |_| | '_ \| |
-dnl                 | | | |_) | (_| (_) | | | |  _| | | | | |
-dnl                 |_|_|_.__/ \___\___/|_| |_|_| |_|_| |_|_|      _ _
-dnl                                                               ( | )
-dnl                                                               |/|/
-dnl
+###
+###        /|/|
+###       (_|_)      _ _ _                      __ _       _
+###                 | (_) |__   ___ ___  _ __  / _(_)_ __ (_)
+###                 | | | '_ \ / __/ _ \| '_ \| |_| | '_ \| |
+###                 | | | |_) | (_| (_) | | | |  _| | | | | |
+###                 |_|_|_.__/ \___\___/|_| |_|_| |_|_| |_|_|      _ _
+###                                                               ( | )
+###                                                               |/|/
+###
 
 m4_include([autostuff/m4/not-autotools.m4])
 
@@ -18,23 +18,23 @@ dnl  This package has not been tested with previous versions of GNU Autoconf...
 AC_PREREQ([2.68])
 
 
-dnl  **************************************************************************
-dnl     P A C K A G E   M E T A D A T A
-dnl  **************************************************************************
+###  **************************************************************************
+###     P A C K A G E   M E T A D A T A
+###  **************************************************************************
 
 AC_INIT([lib]n4_mem([GL_PROJECT_NAME], [confini]),
 	n4_mem([GL_PROJECT_MAJVER], [1])[.]n4_mem([GL_PROJECT_MINVER],
-		[12])[.]n4_mem([GL_PROJECT_REVVER], [0]),
+		[13])[.]n4_mem([GL_PROJECT_REVVER], [0]),
 	[madmurphy333@gmail.com],
 	[lib]GL_PROJECT_NAME,
 	[https://madmurphy.github.io/libconfini])
 
-NC_SET_GLOBALLY(
+NC_GLOBAL_LITERALS(
 	[INTERFACE_NUMBER],			[3],
-	[IMPLEMENTATION_NUMBER],	[0],
+	[IMPLEMENTATION_NUMBER],	[1],
 	[INTERFACE_COMPATIBILITY],	[3],
 	[PROJECT_DESCRIPTION],		[Yet another INI parser],
-	[LICENSE_NAME],				[GNU General Public License, version 3 or any
+	[LICENSE_STRING],			[GNU General Public License, version 3 or any
 								later version],
 	[LICENSE_ID],				[GPL-3.0-or-later],
 	[PUBLISHER_NAME],			[Stefano Gioffré],
@@ -43,21 +43,31 @@ NC_SET_GLOBALLY(
 )
 
 
-dnl  **************************************************************************
-dnl     R E N A M I N G   R U L E S
-dnl  **************************************************************************
+###  **************************************************************************
+###     R E N A M I N G   R U L E S
+###  **************************************************************************
 
 AC_SUBST([PROJECT_NAME], [GL_PROJECT_NAME])
 
-AS_VAR_SET([na_tmppref],
-	["$(test "x${program_prefix}" = xNONE || echo "${program_prefix}" \
-		| sed 's/@<:@^@<:@:alnum:@:>@@:>@\+/-/g;s/@<:@A-Z@:>@/\L&/g')"])
+AS_IF([test "x${program_prefix}" != xNONE], [
+	AS_VAR_SET([na_tmppref],
+		["$(echo "${program_prefix}" | sed \
+		's/@<:@^@<:@:alnum:@:>@@:>@\+/-/g;s/@<:@A-Z@:>@/\L&/g;s/^-//')"])
+	AS_IF([test "x${program_prefix}" != "x${na_tmppref}"],
+		[AC_MSG_WARN(["${program_prefix}" is not a valid prefix - sanitized as "${na_tmppref}"])])
+])
 
-AS_VAR_SET([na_tmpsuff],
-	["$(test "x${program_suffix}" = xNONE || echo "${program_suffix}" \
-		| sed 's/@<:@^@<:@:alnum:@:>@@:>@\+/-/g;s/@<:@A-Z@:>@/\L&/g')"])
+AS_IF([test "x${program_suffix}" != xNONE], [
+	AS_VAR_SET([na_tmpsuff],
+		["$(echo "${program_suffix}" | sed \
+		's/@<:@^@<:@:alnum:@:>@@:>@\+/-/g;s/@<:@A-Z@:>@/\L&/g;s/-@S|@//')"])
+	AS_IF([test "x${program_suffix}" != "x${na_tmpsuff}"],
+		[AC_MSG_WARN(["${program_suffix}" is not a valid suffix - sanitized as "${na_tmpsuff}"])])
+])
 
-AS_VAR_COPY([na_tmptransf], [program_transform_name])
+AS_IF([echo 'x' | sed "${program_transform_name}" 1>/dev/null 2>&1],
+	[AS_VAR_COPY([na_tmptransf], [program_transform_name])],
+	[AC_MSG_WARN([ignored --program-transform-name='${program_transform_name}' (invalid sed expression)'])])
 
 AC_SUBST([PROJECT_CONFNAME],
 	["$(echo "${na_tmppref}]GL_PROJECT_NAME[${na_tmpsuff}" | \
@@ -88,7 +98,7 @@ AM_COND_IF([MULTIVERSION], [
 ])
 
 AM_COND_IF([RENAME_PACKAGE],
-	[AC_MSG_NOTICE([renaming ]AC_PACKAGE_TARNAME[ to ${PACKAGE_CONFNAME}...])])
+	[AC_MSG_NOTICE([renaming "]AC_PACKAGE_TARNAME[" to "${PACKAGE_CONFNAME}"...])])
 
 AC_SUBST([PROJECT_LOCALNAME], ["${PROJECT_CONFNAME}${na_tmpvsuff}"])
 
@@ -109,8 +119,8 @@ NS_UNSET([na_tmppref], [na_tmpsuff], [na_tmptransf], [na_tmpvsuff],
 	[na_tmphvsuff], [na_tmp_arg], [na_auto_docdir])
 
 
-dnl  Prevent any further transformations from Autoconf (unless
-dnl  `AC_CANONICAL_TARGET` is invoked after these lines)
+###  Prevent any further transformations from Autoconf (unless
+###  `AC_CANONICAL_TARGET` is invoked after these lines)
 
 AS_VAR_SET([program_prefix], ['NONE'])
 
@@ -119,109 +129,298 @@ AS_VAR_SET([program_suffix], ['NONE'])
 AS_VAR_SET([program_transform_name], ['s,x,x,'])
 
 
-dnl  **************************************************************************
-dnl     A U T O C O N F   E N V I R O N M E N T
-dnl  **************************************************************************
+###  **************************************************************************
+###     A U T O C O N F   E N V I R O N M E N T
+###  **************************************************************************
 
-dnl  Temporarily unset `CFLAGS` and let `AC_PROG_CC_C99` guess freely
+###  Temporarily unset `CFLAGS` and let `AC_PROG_CC_C99` guess freely
 NS_MOVEVAR([na_tmpusrcflags], [CFLAGS])
 
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_AUX_DIR([build-aux])
 
-dnl  Add a `--with-io-api=API` option to the `configure` script
+###  Add `--enable-extended-config[=MODE]` option
 NC_CONFIG_SHADOW_DIR([autostuff/shadows])
 
 AM_INIT_AUTOMAKE
 
+###  Add `--enable-author-mode` option
+AC_ARG_ENABLE([author-mode],
+	[AS_HELP_STRING([--enable-author-mode],
+		[enable make rules and dependencies that facilitate the programming
+		workflow for developing ]AC_PACKAGE_NAME[ but are not necessary (or are
+        even counterproductive) for the casual installer
+		@<:@default=<enable-extended-config>@:>@])],
+	[AS_IF([test "x${enable_author_mode}" != xyes -a "x${enable_author_mode}" != xno],
+		[AC_MSG_ERROR([unrecognized option: --enable-author-mode=${enable_author_mode}])])],
+	[AM_COND_IF([HAVE_EXTENDED_CONFIG],
+		[AS_VAR_SET([enable_author_mode], ['yes'])],
+		[AS_VAR_SET([enable_author_mode], ['no'])])])
+
+AM_CONDITIONAL([AUTHOR_MODE], [test "x${enable_author_mode}" = xyes])
+
+AM_MAINTAINER_MODE([enable])
+
 AM_SILENT_RULES([yes])
+
+AC_CANONICAL_HOST
 
 AC_ARG_PROGRAM
 
+
+###  **************************************************************************
+###     C   C O M P I L E R   E N V I R O N M E N T
+###  **************************************************************************
+
 AC_PROG_CC_C99
-
-dnl  Save the guessed `CFLAGS` for `AM_CFLAGS` (see `src/Makefile.am`)
-AC_SUBST([guessed_am_cflags], ["${CFLAGS}"])
-
-dnl  Restore `CFLAGS` according to the user's will
-NS_MOVEVAR([CFLAGS], [na_tmpusrcflags])
-
-AC_PROG_LN_S
-
-AC_PROG_SED
-
-AC_CHECK_HEADERS([stdint.h stdlib.h])
 
 AC_C_INLINE
 
-AC_TYPE_INT8_T
+AC_HEADER_STDBOOL
+
+AC_CHECK_HEADERS([stddef.h stdint.h stdio.h stdlib.h])
 
 AC_TYPE_SIZE_T
+
+AC_TYPE_UINT8_T
+
+AC_TYPE_INT8_T
 
 AC_TYPE_UINT16_T
 
 AC_TYPE_UINT32_T
 
-AC_TYPE_UINT8_T
-
 AC_FUNC_MALLOC
+
+NC_CC_CHECK_POSIX
+
+###  Save the guessed `CFLAGS` for `AM_CFLAGS` (see `src/Makefile.am`)
+NC_SUBST_NOTMAKE([guessed_am_cflags], ["${CFLAGS}"])
+
+###  Restore `CFLAGS` according to the user's will
+NS_MOVEVAR([CFLAGS], [na_tmpusrcflags])
 
 AS_VAR_SET([na_tmp_ioflavor], ['check'])
 
-dnl  Add a `--with-io-api=API` option to the `configure` script
+###  Add `--with-io-api=API` option
 AC_ARG_WITH([io_api],
-	[AS_HELP_STRING([--with-io-api=API],
+	[NA_HELP_STRINGS([[--with-io-api=API], [--without-io-api]],
 		[build this package with a specific I/O API; possible values for API
 		are: "standard" for using the C Standard I/O API, "posix" for using the
-		POSIX I/O API, or "check" for automatically selecting the best I/O API
+		POSIX I/O API, "baremetal" or "no" (--without-io-api) for using no I/O
+		API at all, or "check" for automatically selecting the best I/O API
 		supported by this machine @<:@default=check@:>@])],
 	[AS_IF([test "x${withval}" = x -o "x${with_io_api}" = xyes],
 		[AC_MSG_ERROR([an API value must be specified for option --with-io-api=API])],
 		[AS_IF([test "x${with_io_api}" = xno],
-			[AC_MSG_WARN([unrecognized option: --without-io-api])],
+			[AS_VAR_SET([na_tmp_ioflavor], [baremetal])],
 			[AS_VAR_COPY([na_tmp_ioflavor], [withval])])])],
 	[:])
+
+AS_VAR_SET([AC_CPPENV], ['$(OFFICIAL_CPPENV)'])
 
 AS_CASE([${na_tmp_ioflavor}],
 	[standard], [],
 	[posix], [
-		NC_IF_HAVE_POSIX_C([], [
-			NC_MSG_WARNBOX([The POSIX I/O API is not supported on this machine
+		AS_IF([test "x${ac_cv_have_posix_c}" = xno], [
+			NC_MSG_WARNBOX([The POSIX I/O API is not supported on this platform
 			(--with-io-api=posix). The C Standard I/O API will be used
 			instead.])
 			AS_VAR_SET([na_tmp_ioflavor], ['standard'])
 		])
 	],
+	[baremetal], [
+		AM_COND_IF([RENAME_PACKAGE],
+			[AC_MSG_NOTICE([applying --without-io-api...])],
+			[NC_MSG_WARNBOX([It is strongly recommended to rename the package
+			when compiling it without a I/O API (--without-io-api). For
+			example, to rename `]AC_PACKAGE_TARNAME[` to
+			`libnoio]GL_PROJECT_NAME[`, use `./configure --without-io-api
+			--program-prefix='noio'`. Type `./configure --help` for more
+			information about renaming rules.])])
+		AS_VAR_SET([na_want_baremetal], ['yes'])
+		AS_VAR_SET([na_tmp_ioflavor], ['standard'])
+		AS_VAR_SET([AC_CPPENV], ['$(BAREMETAL_CPPENV)'])
+		AS_VAR_SET([na_tmp_further_pp_macros],
+			[' '\''-D_LIBCONFINI_COMPILE_HEADER_="confini-baremetal.h"'\'])
+	],
 	[check], [
-		NC_IF_HAVE_POSIX_C(
+		AS_IF([test "x${ac_cv_have_posix_c}" = xyes],
 			[AS_VAR_SET([na_tmp_ioflavor], ['posix'])],
-			[AS_VAR_SET([na_tmp_ioflavor], ['standard'])]
-		)
+			[AS_VAR_SET([na_tmp_ioflavor], ['standard'])])
 	],
 	[*], [
 		AC_MSG_ERROR([unrecognized option: --with-io-api=${na_tmp_ioflavor}])
 	])
 
-AC_SUBST([c_source_io_flavor],
-	["-DCONFINI_IO_FLAVOR=CONFINI_$(echo "${na_tmp_ioflavor}" | \
-		tr '[a-z]' '[A-Z]')"])
+AM_CONDITIONAL([WANT_BAREMETAL], [test "x${na_want_baremetal}" = xyes])
 
-AS_UNSET([na_tmp_ioflavor])
+NC_SUBST_NOTMAKE([parent_cpp_flavor],
+	["CONFINI_$(echo "${na_tmp_ioflavor}" | tr '[a-z]' '[A-Z]')"])
 
+NC_SUBST_NOTMAKE([AC_CPPENV])
+
+NS_UNSET([na_tmp_further_pp_macros], [na_tmp_ioflavor])
+
+AS_MKDIR_P([no-dist/conf-results])
+
+AS_MKDIR_P([no-dist/hackings/baremetal])
+
+AC_SUBST([rvdir], ['REVISEME'])
+
+AC_SUBST([nonportfile], ['non-portable.h'])
+
+###  When compiling without a I/O API (--without-io-api), try to guess a possible
+###  re-implementation of the required standard data types if these are missing...
+AM_COND_IF([WANT_BAREMETAL], [
+	AS_VAR_SET([na_tmp_allstdint], ['no'])
+	AS_IF([test "x${ac_cv_header_stdint_h}${ac_cv_c_uint8_t}${ac_cv_c_int8_t}${ac_cv_c_uint16_t}${ac_cv_c_uint32_t}" = xyesyesyesyesyes],
+			[AS_VAR_SET([na_tmp_allstdint], ['yes'])],
+		[test "x${ac_cv_header_stdint_h}" = xyes],
+			[AS_CASE([x${ac_cv_c_uint8_t}${ac_cv_c_int8_t}${ac_cv_c_uint16_t}${ac_cv_c_uint32_t}],
+				[*yes*],
+					[AS_VAR_SET([na_tmp_allstdint], ['some'])])])
+	AS_IF([test "x${ac_cv_header_stddef_h}${ac_cv_header_stdbool_h}${ac_cv_header_stdint_h}${ac_cv_type_size_t}${na_tmp_allstdint}" = xyesyesyesyesyes], [
+		AS_VAR_SET([na_revise_baremetal], ['no'])
+	], [
+		AS_VAR_SET([na_revise_baremetal], ['yes'])
+		AS_MKDIR_P([${rvdir}])
+		NC_CC_CHECK_SIZEOF([unsigned short int], [], [ushort])
+		NC_CC_CHECK_SIZEOF([unsigned int], [], [uint])
+		NC_CC_CHECK_SIZEOF([unsigned long int], [], [ulong])
+		NC_CC_CHECK_SIZEOF([sizeof(char)], [], [size_t])
+		cp "${srcdir}/autostuff/chunks/revision-warning.c" \
+			'no-dist/conf-results/stdmissing.h'
+		rm -f 'no-dist/conf-results/noioheaders.h'
+		AS_IF([test "x${ac_cv_header_stddef_h}${ac_cv_type_size_t}" = xyesyes],
+			[echo '@%:@include <stddef.h>' >> \
+				'no-dist/conf-results/noioheaders.h'],
+			[{
+				# `size_t`...
+				echo '/*  Partial re-implementation of `stddef.h`  */'
+				AS_IF([test "${ac_cv_sizeof_size_t}" -eq 1],
+					[echo 'typedef unsigned char size_t;'],
+				[test "${ac_cv_sizeof_ushort}" -ge "${ac_cv_sizeof_size_t}"],
+					[echo 'typedef unsigned short int size_t;'],
+				[test "${ac_cv_sizeof_uint}" -ge "${ac_cv_sizeof_size_t}"],
+					[echo 'typedef unsigned int size_t;'],
+				[test "${ac_cv_sizeof_ulong}" -ge "${ac_cv_sizeof_size_t}"],
+					[echo 'typedef unsigned long int size_t;'],
+					[echo 'typedef unsigned long long int size_t;'])
+			} >> 'no-dist/conf-results/stdmissing.h'])
+		AS_IF([test "x${ac_cv_header_stdbool_h}" = xyes],
+			[echo '@%:@include <stdbool.h>' >> \
+				'no-dist/conf-results/noioheaders.h'],
+			[{
+				# `bool`...
+				echo '/*  Re-implementation of `stdbool.h`  */'
+				echo '@%:@ifndef bool'
+				echo '@%:@define bool unsigned char'
+				echo '@%:@endif'
+			} >> 'no-dist/conf-results/stdmissing.h'])
+		AS_IF([test "x${na_tmp_allstdint}" != xno], [
+			echo '@%:@include <stdint.h>' >> \
+				'no-dist/conf-results/noioheaders.h'
+		])
+		AS_IF([test "x${na_tmp_allstdint}" != xyes], [
+			NC_CC_CHECK_CHAR_BIT
+			AS_VAR_SET([na_tmp_ushort_bit],
+				["$(expr "${ac_cv_sizeof_ushort}" '*' "${ac_cv_char_bit}")"])
+			AS_VAR_SET([na_tmp_uint_bit],
+				["$(expr "${ac_cv_sizeof_uint}" '*' "${ac_cv_char_bit}")"])
+			{
+				# `uint8_t`, `int8_t`, `uint16_t`, `uint32_t`...
+				echo '/*  Partial re-implementation of `stdint.h`  */'
+				# `unsigned char` is guaranteed to be at least 8-bit...
+				AS_IF([test "x${ac_cv_c_uint8_t}" != xyes],
+					[echo 'typedef unsigned char uint8_t;'])
+				# `signed char` is guaranteed to be at least 8-bit...
+				AS_IF([test "x${ac_cv_c_int8_t}" != xyes],
+					[echo 'typedef signed char int8_t;'])
+				# `unsigned int` is guaranteed to be at least 16-bit...
+				AS_IF([test "x${ac_cv_c_uint16_t}" != xyes],
+					[AS_IF([test "${ac_cv_char_bit}" -ge 16],
+						[echo 'typedef unsigned char uint16_t;'],
+					[test "${na_tmp_ushort_bit}" -ge 16],
+						[echo 'typedef unsigned short int uint16_t;'],
+						[echo 'typedef unsigned int uint16_t;'])])
+				# `unsigned long int` is guaranteed to be at least 32-bit...
+				AS_IF([test "x${ac_cv_c_uint32_t}" != xyes],
+					[AS_IF([test "${ac_cv_char_bit}" -ge 32],
+						[echo 'typedef unsigned char uint32_t;'],
+					[test "${na_tmp_ushort_bit}" -ge 32],
+						[echo 'typedef unsigned short int uint32_t;'],
+					[test "${na_tmp_uint_bit}" -ge 32],
+						[echo 'typedef unsigned int uint32_t;'],
+					[echo 'typedef unsigned long int uint32_t;'])])
+			} >> 'no-dist/conf-results/stdmissing.h'
+		])
+		NS_UNSET([na_tmp_ushort_bit], [na_tmp_uint_bit])
+		AS_IF([test -f 'no-dist/conf-results/noioheaders.h'],
+			[echo >> 'no-dist/conf-results/noioheaders.h'])
+		AS_IF([test -f "${rvdir}/${nonportfile}"],
+			[AS_VAR_SET([na_tmp_pending_rv], ['yes'])],
+			[cp 'no-dist/conf-results/stdmissing.h' "${rvdir}/${nonportfile}"])
+	])
+	AS_UNSET([na_tmp_allstdint])
+], [
+	AS_VAR_SET([na_revise_baremetal], ['no'])
+])
+
+AM_CONDITIONAL([REVISE_BAREMETAL], [test "x${na_revise_baremetal}" = xyes])
+
+AM_COND_IF([REVISE_BAREMETAL],
+	[AS_VAR_SET([revision_clean_recipe],
+		m4_normalize(['test -f '\''$(rvdir)/$(nonportfile)'\'' ||
+			$(MAKE) '\''$(rvdir)/$(nonportfile)'\'';']))],
+	[cp "${srcdir}/dev/hackings/baremetal/c-standard-library.h" \
+		'no-dist/hackings/baremetal/c-standard-library.h'])
+
+NC_SUBST_NOTMAKE([revision_clean_recipe])
+
+###  Add `TESTS_PRINTF_HEADER` argument variable
+AC_ARG_VAR([TESTS_PRINTF_HEADER],
+	[The C header file containing the `printf()` function - this variable
+	applies to checks only and does **not** apply to the library's code
+	@<:@default='<stdio.h>'@:>@])
+
+###  Add `TESTS_PRINTF_NAME` argument variable
+AC_ARG_VAR([TESTS_PRINTF_NAME],
+	[An alternative name for the `printf()` function - this variable applies to
+	checks only and does **not** apply to the library's code
+	@<:@default=printf@:>@])
+
+AC_SUBST([TESTSONLY_CPPFLAGS],
+		m4_normalize([
+			"$(test "x${TESTS_PRINTF_HEADER}" = x || echo '
+			"-DTESTS_PRINTF_HEADER=$(TESTS_PRINTF_HEADER)"')$(test
+			"x${TESTS_PRINTF_NAME}" = x || echo '
+			"-DTESTS_PRINTF_NAME=$(TESTS_PRINTF_NAME)"')"
+		]))
+
+
+###  **************************************************************************
+###     ( A U T O ) M A K E   E N V I R O N M E N T
+###  **************************************************************************
+
+AC_PROG_LN_S
+
+AC_PROG_SED
+
+###  Add `RC` argument variable
 AC_ARG_VAR([RC], [Microsoft Windows resource compiler command])
 
+###  Add `RCFLAGS` argument variable
 AC_ARG_VAR([RCFLAGS], [Microsoft Windows resource compiler flags])
 
-NC_REQ_PROGS(
-	[find],		[Unix find utility],
-	[xargs],	[Unix xargs utility]
-)
+NC_REQ_PROGS([find], [Unix find utility])
 
+###  Keep the `pkgconfigdir` environment variable when non-empty
 AS_IF([test "x${pkgconfigdir}" = x],
 	[AS_VAR_SET([pkgconfigdir], ['$(libdir)/pkgconfig'])])
 
-dnl  Add a `--with-pkgconfigdir=API` option to the `configure` script
+###  Add `--with-pkgconfigdir=DIR` option
 AC_ARG_WITH([pkgconfigdir],
 	[AS_HELP_STRING([--with-pkgconfigdir=DIR],
 		[pkg-config installation directory
@@ -235,8 +434,7 @@ AC_ARG_WITH([pkgconfigdir],
 
 AC_SUBST([pkgconfigdir])
 
-dnl  Add `--enable-version-info` and `--disable-version-info` options to the
-dnl  `configure` script
+###  Add `--enable-version-info` and `--disable-version-info` options
 AC_ARG_ENABLE([version-info],
 	[NA_HELP_STRINGS([[--enable-version-info], [--disable-version-info]],
 		[enable/disable libtool versioning system
@@ -244,7 +442,7 @@ AC_ARG_ENABLE([version-info],
 	[:],
 	[AS_VAR_SET([enable_version_info], ['check'])])
 
-dnl  Add a `--disable-devel` option to the `configure` script
+###  Add `--disable-devel` option
 AC_ARG_ENABLE([devel],
 	[AS_HELP_STRING([--disable-devel],
 		[don't install development files (headers, static libraries,
@@ -257,26 +455,37 @@ AC_ARG_ENABLE([devel],
 		])])],
 	[AS_VAR_SET([enable_devel], ['yes'])])
 
-dnl  Add a `--disable-doc` option to the `configure` script
+###  Add `--disable-doc` option
 AC_ARG_ENABLE([doc],
 	[AS_HELP_STRING([--disable-doc],
-		[don't generate any documentation @<:@default=<disable devel>@:>@])],
+		[don't generate any documentation @<:@default=<disable-devel>@:>@])],
 	[AS_IF([test "x${enable_devel}" = xno -a "x${enable_doc}" != xno], [
 		AC_MSG_WARN([ignoring --enable-doc @{:@--disable-devel@:}@])
 		AS_VAR_SET([enable_doc], ['no'])
 	])],
 	[AS_VAR_COPY([enable_doc], [enable_devel])])
 
-dnl  Add `--enable-examples` and `--disable-examples` options to the
-dnl  `configure` script
+###  Add `--enable-examples` and `--disable-examples` options
 AC_ARG_ENABLE([examples],
 	[AS_HELP_STRING([--disable-examples],
-		[don't generate examples @<:@default=<disable doc>@:>@])],
+		[don't generate examples @<:@default=<disable-doc/without-io-api>@:>@])],
 	[AS_IF([test "x${enable_devel}" = xno -a "x${enable_examples}" != xno], [
 		AC_MSG_WARN([ignoring --enable-examples @{:@--disable-devel@:}@])
 		AS_VAR_SET([enable_examples], ['no'])
 	])],
-	[AS_VAR_COPY([enable_examples], [enable_doc])])
+	[AM_COND_IF([WANT_BAREMETAL],
+		[AS_VAR_SET([enable_examples], ['no'])],
+		[AS_VAR_COPY([enable_examples], [enable_doc])])])
+
+###  Add `--enable-htmldoc` option
+AC_ARG_ENABLE([htmldoc],
+	[AS_HELP_STRING([--enable-htmldoc],
+		[generate the html documentation @<:@default=no@:>@])],
+	[AS_IF([test "x${enable_devel}" = xno -a "x${enable_htmldoc}" != xno], [
+		AC_MSG_WARN([ignoring --enable-htmldoc @{:@--disable-devel@:}@])
+		AS_VAR_SET([enable_htmldoc], ['no'])
+	])],
+	[AS_VAR_SET([enable_htmldoc], ['no'])])
 
 AM_CONDITIONAL([WANT_DEVEL], [test "x${enable_devel}" != xno])
 
@@ -284,12 +493,54 @@ AM_CONDITIONAL([WANT_DOC], [test "x${enable_doc}" != xno])
 
 AM_CONDITIONAL([WANT_EXAMPLES], [test "x${enable_examples}" != xno])
 
+AM_CONDITIONAL([WANT_HTML], [test "x${enable_htmldoc}" != xno])
 
-dnl  **************************************************************************
-dnl     P L A T F O R M   C H E C K S
-dnl  **************************************************************************
+AS_IF([test "x${na_want_baremetal}" = xyes -a "x${enable_examples}" != xno],
+	[NC_MSG_WARNBOX([Many examples will not work without a I/O API
+	@{:@--enable-examples --without-io-api@:}@])])
 
-AC_CANONICAL_HOST
+dnl  PREPARE_MAN3PAGES(page1, renamed-page1[, ... pageN, renamed-pageN])
+dnl  **************************************************************************
+dnl
+dnl  Apply renamings (if any) to man pages and set the `MAN3PAGES` substitution
+dnl
+AC_DEFUN_ONCE([PREPARE_MAN3PAGES], [
+	AM_COND_IF([WANT_DOC], [
+		AS_IF([test -d 'no-dist/man3'],
+			[rm -r 'no-dist/man3'])
+		AS_MKDIR_P([no-dist/man3])
+		AM_COND_IF([HAVE_TRANSFORMATIONS], [
+			m4_for([__i__], [1], [$#], [2], [
+				cp "${srcdir}/docs/man/man3/m4_normalize(m4_argn(__i__, $@))" \
+					"no-dist/man3/m4_normalize(m4_argn(m4_incr(__i__), $@))";
+			])
+		], [
+			m4_for([__i__], [1], [$#], [2], [
+				cp "${srcdir}/docs/man/man3/m4_normalize(m4_argn(__i__, $@))" \
+					'no-dist/man3/';
+			])
+		])
+		###  See `Makefile.am` for this workaround
+		AS_VAR_SET([MAN3PAGES],
+			["$(echo no-dist/man3/*)"])
+	])
+	AC_SUBST([MAN3PAGES])
+])
+
+dnl  Man pages go here, each page accompanied by a safe cohabitation renaming
+dnl  and expected to be found in `${srcdir}/docs/man/man3`
+PREPARE_MAN3PAGES(
+	AC_PACKAGE_TARNAME[.3],	[${PACKAGE_LOCALNAME}.3],
+	GL_PROJECT_NAME[.h.3],	[${library_headername}.h.3],
+	[IniStatistics.3],		[${PACKAGE_LOCALNAME}-IniStatistics.3],
+	[IniFormat.3],			[${PACKAGE_LOCALNAME}-IniFormat.3],
+	[IniDispatch.3],		[${PACKAGE_LOCALNAME}-IniDispatch.3]
+)
+
+
+###  **************************************************************************
+###     P L A T F O R M   C H E C K S
+###  **************************************************************************
 
 AS_CASE([${host_os}],
 	[*mingw*], [
@@ -316,30 +567,41 @@ AM_CONDITIONAL([PLATFORM_MSWIN], [test "x${na_platform_mswin}" = xyes])
 
 AM_CONDITIONAL([NATIVE_MSWIN], [test "x${na_native_mswin}" = xyes])
 
+AC_SUBST([host_cpu_pretty], ["$(echo "${host_cpu}" | tr '_' '-')"])
 
-dnl  **************************************************************************
-dnl     L I B T O O L
-dnl  **************************************************************************
+
+###  **************************************************************************
+###     L I B T O O L
+###  **************************************************************************
 
 LT_INIT([win32-dll])
 
-AM_COND_IF([PLATFORM_MSWIN], [LT_PROG_RC])
+AM_COND_IF([PLATFORM_MSWIN], [
+	AC_CONFIG_FILES([src/winres-ac.rc:]NC_SHADOW_DIR[/src/winres-ac.rc.in])
+	LT_PROG_RC
+])
 
-AM_CONDITIONAL([HAVE_RC], [test "x${RC}" != x])
+# `LT_INIT([win32-dll])` should set the `${DLLTOOL}` variable
+AM_CONDITIONAL([HAVE_DLLTOOL],
+	[test "x${DLLTOOL}" != xfalse -a "x${DLLTOOL}" != x])
+
+# `LT_PROG_RC` should set the `${RC}` variable
+AM_CONDITIONAL([HAVE_RC],
+	[test "x${RC}" != xfalse -a "x${RC}" != x])
 
 
-dnl  **************************************************************************
-dnl     F I N E   T U N I N G
-dnl  **************************************************************************
+###  **************************************************************************
+###     F I N E   T U N I N G
+###  **************************************************************************
 
-dnl  **************************************************************************
-dnl     TODO:  For a perfect optimization it would be needed to test `-O2`
-dnl            and `-O3` under more conditions...
-dnl  **************************************************************************
+###  **************************************************************************
+###     TODO:  For a perfect optimization it would be needed to test `-O2`
+###            and `-O3` under more conditions...
+###  **************************************************************************
 
-dnl  Optimization `-O3` seems to be working better than `-O2` when compiling
-dnl  under native Microsoft Windows, in all other cases use `-O2`. Users can
-dnl  always override the default value by passing a `CFLAGS` variable.
+###  Optimization `-O3` seems to be working better than `-O2` when compiling
+###  under native Microsoft Windows, in all other cases use `-O2`. Users can
+###  always override the default value by passing a `CFLAGS` variable.
 AM_COND_IF([NATIVE_MSWIN],
 	[AS_VAR_SET([default_optimization], [3])],
 	[AS_VAR_SET([default_optimization], [2])])
@@ -347,134 +609,100 @@ AM_COND_IF([NATIVE_MSWIN],
 AC_SUBST([default_optimization])
 
 
-dnl  **************************************************************************
-dnl     O U T P U T
-dnl  **************************************************************************
+###  **************************************************************************
+###     S U B S T I T U T I O N S
+###  **************************************************************************
 
 AC_CONFIG_FILES([
 	Makefile
 	src/${PACKAGE_LOCALNAME}.pc:src/]AC_PACKAGE_TARNAME[.pc.in
 	src/Makefile
+	tests/Makefile
 ])
 
-NC_THREATEN_FILES([package.json], [src/winres.rc])
-
-dnl  PREPARE_MANPAGES(page1, renamed-page1[, ... pageN, renamed-pageN])
-dnl  **************************************************************************
-dnl
-dnl  Apply renamings (if any) to man pages and set the `notrans_man_MANS`
-dnl  variable
-dnl
-AC_DEFUN_ONCE([PREPARE_MANPAGES], [
-	AM_COND_IF([WANT_DOC], [
-		AS_IF([test -d 'no-dist/man3'],
-			[rm -r 'no-dist/man3'])
-		AS_MKDIR_P([no-dist/man3])
-		AM_COND_IF([HAVE_TRANSFORMATIONS], [
-			m4_for([_iter_], [1], [$#], [2], [
-				cp "${srcdir}/docs/man/man3/m4_normalize(m4_argn(_iter_, $@))" \
-					"no-dist/man3/m4_normalize(m4_argn(m4_incr(_iter_), $@))";
-			])
-		], [
-			m4_for([_iter_], [1], [$#], [2], [
-				cp "${srcdir}/docs/man/man3/m4_normalize(m4_argn(_iter_, $@))" \
-					'no-dist/man3/';
-			])
-		])
-		dnl  See `Makefile.am` for this workaround
-		AS_VAR_SET([POPULATE_MANPAGE_LIST], 
-			["notrans_man_MANS = $(echo no-dist/man3/*)"])
-	], [
-		AS_VAR_SET([POPULATE_MANPAGE_LIST], ["notrans_man_MANS ="])
-	])
-	AC_SUBST([POPULATE_MANPAGE_LIST])
-	AM_SUBST_NOTMAKE([POPULATE_MANPAGE_LIST])
-])
-
-dnl  Man pages go here, each page accompanied by a safe cohabitation renaming
-dnl  and expected to be found in `${srcdir}/docs/man/man3`
-PREPARE_MANPAGES(
-	AC_PACKAGE_TARNAME[.3],	[${PACKAGE_LOCALNAME}.3],
-	GL_PROJECT_NAME[.h.3],	[${library_headername}.h.3],
-	[IniStatistics.3],		[${PACKAGE_LOCALNAME}-IniStatistics.3],
-	[IniFormat.3],			[${PACKAGE_LOCALNAME}-IniFormat.3],
-	[IniDispatch.3],		[${PACKAGE_LOCALNAME}-IniDispatch.3]
+NC_THREATEN_FILES(
+	[package.json],
+	[src/winres.rc],
+	[dev/hackings/all/confini-metadata.c],
+	[dev/hackings/all/confini-metadata.h],
 )
 
-dnl  More renaming and extended config rules...
+AC_CONFIG_LINKS([help/INSTALL.md:INSTALL])
+
+###  More renaming and extended config rules...
 AM_COND_IF([RENAME_PACKAGE], [
 	AM_COND_IF([HAVE_EXTENDED_CONFIG], [
 		NC_MSG_WARNBOX([Extended configuration has been called on a renamed
 			package. Changes will be reverted with `make *clean` and will not
 			be re-distributed with `make dist`!])
-		AS_VAR_SET([renaming_dist_cmds],
-			m4_normalize([']m4_foreach([_iter_], [NC_THREATENED_LIST], [[
-				! test -f '\''$(srcdir)/'"]_iter_["'.dist'\'' ||
-					cp '\''$(srcdir)/'"]_iter_["'.dist'\''
-					'\''$(distdir)/'"]_iter_["\'';
+		AS_VAR_SET([transf_dist_recipe],
+			m4_normalize([']m4_foreach([__i__], [NC_THREATENED_LIST], [[
+				! test -f '\''$(srcdir)/'"]__i__["'.dist'\'' ||
+					cp '\''$(srcdir)/'"]__i__["'.dist'\''
+					'\''$(distdir)/'"]__i__["\'';
 			]])[']))
 		AM_COND_IF([HAVE_UPDATES], [
-			AS_VAR_SET([synch_cmds],
-				m4_normalize([']m4_foreach([_iter_], [NC_THREATENED_LIST], [[
-					test -f '\''$(srcdir)/'"]_iter_["'.dist'\'' ||
-						cp '\''$(srcdir)/'"]_iter_["\''
-						'\''$(srcdir)/'"]_iter_["'.dist'\'';
-					cp '\''$(confnewdir)/'"]_iter_["\''
-						'\''$(srcdir)/'"]_iter_["\'' &&
-						echo '\''File $(srcdir)/'"]_iter_["'
+			AS_VAR_SET([mergenew_recipe],
+				m4_normalize([']m4_foreach([__i__], [NC_THREATENED_LIST], [[
+					test -f '\''$(srcdir)/'"]__i__["'.dist'\'' ||
+						cp '\''$(srcdir)/'"]__i__["\''
+						'\''$(srcdir)/'"]__i__["'.dist'\'';
+					cp '\''$(confnewdir)/'"]__i__["\''
+						'\''$(srcdir)/'"]__i__["\'' &&
+						echo '\''File $(srcdir)/'"]__i__["'
 						successfully updated.'\'' || echo '\''File
-						$(confnewdir)/'"]_iter_["' not found.'\'';
+						$(confnewdir)/'"]__i__["' not found.'\'';
 				]])[']))
 			# The the `.dist` files have been generated by `make synch`, hence
 			# `make clean` must restore them
-			AS_VAR_SET([renaming_clean_cmds],
-				m4_normalize([']m4_foreach([_iter_], [NC_THREATENED_LIST], [[
-					! test -f '\''$(srcdir)/'"]_iter_["'.dist'\'' ||
-						mv '\''$(srcdir)/'"]_iter_["'.dist'\''
-						'\''$(srcdir)/'"]_iter_["\'';
+			AS_VAR_SET([transf_clean_recipe],
+				m4_normalize([']m4_foreach([__i__], [NC_THREATENED_LIST], [[
+					! test -f '\''$(srcdir)/'"]__i__["'.dist'\'' ||
+						mv '\''$(srcdir)/'"]__i__["'.dist'\''
+						'\''$(srcdir)/'"]__i__["\'';
 				]])[']))
 		], [
-			m4_foreach([_iter_], [NC_THREATENED_LIST],
-				[test -f "${srcdir}/]_iter_[.dist" || \
-					cp "${srcdir}/]_iter_[" "${srcdir}/]_iter_[.dist";])
-			AS_VAR_SET([synch_cmds],
+			m4_foreach([__i__], [NC_THREATENED_LIST],
+				[test -f "${srcdir}/]__i__[.dist" || \
+					cp "${srcdir}/]__i__[" "${srcdir}/]__i__[.dist";])
+			AS_VAR_SET([mergenew_recipe],
 				m4_normalize(['echo '\''Launch `$(srcdir)/configure @<:@...@:>@
 					--enable-extended-config=sandbox` to use `make
-					synch`.'\']))
+					mergenew`.'\']))
 			# The the `.dist` files have been generated by the `configure`
 			# script, hence `make distclean` must restore them
-			AS_VAR_SET([renaming_distclean_cmds],
-				m4_normalize([']m4_foreach([_iter_], [NC_THREATENED_LIST], [[
-					! test -f '\''$(srcdir)/'"]_iter_["'.dist'\'' ||
-						mv '\''$(srcdir)/'"]_iter_["'.dist'\''
-						'\''$(srcdir)/'"]_iter_["\'';
+			AS_VAR_SET([transf_distclean_recipe],
+				m4_normalize([']m4_foreach([__i__], [NC_THREATENED_LIST], [[
+					! test -f '\''$(srcdir)/'"]__i__["'.dist'\'' ||
+						mv '\''$(srcdir)/'"]__i__["'.dist'\''
+						'\''$(srcdir)/'"]__i__["\'';
 				]])[']))
 		])
 	])
 ], [
 	AM_COND_IF([HAVE_UPDATES],
-		[AS_VAR_SET([synch_cmds],
-			m4_normalize([']m4_foreach([_iter_], [NC_THREATENED_LIST], [[
-				test -f '\''$(confnewdir)/'"]_iter_["\'' &&
-					cp '\''$(confnewdir)/'"]_iter_["\''
-					'\''$(srcdir)/'"]_iter_["\'' &&
-					echo '\''File $(srcdir)/'"]_iter_["' successfully
-					updated.'\'' || echo '\''File $(confnewdir)/'"]_iter_["'
+		[AS_VAR_SET([mergenew_recipe],
+			m4_normalize([']m4_foreach([__i__], [NC_THREATENED_LIST], [[
+				test -f '\''$(confnewdir)/'"]__i__["\'' &&
+					cp '\''$(confnewdir)/'"]__i__["\''
+					'\''$(srcdir)/'"]__i__["\'' &&
+					echo '\''File $(srcdir)/'"]__i__["' successfully
+					updated.'\'' || echo '\''File $(confnewdir)/'"]__i__["'
 					not found.'\'';
 			]])[']))],
-		[AS_VAR_SET([synch_cmds],
-				m4_normalize(['echo '\''Launch `$(srcdir)/configure @<:@...@:>@
-					--enable-extended-config=sandbox` to use `make synch`.'\']))
+		[AS_VAR_SET([mergenew_recipe],
+				m4_normalize(['echo '\''Launch `$(srcdir)/configure
+					--enable-extended-config=sandbox` to use `make mergenew`.'\']))
 	])
 ])
 
-AC_SUBST([renaming_dist_cmds])
+NC_SUBST_NOTMAKE([transf_dist_recipe])
 
-AC_SUBST([synch_cmds])
+NC_SUBST_NOTMAKE([transf_clean_recipe])
 
-AC_SUBST([renaming_clean_cmds])
+NC_SUBST_NOTMAKE([transf_distclean_recipe])
 
-AC_SUBST([renaming_distclean_cmds])
+NC_SUBST_NOTMAKE([mergenew_recipe])
 
 AC_SUBST([PROJECT_MAJVER], [']GL_PROJECT_MAJVER['])
 
@@ -484,15 +712,130 @@ AC_SUBST([PROJECT_REVVER], [']GL_PROJECT_REVVER['])
 
 AC_SUBST([PROJECT_EFFVER], [']GL_PROJECT_MAJVER[.]GL_PROJECT_MINVER['])
 
-AC_SUBST([PUBLISHER_UTF8ESC_NAME],
-	['n4_escape_non_ascii(GL_PUBLISHER_NAME)'])
+AC_SUBST([lt_cv_objdir])
+
+
+###  **************************************************************************
+###     R E B U I L D   T H E   M A I N   S O U R C E   C O D E
+###  **************************************************************************
+
+##  src/Makefile.am, `make confini.c`
+###  No amendments here, the marked files already refer to the standard...
+NC_SUBST_NOTMAKE([confini_c_recipe],
+	m4_normalize([
+		']m4_quote(NA_TRIANGLE_BRACKETS_TO_MAKE_VARS(m4_quote(
+		NA_DOUBLE_DOLLAR(m4_quote(NA_ESC_APOS(m4_quote(
+		NA_AMEND([<@>],
+			[<top_srcdir>/dev/marked-sources/confini-marked.c],
+			[[CONFINI_C_METADATA],
+				[<top_srcdir>/dev/hackings/all/confini-metadata.c]]))))))))[;'
+	]))
+
+##  src/Makefile.am, `make confini.h`
+###  No amendments here, the marked files already refer to the standard...
+NC_SUBST_NOTMAKE([confini_h_recipe],
+	m4_normalize([
+		']m4_quote(NA_TRIANGLE_BRACKETS_TO_MAKE_VARS(m4_quote(
+		NA_DOUBLE_DOLLAR(m4_quote(NA_ESC_APOS(m4_quote(
+		NA_AMEND([<@>],
+			[<top_srcdir>/dev/marked-sources/confini-marked.h],
+			[[CONFINI_H_METADATA],
+				[<top_srcdir>/dev/hackings/all/confini-metadata.h]]))))))))[;'
+	]))
+
+
+###  **************************************************************************
+###     H A C K I N G S
+###  **************************************************************************
+
+##  src/Makefile.am, `make confini-baremetal.c`
+NC_SUBST_NOTMAKE([confini_baremetal_c_recipe],
+	m4_normalize([
+		'@S|@@{:@MKDIR_P@:}@ '\''@S|@@{:@@D@:}@'\'' &&
+		]NA_ESC_APOS(m4_quote(NA_TRIANGLE_BRACKETS_TO_MAKE_VARS(m4_quote(
+		NA_DOUBLE_DOLLAR(m4_quote(
+		NA_AMEND([<@>],
+			[<top_srcdir>/dev/marked-sources/confini-marked.c],
+			[[CONFINI_C_METADATA],
+				[<top_srcdir>/dev/hackings/all/confini-metadata.c]],
+			[[PP_UTILS],
+				[<top_srcdir>/dev/hackings/baremetal/pp-utils.c]],
+			[[IO_FLAVORS],
+				[]],
+			[[STANDARD_HEADERS],
+				[]],
+			[[CONFINI_HEADER],
+				[<top_srcdir>/dev/hackings/baremetal/confini-header.c]],
+			[[IO_ALIASES],
+				[]],
+			[[IO_FUNCTIONS],
+				[]],
+			[[NUMBER_PARSERS],
+				[<top_srcdir>/dev/hackings/baremetal/number-parsers.c]])))))))[
+			;'
+	]))
+
+##  src/Makefile.am, `make confini-baremetal.h`
+NC_SUBST_NOTMAKE([confini_baremetal_h_recipe],
+	m4_normalize([
+		"@S|@@{:@test "x${na_revise_baremetal}" != xyes || echo 'test
+		-e '\''../no-dist/hackings/baremetal/c-standard-library.h'\'' && @{:@
+		'@:}@"'@S|@@{:@MKDIR_P@:}@ '\''@S|@@{:@@D@:}@'\'' &&
+		]NA_ESC_APOS(m4_quote(NA_TRIANGLE_BRACKETS_TO_MAKE_VARS(m4_quote(
+		NA_DOUBLE_DOLLAR(m4_quote(
+		NA_AMEND([<@>],
+			[<top_srcdir>/dev/marked-sources/confini-marked.h],
+			[[CONFINI_H_METADATA],
+				[<top_srcdir>/dev/hackings/all/confini-metadata.h]],
+			[[STANDARD_HEADERS],
+				[<top_builddir>/no-dist/hackings/baremetal/c-standard-library.h]],
+			[[IO_FUNCTIONS],
+				[]],
+			[[NUMBER_PARSERS],
+				[<top_srcdir>/dev/hackings/baremetal/number-parsers.h]])))))))[
+		'"@S|@@{:@test "x${na_revise_baremetal}" != xyes || echo '@:}@ ||
+		@{:@echo >&2 && { echo '\''I am not ready to build `@S|@@{:@D@:}@` yet.
+		Please revise'\''; echo '\''the content of the `@S|@@{:@rvdir@:}@`
+		subdirectory, then launch `@S|@@{:@MAKE@:}@'\''; echo
+		'\''approve-revision` after you are done.'\''; echo; } >&2 && exit
+		2@:}@'@:}@"';'
+	]))
+
+
+###  **************************************************************************
+###     O U T P U T
+###  **************************************************************************
 
 AC_OUTPUT
 
 NC_SHADOW_MAYBE_OUTPUT
 
-dnl  Create a file named `common-targets.txt` to be printed by `make help`
-cat << 'END_HEREDOC' > 'make-targets.txt'
+
+###  **************************************************************************
+###     H E L P   A N D   F I N A L   M E S S A G E S
+###  **************************************************************************
+
+AM_COND_IF([REVISE_BAREMETAL],
+	[AS_IF([test "x${na_tmp_pending_rv}" = xyes], [
+		NC_MSG_WARNBOX([Do not forget to revise the content of the `${rvdir}`
+		subdirectory before proceeding! (--without-io-api)])
+	], [
+		NC_MSG_WARNBOX([I could not access one or more C standard headers. I am
+		assuming that you are compiling for some exotic platform
+		(--without-io-api), so I have tried to guess a possible
+		re-implementation of the standard C data types needed to build
+		]AC_PACKAGE_NAME[ on your machine. You will need to review the guessed
+		content in the `${rvdir}` subdirectory before launching `make all`.
+		Launch `make approve-revision` after you are done.])
+	])])
+
+AS_UNSET([na_tmp_pending_rv])
+
+###  Create the `help` subdirectory
+AS_MKDIR_P([help])
+
+###  Create a `help/make-targets.txt` file to be printed by `make help`
+{ cat << 'END_HEREDOC'
 GNU make utility to maintain AC_PACKAGE_NAME
 
 Commonly used targets:
@@ -506,7 +849,18 @@ NA_HELP_STRINGS(
 		[install the library - if `make (all)` has not been launched yet, it
 		will be launched first],
 	[[make uninstall]],
-		[delete all the files created by `make install`],
+		[delete all the files created by `make install(-*)`],
+	[[make check], [make installcheck], [make finishcheck]],
+		[check that the compiled library is in good conditions; in particular,
+		`make check` tests the compiled objects directly from the source
+		directory, `make installcheck` tests the compiled objects from the
+		installation paths (you can pass a `DESTDIR` variable in case of staged
+		installations), `make finishcheck` tests the compiled objects from
+		the installation paths without passing any information to the compiler
+		about the latter, in order to check that <includedir> and <libdir> are
+		automatically reachable (therefore no `DESTDIR` variable is supported
+		here); note that `make installcheck` and `make finishcheck` can be
+		launched only after `make install(*)` has been launched],
 	[[make mostlyclean], [make clean], [make distclean]],
 		[clean the source directory according to different degrees of fury],
 	[[make clobber]],
@@ -519,15 +873,16 @@ NA_HELP_STRINGS(
 	[[make portable-builds]],
 		[create a package containing all the files that would be installed by
 		`make install-exec-strip`, but without any directory structure - if
-		`make (all)` has not been launched yet, it will be launched first])
+		`make (all)` has not been launched yet, it will be launched first]
+)
 
 Package maintenance targets:
 
 NA_HELP_STRINGS(
-	[[make synch]],
+	[[make mergenew]],
 		[merge all the files created by the `configure` option
 		`--enable-extended-config=sandbox`],
-	[[make dist(*)], [make source-release], [make authors-copy]],
+	[[make dist(-*)], [make source-release], [make authors-copy]],
 		[create a re-distributable copy of this package, ignoring any local
 		configuration; the `make dist(*)` targets are GNU Automake's built-in
 		recipes for redistributing the source code of a generic package, while
@@ -537,20 +892,38 @@ NA_HELP_STRINGS(
 		the shape of the package as close as possible to the original release;
 		same goes for `make authors-copy`, although this goes a step further
 		and re-creates the original package as after launching `make
-		author-clean`],
-	[[make maintainer-clean], [make author-clean], [make oblivion-clean]],
+		bootstrap-clean`],
+	[[make maintainer-clean], [make bootstrap-clean], [make oblivion-clean]],
 		[clean the source directory according to different degrees of fury
 		beyond `make distclean` - unless you are a package maintainer you
 		should not use these targets, as your machine might not have the tools
 		for re-creating the files deleted by `make maintainer-clean`, `make
-		author-clean` and `make oblivion-clean`],
+		bootstrap-clean` and `make oblivion-clean`],
 	[[make distcheck]],
 		[create a redistributable package and check that everything in it
 		works as it is supposed to work],
 	[[make git-clone]],
-		[download the latest revision of ]AC_PACKAGE_NAME[ from the Git server
-		(the `git` utility is required); note that this might not be an
-		official release yet]
+		[download the latest revision of ]AC_PACKAGE_NAME[ from the server (the
+		`git` utility is required); note that the downloaded archive might
+		be a work in progress and not yet an official release]
+)
+
+Special targets:
+
+NA_HELP_STRINGS(
+	[[make all-sources], [make baremetal-csources], [make official-csources],
+	[make official-symbols]],
+		[(Re-)generate the source code of ]AC_PACKAGE_NAME[ using the content
+		of the `dev` subdirectory - some of these targets might be available
+		only after passing the `--enable-author-mode` option to the `configure`
+		script],
+	[[make approve-revision], [make reject-revision]],
+		[Approve/reject the current customization for a non-standard
+		environment (available only in specific cases))],
+	[[make expired]],
+		[(Re)build all the targets listed in the `EXPIRE` user variable, as in
+		`make EXPIRE=']AC_PACKAGE_TARNAME[-git.tar.gz
+		]AC_PACKAGE_TARNAME[-snapshot.tar.gz' expired`]
 )
 
 Optional variables:
@@ -580,17 +953,27 @@ NA_HELP_STRINGS(
 		last case with the exception of `make manifest`, as this never produces
 		archives); for example: `make DEST=']AC_PACKAGE_TARNAME[-edited.zip'
 		portable-builds` creates a zip archive named
-		`]AC_PACKAGE_TARNAME[-edited` instead of the default `.tar.xz` archive;
+		`]AC_PACKAGE_TARNAME[-edited` instead of the default `.tar.gz` archive;
 		if no recognizable extension is present, a directory will be created
 		instead; archive formats supported are: `tar.gz`, `tar.xz`, `tgz`,
-		`txz`, `zip`; this variable always overrides `ZIPTYPE`]
+		`txz`, `zip`; this variable always overrides `ZIPTYPE`],
+	[[EXPIRE]],
+		[A space-separated list of targets to build even when up-to-date]
 )
 
 For further options, please refer to the documentation of GNU Automake.
 
 END_HEREDOC
 
-AC_MSG_NOTICE([all done, use `make help` to list the commonly used targets.])
+echo "This package is currently configured for a ${host_cpu_pretty} CPU running ${host_os}."
+echo
+
+} > 'help/make-targets.txt'
+
+###  Save the output of `./configure --help`
+{ "${0}" --help; echo; } > 'help/configure-options.txt'
+
+AC_MSG_NOTICE([all done, launch `${ac_make} help` to list the commonly used targets.])
 
 
 dnl  **************************************************************************

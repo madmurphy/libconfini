@@ -1,0 +1,244 @@
+Compiling without the C Standard Library {#baremetal}
+=====================================================
+
+Nearly everything in **libconfini** is implemented from scratch, with the only
+notable exception of the I/O functions `load_ini_file()` and `load_ini_path()`,
+which rely on C standard libraries. On some platforms, however, only a rather
+exotic I/O API is available, while for some other platforms the C Standard
+Library is simply too heavy or just not implementable.
+
+In the past the build environment of **libconfini** did not offer shortcuts for
+facing this kind of situations -- although thanks to the modularity of the
+source code it was still relatively simple to get rid of every tie with the C
+Standard Library and compile **libconfini** as “bare metal”, with
+`strip_ini_cache()` as the only parsing function (since this relies only on a
+buffer for its input) -- i.e. without `load_ini_file()` and `load_ini_path()`,
+and even without any header at all.
+
+Starting from version 1.13.0 a “bare metal” version of **libconfini** has been
+made available by simply passing a `--without-io-api` option to the `configure`
+script.
+
+## The `--without-io-api` option
+
+When the `configure` script is launched with the `--without-io-api` option,
+it assumes that no standard library at all could be present in the system.
+Hence it runs a series of tests and creates an inventory of what is present and
+what is not, in order to amend the source code accordingly. The amendments are
+necessary (instead of just relying on the C preprocessor) because it is
+required to change the public header, and not just the compiled code.
+
+Fortunately only a very small amount of code in **libconfini**, besides the I/O
+functions, depends on the C Standard library, so it is relatively easy to
+produce a “bare metal” fork with or without it.
+
+The `dev/hackings/baremetal` subdirectory contains all the necessary
+amendments. These are automatically applied when launching `make
+baremetal-csources` from the top level directory, after having launched
+`./configure --without-io-api` (the original source code will be preserved).
+
+The files `pp-utils.c` and `number-parsers.c` constitute a re-implementation of
+the functions `ini_get_int()`, `ini_get_lint()`, `ini_get_llint()`,
+`ini_get_float()` and `ini_get_double()`, which in the original code are
+implemented as pointers to standard functions (see below). These two files
+amend `src/confini.c`.
+
+The file `number-parsers.h` exports the function headers of what
+`number-parsers.c` implements, and amends `src/confini.h` (i.e., the **public**
+header).
+
+The file `confini-header.c` contains only a nominal workaround-amendment to
+`src/confini.c` (for facilitating the build system) that does not change the
+final C code compiled.
+
+To produce the source code of the “bare metal” version of **libconfini** a
+fifth amendment to the public header is also required, containing some common C
+standard objects. This amendment is automatically generated for each platform
+during the build process and will be located under
+`no-dist/hackings/baremetal/c-standard-library.h`.
+
+Here follows the summary of what is required by `make baremetal-csources`:
+
+1. `dev/hackings/baremetal/confini-header.c` (pasted to the private module
+   `src/confini.c`)
+2. `dev/hackings/baremetal/number-parsers.c` (pasted to the private module
+   `src/confini.c`)
+3. `dev/hackings/baremetal/number-parsers.h` (pasted to the **public** header
+   `src/confini.h`)
+4. `dev/hackings/baremetal/pp-utils.c` (pasted to the private module
+   `src/confini.c`)
+5. `no-dist/hackings/baremetal/c-standard-library.h` (pasted to the **public**
+   header `src/confini.h` after having been automaticaly generated either by
+   the `configure` script, as an exact copy of
+   `dev/hackings/baremetal/c-standard-library.h`, or by `make
+   approve-revision`, in the few cases where manual user's intervention is
+   required during the build process)
+
+The first four files (the ones located in the `dev/hackings/baremetal`
+subdirectory) are static and do not need any intervention from the user, unless
+(s)he wants to participate in the development of **libconfini**.
+
+
+## Going manual
+
+If you prefer to hack the code manually, follow these simple steps (or adjust
+them according to your needs):
+
+1. Remove `#include <stdio.h>` from `confini.h`
+2. If the `stddef.h` header (providing the `typedef` for the `size_t` data
+   type) is available, add `#include <stddef.h>` to `confini.h`, otherwise
+   provide your own implementation of the `size_t` data type
+3. If the `stdint.h` header (providing the `typedef` for the `int8_t`,
+   `uint8_t`, `uint16_t` and `uint32_t` data types) is not available, remove it
+   from `confini.h` and provide your own implementation of the `int8_t`,
+   `uint8_t`, `uint16_t` `uint32_t` data types
+4. Remove the functions `load_ini_file()` and `load_ini_path()` from both
+   `confini.h` and `confini.c`
+5. If the `stdlib.h` header is not available, remove `#include <stdlib.h>` from
+   `confini.c` and remove the function pointers `ini_get_int`, `ini_get_lint`,
+   `ini_get_llint` and `ini_get_double` from both `confini.h` and `confini.c`
+   (you will have to use your own functions for converting strings to numbers)
+   -- for a set of possible replacements _as actual functions_ instead of
+   function pointers, please see below)
+6. Leave everything else as it is
+
+After doing so **libconfini** will work even without a kernel.
+
+
+## Parsing numbers without the C Standard Library
+
+As explained in the previous paragraph, compiling **libconfini** without the C
+Standard Library requires getting rid of the function pointers `ini_get_int()`,
+`ini_get_lint()`, `ini_get_llint()` and `ini_get_double()` -- as these are
+nothing but links to the standard functions [`atoi()`][1], [`atol()`][2],
+[`atoll()`][3] and [`atof()`][4].
+
+Instead of just removing the function pointers above, however, it is also
+possible to provide novel functions implemented from scratch for parsing
+numbers.
+
+What `make baremetal-csources` does in fact is replacing in `src/confini.h` the
+function pointers declared immediately after the comment `/*  PUBLIC LINKS  */`
+with the following function headers:
+
+```````````````````````````````````` c
+extern int ini_get_int (
+  const char * const ini_string
+);
+
+
+extern long int ini_get_lint (
+  const char * const ini_string
+);
+
+
+extern long long int ini_get_llint (
+  const char * const ini_string
+);
+
+
+extern float ini_get_float (
+  const char * const ini_string
+);
+
+
+extern double ini_get_double (
+  const char * const ini_string
+);
+````````````````````````````````````
+
+The same `make` recipe replaces in `src/confini.c` (at the end of the file) the
+corresponding pointers with the code below. Note that the C language does not
+possess a templating mechanism, so the code below needs to rely on a macro for
+not repeating five times the same function body with only minimal variations.
+
+_**Note:** The code below is released under the terms of the GPL license,
+version 3 or any later version._
+
+````````````````````````````````````````````````````````````````````````````` c
+#define __PP_IIF__(CONDITION, ...) __PP_EVALUCAT__(__PP_UCAT__(__COND, CONDITION), _)(__VA_ARGS__, , )
+#define __COND_0__(IF_TRUE, IF_FALSE, ...) IF_FALSE
+#define __COND_1__(IF_TRUE, ...) IF_TRUE
+
+#define _LIBCONFINI_RADIX_POINT_ '.'
+#define __INTEGER_DATA_TYPE__ 0
+#define __FLOAT_DATA_TYPE__ 1
+
+
+/*
+
+Mask `abcd` (6 bits used):
+
+  FLAG_1    Continue the loop
+  FLAG_2    The numerical part has been found
+  FLAG_4    This is the sign
+  FLAG_8    Radix point has not been encountered yet
+  FLAG_16   This is a digit
+  FLAG_32   The number is negative
+
+*/
+#define _LIBCONFINI_STR2NUM_FNBODY_(HAS_RADIX_PT, DATA_TYPE, STR) \
+  register uint8_t abcd = 9; \
+  register DATA_TYPE retval = 0; \
+  __PP_IIF__(HAS_RADIX_PT, \
+    DATA_TYPE fact = 1; \
+  ) \
+  for (register size_t idx = 0; abcd & 1; idx++) { \
+    abcd  =   STR[idx] == '-' ? \
+                (abcd & 6 ? abcd & 14 : (abcd & 47) | 36) \
+              : STR[idx] == '+' ? \
+                (abcd & 6 ? abcd & 14 : (abcd & 15) | 4) \
+              : STR[idx] > 47 && STR[idx] < 58 ? \
+                abcd | 18 \
+              __PP_IIF__(HAS_RADIX_PT, \
+              : (abcd & 8) && STR[idx] == _LIBCONFINI_RADIX_POINT_ ? \
+                (abcd & 39) | 2 \
+              ) \
+              : !(abcd & 2) && is_some_space(STR[idx], _LIBCONFINI_WITH_EOL_) ? \
+                (abcd & 47) | 1 \
+              : \
+                abcd & 46; \
+    if (abcd & 16) { \
+      retval  =   __PP_IIF__(HAS_RADIX_PT, \
+                  abcd & 8 ? \
+                    STR[idx] - 48 + retval * 10 \
+                  : \
+                    (STR[idx] - 48) / (fact *= 10) + retval, \
+                  retval * 10 + STR[idx] - 48 \
+                  ); \
+    } \
+  } \
+  return abcd & 32 ? -retval : retval;
+
+
+int ini_get_int (const char * const ini_string) {
+  _LIBCONFINI_STR2NUM_FNBODY_(__INTEGER_DATA_TYPE__, int, ini_string);
+}
+
+
+long int ini_get_lint (const char * const ini_string) {
+  _LIBCONFINI_STR2NUM_FNBODY_(__INTEGER_DATA_TYPE__, long int, ini_string);
+}
+
+
+long long int ini_get_llint (const char * const ini_string) {
+  _LIBCONFINI_STR2NUM_FNBODY_(__INTEGER_DATA_TYPE__, long long int, ini_string);
+}
+
+
+float ini_get_float (const char * const ini_string) {
+  _LIBCONFINI_STR2NUM_FNBODY_(__FLOAT_DATA_TYPE__, float, ini_string);
+}
+
+
+double ini_get_double (const char * const ini_string) {
+  _LIBCONFINI_STR2NUM_FNBODY_(__FLOAT_DATA_TYPE__, double, ini_string);
+}
+`````````````````````````````````````````````````````````````````````````````
+
+
+[1]: http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoi
+[2]: http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atol
+[3]: http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoll
+[4]: http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atof
+

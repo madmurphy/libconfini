@@ -2,6 +2,19 @@ NEWS
 ====
 
 
+## 1.13.0
+
+* Standard header `stdbool.h` has been added to the library's public header for
+  handling C++ compatibility
+* Module-definition file `src/libconfini.def` has been added to the package
+  tree for improving compatibility with **Microsoft Windows**
+* A `--without-io-api` option has been added to the `configure` script for
+  compiling the library without the C Standard I/O API
+* **GNU Autotests** have been implemented (via `make check`, `make finishcheck`
+  and `make installcheck` -- launch `make help` for more information about
+  these targets)
+
+
 ## 1.12.0
 
 * Function `ini_get_float()` has been marked as deprecated for parsing a

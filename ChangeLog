@@ -2,6 +2,37 @@ Change Log {#changelog}
 =======================
 
 
+## 1.13.0 -- 2020-02-05
+
+Changes:
+
+* Support for C++ has been improved
+* Standard header `stdbool.h` has been added to the library's public header for
+  handling C++ compatibility
+* Module-definition file `src/libconfini.def` has been added to the package
+  tree for improving compatibility with **Microsoft Windows**
+* Code page and UTF-8 strings in `src/winres.rc` have been adjusted
+* Code review
+* A `--without-io-api` option has been added to the `configure` script for
+  compiling the library without the C Standard I/O API
+* **GNU Autotests** have been implemented (via `make check`, `make finishcheck`
+  and `make installcheck` -- launch `make help` for more information about
+  these targets)
+* The package tree has been re-organized -- all the files needed for developing
+  the library and the documentation are now in the `dev` subdirectory
+* Code review in the `configure` script (options `--disable-maintainer-mode`,
+  `--enable-author-mode` and `--enable-htmldoc` have been created; the `xargs`
+  utility has been removed from the requirements for building the package) and
+  in the **GNU Make** environment (`Makefile.am`: the following targets have
+  been created: `make all-sources`, `make baremetal-csources`, `make expired`,
+  `make official-csources`, `make official-sources`, `make official-symbols`
+  and `make snapshot`, furthermore † `make author-clean` has been renamed to
+  `make bootstrap-clean`)
+* Added GCC option `-Wl,-out-implib,libconfini.lib` to the `mgwmake.bat` script
+* Documentation
+* Examples
+
+
 ## 1.12.0 -- 2019-11-29
 
 Changes:
@@ -58,7 +89,7 @@ Changes:
   source-release` and `make authors-copy` targets for better reproducing the
   content of the package as released by its authors; created † `make
   binary-image`, `make binary-release` and † `make install-manifest` targets
-  for aiding staged installations; created a `make author-clean` target for
+  for aiding staged installations; created a † `make author-clean` target for
   cleaning the source directory with the same degree of fury of `./bootstrap
   --clean`; created a `make help` target for printing the list of commonly used
   targets; replaced † `autogen.sh --multiversion` with `./configure
