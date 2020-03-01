@@ -9,6 +9,37 @@
 
 
 
+\page		baremetal	Compiling without the C Standard Library
+
+\brief		What `./configure --without-io-api` does
+
+
+
+\page		changelog	ChangeLog
+
+\brief		Record of notable changes
+
+
+
+\page		develop		Get involved
+
+\brief		Developing **libconfini**
+
+
+
+\page		fnoverview	Function Overview
+
+\brief		Complete list of functions
+
+Here follows the list of public functions available with **libconfini**. Almost
+each of them is independent, therefore if you are compiling the library you may
+decide to remove the functions listed below from the code according to your
+needs, with the only exceptions of `ini_string_match_ii()`, required by
+`ini_array_match()`, and `strip_ini_cache()`, required by both
+`load_ini_file()` and `load_ini_path()`.
+
+
+
 \page		libconfini	Library Functions Manual
 
 \brief		User Guide for **libconfini**
@@ -26,36 +57,6 @@
 \page		readme		README
 
 \brief		Yet another INI parser
-
-
-
-\page		develop	Get involved
-
-\brief		Developing **libconfini**
-
-
-
-\page		baremetal	Compiling without the C Standard Library
-
-\brief		What `./configure --without-io-api` does
-
-
-
-\page		fnoverview	Function Overview
-
-\brief		Complete list of functions
-
-What follows here is the list of public functions available with **libconfini**.
-Almost each of them is independent, hence if you are compiling the library you
-may decide to remove the functions listed below from the code, with the only
-exceptions of `ini_string_match_ii()`, required by `ini_array_match()`, and
-`strip_ini_cache()`, required by both `load_ini_file()` and `load_ini_path()`.
-
-
-
-\page		changelog	ChangeLog
-
-\brief		Record of notable changes
 
 
 
@@ -77,15 +78,9 @@ This file provides the markdown source code for the \ref libconfini.
 
 
 
-\file		dev/docs/mainpage.md
+\file		dev/docs/baremetal.md
 
-This file provides the markdown source code for the main page.
-
-
-
-\file		dev/docs/rationale.md
-
-This file provides the markdown source code for the \ref rationale.
+This file provides the markdown source code for the page \ref baremetal.
 
 
 
@@ -95,9 +90,15 @@ This file provides the markdown source code for the page \ref develop.
 
 
 
-\file		dev/docs/baremetal.md
+\file		dev/docs/mainpage.md
 
-This file provides the markdown source code for the page \ref baremetal.
+This file provides the markdown source code for the main page.
+
+
+
+\file		dev/docs/rationale.md
+
+This file provides the markdown source code for the \ref rationale.
 
 
 

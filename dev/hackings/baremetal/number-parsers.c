@@ -17,17 +17,18 @@ Mask `abcd` (6 bits used):
 */
 #define _LIBCONFINI_STR2NUM_FNBODY_(HAS_RADIX_PT, DATA_TYPE, STR) \
 	register uint8_t abcd = 9; \
+	register size_t idx = 0; \
 	register DATA_TYPE retval = 0; \
 	__PP_IIF__(HAS_RADIX_PT, \
 		DATA_TYPE fact = 1; \
 	) \
-	for (register size_t idx = 0; abcd & 1; idx++) { \
-		abcd	=	STR[idx] == '-' ? \
-						(abcd & 6 ? abcd & 14 : (abcd & 47) | 36) \
-					: STR[idx] == '+' ? \
-						(abcd & 6 ? abcd & 14 : (abcd & 15) | 4) \
-					: STR[idx] > 47 && STR[idx] < 58 ? \
+	do { \
+		abcd	=	STR[idx] > 47 && STR[idx] < 58 ? \
 						abcd | 18 \
+					: !(abcd & 6) && STR[idx] == '-' ? \
+						(abcd & 47) | 36 \
+					: !(abcd & 6) && STR[idx] == '+' ? \
+						(abcd & 15) | 4 \
 					__PP_IIF__(HAS_RADIX_PT, \
 					: (abcd & 8) && STR[idx] == _LIBCONFINI_RADIX_POINT_ ? \
 						(abcd & 39) | 2 \
@@ -45,7 +46,8 @@ Mask `abcd` (6 bits used):
 						retval * 10 + STR[idx] - 48 \
 						); \
 		} \
-	} \
+		idx++; \
+	} while (abcd & 1); \
 	return abcd & 32 ? -retval : retval;
 
 

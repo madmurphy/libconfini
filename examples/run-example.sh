@@ -69,7 +69,7 @@ while [[ "${_DONE_}" -eq 0 ]]; do
 			_DONT_RUN_=1
 			_DONE_=1
 		elif [[ ! "${_CHOICE_}" =~ ^[0-9]+$ ]] || [[ "${_CHOICE_}" -lt 0 ]] || [[ "${_CHOICE_}" -gt "${_ITER_}" ]]; then
-			echo -e "  ${_COL_BBLUE_}->${_COL_DEFAULT_} ${_COL_BRED_}Invalid choice${_COL_DEFAULT_}"
+			echo -e "  ${_COL_BBLUE_}->${_COL_DEFAULT_} ${_COL_BRED_}Invalid number${_COL_DEFAULT_}"
 			echo
 		else
 			_GOOD_ANSWER_=1
@@ -81,7 +81,7 @@ while [[ "${_DONE_}" -eq 0 ]]; do
 		_CHOSEN_SHORT_="${_CHOSEN_LONG_:_THIS_PATH_LENGTH_}"
 		_GCC_CMD_="gcc -Wall -pedantic -lconfini"
 		if [[ "${_CHOSEN_SHORT_}" == *"glib_"* ]]; then
-			# We need glib for this...
+			# We need glib for these...
 			_GCC_CMD_="${_GCC_CMD_} -lglib-2.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include"
 		fi
 		echo -e "  ${_COL_BBLUE_}->${_COL_DEFAULT_} Compiling \"${_CHOSEN_SHORT_}\" with gcc"

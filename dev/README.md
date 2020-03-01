@@ -15,7 +15,7 @@ generated). You can afterwards launch
 
 ```````````````````````````````` sh
 ./configure --enable-author-mode
-make official-csources
+make official-sources
 ````````````````````````````````
 
 to update the `src` subdirectory.

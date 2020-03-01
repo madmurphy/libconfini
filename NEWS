@@ -2,6 +2,18 @@ NEWS
 ====
 
 
+## 1.14.0
+
+* Added implicit value check in `ini_array_break()`, `ini_array_collapse()`,
+  `ini_array_release()`, `ini_array_split()`, `ini_string_parse()` and
+  `ini_unquote()`
+* Integer constant `CONFINI_EROADDR` has been added to the `ConfiniInterruptNo`
+  `enum`
+* New examples have been created (`examples/miscellanea/parse_foreign.c`,
+  `examples/miscellanea/toml-like.c` and
+  `examples/utilities/clone_ini_dispatch.h`)
+
+
 ## 1.13.0
 
 * Standard header `stdbool.h` has been added to the library's public header for

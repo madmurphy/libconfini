@@ -20,12 +20,13 @@ int main () {
 
   const char original_ini_buffer[] = 
     "[SectionOne]\n"
-    " \n"
+    "\n"
     "key = \"value\"\n"
     "integer = 1234\n"
     "real = 3.14\n"
     "string1 = \"Case 1\"\n"
-    "string2 = 'Case 2'\n";
+    "string2 = 'Case 2'\n"
+  ;
 
   size_t ini_length = strlen(original_ini_buffer);
   char * const ini_cache = strndup(original_ini_buffer, ini_length);
@@ -46,7 +47,7 @@ int main () {
 
   printf(
 
-    "The previous dispatches come from the following INI buffer:\n\n"
+    "The previous dispatches come from the following buffer:\n\n"
     "-----------------[original INI buffer]-----------------\n"
     "%s"
     "-------------------------------------------------------\n\n",
@@ -56,11 +57,11 @@ int main () {
   );
 
   printf(
-	"After being processed by `strip_ini_cache()`, the buffer looks "
-	"like this:\n"
+    "After being processed by `strip_ini_cache()`, the buffer looks "
+    "like this:\n"
   );
 
-  printf("\n--------------------[disposed copy]--------------------\n");
+  printf("\n-------------------[disposed buffer]-------------------\n");
 
   for (size_t idx = 0; idx <= ini_length; idx++) {
 
@@ -73,7 +74,7 @@ int main () {
   printf(
     "The dots in the example above represent NUL characters. Remember "
     "that\n`strip_ini_cache()` does not free the buffer passed, you will "
-    "have to do that\nby yourself!\n"
+    "have to do that\nby yourself.\n"
   );
 
   free(ini_cache);

@@ -14,4 +14,5 @@ You can get started by having a look at the [README](@ref readme) and
 * `IniFormat`
 * `IniStatistics`
 * `IniDispatch`
+* [**Project Wiki**](https://github.com/madmurphy/libconfini/wiki)
 

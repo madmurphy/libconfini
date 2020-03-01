@@ -4,11 +4,7 @@ root = true
 indent_style = tab
 indent_size = 2
 
-[{**.sh,configure.ac,**/Makefile.am}]
-indent_style = tab
-indent_size = 4
-
-[{src/confini.c,dev/marked-sources/confini-marked.c}]
+[{src/confini.c,dev/marked-sources/confini-marked.c,**.sh,configure.ac,**/Makefile.am,**.m4}]
 charset = utf-8
 indent_style = tab
 indent_size = 4

@@ -17,7 +17,7 @@ AM_CPPENV = \
 	"-DPACKAGE_DATA_DIR=\"$(pkgdatadir)\""
 
 OFFICIAL_CPPENV = \
-	"-DCONFINI_IO_FLAVOR=@parent_cpp_flavor@"
+	"-DCONFINI_IO_FLAVOR=@na_io_api@"
 
 BAREMETAL_CPPENV = \
 	"-DCONFINI_IO_FLAVOR=CONFINI_BAREMETAL" \
@@ -326,12 +326,12 @@ built-sources/baremetal/confini.h: \
 # Symbolic link
 confini-baremetal.c: \
  built-sources/baremetal/confini.c
-	@rm -f '$@' && $(LN_S) '$<' '$@'
+	@rm -f '$@' && $(LN_S) '$<' '$@';
 
 # Symbolic link
 confini-baremetal.h: \
  built-sources/baremetal/confini.h
-	@rm -f '$@' && $(LN_S) '$<' '$@'
+	@rm -f '$@' && $(LN_S) '$<' '$@';
 
 # User's rule for forcing non-phony targets to be built, as in `make
 # EXPIRE='confini.c confini.h' confini.c confini.h` or (equivalently) `make

@@ -2,14 +2,15 @@ libconfini {#readme}
 ====================
 
 **libconfini** is the ultimate and most consistent INI file parser library
-written in C. It focuses on standardization and parsing exactness and is at
+written in C. Originally designed for parsing configuration files written by
+other programs, it focuses on standardization and parsing exactness and is at
 ease with almost every type of file containing key/value pairs.
 
 The library is fast and suitable for embedded systems. Its algorithms are
 written from scratch and do not depend on any external library, except for the
 C standard headers **stdio.h**, **stdlib.h**, **stdbool.h** and **stdint.h**
-(and for extreme platforms the code can be also compiled as “bare metal”, with
-few or no strings attached to the C Standard Library).
+(and for extreme platforms the code [can be also compiled as “bare metal”][1],
+with few or no strings attached to the C Standard Library).
 
 Rather than storing the parsed data, **libconfini** gives the developer the
 freedom to choose what to do with them through a custom callback invoked for
@@ -20,8 +21,12 @@ With **libconfini** you will find in INI files the same serialization power you
 would normally find in other heavily structured formats (such as JSON, YAML,
 TOML), but with the advantage of using the most human-readable configuration
 format ever invented (thanks to their informal status, INI files are indeed
-more fluid and human-readable than formats explicitly designed with this
-purpose, such as YAML and TOML).
+more fluid, expressive and human-readable than formats explicitly designed with
+the same purpose, such as YAML and TOML). The library's main goal is to be
+uncommonly powerful in the most tedious and error-prone task when parsing a
+text file in C: string handling. Thanks to this the the programmer is left free
+to organize the content parsed as (s)he pleases, assisted by a rich set of
+fine-tuning tools.
 
 
 Features
@@ -29,7 +34,8 @@ Features
 
 * Typed data support (each value can be parsed as a boolean, a number, a
   string, an array)
-* Single/double quotes support in _Bash single quotes style_
+* Single/double quotes support in _Bash style_ (i.e. quotes can be opened and
+  closed multiple times within the same value)
 * Multi-line support
 * Comment support
 * Disabled entry support
@@ -122,10 +128,10 @@ People who have visited: ronnie, lilly82, robrob
 Last update: 12.03.2017
 ````````````````````````````````````````````````
 
-For more details, please read the [Library Functions Manual][1]
-(`man libconfini` -- a standalone HTML version is available [here][2]) and the
+For more details, please read the [Library Functions Manual][2]
+(`man libconfini` -- a standalone HTML version is available [here][3]) and the
 manual of the header file (`man confini.h`). The code is available on
-[GitHub][3] under [madmurphy/libconfini][4]).
+[GitHub][4] under [madmurphy/libconfini][5]).
 
 
 Installation
@@ -133,7 +139,7 @@ Installation
 
 Despite the small footprint, **libconfini** has been conceived as a shared
 library (but it can be used as a static library as well). An automatic list of
-the distributions that ship the library already compiled is available [here][5].
+the distributions that ship the library already compiled is available [here][6].
 
 If a pre-compiled package for your platform is not available, on most Unix-like
 systems it is possible to install **libconfini** using the following common
@@ -158,32 +164,34 @@ by running the `bootstrap` script. By default, `bootstrap` will also run the
 `./bootstrap --help`.
 
 If you are using **Microsoft Windows**, a batch script for compiling
-**libconfini** with [MinGW][6] without Bash is available (`mgwmake.bat`). If you
+**libconfini** with [MinGW][7] without Bash is available (`mgwmake.bat`). If you
 are interested in using Autotools for compiling **libconfini** under Microsoft
-Windows, you can integrate MinGW with [MSYS][7], or you can directly use
-[MSYS2][8]. Alternatively, [an unofficial port][9] of **libconfini** for
-[Cygwin][10] is available.
+Windows, you can integrate MinGW with [MSYS][8], or you can directly use
+[MSYS2][9]. Alternatively, [an unofficial port][10] of **libconfini** for
+[Cygwin][11] is available.
 
-For further information, see [INSTALL][11].
+For further information, see [INSTALL][12].
 
 
 Free software
 -------------
 
 This library is free software. You can redistribute it and/or modify it under
-the terms of the GPL license version 3 or any later version. See [COPYING][12]
+the terms of the GPL license version 3 or any later version. See [COPYING][13]
 for details.
 
 
-[1]: https://madmurphy.github.io/libconfini/html/libconfini.html
-[2]: https://madmurphy.github.io/libconfini/manual.html
-[3]: https://github.com/
-[4]: https://github.com/madmurphy/libconfini
-[5]: https://repology.org/project/libconfini/versions
-[6]: http://www.mingw.org/
-[7]: http://www.mingw.org/wiki/MSYS
-[8]: https://www.msys2.org/
-[9]: https://github.com/fd00/yacp/tree/master/libconfini
-[10]: https://www.cygwin.com/
-[11]: https://github.com/madmurphy/libconfini/blob/master/INSTALL
-[12]: https://github.com/madmurphy/libconfini/blob/master/COPYING
+[1]: https://madmurphy.github.io/libconfini/html/baremetal.html
+[2]: https://madmurphy.github.io/libconfini/html/libconfini.html
+[3]: https://madmurphy.github.io/libconfini/manual.html
+[4]: https://github.com/
+[5]: https://github.com/madmurphy/libconfini
+[6]: https://repology.org/project/libconfini/versions
+[7]: http://www.mingw.org/
+[8]: http://www.mingw.org/wiki/MSYS
+[9]: https://www.msys2.org/
+[10]: https://github.com/fd00/yacp/tree/master/libconfini
+[11]: https://www.cygwin.com/
+[12]: https://github.com/madmurphy/libconfini/blob/master/INSTALL
+[13]: https://github.com/madmurphy/libconfini/blob/master/COPYING
+

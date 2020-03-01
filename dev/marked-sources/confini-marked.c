@@ -3,15 +3,18 @@
 
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ !START_OMISSION! @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
 
-This is a marked EXACT COPY of `src/confini.c`, where replaceable sections have
-been enclosed within special tags so that it can be amended by the `configure`
-script.
+This is a marked **exact copy** of `src/confini.c`, where replaceable sections have
+been enclosed within special tags that can be parsed and amended by GNU Make to
+create custom forks of the library.
 
-If you want to contribute to the development of the library, please USE THIS FILE,
-as `src/confini.c` is automatically generated from here.
+If you want to contribute to the development of this project, please **use this
+file**, as `src/confini.c` is automatically generated from here.
 
-This code distributed under the terms of the GPL license version 3 or any later
-version.
+For more information about the tags used here, see the `NA_AMEND()` macro from
+`m4/not-autotools.m4` at https://github.com/madmurphy/not-autotools
+
+The code below is distributed under the terms of the GPL license version 3 or any
+later version.
 
 -@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ !END_OMISSION! @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@ !ENTRY_POINT(CONFINI_C_METADATA)! @@@@@@@@@@@@@@@@@@@@@@*/
@@ -118,15 +121,16 @@ version.
 	@struct		IniFormat
 
 	@property	IniFormat::delimiter_symbol
-					The symbol to be used as delimiter (only ASCII allowed); if set
-					to `0`, any space is delimiter
+					The key-value delimiter character (ASCII only allowed); if set
+					to `\0`, any space is delimiter
 					(`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`); if, within the format
-					given, this matches a metacharacter (`'\\'`, `'\''`, `'\"'`),
-					its role as metacharacter will have higher priority than its
-					role as delimiter symbol (i.e., the format will have no
-					delimiter symbol); you may use `enum` #IniDelimiters for this.
+					given, `IniFormat::delimiter_symbol` matches a metacharacter
+					(`'\\'`, `'\''`, `'\"'`), its role as metacharacter will have
+					higher priority than its role as delimiter symbol (i.e., the
+					format will have no key-value delimiter); you may use the
+					#IniDelimiters `enum` for this.
 	@property	IniFormat::case_sensitive
-					If set to `true`, string comparisons will be always performed
+					If set to `true`, string comparisons will be always
 					case-sensitive.
 	@property	IniFormat::semicolon_marker
 					The rule of the semicolon character (use `enum`
@@ -154,7 +158,7 @@ version.
 					considered as a normal character.
 	@property	IniFormat::implicit_is_not_empty
 					If set to `true`, implicit keys (see @ref libconfini) will
-					always be dispatched using the values given by the global
+					be always dispatched using the values given by the global
 					variables #INI_GLOBAL_IMPLICIT_VALUE and
 					#INI_GLOBAL_IMPLICIT_V_LEN for the fields #IniDispatch::value
 					and to #IniDispatch::v_len respectively; if set to `false`,
@@ -173,12 +177,12 @@ version.
 					empty strings enclosed between quotes are _always_ collapsed
 					together with their surrounding spaces.
 	@property	IniFormat::disabled_after_space
-					If set to `true`, allows what follows `/[#;]\s/` to be parsed as
-					a disabled entry.
+					If set to `true`, what follows `/[#;]\s/` is allowed to be
+					parsed as a disabled entry.
 	@property	IniFormat::disabled_can_be_implicit
-					If set to `true`, comments that do not contain a delimiter
-					symbol will never be parsed as disabled keys, but always as
-					simple comments.
+					If set to `false`, comments that do not contain a key-value
+					delimiter will never be parsed as disabled keys, but always as
+					simple comments (even if the format supports implicit keys).
 
 
 
@@ -187,9 +191,9 @@ version.
 	@property	IniStatistics::format
 					The format of the INI file (see #IniFormat)
 	@property	IniStatistics::bytes
-					The size of the parsed file in bytes
+					The size in bytes of the parsed file
 	@property	IniStatistics::members
-					The size of the parsed file in number of members (nodes) -- this
+					The size in number of members (nodes) of the parsed file -- this
 					number always equals the number of dispatches that will be sent
 					by #load_ini_file(), #load_ini_path() or #strip_ini_cache()
 
@@ -202,14 +206,15 @@ version.
 	@property	IniDispatch::type
 					The dispatch type (see `enum` #IniNodeType)
 	@property	IniDispatch::data
-					It can be the content of a comment, a section path or a key name
+					#IniDispatch::data can contain a comment, a section path or a
+					key name depending, on #IniDispatch::type; cannot be `NULL`
 	@property	IniDispatch::value
 					It can be the value of a key element, an empty string or it can
 					point to the address pointed by the global variable
-					#INI_GLOBAL_IMPLICIT_VALUE (the latter is the only case in which
-					`IniDispatch::value` might be ·`NULL`)
+					#INI_GLOBAL_IMPLICIT_VALUE (_the latter is the only case in
+					which `IniDispatch::value` can be `NULL`_)
 	@property	IniDispatch::append_to
-					The current section path
+					The current section path; cannot be `NULL`
 	@property	IniDispatch::d_len
 					The length of the string #IniDispatch::data
 	@property	IniDispatch::v_len
@@ -441,6 +446,16 @@ version.
 		: \
 			CHR == _LIBCONFINI_SEMICOLON_ && FMT.semicolon_marker == INI_IGNORE \
 	)
+
+
+/*
+
+	Checks whether a pointer is within the range
+	`INI_GLOBAL_IMPLICIT_VALUE >= PTR <= INI_GLOBAL_IMPLICIT_VALUE + INI_GLOBAL_IMPLICIT_V_LEN`
+
+*/
+#define _LIBCONFINI_IMPLICIT_RANGE_(PTR) \
+	(PTR >= INI_GLOBAL_IMPLICIT_VALUE && PTR <= INI_GLOBAL_IMPLICIT_VALUE + INI_GLOBAL_IMPLICIT_V_LEN)
 
 
 /*
@@ -732,7 +747,7 @@ static inline size_t qultrim_h (char * const srcstr, const size_t offs, const In
 	register uint8_t abcd = (format.no_double_quotes ? 130 : 128) | format.no_single_quotes;
 	size_t idx = offs;
 
-	for (; abcd & 128; idx++) {
+	do {
 
 		abcd	=	!(abcd & 28) && is_some_space(srcstr[idx], _LIBCONFINI_NO_EOL_) ?
 						(abcd & 207) | 64
@@ -775,7 +790,9 @@ static inline size_t qultrim_h (char * const srcstr, const size_t offs, const In
 
 		}
 
-	}
+		idx++;
+
+	} while (abcd & 128);
 
 	return abcd & 28 ? idx - 2 : idx - 1;
 
@@ -817,7 +834,7 @@ static inline size_t dqultrim_s (const char * const srcstr, const size_t offs, c
 
 	register size_t idx = offs;
 
-	for (; abcd & 64; idx++) {
+	do {
 
 		abcd	=	is_some_space(srcstr[idx], _LIBCONFINI_NO_EOL_) ?
 						(
@@ -851,7 +868,10 @@ static inline size_t dqultrim_s (const char * const srcstr, const size_t offs, c
 					:
 						abcd & 19;
 
-	}
+
+		idx++;
+
+	} while (abcd & 64);
 
 	return abcd & 28 ? idx - 2 : idx - 1;
 
@@ -1490,7 +1510,7 @@ static size_t uncomment (char * const srcstr, size_t len, const IniFormat format
 	@param			srcstr			String containing an individual node (it may
 									contain multi-line escape sequences)
 	@param			len				Length of the node
-	@param			allow_implicit	A boolean: `true` if keys without a
+	@param			allow_implicit	A boolean: `true` if keys without a key-value
 									delimiter are allowed, `false` otherwise
 	@param			format			The format of the INI file
 	@return			The node type (see header)
@@ -1548,19 +1568,15 @@ static uint8_t get_type_as_active (
 
 			*/
 
-			for (
 
-				idx = 1,
+			idx = 1;
 
-				abcd	=	(format.section_paths == INI_ONE_LEVEL_ONLY ? 772: 768) |
-							(format.no_double_quotes << 1) |
-							format.no_single_quotes;
+			abcd	=	(format.section_paths == INI_ONE_LEVEL_ONLY ? 772: 768) |
+						(format.no_double_quotes << 1) |
+						format.no_single_quotes;
 
-					abcd & 256;
 
-				idx++
-
-			) {
+			do {
 
 				/*  Revision #2  */
 
@@ -1609,7 +1625,10 @@ static uint8_t get_type_as_active (
 							:
 								(abcd & 671) | 128;
 
-			}
+
+				idx++;
+
+			} while (abcd & 256);
 
 			if (abcd & 512) {
 
@@ -1874,6 +1893,8 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 			case '\0':
 
+				/*  End of string  */
+
 				if (~abcd & 8) {
 
 					/*
@@ -1995,7 +2016,12 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 					focus_at = dqultrim_s(srcstr, search_at, format);
 
-					if (get_type_as_active(srcstr + focus_at, idx - focus_at, format.disabled_can_be_implicit, format)) {
+					if (get_type_as_active(
+						srcstr + focus_at,
+						idx - focus_at,
+						format.disabled_can_be_implicit,
+						format
+					)) {
 
 						if (!_LIBCONFINI_IS_IGN_MARKER_(srcstr[idx], format)) {
 
@@ -2086,6 +2112,7 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 			case '\0':
 
+				/*  End of string  */
 				break;
 
 			case _LIBCONFINI_VT_:
@@ -2135,9 +2162,10 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 					/*
 
 						Remove the backslash if the comment immediately follows an
-						escaped new line made of two chararacters (`/\\[\r\n]/`).
-						In case of CR + LF or LF + CR (`/\\\n\r|\\\r\n/`) the
-						backslash will be removed later by #strip_ini_cache().
+						escaped new line expressed by one chararacter
+						(`/\\[\r\n]/`). In case of CR + LF or LF + CR
+						(`/\\\n\r|\\\r\n/`) the backslash will be removed later by
+						#strip_ini_cache().
 
 					*/
 
@@ -2221,7 +2249,7 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 					dispatches its content to a custom callback
 	@param			ini_source		The buffer containing the INI file to tokenize
 	@param			ini_length		The length of @p ini_source without counting the
-									NUL terminator (if any)
+									NUL terminator (if any -- se below)
 	@param			format			The format of the INI file
 	@param			f_init			The function that will be invoked before the
 									first dispatch, or `NULL`
@@ -2270,9 +2298,9 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 	ASCII (as they do, for example, in UTF-8 and ISO-8859-1), independently of
 	platform-specific conventions.
 
-	@note	In order to be null-byte-injection-safe, this function will strip all
-			`NUL` characters possibly present in the buffer, with the exception of
-			the last one, before dispatching the parsed content.
+	@note	In order to be null-byte-injection-safe, before dispatching the parsed
+			content this function will strip all `NUL` characters possibly present
+			in the buffer (with the exception of the last one).
 
 	Possible return values are: #CONFINI_SUCCESS, #CONFINI_IINTR, #CONFINI_FEINTR,
 	#CONFINI_EOOR.
@@ -2463,10 +2491,20 @@ int strip_ini_cache (
 		/*  Set `dsp.value` to an empty string  */
 		dsp.value = ini_source + idx;
 
-		if (_LIBCONFINI_IS_DIS_MARKER_(*dsp.data, format) && (format.disabled_after_space || !is_some_space(dsp.data[1], _LIBCONFINI_NO_EOL_))) {
+		if (
+			_LIBCONFINI_IS_DIS_MARKER_(*dsp.data, format) && (
+				format.disabled_after_space || !is_some_space(dsp.data[1], _LIBCONFINI_NO_EOL_)
+			)
+		) {
 
 			__ITER__ = dqultrim_s(dsp.data, 0, format);
-			dsp.type = get_type_as_active(dsp.data + __ITER__, dsp.d_len - __ITER__, format.disabled_can_be_implicit, format);
+
+			dsp.type = get_type_as_active(
+				dsp.data + __ITER__,
+				dsp.d_len - __ITER__,
+				format.disabled_can_be_implicit,
+				format
+			);
 
 			if (dsp.type) {
 
@@ -2682,7 +2720,7 @@ int strip_ini_cache (
 
 							dsp.value += ltrim_h(dsp.value, 0, _LIBCONFINI_WITH_EOL_);
 							dsp.v_len = rtrim_h(dsp.value, dsp.d_len + dsp.data - dsp.value, _LIBCONFINI_WITH_EOL_);
-							break;
+							/*  No case break here (last case)  */
 
 					}
 
@@ -2738,8 +2776,8 @@ int strip_ini_cache (
 													/** @utility{load_ini_file} **/
 /**
 
-	@brief			Parses an INI file and dispatches its content using a `FILE`
-					structure as argument
+	@brief			Parses an INI file and dispatches its content to a custom
+					callback using a `FILE` structure as argument
 	@param			ini_file		The `FILE` handle pointing to the INI file to
 									parse
 	@param			format			The format of the INI file
@@ -2831,8 +2869,8 @@ int load_ini_file (
 													/** @utility{load_ini_path} **/
 /**
 
-	@brief			Parses an INI file and dispatches its content using a path as
-					argument
+	@brief			Parses an INI file and dispatches its content to a custom
+					callback using a path as argument
 	@param			path			The path of the INI file
 	@param			format			The format of the INI file
 	@param			f_init			The function that will be invoked before the
@@ -2912,7 +2950,7 @@ int load_ini_path (
 
 	}
 
-	/*  No checks here, as there is nothing we can do about it  */
+	/*  No checks here, as there is nothing we can do about it...  */
 	fclose(ini_file);
 
 	const int return_value = strip_ini_cache(cache, (size_t) file_size, format, f_init, f_foreach, user_data);
@@ -2931,7 +2969,7 @@ int load_ini_path (
 											/** @utility{ini_string_match_ss} **/
 /**
 
-	@brief			Compares two simple strings and checks if they match
+	@brief			Compares two simple strings and checks whether they match
 	@param			simple_string_a		The first simple string
 	@param			simple_string_b		The second simple string
 	@param			format				The format of the INI file
@@ -2985,8 +3023,8 @@ bool ini_string_match_ss (
 											/** @utility{ini_string_match_si} **/
 /**
 
-	@brief			Compares a simple string and an INI string and and checks if
-					they match
+	@brief			Compares a simple string and an INI string and and checks
+					whether they match
 	@param			ini_string		The INI string escaped according to
 									@p format
 	@param			simple_string	The simple string
@@ -3157,7 +3195,7 @@ bool ini_string_match_si (
 											/** @utility{ini_string_match_ii} **/
 /**
 
-	@brief			Compares two INI strings and checks if they match
+	@brief			Compares two INI strings and checks whether they match
 	@param			ini_string_a	The first INI string unescaped according to
 									@p format
 	@param			ini_string_b	The second INI string unescaped according to
@@ -3371,7 +3409,7 @@ bool ini_string_match_ii (
 												/** @utility{ini_array_match} **/
 /**
 
-	@brief			Compares two INI arrays and checks if they match
+	@brief			Compares two INI arrays and checks whether they match
 	@param			ini_string_a	The first INI array
 	@param			ini_string_b	The second INI array
 	@param			delimiter		The delimiter between the array members -- if
@@ -3625,6 +3663,10 @@ bool ini_array_match (
 	used as well). If the string does not contain quotes, or if quotes are
 	considered to be normal characters, no changes will be made.
 
+	@note	If @p ini_string comes from #INI_GLOBAL_IMPLICIT_VALUE this function is
+			no-op and will only return the value of #INI_GLOBAL_IMPLICIT_V_LEN minus
+			the offset of @p ini_string within #INI_GLOBAL_IMPLICIT_VALUE.
+
 	The @p format argument is used for the following fields:
 
 	- `format.no_single_quotes`
@@ -3635,6 +3677,12 @@ bool ini_array_match (
 
 **/
 size_t ini_unquote (char * const ini_string, const IniFormat format) {
+
+	if (_LIBCONFINI_IMPLICIT_RANGE_(ini_string)) {
+
+		return INI_GLOBAL_IMPLICIT_V_LEN + INI_GLOBAL_IMPLICIT_VALUE - ini_string;
+
+	}
 
 	register size_t idx = 0;
 
@@ -3746,6 +3794,10 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 	used as well). If `format.do_not_collapse_values` is set to non-zero, spaces
 	surrounding empty quotes will be collapsed together with the latter.
 
+	@note	If @p ini_string comes from #INI_GLOBAL_IMPLICIT_VALUE this function is
+			no-op and will only return the value of #INI_GLOBAL_IMPLICIT_V_LEN minus
+			the offset of @p ini_string within #INI_GLOBAL_IMPLICIT_VALUE.
+
 	The @p format argument is used for the following fields:
 
 	- `format.no_single_quotes`
@@ -3756,13 +3808,19 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 	@note	`format.multiline_nodes` is used only to figure out whether there are
 			escape sequences or not. For all other purposes new line characters will
 			be considered to be equal to any other space character, even if the
-			format is not multi-line -- in fact new line characters should never
-			appear in non-multi-line formats .
+			format is not multi-line -- new line characters should never appear in
+			non-multi-line formats.
 
 	@include topics/ini_string_parse.c
 
 **/
 size_t ini_string_parse (char * const ini_string, const IniFormat format) {
+
+	if (_LIBCONFINI_IMPLICIT_RANGE_(ini_string)) {
+
+		return INI_GLOBAL_IMPLICIT_V_LEN + INI_GLOBAL_IMPLICIT_VALUE - ini_string;
+
+	}
 
 	/*
 
@@ -3948,7 +4006,11 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 			will contain only one member).
 
 **/
-size_t ini_array_get_length (const char * const ini_string, const char delimiter, const IniFormat format) {
+size_t ini_array_get_length (
+	const char * const ini_string,
+	const char delimiter,
+	const IniFormat format
+) {
 
 	if (!ini_string) {
 
@@ -4034,7 +4096,7 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 	@brief			Calls a custom function for each member of a stringified INI
 					array, without modifying the content of the buffer -- useful for
 					read-only (`const`) stringified arrays
-	@param			ini_string		The stringified array (it cannot be `NULL`)
+	@param			ini_string		The stringified array (it can be `NULL`)
 	@param			delimiter		The delimiter between the array members -- if
 									zero (see #INI_ANY_SPACE), any space is
 									delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
@@ -4061,6 +4123,8 @@ size_t ini_array_get_length (const char * const ini_string, const char delimiter
 			than its role as delimiter (i.e., the array will have no delimiters and
 			will contain only one member).
 
+	Possible return values are: #CONFINI_SUCCESS, #CONFINI_FEINTR.
+
 	@include topics/ini_array_foreach.c.
 
 **/
@@ -4071,6 +4135,12 @@ int ini_array_foreach (
 	const IniSubstrHandler f_foreach,
 	void * const user_data
 ) {
+
+	if (!ini_string) {
+
+		return CONFINI_SUCCESS;
+
+	}
 
 	/*
 
@@ -4268,6 +4338,10 @@ size_t ini_array_shift (const char ** const ini_strptr, const char delimiter, co
 	     third&nbsp;&nbsp;&nbsp;&nbsp; etc.&nbsp;&nbsp;&nbsp;`
 	   - After: `first second third etc.`
 
+	@note	If @p ini_string comes from #INI_GLOBAL_IMPLICIT_VALUE this function is
+			no-op and will only return the value of #INI_GLOBAL_IMPLICIT_V_LEN minus
+			the offset of @p ini_string within #INI_GLOBAL_IMPLICIT_VALUE.
+
 	@note	If @p delimiter matches a metacharacter within the format given (`'\\'`,
 			`'\''` or `'\"'`), its role as metacharacter will have higher priority
 			than its role as delimiter (i.e., the array will have no delimiters and
@@ -4280,6 +4354,12 @@ size_t ini_array_shift (const char ** const ini_strptr, const char delimiter, co
 
 **/
 size_t ini_array_collapse (char * const ini_string, const char delimiter, const IniFormat format) {
+
+	if (_LIBCONFINI_IMPLICIT_RANGE_(ini_string)) {
+
+		return INI_GLOBAL_IMPLICIT_V_LEN + INI_GLOBAL_IMPLICIT_VALUE - ini_string;
+
+	}
 
 	if (_LIBCONFINI_IS_ESC_CHAR_(delimiter, format)) {
 
@@ -4454,7 +4534,7 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 
 	@brief			Replaces the first delimiter found (together with the spaces
 					that surround it) with `\0`
-	@param			ini_string		The stringified array -- it can be `NULL`
+	@param			ini_string		The stringified array (it can be `NULL`)
 	@param			delimiter		The delimiter between the array members -- if
 									zero (see #INI_ANY_SPACE), any space is
 									delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
@@ -4468,6 +4548,9 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 	Similarly to `strtok_r()` this function can be used only once for a given
 	string.
 
+	@note	If @p ini_string comes from #INI_GLOBAL_IMPLICIT_VALUE this function is
+			no-op and will return `NULL`.
+
 	@note	If @p delimiter matches a metacharacter within the format given (`'\\'`,
 			`'\''` or `'\"'`), its role as metacharacter will have higher priority
 			than its role as delimiter (i.e., the array will have no delimiters and
@@ -4478,7 +4561,7 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 **/
 char * ini_array_break (char * const ini_string, const char delimiter, const IniFormat format) {
 
-	if (ini_string) {
+	if (ini_string && !_LIBCONFINI_IMPLICIT_RANGE_(ini_string)) {
 
 		char * remnant;
 
@@ -4544,6 +4627,9 @@ char * ini_array_break (char * const ini_string, const char delimiter, const Ini
 	Similarly to `strtok_r()` this function can be used only once for a given
 	string.
 
+	@note	If @p ini_string comes from #INI_GLOBAL_IMPLICIT_VALUE this function is
+			no-op and will set @p ini_strptr to `NULL`.
+
 	@note	If @p delimiter matches a metacharacter within the format given (`'\\'`,
 			`'\''` or `'\"'`), its role as metacharacter will have higher priority
 			than its role as delimiter (i.e., the array will have no delimiters and
@@ -4556,7 +4642,7 @@ char * ini_array_release (char ** const ini_strptr, const char delimiter, const 
 
 	char * const token = *ini_strptr;
 
-	if (token && !_LIBCONFINI_IS_ESC_CHAR_(delimiter, format)) {
+	if (token && !_LIBCONFINI_IMPLICIT_RANGE_(token) && !_LIBCONFINI_IS_ESC_CHAR_(delimiter, format)) {
 
 		*ini_strptr += get_metachar_pos(*ini_strptr, delimiter, format);
 
@@ -4611,10 +4697,15 @@ char * ini_array_release (char ** const ini_strptr, const char delimiter, const 
 	Similarly to `strtok_r()` this function can be used only once for a given
 	string.
 
+	@note	If @p ini_string comes from #INI_GLOBAL_IMPLICIT_VALUE or is `NULL` this
+			function is no-op and will return an error code.
+
 	@note	If @p delimiter matches a metacharacter within the format given (`'\\'`,
 			`'\''` or `'\"'`), its role as metacharacter will have higher priority
 			than its role as delimiter (i.e., the array will have no delimiters and
 			will contain only one member).
+
+	Possible return values are: #CONFINI_SUCCESS, #CONFINI_EROADDR, #CONFINI_FEINTR.
 
 	@include topics/ini_array_split.c.
 
@@ -4626,6 +4717,12 @@ int ini_array_split (
 	const IniStrHandler f_foreach,
 	void * const user_data
 ) {
+
+	if (!ini_string || _LIBCONFINI_IMPLICIT_RANGE_(ini_string)) {
+
+		return CONFINI_EROADDR;
+
+	}
 
 	/*
 
@@ -4810,7 +4907,7 @@ IniFormat ini_ntof (const IniFormatNum format_num) {
 	#define __MAX_7_BITS__ 127
 	#define __MAX_8_BITS__ 255
 	#define __INIFORMAT_PROPERTIES__(NAME, OFFSET, SIZE, DEFVAL) \
-		(format_num >> OFFSET) & __MAX_##SIZE##_BITS__,
+		(unsigned char) ((format_num >> OFFSET) & __MAX_##SIZE##_BITS__),
 
 	return (IniFormat) { INIFORMAT_TABLE_AS(__INIFORMAT_PROPERTIES__) };
 
@@ -4832,11 +4929,11 @@ IniFormat ini_ntof (const IniFormatNum format_num) {
 
 	@brief			Checks whether a string matches one of the booleans listed in
 					the private constant #INI_BOOLEANS (case-insensitive)
-	@param			ini_string			A string to be checked
-	@param			return_value		A value that is returned if no matching
-										boolean has been found
-	@return			The matching boolean value (0 or 1) or @p return_value if no
-					boolean has been found
+	@param			ini_string			A string to check (it can be `NULL`)
+	@param			when_fail			A value that is returned if no matching
+										boolean is found
+	@return			The matching boolean (`0` or `1`) or @p when_fail if
+					@p ini_string does not contain a valid INI boolean
 
 	Usually @p ini_string comes from an #IniDispatch (but any other string may be
 	used as well).
@@ -4844,12 +4941,18 @@ IniFormat ini_ntof (const IniFormatNum format_num) {
 	@include miscellanea/typed_ini.c
 
 **/
-int ini_get_bool (const char * const ini_string, const int return_value) {
+int ini_get_bool (const char * const ini_string, const int when_fail) {
+
+	if (!ini_string) {
+
+		return when_fail;
+
+	}
 
 	register uint8_t bool_idx;
 	register size_t pair_idx, chr_idx;
 
-	for (pair_idx = 0; pair_idx < sizeof(INI_BOOLEANS) / 2 / sizeof(char *); pair_idx++) {
+	for (pair_idx = 0; pair_idx < sizeof(INI_BOOLEANS) / sizeof(const char * const [2]); pair_idx++) {
 
 		for (bool_idx = 0; bool_idx < 2; bool_idx++) {
 
@@ -4869,14 +4972,14 @@ int ini_get_bool (const char * const ini_string, const int return_value) {
 
 	}
 
-	return return_value;
+	return when_fail;
 
 }
 
 
 /*@@@@@@@@@@@@@@@@@@@@@@ !START_EXCEPTION(NUMBER_PARSERS)! @@@@@@@@@@@@@@@@@@@@@@*/
 
-		/*  LINKS -- In case you don't have `#include <stdlib.h>` in your source  */
+		/*  LINKS - In case you don't have `#include <stdlib.h>` in your source  */
 
 
 /**
@@ -4908,7 +5011,7 @@ double (* const ini_get_double) (const char * ini_string) = atof;
 #ifdef ini_get_float
 #undef ini_get_float
 #endif
-double (* const ini_get_float) (const char * ini_string) = &atof;
+double (* const ini_get_float) (const char * ini_string) = atof;
 /*@@@@@@@@@@@@@@@@@@@@@@@ !END_EXCEPTION(NUMBER_PARSERS)! @@@@@@@@@@@@@@@@@@@@@@@*/
 
 

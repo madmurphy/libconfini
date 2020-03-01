@@ -12,7 +12,7 @@ static int my_array_fragm_handler (
   void * user_data
 ) {
 
-  printf("%.*s\n", (unsigned int) fragm_length, ini_array + fragm_offset);
+  printf("\"%.*s\"\n", (unsigned int) fragm_length, ini_array + fragm_offset);
 
   return 0;
 
@@ -21,7 +21,7 @@ static int my_array_fragm_handler (
 int main () {
 
   ini_array_foreach(
-    "first,  second,  third",
+    "first  ,  second   ,  third",
     ',',
     INI_DEFAULT_FORMAT,
     my_array_fragm_handler,

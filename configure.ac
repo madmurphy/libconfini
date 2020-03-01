@@ -23,16 +23,18 @@ AC_PREREQ([2.68])
 ###  **************************************************************************
 
 AC_INIT([lib]n4_mem([GL_PROJECT_NAME], [confini]),
-	n4_mem([GL_PROJECT_MAJVER], [1])[.]n4_mem([GL_PROJECT_MINVER],
-		[13])[.]n4_mem([GL_PROJECT_REVVER], [0]),
+	m4_joinall([.],
+		n4_mem([GL_PROJECT_MAJVER], [1]),
+		n4_mem([GL_PROJECT_MINVER], [14]),
+		n4_mem([GL_PROJECT_REVVER], [0])),
 	[madmurphy333@gmail.com],
 	[lib]GL_PROJECT_NAME,
 	[https://madmurphy.github.io/libconfini])
 
 NC_GLOBAL_LITERALS(
-	[INTERFACE_NUMBER],			[3],
-	[IMPLEMENTATION_NUMBER],	[1],
-	[INTERFACE_COMPATIBILITY],	[3],
+	[INTERFACE_NUMBER],			[4],
+	[IMPLEMENTATION_NUMBER],	[0],
+	[INTERFACE_COMPATIBILITY],	[4],
 	[PROJECT_DESCRIPTION],		[Yet another INI parser],
 	[LICENSE_STRING],			[GNU General Public License, version 3 or any
 								later version],
@@ -47,7 +49,7 @@ NC_GLOBAL_LITERALS(
 ###     R E N A M I N G   R U L E S
 ###  **************************************************************************
 
-AC_SUBST([PROJECT_NAME], [GL_PROJECT_NAME])
+AC_SUBST([PROJECT_NAME], [']GL_PROJECT_NAME['])
 
 AS_IF([test "x${program_prefix}" != xNONE], [
 	AS_VAR_SET([na_tmppref],
@@ -77,8 +79,8 @@ AC_SUBST([PACKAGE_CONFNAME], ["lib${PROJECT_CONFNAME}"])
 
 AC_ARG_WITH([other_versions],
 	[AS_HELP_STRING([--with-other-versions],
-		[make this package able to cohabitate with other major versions of
-		itself @<:@default=no@:>@])],
+		[make this package able to cohabit with other major versions of itself
+		@<:@default=no@:>@])],
 	[:],
 	[AS_VAR_SET([with_other_versions], ['no'])])
 
@@ -106,17 +108,13 @@ AC_SUBST([PACKAGE_LOCALNAME], ["${PACKAGE_CONFNAME}${na_tmpvsuff}"])
 
 AC_SUBST([library_headername], ["${PROJECT_CONFNAME}${na_tmphvsuff}"])
 
-NS_FOR([na_tmp_arg],
-	[AS_CASE([${na_tmp_arg}], [--docdir=*],
-		[AS_VAR_SET([na_auto_docdir], [no])[]NS_BREAK])])
-
 AM_COND_IF([HAVE_TRANSFORMATIONS],
-	[AS_IF([test "x${na_auto_docdir}" != xno],
+	[AS_IF([NC_ARG_MISSING_WITHVAL([--docdir])],
 		[AS_VAR_SET([docdir],
 			['${datarootdir}/doc/'"${PACKAGE_LOCALNAME}"])])])
 
 NS_UNSET([na_tmppref], [na_tmpsuff], [na_tmptransf], [na_tmpvsuff],
-	[na_tmphvsuff], [na_tmp_arg], [na_auto_docdir])
+	[na_tmphvsuff])
 
 
 ###  Prevent any further transformations from Autoconf (unless
@@ -149,8 +147,8 @@ AM_INIT_AUTOMAKE
 AC_ARG_ENABLE([author-mode],
 	[AS_HELP_STRING([--enable-author-mode],
 		[enable make rules and dependencies that facilitate the programming
-		workflow for developing ]AC_PACKAGE_NAME[ but are not necessary (or are
-        even counterproductive) for the casual installer
+		workflow for developing ]AC_PACKAGE_NAME[ but are not useful (or are
+        even counterproductive) to the casual installer
 		@<:@default=<enable-extended-config>@:>@])],
 	[AS_IF([test "x${enable_author_mode}" != xyes -a "x${enable_author_mode}" != xno],
 		[AC_MSG_ERROR([unrecognized option: --enable-author-mode=${enable_author_mode}])])],
@@ -201,7 +199,7 @@ NC_SUBST_NOTMAKE([guessed_am_cflags], ["${CFLAGS}"])
 ###  Restore `CFLAGS` according to the user's will
 NS_MOVEVAR([CFLAGS], [na_tmpusrcflags])
 
-AS_VAR_SET([na_tmp_ioflavor], ['check'])
+AS_VAR_SET([na_allow_stdc], [yes])
 
 ###  Add `--with-io-api=API` option
 AC_ARG_WITH([io_api],
@@ -209,18 +207,24 @@ AC_ARG_WITH([io_api],
 		[build this package with a specific I/O API; possible values for API
 		are: "standard" for using the C Standard I/O API, "posix" for using the
 		POSIX I/O API, "baremetal" or "no" (--without-io-api) for using no I/O
-		API at all, or "check" for automatically selecting the best I/O API
-		supported by this machine @<:@default=check@:>@])],
-	[AS_IF([test "x${withval}" = x -o "x${with_io_api}" = xyes],
-		[AC_MSG_ERROR([an API value must be specified for option --with-io-api=API])],
-		[AS_IF([test "x${with_io_api}" = xno],
-			[AS_VAR_SET([na_tmp_ioflavor], [baremetal])],
-			[AS_VAR_COPY([na_tmp_ioflavor], [withval])])])],
-	[:])
+		API at all, "nolibc" for using neither a I/O API or any C Standard
+		object whatsoever, or "check" for automatically selecting the best I/O
+		API supported by this machine @<:@default=check@:>@])],
+	[AS_IF([test "x${withval}" = x -o "x${with_io_api}" = xyes], [
+		AC_MSG_ERROR([an API value must be specified for option --with-io-api=API])
+	], [test "x${with_io_api}" = xno], [
+		AS_VAR_SET([na_tmp_ioflavor], [baremetal])
+	], [test "x${withval}" = 'xnolibc'], [
+		AS_VAR_SET([na_allow_stdc], [no])
+		AS_VAR_SET([na_tmp_ioflavor], [baremetal])
+	], [
+		AS_VAR_COPY([na_tmp_ioflavor], [withval])
+	])],
+	[AS_VAR_SET([na_tmp_ioflavor], ['check'])])
 
 AS_VAR_SET([AC_CPPENV], ['$(OFFICIAL_CPPENV)'])
 
-AS_CASE([${na_tmp_ioflavor}],
+AS_CASE(["${na_tmp_ioflavor}"],
 	[standard], [],
 	[posix], [
 		AS_IF([test "x${ac_cv_have_posix_c}" = xno], [
@@ -236,8 +240,8 @@ AS_CASE([${na_tmp_ioflavor}],
 			[NC_MSG_WARNBOX([It is strongly recommended to rename the package
 			when compiling it without a I/O API (--without-io-api). For
 			example, to rename `]AC_PACKAGE_TARNAME[` to
-			`libnoio]GL_PROJECT_NAME[`, use `./configure --without-io-api
-			--program-prefix='noio'`. Type `./configure --help` for more
+			`lib]GL_PROJECT_NAME[-baremetal`, use `./configure --without-io-api
+			--program-suffix='-baremetal'`. Type `./configure --help` for more
 			information about renaming rules.])])
 		AS_VAR_SET([na_want_baremetal], ['yes'])
 		AS_VAR_SET([na_tmp_ioflavor], ['standard'])
@@ -256,36 +260,45 @@ AS_CASE([${na_tmp_ioflavor}],
 
 AM_CONDITIONAL([WANT_BAREMETAL], [test "x${na_want_baremetal}" = xyes])
 
-NC_SUBST_NOTMAKE([parent_cpp_flavor],
+NC_SUBST_NOTMAKE([na_io_api],
 	["CONFINI_$(echo "${na_tmp_ioflavor}" | tr '[a-z]' '[A-Z]')"])
 
 NC_SUBST_NOTMAKE([AC_CPPENV])
 
 NS_UNSET([na_tmp_further_pp_macros], [na_tmp_ioflavor])
 
-AS_MKDIR_P([no-dist/conf-results])
+AS_MKDIR_P(['no-dist/conf-results'])
 
-AS_MKDIR_P([no-dist/hackings/baremetal])
+AS_MKDIR_P(['no-dist/hackings/baremetal'])
 
 AC_SUBST([rvdir], ['REVISEME'])
 
 AC_SUBST([nonportfile], ['non-portable.h'])
 
-###  When compiling without a I/O API (--without-io-api), try to guess a possible
-###  re-implementation of the required standard data types if these are missing...
+###  When compiling without a I/O API (--without-io-api), try to guess a
+###  possible re-implementation of the required standard data types if these
+###  are missing...
 AM_COND_IF([WANT_BAREMETAL], [
-	AS_VAR_SET([na_tmp_allstdint], ['no'])
-	AS_IF([test "x${ac_cv_header_stdint_h}${ac_cv_c_uint8_t}${ac_cv_c_int8_t}${ac_cv_c_uint16_t}${ac_cv_c_uint32_t}" = xyesyesyesyesyes],
+	AS_IF([NS_TEST_AEQ([yes],
+		[${na_allow_stdc}], [${ac_cv_header_stdint_h}],
+		[${ac_cv_c_uint8_t}], [${ac_cv_c_int8_t}], [${ac_cv_c_uint16_t}],
+		[${ac_cv_c_uint32_t}])],
 			[AS_VAR_SET([na_tmp_allstdint], ['yes'])],
-		[test "x${ac_cv_header_stdint_h}" = xyes],
-			[AS_CASE([x${ac_cv_c_uint8_t}${ac_cv_c_int8_t}${ac_cv_c_uint16_t}${ac_cv_c_uint32_t}],
-				[*yes*],
-					[AS_VAR_SET([na_tmp_allstdint], ['some'])])])
-	AS_IF([test "x${ac_cv_header_stddef_h}${ac_cv_header_stdbool_h}${ac_cv_header_stdint_h}${ac_cv_type_size_t}${na_tmp_allstdint}" = xyesyesyesyesyes], [
+		[NS_TEST_AEQ([yes],
+			[${na_allow_stdc}], [${ac_cv_header_stdint_h}]) \
+		&& NS_TEST_NAE([no],
+			[${ac_cv_c_uint8_t}], [${ac_cv_c_int8_t}], [${ac_cv_c_uint16_t}],
+			[${ac_cv_c_uint32_t}])],
+			[AS_VAR_SET([na_tmp_allstdint], ['some'])],
+			[AS_VAR_SET([na_tmp_allstdint], ['no'])])
+	AS_IF([NS_TEST_AEQ([yes],
+		[${na_allow_stdc}], [${ac_cv_header_stddef_h}],
+		[${ac_cv_header_stdbool_h}], [${ac_cv_header_stdint_h}],
+		[${ac_cv_type_size_t}], [${na_tmp_allstdint}])], [
 		AS_VAR_SET([na_revise_baremetal], ['no'])
 	], [
 		AS_VAR_SET([na_revise_baremetal], ['yes'])
-		AS_MKDIR_P([${rvdir}])
+		AS_MKDIR_P(["${rvdir}"])
 		NC_CC_CHECK_SIZEOF([unsigned short int], [], [ushort])
 		NC_CC_CHECK_SIZEOF([unsigned int], [], [uint])
 		NC_CC_CHECK_SIZEOF([unsigned long int], [], [ulong])
@@ -293,12 +306,14 @@ AM_COND_IF([WANT_BAREMETAL], [
 		cp "${srcdir}/autostuff/chunks/revision-warning.c" \
 			'no-dist/conf-results/stdmissing.h'
 		rm -f 'no-dist/conf-results/noioheaders.h'
-		AS_IF([test "x${ac_cv_header_stddef_h}${ac_cv_type_size_t}" = xyesyes],
+		AS_IF([NS_TEST_AEQ([yes],
+			[${na_allow_stdc}], [${ac_cv_header_stddef_h}],
+			[${ac_cv_type_size_t}])],
 			[echo '@%:@include <stddef.h>' >> \
 				'no-dist/conf-results/noioheaders.h'],
 			[{
 				# `size_t`...
-				echo '/*  Partial re-implementation of `stddef.h`  */'
+				echo '/*  Partial re-implementation of `stddef.h`:  */'
 				AS_IF([test "${ac_cv_sizeof_size_t}" -eq 1],
 					[echo 'typedef unsigned char size_t;'],
 				[test "${ac_cv_sizeof_ushort}" -ge "${ac_cv_sizeof_size_t}"],
@@ -309,12 +324,13 @@ AM_COND_IF([WANT_BAREMETAL], [
 					[echo 'typedef unsigned long int size_t;'],
 					[echo 'typedef unsigned long long int size_t;'])
 			} >> 'no-dist/conf-results/stdmissing.h'])
-		AS_IF([test "x${ac_cv_header_stdbool_h}" = xyes],
+		AS_IF([NS_TEST_AEQ([yes],
+			[${na_allow_stdc}], [${ac_cv_header_stdbool_h}])],
 			[echo '@%:@include <stdbool.h>' >> \
 				'no-dist/conf-results/noioheaders.h'],
 			[{
 				# `bool`...
-				echo '/*  Re-implementation of `stdbool.h`  */'
+				echo '/*  Re-implementation of `stdbool.h`:  */'
 				echo '@%:@ifndef bool'
 				echo '@%:@define bool unsigned char'
 				echo '@%:@endif'
@@ -331,22 +347,26 @@ AM_COND_IF([WANT_BAREMETAL], [
 				["$(expr "${ac_cv_sizeof_uint}" '*' "${ac_cv_char_bit}")"])
 			{
 				# `uint8_t`, `int8_t`, `uint16_t`, `uint32_t`...
-				echo '/*  Partial re-implementation of `stdint.h`  */'
+				echo '/*  Partial re-implementation of `stdint.h`:  */'
 				# `unsigned char` is guaranteed to be at least 8-bit...
-				AS_IF([test "x${ac_cv_c_uint8_t}" != xyes],
+				AS_IF([NS_TEST_NAE([yes],
+					[${na_allow_stdc}], [${ac_cv_c_uint8_t}])],
 					[echo 'typedef unsigned char uint8_t;'])
 				# `signed char` is guaranteed to be at least 8-bit...
-				AS_IF([test "x${ac_cv_c_int8_t}" != xyes],
+				AS_IF([NS_TEST_NAE([yes],
+					[${na_allow_stdc}], [${ac_cv_c_int8_t}])],
 					[echo 'typedef signed char int8_t;'])
 				# `unsigned int` is guaranteed to be at least 16-bit...
-				AS_IF([test "x${ac_cv_c_uint16_t}" != xyes],
+				AS_IF([NS_TEST_NAE([yes],
+					[${na_allow_stdc}], [${ac_cv_c_uint16_t}])],
 					[AS_IF([test "${ac_cv_char_bit}" -ge 16],
 						[echo 'typedef unsigned char uint16_t;'],
 					[test "${na_tmp_ushort_bit}" -ge 16],
 						[echo 'typedef unsigned short int uint16_t;'],
 						[echo 'typedef unsigned int uint16_t;'])])
 				# `unsigned long int` is guaranteed to be at least 32-bit...
-				AS_IF([test "x${ac_cv_c_uint32_t}" != xyes],
+				AS_IF([NS_TEST_NAE([yes],
+					[${na_allow_stdc}], [${ac_cv_c_uint32_t}])],
 					[AS_IF([test "${ac_cv_char_bit}" -ge 32],
 						[echo 'typedef unsigned char uint32_t;'],
 					[test "${na_tmp_ushort_bit}" -ge 32],
@@ -392,21 +412,19 @@ AC_ARG_VAR([TESTS_PRINTF_NAME],
 	@<:@default=printf@:>@])
 
 AC_SUBST([TESTSONLY_CPPFLAGS],
-		m4_normalize([
-			"$(test "x${TESTS_PRINTF_HEADER}" = x || echo '
-			"-DTESTS_PRINTF_HEADER=$(TESTS_PRINTF_HEADER)"')$(test
-			"x${TESTS_PRINTF_NAME}" = x || echo '
-			"-DTESTS_PRINTF_NAME=$(TESTS_PRINTF_NAME)"')"
-		]))
+	m4_normalize([
+		"$(test "x${TESTS_PRINTF_HEADER}" = x || echo '
+		"-DTESTS_PRINTF_HEADER=$(TESTS_PRINTF_HEADER)"')$(test
+		"x${TESTS_PRINTF_NAME}" = x || echo '
+		"-DTESTS_PRINTF_NAME=$(TESTS_PRINTF_NAME)"')"
+	]))
 
 
 ###  **************************************************************************
 ###     ( A U T O ) M A K E   E N V I R O N M E N T
 ###  **************************************************************************
 
-AC_PROG_LN_S
-
-AC_PROG_SED
+NC_REQUIRE([AC_PROG_LN_S], [AC_PROG_SED])
 
 ###  Add `RC` argument variable
 AC_ARG_VAR([RC], [Microsoft Windows resource compiler command])
@@ -508,7 +526,7 @@ AC_DEFUN_ONCE([PREPARE_MAN3PAGES], [
 	AM_COND_IF([WANT_DOC], [
 		AS_IF([test -d 'no-dist/man3'],
 			[rm -r 'no-dist/man3'])
-		AS_MKDIR_P([no-dist/man3])
+		AS_MKDIR_P(['no-dist/man3'])
 		AM_COND_IF([HAVE_TRANSFORMATIONS], [
 			m4_for([__i__], [1], [$#], [2], [
 				cp "${srcdir}/docs/man/man3/m4_normalize(m4_argn(__i__, $@))" \
@@ -520,9 +538,7 @@ AC_DEFUN_ONCE([PREPARE_MAN3PAGES], [
 					'no-dist/man3/';
 			])
 		])
-		###  See `Makefile.am` for this workaround
-		AS_VAR_SET([MAN3PAGES],
-			["$(echo no-dist/man3/*)"])
+		AS_VAR_SET([MAN3PAGES], ["$(echo no-dist/man3/*)"])
 	])
 	AC_SUBST([MAN3PAGES])
 ])
@@ -542,7 +558,7 @@ PREPARE_MAN3PAGES(
 ###     P L A T F O R M   C H E C K S
 ###  **************************************************************************
 
-AS_CASE([${host_os}],
+AS_CASE(["${host_os}"],
 	[*mingw*], [
 		AS_VAR_SET([na_platform_mswin], ['yes'])
 		AS_VAR_SET([na_native_mswin], ['yes'])
@@ -630,20 +646,24 @@ NC_THREATEN_FILES(
 AC_CONFIG_LINKS([help/INSTALL.md:INSTALL])
 
 ###  More renaming and extended config rules...
-AM_COND_IF([RENAME_PACKAGE], [
-	AM_COND_IF([HAVE_EXTENDED_CONFIG], [
-		NC_MSG_WARNBOX([Extended configuration has been called on a renamed
-			package. Changes will be reverted with `make *clean` and will not
-			be re-distributed with `make dist`!])
+AM_COND_IF([HAVE_EXTENDED_CONFIG], [
+	AM_COND_IF([RENAME_PACKAGE], [
 		AS_VAR_SET([transf_dist_recipe],
 			m4_normalize([']m4_foreach([__i__], [NC_THREATENED_LIST], [[
 				! test -f '\''$(srcdir)/'"]__i__["'.dist'\'' ||
 					cp '\''$(srcdir)/'"]__i__["'.dist'\''
 					'\''$(distdir)/'"]__i__["\'';
 			]])[']))
-		AM_COND_IF([HAVE_UPDATES], [
+	])
+	AM_COND_IF([HAVE_UPDATES], [
+		AM_COND_IF([RENAME_PACKAGE], [
 			AS_VAR_SET([mergenew_recipe],
-				m4_normalize([']m4_foreach([__i__], [NC_THREATENED_LIST], [[
+				m4_normalize([
+					'echo '\''**Warning** Extended configuration has been
+					called on a renamed package. All'\'' && echo '\''updates
+					will be reverted with `make clean` and will not be
+					re-distributed with'\'' && echo '\''`make dist`!'\'';
+					]m4_foreach([__i__], [NC_THREATENED_LIST], [[
 					test -f '\''$(srcdir)/'"]__i__["'.dist'\'' ||
 						cp '\''$(srcdir)/'"]__i__["\''
 						'\''$(srcdir)/'"]__i__["'.dist'\'';
@@ -662,13 +682,30 @@ AM_COND_IF([RENAME_PACKAGE], [
 						'\''$(srcdir)/'"]__i__["\'';
 				]])[']))
 		], [
+			AS_VAR_SET([mergenew_recipe],
+				m4_normalize([']m4_foreach([__i__], [NC_THREATENED_LIST], [[
+					test -f '\''$(confnewdir)/'"]__i__["\'' &&
+						cp '\''$(confnewdir)/'"]__i__["\''
+						'\''$(srcdir)/'"]__i__["\'' &&
+						echo '\''File $(srcdir)/'"]__i__["' successfully
+						updated.'\'' || echo '\''File $(confnewdir)/'"]__i__["'
+						not found.'\'';
+				]])[']))
+		])
+	], [
+		AS_VAR_SET([mergenew_recipe],
+			m4_normalize([
+				'echo '\''Extended configuration had been already merged with
+				the package tree (for more'\'' && echo '\''information about
+				the updates see the content of `./$(confnewdir)`).'\'
+		]))
+		AM_COND_IF([RENAME_PACKAGE], [
+			NC_MSG_WARNBOX([Extended configuration has been called on a renamed
+			package. Changes will be reverted with `make distclean` and will
+			not be re-distributed with `make dist`!])
 			m4_foreach([__i__], [NC_THREATENED_LIST],
 				[test -f "${srcdir}/]__i__[.dist" || \
 					cp "${srcdir}/]__i__[" "${srcdir}/]__i__[.dist";])
-			AS_VAR_SET([mergenew_recipe],
-				m4_normalize(['echo '\''Launch `$(srcdir)/configure @<:@...@:>@
-					--enable-extended-config=sandbox` to use `make
-					mergenew`.'\']))
 			# The the `.dist` files have been generated by the `configure`
 			# script, hence `make distclean` must restore them
 			AS_VAR_SET([transf_distclean_recipe],
@@ -680,20 +717,10 @@ AM_COND_IF([RENAME_PACKAGE], [
 		])
 	])
 ], [
-	AM_COND_IF([HAVE_UPDATES],
-		[AS_VAR_SET([mergenew_recipe],
-			m4_normalize([']m4_foreach([__i__], [NC_THREATENED_LIST], [[
-				test -f '\''$(confnewdir)/'"]__i__["\'' &&
-					cp '\''$(confnewdir)/'"]__i__["\''
-					'\''$(srcdir)/'"]__i__["\'' &&
-					echo '\''File $(srcdir)/'"]__i__["' successfully
-					updated.'\'' || echo '\''File $(confnewdir)/'"]__i__["'
-					not found.'\'';
-			]])[']))],
-		[AS_VAR_SET([mergenew_recipe],
-				m4_normalize(['echo '\''Launch `$(srcdir)/configure
-					--enable-extended-config=sandbox` to use `make mergenew`.'\']))
-	])
+	AS_VAR_SET([mergenew_recipe],
+		m4_normalize([
+			'echo '\''Extended configuration is currently disabled.'\'
+		]))
 ])
 
 NC_SUBST_NOTMAKE([transf_dist_recipe])
@@ -720,24 +747,22 @@ AC_SUBST([lt_cv_objdir])
 ###  **************************************************************************
 
 ##  src/Makefile.am, `make confini.c`
-###  No amendments here, the marked files already refer to the standard...
+###  No amendments here, the marked files already contain the official version
 NC_SUBST_NOTMAKE([confini_c_recipe],
 	m4_normalize([
 		']m4_quote(NA_TRIANGLE_BRACKETS_TO_MAKE_VARS(m4_quote(
-		NA_DOUBLE_DOLLAR(m4_quote(NA_ESC_APOS(m4_quote(
-		NA_AMEND([<@>],
+		NA_DOUBLE_DOLLAR(m4_quote(NA_ESC_APOS(m4_quote(NA_AMEND([<@>],
 			[<top_srcdir>/dev/marked-sources/confini-marked.c],
 			[[CONFINI_C_METADATA],
 				[<top_srcdir>/dev/hackings/all/confini-metadata.c]]))))))))[;'
 	]))
 
 ##  src/Makefile.am, `make confini.h`
-###  No amendments here, the marked files already refer to the standard...
+###  No amendments here, the marked files already contain the official version
 NC_SUBST_NOTMAKE([confini_h_recipe],
 	m4_normalize([
 		']m4_quote(NA_TRIANGLE_BRACKETS_TO_MAKE_VARS(m4_quote(
-		NA_DOUBLE_DOLLAR(m4_quote(NA_ESC_APOS(m4_quote(
-		NA_AMEND([<@>],
+		NA_DOUBLE_DOLLAR(m4_quote(NA_ESC_APOS(m4_quote(NA_AMEND([<@>],
 			[<top_srcdir>/dev/marked-sources/confini-marked.h],
 			[[CONFINI_H_METADATA],
 				[<top_srcdir>/dev/hackings/all/confini-metadata.h]]))))))))[;'
@@ -753,8 +778,7 @@ NC_SUBST_NOTMAKE([confini_baremetal_c_recipe],
 	m4_normalize([
 		'@S|@@{:@MKDIR_P@:}@ '\''@S|@@{:@@D@:}@'\'' &&
 		]NA_ESC_APOS(m4_quote(NA_TRIANGLE_BRACKETS_TO_MAKE_VARS(m4_quote(
-		NA_DOUBLE_DOLLAR(m4_quote(
-		NA_AMEND([<@>],
+		NA_DOUBLE_DOLLAR(m4_quote(NA_AMEND([<@>],
 			[<top_srcdir>/dev/marked-sources/confini-marked.c],
 			[[CONFINI_C_METADATA],
 				[<top_srcdir>/dev/hackings/all/confini-metadata.c]],
@@ -782,8 +806,7 @@ NC_SUBST_NOTMAKE([confini_baremetal_h_recipe],
 		-e '\''../no-dist/hackings/baremetal/c-standard-library.h'\'' && @{:@
 		'@:}@"'@S|@@{:@MKDIR_P@:}@ '\''@S|@@{:@@D@:}@'\'' &&
 		]NA_ESC_APOS(m4_quote(NA_TRIANGLE_BRACKETS_TO_MAKE_VARS(m4_quote(
-		NA_DOUBLE_DOLLAR(m4_quote(
-		NA_AMEND([<@>],
+		NA_DOUBLE_DOLLAR(m4_quote(NA_AMEND([<@>],
 			[<top_srcdir>/dev/marked-sources/confini-marked.h],
 			[[CONFINI_H_METADATA],
 				[<top_srcdir>/dev/hackings/all/confini-metadata.h]],
@@ -808,7 +831,10 @@ NC_SUBST_NOTMAKE([confini_baremetal_h_recipe],
 
 AC_OUTPUT
 
-NC_SHADOW_MAYBE_OUTPUT
+NC_SHADOW_AFTER_OUTPUT([
+	AC_MSG_NOTICE([updating the source code with `${ac_make} official-sources`...])
+	"${ac_make}" official-sources 1>/dev/null
+])
 
 
 ###  **************************************************************************
@@ -818,13 +844,20 @@ NC_SHADOW_MAYBE_OUTPUT
 AM_COND_IF([REVISE_BAREMETAL],
 	[AS_IF([test "x${na_tmp_pending_rv}" = xyes], [
 		NC_MSG_WARNBOX([Do not forget to revise the content of the `${rvdir}`
-		subdirectory before proceeding! (--without-io-api)])
-	], [
+		subdirectory before proceeding! (--with-io-api=${with_io_api})])
+	], [test "x${na_allow_stdc}" = xyes], [
 		NC_MSG_WARNBOX([I could not access one or more C standard headers. I am
 		assuming that you are compiling for some exotic platform
 		(--without-io-api), so I have tried to guess a possible
-		re-implementation of the standard C data types needed to build
-		]AC_PACKAGE_NAME[ on your machine. You will need to review the guessed
+		re-implementation of the standard data types needed to build
+		]AC_PACKAGE_NAME[ for your machine. You will need to review the guessed
+		content in the `${rvdir}` subdirectory before launching `make all`.
+		Launch `make approve-revision` after you are done.])
+	], [
+		NC_MSG_WARNBOX([The C Standard Library has been disabled
+		(--with-io-api=nolibc), so I have tried to guess a possible
+		re-implementation of the standard data types needed to build
+		]AC_PACKAGE_NAME[ for your machine. You will need to review the guessed
 		content in the `${rvdir}` subdirectory before launching `make all`.
 		Launch `make approve-revision` after you are done.])
 	])])
@@ -832,7 +865,7 @@ AM_COND_IF([REVISE_BAREMETAL],
 AS_UNSET([na_tmp_pending_rv])
 
 ###  Create the `help` subdirectory
-AS_MKDIR_P([help])
+AS_MKDIR_P(['help'])
 
 ###  Create a `help/make-targets.txt` file to be printed by `make help`
 { cat << 'END_HEREDOC'
@@ -865,6 +898,10 @@ NA_HELP_STRINGS(
 		[clean the source directory according to different degrees of fury],
 	[[make clobber]],
 		[launch `make uninstall` followed by `make clean`],
+	[[make alldone]],
+		[launch `make install-strip` followed by `make installcheck` - in case
+		of staged installations it is possible to pass a `DEST` variable (see
+		below)],
 	[[make binary-release], [make manifest]],
 		[create respectively a package and a manifest in the current location
 		containing all the files that would be installed by `make
@@ -912,7 +949,7 @@ Special targets:
 
 NA_HELP_STRINGS(
 	[[make all-sources], [make baremetal-csources], [make official-csources],
-	[make official-symbols]],
+	[make official-symbols], [make official-sources]],
 		[(Re-)generate the source code of ]AC_PACKAGE_NAME[ using the content
 		of the `dev` subdirectory - some of these targets might be available
 		only after passing the `--enable-author-mode` option to the `configure`
@@ -939,7 +976,10 @@ NA_HELP_STRINGS(
 		[Supported by the `make install(-*)` and `make uninstall(-*)` targets,
 		the `DESTDIR` variable allows to change the final installation path,
 		independently of how the package has been configured; this variable can
-		contain absolute paths only and defaults to `/` when omitted],
+		contain absolute paths only and defaults to an empty string when
+		omitted; the `DESTDIR` variable is meant only for staged installations
+		and must never contain a real installation path - if you need to
+		customize the target directories, launch `./configure --help`],
 	[[ZIPTYPE]],
 		[Supported by `make authors-copy`, `make binary-release`, `make
 		git-clone`, `make portable-builds` and `make source-release`, this
@@ -965,8 +1005,8 @@ For further options, please refer to the documentation of GNU Automake.
 
 END_HEREDOC
 
-echo "This package is currently configured for a ${host_cpu_pretty} CPU running ${host_os}."
-echo
+AS_ECHO("This package is currently configured for a ${host_cpu_pretty} CPU running ${host_os}.")
+AS_ECHO
 
 } > 'help/make-targets.txt'
 

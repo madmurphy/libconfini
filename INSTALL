@@ -47,6 +47,7 @@ from the source directory:
 
 Or you can use a more modern approach and launch directly:
 
+    mkdir m4
     autoreconf -i
     ./configure
 
@@ -63,7 +64,6 @@ to compile the library manually, you can run:
 	gcc.exe -std=c99 -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined \
 		-Wl,-out-implib,libconfini.lib -o libconfini.dll winres.o confini.c
 	strip.exe libconfini.dll
-	del confini.o winres.o
 
 If you want to generate also the `.def` file, use:
 
@@ -74,7 +74,6 @@ If you want to generate also the `.def` file, use:
 	gcc.exe -std=c99 -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined \
 		-Wl,-out-implib,libconfini.lib -o libconfini.dll confini.o winres.o
 	strip.exe libconfini.dll
-	del confini.o winres.o
 
 If you want to build (and install) **libconfini** via Make/Autotools under
 Microsoft Windows several options are available, such as MinGW + MSYS, MSYS2,
@@ -102,7 +101,7 @@ package on GitHub.
 Bare metal
 ----------
 
-The library has nearly everything implemented from scratch, with the only
+The library has almost everything implemented from scratch, with the only
 notable exception of the I/O functions `load_ini_file()` and `load_ini_path()`,
 which rely on C standard libraries. On some platforms, however, only a rather
 exotic I/O API is available, while for some other platforms the C Standard
@@ -125,9 +124,9 @@ installed.
 
 For two or more different major releases to be able to coexist, the major
 number of each version must be appended to the package name it refers to, with
-the possible exception of only one package (usually version 1.X.X or the most
-recent release, depending on the approach of your distro). This can be done
-easily by passing the `--with-other-versions` option to the `configure` script:
+the possible exception of only one package (usually version 1.X.X). This can be
+done easily by passing the `--with-other-versions` option to the `configure`
+script:
 
     ./configure --with-other-versions
 
@@ -162,7 +161,7 @@ Distributing the source code
 
 If you aim to re-distribute the source code of **libconfini** you should first
 make sure that the `configure` script is present, for granting the possibility
-of compiling the package without having Autotools installed. If the `configure`
+to compile the package without having Autotools installed. If the `configure`
 script is present and you have already launched it, use `make distclean` to
 reset the configuration that this has created, or use `make source-release` to
 build a fresh archive that ignores the current configuration.

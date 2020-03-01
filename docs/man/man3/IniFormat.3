@@ -1,4 +1,4 @@
-.TH "IniFormat" 3 "Wed Feb 5 2020" "libconfini" \" -*- nroff -*-
+.TH "IniFormat" 3 "Sun Mar 1 2020" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -61,19 +61,19 @@ IniFormat \- 24-bit bitfield representing the format of an INI file (INI dialect
 .SH "Field Documentation"
 .PP 
 .SS "IniFormat::case_sensitive"
-If set to \fCtrue\fP, string comparisons will be always performed case-sensitive\&. 
+If set to \fCtrue\fP, string comparisons will be always case-sensitive\&. 
 .SS "IniFormat::delimiter_symbol"
-The symbol to be used as delimiter (only ASCII allowed); if set to \fC0\fP, any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP); if, within the format given, this matches a metacharacter (\fC'\\\\'\fP, \fC'\\''\fP, \fC'\\"'\fP), its role as metacharacter will have higher priority than its role as delimiter symbol (i\&.e\&., the format will have no delimiter symbol); you may use \fCenum\fP \fBIniDelimiters\fP for this\&. 
+The key-value delimiter character (ASCII only allowed); if set to \fC\\0\fP, any space is delimiter (\fC/(?:\\\\(?:\\n\\r?|\\r\\n?)|[\\t \\v\\f])+/\fP); if, within the format given, \fC\fBIniFormat::delimiter_symbol\fP\fP matches a metacharacter (\fC'\\\\'\fP, \fC'\\''\fP, \fC'\\"'\fP), its role as metacharacter will have higher priority than its role as delimiter symbol (i\&.e\&., the format will have no key-value delimiter); you may use the \fBIniDelimiters\fP \fCenum\fP for this\&. 
 .SS "IniFormat::disabled_after_space"
-If set to \fCtrue\fP, allows what follows \fC/[#;]\\s/\fP to be parsed as a disabled entry\&. 
+If set to \fCtrue\fP, what follows \fC/[#;]\\s/\fP is allowed to be parsed as a disabled entry\&. 
 .SS "IniFormat::disabled_can_be_implicit"
-If set to \fCtrue\fP, comments that do not contain a delimiter symbol will never be parsed as disabled keys, but always as simple comments\&. 
+If set to \fCfalse\fP, comments that do not contain a key-value delimiter will never be parsed as disabled keys, but always as simple comments (even if the format supports implicit keys)\&. 
 .SS "IniFormat::do_not_collapse_values"
 If set to \fCtrue\fP, sequences of one or more spaces in values (\fC/\\s+/\fP) will be dispatched verbatim\&. 
 .SS "IniFormat::hash_marker"
 The rule of the hash character (use \fCenum\fP \fBIniCommentMarker\fP for this)\&. 
 .SS "IniFormat::implicit_is_not_empty"
-If set to \fCtrue\fP, implicit keys (see \fBLibrary Functions Manual\fP) will always be dispatched using the values given by the global variables \fBINI_GLOBAL_IMPLICIT_VALUE\fP and \fBINI_GLOBAL_IMPLICIT_V_LEN\fP for the fields \fBIniDispatch::value\fP and to \fBIniDispatch::v_len\fP respectively; if set to \fCfalse\fP, implicit keys will be considered to be empty keys\&. 
+If set to \fCtrue\fP, implicit keys (see \fBLibrary Functions Manual\fP) will be always dispatched using the values given by the global variables \fBINI_GLOBAL_IMPLICIT_VALUE\fP and \fBINI_GLOBAL_IMPLICIT_V_LEN\fP for the fields \fBIniDispatch::value\fP and to \fBIniDispatch::v_len\fP respectively; if set to \fCfalse\fP, implicit keys will be considered to be empty keys\&. 
 .SS "IniFormat::multiline_nodes"
 Defines which class of entries are allowed to be multi-line (use \fCenum\fP \fBIniMultiline\fP for this)\&. 
 .SS "IniFormat::no_double_quotes"

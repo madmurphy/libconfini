@@ -4,18 +4,21 @@
 #include <string.h>
 #include <confini.h>
 
-/*
+/**
 
   @brief    Converts a stringified INI array to a new array of strings
+  @param    dest_arrlen     The variable where the length of the array (in
+                            number of members) will be saved (cannot be
+                            `NULL`)
   @param    str             The stringified array (it cannot be `NULL`)
-  @param    len             The length of the stringified array
+  @param    len             The length of the stringified array in bytes
   @param    delimiter       The delimiter between the array members -- if zero
                             (see #INI_ANY_SPACE), any space is delimiter
                             (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
   @param    format          The format of the INI file
-  @param    dest_arrlen     The variable where the length of the array (in
-                            number of members) will be saved
   @return   A new array of char pointers
+
+  Example:
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
   size_t my_arrlen;
@@ -32,15 +35,15 @@
   free(my_array);
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  The returned array must be freed afterwards.
+  The returned address (and **only that**) must be freed afterwards.
 
-*/
+**/
 static char ** make_strarray (
+  size_t * const dest_arrlen,
   const char * const str,
   const size_t len,
   const char delimiter,
-  const IniFormat format,
-  size_t * const dest_arrlen
+  const IniFormat format
 ) {
 
   *dest_arrlen = ini_array_get_length(str, delimiter, format);

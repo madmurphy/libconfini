@@ -2,6 +2,25 @@ Change Log {#changelog}
 =======================
 
 
+## 1.14.0 -- 2020-03-01
+
+Changes:
+
+* Added implicit value check in `ini_array_break()`, `ini_array_collapse()`,
+  `ini_array_release()`, `ini_array_split()`, `ini_string_parse()` and
+  `ini_unquote()`
+* Integer constant `CONFINI_EROADDR` has been added to the `ConfiniInterruptNo`
+  `enum`
+* Code review (`ini_array_foreach()`, `ini_get_bool()`, `ini_ntof()`, "bare
+  metal" functions `ini_get_int()`, `ini_get_lint()`, `ini_get_llint()` and
+  `ini_get_double()`, private functions `dqultrim_s()`, `get_type_as_active()`,
+  and `qultrim_h()`)
+* Documentation
+* New examples have been created (`examples/miscellanea/parse_foreign.c`,
+  `examples/miscellanea/toml-like.c` and
+  `examples/utilities/clone_ini_dispatch.h`)
+
+
 ## 1.13.0 -- 2020-02-05
 
 Changes:
@@ -112,7 +131,7 @@ Changes:
   `examples/utilities/make_strarray.h`)
 * The `configure` script has been improved with a built-in support for complete
   package renaming (using `--program-prefix=PREFIX`, `--program-suffix=SUFFX`
-  and `--program-transform-name='s/[OLDTEXT]/[NEWTEXT]/[g]'`) and several new
+  and `--program-transform-name=s/[OLDTEXT]/[NEWTEXT]/[g]`) and several new
   options (`--enable-version-info` and `--disable-version-info`, for
   enabling/disabling **libtool** versioning system; `--enable-extended-config`,
   for safely exporting package renamings at `configure` time, or any changes in

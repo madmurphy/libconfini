@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/sh
 #
 # sprepare.sh
 #
@@ -8,7 +8,7 @@
 #
 
 _TMPFILE="tmp.ini"
-CATSRC='../../examples/ini_files/self_explaining.conf'
+CATSRC='../../../examples/ini_files/self_explaining.conf'
 CATDEST='big_file.ini'
 CCPROG='gcc'
 CSRC='performance.c'
@@ -16,5 +16,5 @@ COUT='speedtest'
 
 echo "$(echo; cat $CATSRC)" > "${CATDEST}"
 for INDEX in {1..15}; do cat "${CATDEST}" "${CATDEST}" > "${_TMPFILE}" && mv "${_TMPFILE}" "${CATDEST}"; done
-"${CCPROG}" -lconfini -o  "${COUT}" "${CSRC}"
+"${CCPROG}" -lconfini -pedantic -o  "${COUT}" "${CSRC}"
 

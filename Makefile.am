@@ -67,7 +67,9 @@ dist_examplesinifiles_DATA = \
 	examples/ini_files/delivery.conf \
 	examples/ini_files/extreme_ini.conf \
 	examples/ini_files/hash_table.conf \
+	examples/ini_files/pacman.conf \
 	examples/ini_files/self_explaining.conf \
+	examples/ini_files/toml-like.conf \
 	examples/ini_files/typed_ini.conf \
 	examples/ini_files/unix-like.conf
 
@@ -77,8 +79,10 @@ dist_examplesmisc_DATA = \
 	examples/miscellanea/disambiguate.c \
 	examples/miscellanea/dispatch_everything.c \
 	examples/miscellanea/glib_hash_table.c \
+	examples/miscellanea/parse_foreign.c \
 	examples/miscellanea/print_format.c \
 	examples/miscellanea/stats_only.c \
+	examples/miscellanea/toml-like.c \
 	examples/miscellanea/typed_ini.c
 
 examplestopicsdir = $(examplesdir)/topics
@@ -98,6 +102,7 @@ dist_examplestopics_DATA = \
 
 exampleutilsdir = $(examplesdir)/utilities
 dist_exampleutils_DATA = \
+	examples/utilities/clone_ini_dispatch.h \
 	examples/utilities/load_ini_buffer.h \
 	examples/utilities/make_strarray.h
 
@@ -133,11 +138,6 @@ endif WANT_HTML
 endif WANT_DEVEL
 
 
-# Files/directories erased by `make mostlyclean`
-
-RUNPATH = volatile
-
-
 # Files/directories erased by `make oblivion-clean`
 
 BINPATH = @PACKAGE_CONFNAME@-@PACKAGE_VERSION@-@host@-pkg
@@ -152,13 +152,16 @@ GITPATH = @PACKAGE_TARNAME@-git
 
 BAKPATH = @PACKAGE_TARNAME@-snapshot
 
+
 # Other settings
 
 MOSTLYCLEANFILES = \
-	$(RUNPATH).lst $(RUNPATH).tar $(RUNPATH).tar.gz $(RUNPATH).tar.xz \
-	$(RUNPATH).tgz $(RUNPATH).txz $(RUNPATH).zip
+	$(SANDBOX).lst $(SANDBOX).tar $(SANDBOX).tar.gz $(SANDBOX).tar.xz \
+	$(SANDBOX).tgz $(SANDBOX).txz $(SANDBOX).zip
 
-CLEANFILES =
+CLEANFILES = \
+	dev/tests/performance/big_file.ini \
+	dev/tests/performance/speedtest
 
 # Shell expansion is supported here
 _bootstrapclean_dirs_ = \
@@ -199,12 +202,31 @@ _oblivionclean_files_ = \
 	'$(GITPATH).tar.gz' '$(GITPATH).tar.xz' '$(GITPATH).tgz' \
 	'$(GITPATH).txz' '$(GITPATH).zip'
 
-# Default compression format
-ZIPTYPE = tar.gz
-
 INSTALLCHECKS_CPPENV = \
 	$(TESTSONLY_CPPFLAGS) \
 	"-DTESTS_CONFINI_HEADER=<@library_headername@.h>"
+
+# Default compression format (one word only allowed)
+ZIPTYPE = tar.gz
+
+# The `install` target to use by default (see, for example `make alldone` and
+# `make binary-release` -- one word only allowed)
+INSTALLFLAVOR = install-strip
+
+# Default space-separated list of actions for `make beforedone` -- do not
+# change this variable here; although the the user can freely change it from
+# the command line, in the `Makefile` it must contain targets that support the
+# `DESTDIR` variable
+FINALJOBS = \
+	installcheck
+
+# Default target for `make volatile*` (one word only allowed) -- do not change
+# this variable here; although the the user can freely change it from the
+# command line, in the `Makefile` it must have this value
+RUNJOB = $(INSTALLFLAVOR)
+
+# Sandbox default path (one word only allowed)
+SANDBOX = volatile
 
 
 ###############################################################################
@@ -233,7 +255,7 @@ installcheck-local:
 	autotest_LDADD='-L$(DESTDIR)$(libdir) -l@PROJECT_LOCALNAME@' check;
 
 mostlyclean-local:
-	-rm -rf '$(RUNPATH)' '._'*;
+	-rm -rf '$(SANDBOX)' '._'*;
 
 clean-local:
 	@transf_clean_recipe@
@@ -263,7 +285,7 @@ install-exec-strip:
 # Install/uninstall only the headers
 .PHONY: install-headers uninstall-headers
 install-headers uninstall-headers:
-	$(MAKE) -C 'src' '$@';
+	@$(MAKE) -C 'src' '$@';
 
 # Check that `$(libdir)` and `$(includedir)` work correctly
 .PHONY: finishcheck
@@ -271,6 +293,19 @@ finishcheck:
 	$(MAKE) -C 'tests' clean && $(MAKE) \
 	AM_CPPFLAGS='$(INSTALLCHECKS_CPPENV)' \
 	autotest_LDADD='-l@PROJECT_LOCALNAME@' check;
+
+# Let us decide whether stripping or not
+.PHONY: nearlydone
+nearlydone: $(INSTALLFLAVOR)
+
+# Defaults to `make installcheck` (mostly `Makefile` glue)
+.PHONY: beforedone
+beforedone: $(FINALJOBS)
+
+# Calls `make $(INSTALLFLAVOR)` followed by `make beforedone`
+.PHONY: alldone
+alldone: $(INSTALLFLAVOR)
+	@$(MAKE) beforedone;
 
 # Make the source directory depend on Autotools and a `bootstrap` script
 .PHONY: bootstrap-clean
@@ -284,10 +319,12 @@ bootstrap-clean: maintainer-clean
 oblivion-clean: bootstrap-clean
 	rm -rf $(_oblivionclean_dirs_) && rm -f $(_oblivionclean_files_);
 
-# Merge the files created by `./configure --enable-extended-config=sandbox`
+# Merge the files created by `./configure --enable-extended-config=sandbox` and
+# update the source code
 .PHONY: mergenew
 mergenew:
 	@@mergenew_recipe@
+	@$(MAKE) official-sources;
 
 # Uninstall what `make install` has created, then clean the source directory
 .PHONY: clobber
@@ -323,7 +360,7 @@ if AUTHOR_MODE
 STATICSRC += \
 	official-csources
 
- # (Re-)create the standard source files
+ # (Re-)create the official source files
  .PHONY: official-csources
  official-csources:
 	$(MAKE) -C 'src' 'confini.h' 'confini.c';
@@ -334,7 +371,7 @@ if HAVE_DLLTOOL
 STATICSRC += \
 	official-symbols
 
- # (Re-)create the standard source files
+ # (Re-)create the official exported symbols
  .PHONY: official-symbols
  official-symbols:
 	$(MAKE) -C 'src' '@PACKAGE_TARNAME@.def';
@@ -392,10 +429,9 @@ CLEANFILES += \
 	@echo 'Creating $@...' && $(MKDIR_P) 'no-dist/hackings/baremetal' && \
 	{ ! test -f 'no-dist/conf-results/noioheaders.h' || cat \
 	'no-dist/conf-results/noioheaders.h'; cat \
-	'no-dist/.archived/$(nonportfile)'; } 1> \
-	'$@';
+	'no-dist/.archived/$(nonportfile)'; } > '$@';
 
- # Defaults to  `make REVISEME/non-portable.h`
+ # Defaults to `make REVISEME/non-portable.h`
  $(rvdir)/$(nonportfile): no-dist/conf-results/stdmissing.h no-dist/.archived/$(nonportfile)
 	@$(MKDIR_P) '$(rvdir)'; test -f 'no-dist/.archived/$(nonportfile)' && \
 	mv 'no-dist/.archived/$(nonportfile)' '$@' || cp \
@@ -419,173 +455,179 @@ endif REVISE_BAREMETAL
 ##    R E C I P E S   P A R T   I I I:   A N A L Y S I S
 ###############################################################################
 
-# Various `sandbox-*` phony targets... Each of them must erase and rebuild the
-# `volatile` directory (or an alternative directory if a `RUNPATH` variable
-# is passed to `make` - as in `make RUNPATH='man-pkg' sandbox-install-man`).
+# Various `sandbox-*` phony targets... Each of them (except the `*check` ones)
+# must erase and rebuild the `volatile` directory (or an alternative directory
+# if a `SANDBOX` variable is passed to `make` - as in `make SANDBOX='man-pkg'
+# sandbox-install-man`).
 
 # For internal use they serve several purposes, while for public use they are
 # mostly sugar targets for invoking `make install*` with a relative path as
-# `DESTDIR` (by passing a `RUNPATH` variable), or unpacking the various
+# `DESTDIR` (by passing a `SANDBOX` variable), or unpacking the various
 # distribution targets into a volatile directory.
 
-# Dynamic variable
-DESTDIRJOBS = \
-	installcheck
-
-.PHONY: sandbox-destdir
-sandbox-destdir: $(RUNPATH)
-	@_FULLPATH="$$(cd '$(RUNPATH)' && pwd)" && $(MAKE) \
-	DESTDIR="$${_FULLPATH}" $(DESTDIRJOBS);
-
 .PHONY: sandbox-void
-sandbox-void:
-	rm -rf '$(RUNPATH)' && $(MKDIR_P) '$(RUNPATH)';
+sandbox-void: ;
 
-.PHONY: sandbox-install
-sandbox-install: sandbox-void
-	@$(MAKE) DESTDIRJOBS='install' sandbox-destdir;
+.PHONY: sandbox-erase
+sandbox-erase:
+	@rm -rf '$(SANDBOX)';
 
-.PHONY: sandbox-install-strip sandbox-binary-release
-sandbox-install-strip sandbox-binary-release: sandbox-void
-	@$(MAKE) DESTDIRJOBS='install-strip' sandbox-destdir;
+.PHONY: sandbox-blank
+sandbox-blank: sandbox-erase
+	@$(MKDIR_P) '$(SANDBOX)';
 
-.PHONY: sandbox-install-exec
-sandbox-install-exec: sandbox-void
-	@$(MAKE) DESTDIRJOBS='install-exec' sandbox-destdir;
-
-.PHONY: sandbox-install-exec-strip
-sandbox-install-exec-strip: sandbox-void
-	@$(MAKE) DESTDIRJOBS='install-exec-strip' sandbox-destdir;
-
-.PHONY: sandbox-install-headers
-sandbox-install-headers: sandbox-void
-	@$(MAKE) DESTDIRJOBS='install-headers' sandbox-destdir;
-
-.PHONY: sandbox-install-man
-sandbox-install-man: sandbox-void
-	@$(MAKE) DESTDIRJOBS='install-man' sandbox-destdir;
-
-.PHONY: sandbox-install-data
-sandbox-install-data: sandbox-void
-	@$(MAKE) DESTDIRJOBS='install-data' sandbox-destdir;
-
-.PHONY: sandbox-install-html
-sandbox-install-html: sandbox-void
-	@$(MAKE) DESTDIRJOBS='install-html' sandbox-destdir;
+.PHONY: sandbox-beforedone
+sandbox-beforedone: $(SANDBOX)
+	@_FULLPATH="$$(cd '$(SANDBOX)' && pwd)" && $(MAKE) \
+	DESTDIR="$${_FULLPATH}" $(FINALJOBS);
 
 .PHONY: sandbox-installcheck
-sandbox-installcheck: $(RUNPATH)
-	@$(MAKE) DESTDIRJOBS='installcheck' sandbox-destdir;
+sandbox-installcheck: $(SANDBOX)
+	@$(MAKE) FINALJOBS='installcheck' sandbox-beforedone;
+
+.PHONY: sandbox-install
+sandbox-install: sandbox-blank
+	@$(MAKE) RUNJOB='void' FINALJOBS='install' sandbox-beforedone;
+
+.PHONY: sandbox-install-strip
+sandbox-install-strip: sandbox-blank
+	@$(MAKE) RUNJOB='void' FINALJOBS='install-strip' sandbox-beforedone;
+
+.PHONY: sandbox-install-exec
+sandbox-install-exec: sandbox-blank
+	@$(MAKE) RUNJOB='void' FINALJOBS='install-exec' sandbox-beforedone;
+
+.PHONY: sandbox-install-exec-strip
+sandbox-install-exec-strip: sandbox-blank
+	@$(MAKE) RUNJOB='void' FINALJOBS='install-exec-strip' \
+	sandbox-beforedone;
+
+.PHONY: sandbox-install-headers
+sandbox-install-headers: sandbox-blank
+	@$(MAKE) RUNJOB='void' FINALJOBS='install-headers' sandbox-beforedone;
+
+.PHONY: sandbox-install-man
+sandbox-install-man: sandbox-blank
+	@$(MAKE) RUNJOB='void' FINALJOBS='install-man' sandbox-beforedone;
+
+.PHONY: sandbox-install-data
+sandbox-install-data: sandbox-blank
+	@$(MAKE) RUNJOB='void' FINALJOBS='install-data' sandbox-beforedone;
+
+.PHONY: sandbox-install-html
+sandbox-install-html: sandbox-blank
+	@$(MAKE) RUNJOB='void' FINALJOBS='install-html' sandbox-beforedone;
+
+.PHONY: sandbox-binary-release sandbox-nearlydone
+sandbox-binary-release sandbox-nearlydone: sandbox-$(INSTALLFLAVOR)
+
+.PHONY: sandbox-alldone
+sandbox-alldone: sandbox-$(INSTALLFLAVOR)
+	@$(MAKE) sandbox-beforedone;
 
 .PHONY: sandbox-portable-builds
-sandbox-portable-builds: sandbox-void
-	$(MAKE) DESTDIRJOBS='install-exec-strip install-headers' \
-	RUNPATH='._excfiles_' sandbox-destdir && rm -rf '$(RUNPATH)' && \
-	$(MKDIR_P) '$(RUNPATH)' && $(FIND) -L '._excfiles_' -type f -exec cp \
-	-a {} '$(RUNPATH)/' \; && cp '$(srcdir)/COPYING' '$(RUNPATH)/COPYING' \
-	&& rm -rf '._excfiles_';
+sandbox-portable-builds: sandbox-blank
+	@rm -rf '._excfiles_' && $(MAKE) SANDBOX='._excfiles_' RUNJOB='blank' \
+	FINALJOBS='install-exec-strip install-headers' sandbox-beforedone && \
+	$(FIND) -L '._excfiles_' -type f -exec cp -a {} '$(SANDBOX)/' \; && \
+	cp '$(srcdir)/COPYING' '$(SANDBOX)/COPYING' && rm -rf '._excfiles_';
 
 .PHONY: sandbox-dist sandbox-distdir
-sandbox-dist sandbox-distdir:
-	rm -rf '$(RUNPATH)' '._dstfiles_' && $(MAKE) distdir='._dstfiles_' \
-	distdir && mv '._dstfiles_' '$(RUNPATH)';
+sandbox-dist sandbox-distdir: sandbox-erase
+	@rm -rf '._dstfiles_' && $(MAKE) distdir='._dstfiles_' distdir && mv \
+	'._dstfiles_' '$(SANDBOX)';
 
 .PHONY: sandbox-source-release
 sandbox-source-release: sandbox-dist
-	for _FILE in $$(cd '$(RUNPATH)' && $(FIND) -L . ! -name '.'); do ! \
-	test -L '$(srcdir)/'"$${_FILE}" || (rm -rf '$(RUNPATH)/'"$${_FILE}" \
-	&& cp -d '$(srcdir)/'"$${_FILE}" '$(RUNPATH)/'"$${_FILE}"); done;
+	@for _FILE in $$(cd '$(SANDBOX)' && $(FIND) -L . ! -name '.'); do ! \
+	test -L '$(srcdir)/'"$${_FILE}" || (rm -rf '$(SANDBOX)/'"$${_FILE}" \
+	&& cp -d '$(srcdir)/'"$${_FILE}" '$(SANDBOX)/'"$${_FILE}"); done;
 
 .PHONY: sandbox-authors-copy
 sandbox-authors-copy: sandbox-source-release
-	(cd '$(RUNPATH)' && rm -rf $(_bootstrapclean_dirs_) && \
+	@(cd '$(SANDBOX)' && rm -rf $(_bootstrapclean_dirs_) && \
 	rm -f $(_bootstrapclean_files_));
 
 .PHONY: sandbox-snapshot
 sandbox-snapshot:
-	@if test "x$$(pwd)" != "x$$(cd '$(srcdir)' && pwd)"; then echo \
-	'This operation is permitted only when building from the top level' \
-	1>&2 && echo 'directory.' 1>&2; exit 1; fi; rm -rf '$(RUNPATH)' && \
-	$(MKDIR_P) '$(RUNPATH)' && $(FIND) -L '$(srcdir)' -maxdepth 1 ! -name \
-	'.' ! -name '$(RUNPATH)' -exec cp -at '$(RUNPATH)' {} \; && $(MAKE) \
-	-C '$(RUNPATH)' BAKPATH='@PACKAGE_TARNAME@-snapshot' oblivion-clean;
+	@if test "x$$(pwd)" != "x$$(cd '$(srcdir)' && pwd)"; then { echo \
+	'**Error** This operation is permitted only when building from the top level'; \
+	echo 'directory.'; } 1>&2; exit 1; fi; rm -rf '$(SANDBOX)' && \
+	$(MKDIR_P) '$(SANDBOX)' && $(FIND) -L '$(srcdir)' -maxdepth 1 ! -name \
+	'.' ! -name '$(SANDBOX)' $$({ for _COIN in $(SNAPIGNORE); do echo "! \
+	-name $${_COIN}"; done; }) -exec cp -at '$(SANDBOX)' {} \; && $(MAKE) \
+	-C '$(SANDBOX)' BAKPATH='@PACKAGE_TARNAME@-snapshot' oblivion-clean;
 
 .PHONY: sandbox-git-clone
-sandbox-git-clone:
-	@rm -rf '$(RUNPATH)' && git clone --quiet --progress \
-	'@GIT_HTTP_SERVER@/@PUBLISHER_ID@/@PACKAGE_TARNAME@.git' '$(RUNPATH)';
+sandbox-git-clone: sandbox-erase
+	@git clone --quiet --progress \
+	'@GIT_HTTP_SERVER@/@PUBLISHER_ID@/@PACKAGE_TARNAME@.git' '$(SANDBOX)';
 
-.PHONY: sandbox-nothing
-sandbox-nothing: ;
-
-# Non-phony targets with names editable on the fly (mostly for internal use,
-# but nothing forbids invoking them)
-
-# Default `sandbox-*` target for `make volatile*` -- do not change it!
-RUNJOB = binary-release
+# Non-phony targets with names editable on the fly (mostly `Makefile` glue, but
+# nothing forbids invoking them)
 
 # Defaults to `make volatile` (directory)
-$(RUNPATH):
+$(SANDBOX):
 	@$(MAKE) 'sandbox-$(RUNJOB)';
 
 # Defaults to `make volatile.tar`
-$(RUNPATH).tar: $(RUNPATH)
-	rm -rf '$@' && (cd '$(RUNPATH)' && $(AMTAR) -cf '../$(@F)' *);
+$(SANDBOX).tar: $(SANDBOX)
+	rm -rf '$@' && (cd '$(SANDBOX)' && $(AMTAR) -cf '../$(@F)' *);
 
 # Defaults to `make volatile.tar.gz` and `make volatile.tgz`
-$(RUNPATH).tar.gz $(RUNPATH).tgz: $(RUNPATH)
-	rm -rf '$@' && (cd '$(RUNPATH)' && $(AMTAR) -czf '../$(@F)' *);
+$(SANDBOX).tar.gz $(SANDBOX).tgz: $(SANDBOX)
+	rm -rf '$@' && (cd '$(SANDBOX)' && $(AMTAR) -czf '../$(@F)' *);
 
 # Defaults to `make volatile.tar.xz` and `make volatile.txz`
-$(RUNPATH).tar.xz $(RUNPATH).txz: $(RUNPATH)
-	rm -rf '$@' && (cd '$(RUNPATH)' && $(AMTAR) -cJf '../$(@F)' *);
+$(SANDBOX).tar.xz $(SANDBOX).txz: $(SANDBOX)
+	rm -rf '$@' && (cd '$(SANDBOX)' && $(AMTAR) -cJf '../$(@F)' *);
 
 # Defaults to `make volatile.zip`
-$(RUNPATH).zip: $(RUNPATH)
-	rm -rf '$@' && (cd '$(RUNPATH)' && zip -rqy '../$(@F)' *);
+$(SANDBOX).zip: $(SANDBOX)
+	rm -rf '$@' && (cd '$(SANDBOX)' && zip -rqy '../$(@F)' *);
 
 # Defaults to `make volatile.lst` (optionally supports a `LISTPREFIX` variable)
-$(RUNPATH).lst: $(RUNPATH)
-	rm -rf '$@' && (cd '$(RUNPATH)' && $(FIND) -L * -type f -printf \
-	'$(LISTPREFIX)%p\n' > '../$(@F)');
+$(SANDBOX).lst: $(SANDBOX)
+	rm -rf '$@' && (cd '$(SANDBOX)' && $(FIND) -L . -type f -printf \
+	'$(LISTPREFIX)%P\n' > '../$(@F)');
 
 
 ###############################################################################
 ##    R E C I P E S   P A R T   I V:   D I S T R I B U T I O N
 ###############################################################################
 
-# Non-phony targets with names editable on the fly (mostly for internal use,
-# but nothing forbids invoking them)
+# Non-phony targets with names editable on the fly (mostly `Makefile` glue, but
+# nothing forbids invoking them)
 
 # Defaults to `make @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-pkg`
 # (directory)
 $(BINPATH):
-	@$(MAKE) RUNJOB='binary-release' RUNPATH='._binfiles_' \
+	@$(MAKE) RUNJOB='binary-release' SANDBOX='._binfiles_' \
 	'._binfiles_' && mv '._binfiles_' '$@';
 
 # Defaults to `make @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-builds`
 # (directory)
 $(PTBPATH):
-	@$(MAKE) RUNJOB='portable-builds' RUNPATH='._ptbfiles_' \
+	@$(MAKE) RUNJOB='portable-builds' SANDBOX='._ptbfiles_' \
 	'._ptbfiles_' && mv '._ptbfiles_' '$@';
 
 # Defaults to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-src` (directory)
 $(SRCPATH):
-	@$(MAKE) RUNJOB='source-release' RUNPATH='._srcfiles_' \
+	@$(MAKE) RUNJOB='source-release' SANDBOX='._srcfiles_' \
 	'._srcfiles_' && mv '._srcfiles_' '$@';
 
 # Defaults to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-dev` (directory)
 $(DEVPATH):
-	@$(MAKE) RUNJOB='authors-copy' RUNPATH='._devfiles_' \
+	@$(MAKE) RUNJOB='authors-copy' SANDBOX='._devfiles_' \
 	'._devfiles_' && mv '._devfiles_' '$@';
 
 $(BAKPATH):
-	@$(MAKE) RUNJOB='snapshot' RUNPATH='._bakfiles_' \
+	@$(MAKE) RUNJOB='snapshot' SANDBOX='._bakfiles_' \
 	'._bakfiles_' && mv '._bakfiles_' '$@';
 
 # Defaults to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-git` (directory)
 $(GITPATH):
-	@$(MAKE) RUNJOB='git-clone' RUNPATH='._gitfiles_' '._gitfiles_' && \
+	@$(MAKE) RUNJOB='git-clone' SANDBOX='._gitfiles_' '._gitfiles_' && \
 	mv '._gitfiles_' '$@';
 
 # Default to
@@ -593,44 +635,44 @@ $(GITPATH):
 # `make @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-pkg.{...EXT...}`
 $(BINPATH).lst $(BINPATH).tar $(BINPATH).tar.gz $(BINPATH).tgz $(BINPATH).tar.xz $(BINPATH).txz $(BINPATH).zip:
 	@_STEM="$$(basename '$(BINPATH)')" && $(MAKE) \
-	RUNJOB='binary-release' RUNPATH="._tmp-$${_STEM}" '._tmp-$(@F)' && \
+	RUNJOB='binary-release' SANDBOX="._tmp-$${_STEM}" '._tmp-$(@F)' && \
 	mv '._tmp-$(@F)' '$@' && rm -rf "._tmp-$${_STEM}";
 
 # Default to
 # `make @PACKAGE_LOCALNAME@-@PACKAGE_VERSION@-@host@-builds.{...EXT...}`
 $(PTBPATH).tar $(PTBPATH).tar.gz $(PTBPATH).tgz $(PTBPATH).tar.xz $(PTBPATH).txz $(PTBPATH).zip:
 	@_STEM="$$(basename '$(PTBPATH)')" && $(MAKE) \
-	RUNJOB='portable-builds' RUNPATH="._tmp-$${_STEM}" '._tmp-$(@F)' && \
+	RUNJOB='portable-builds' SANDBOX="._tmp-$${_STEM}" '._tmp-$(@F)' && \
 	mv '._tmp-$(@F)' '$@' && rm -rf "._tmp-$${_STEM}";
 
 # Default to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-src.{...EXT...}`
 $(SRCPATH).tar $(SRCPATH).tar.gz $(SRCPATH).tgz $(SRCPATH).tar.xz $(SRCPATH).txz $(SRCPATH).zip:
 	@_STEM="$$(basename '$(SRCPATH)')" && $(MKDIR_P) "._tmp-$${_STEM}" && \
-	$(MAKE) RUNPATH="._tmp-$${_STEM}/$${_STEM}" sandbox-source-release && \
-	$(MAKE) RUNJOB='nothing' RUNPATH="._tmp-$${_STEM}" '._tmp-$(@F)' && \
-	mv '._tmp-$(@F)' '$@' && rm -rf "._tmp-$${_STEM}";
+	$(MAKE) SANDBOX="._tmp-$${_STEM}/$${_STEM}" sandbox-source-release && \
+	$(MAKE) RUNJOB='void' SANDBOX="._tmp-$${_STEM}" '._tmp-$(@F)' && mv \
+	'._tmp-$(@F)' '$@' && rm -rf "._tmp-$${_STEM}";
 
 # Default to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-dev.{...EXT...}`
 $(DEVPATH).tar $(DEVPATH).tar.gz $(DEVPATH).tgz $(DEVPATH).tar.xz $(DEVPATH).txz $(DEVPATH).zip:
 	@_STEM="$$(basename '$(DEVPATH)')" && $(MKDIR_P) "._tmp-$${_STEM}" && \
-	$(MAKE) RUNPATH="._tmp-$${_STEM}/$${_STEM}" sandbox-authors-copy && \
-	$(MAKE) RUNJOB='nothing' RUNPATH="._tmp-$${_STEM}" '._tmp-$(@F)' && \
-	mv '._tmp-$(@F)' '$@' && rm -rf "._tmp-$${_STEM}";
+	$(MAKE) SANDBOX="._tmp-$${_STEM}/$${_STEM}" sandbox-authors-copy && \
+	$(MAKE) RUNJOB='void' SANDBOX="._tmp-$${_STEM}" '._tmp-$(@F)' && mv \
+	'._tmp-$(@F)' '$@' && rm -rf "._tmp-$${_STEM}";
 
 # Default to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-src.{...EXT...}`
 $(BAKPATH).tar $(BAKPATH).tar.gz $(BAKPATH).tgz $(BAKPATH).tar.xz $(BAKPATH).txz $(BAKPATH).zip:
-	@_STEM="$$(basename '$(BAKPATH)')" && $(MAKE) RUNPATH="._bakfiles_" \
+	@_STEM="$$(basename '$(BAKPATH)')" && $(MAKE) SANDBOX="._bakfiles_" \
 	sandbox-snapshot && $(MKDIR_P) "._tmp-$${_STEM}" && mv '._bakfiles_' \
-	"._tmp-$${_STEM}/$${_STEM}" && $(MAKE) RUNJOB='nothing' \
-	RUNPATH="._tmp-$${_STEM}" '._tmp-$(@F)' && mv '._tmp-$(@F)' '$@' && \
+	"._tmp-$${_STEM}/$${_STEM}" && $(MAKE) RUNJOB='void' \
+	SANDBOX="._tmp-$${_STEM}" '._tmp-$(@F)' && mv '._tmp-$(@F)' '$@' && \
 	rm -rf "._tmp-$${_STEM}";
 
 # Default to `make @PACKAGE_TARNAME@-@PACKAGE_VERSION@-git.{...EXT...}`
 $(GITPATH).tar $(GITPATH).tar.gz $(GITPATH).tgz $(GITPATH).tar.xz $(GITPATH).txz $(GITPATH).zip:
 	@_STEM="$$(basename '$(GITPATH)')" && $(MKDIR_P) "._tmp-$${_STEM}" && \
-	$(MAKE) RUNPATH="._tmp-$${_STEM}/$${_STEM}" sandbox-git-clone && \
-	$(MAKE) RUNJOB='nothing' RUNPATH="._tmp-$${_STEM}" '._tmp-$(@F)' && \
-	mv '._tmp-$(@F)' '$@' && rm -rf "._tmp-$${_STEM}";
+	$(MAKE) SANDBOX="._tmp-$${_STEM}/$${_STEM}" sandbox-git-clone && \
+	$(MAKE) RUNJOB='void' SANDBOX="._tmp-$${_STEM}" '._tmp-$(@F)' && mv \
+	'._tmp-$(@F)' '$@' && rm -rf "._tmp-$${_STEM}";
 
 
 # Phony targets
@@ -665,7 +707,7 @@ git-clone:
 # Create a list of the files that will be installed by `make-install`
 .PHONY: manifest
 manifest:
-	@rm -rf '._tmp_.lst'; $(MAKE) RUNJOB='install' RUNPATH='._tmp_' \
+	@rm -rf '._tmp_.lst'; $(MAKE) RUNJOB='install' SANDBOX='._tmp_' \
 	LISTPREFIX='/' '._tmp_.lst' && (test 'x$(DEST)' != x && (rm -rf \
 	'$(DEST)' && mv '._tmp_.lst' '$(DEST)') || (rm -rf '$(BINPATH).lst' \
 	&& mv '._tmp_.lst' '$(BINPATH).lst')) && rm -rf '._tmp_';

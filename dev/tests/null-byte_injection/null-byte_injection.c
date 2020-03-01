@@ -1,4 +1,4 @@
-/*  tests/null-byte_injected.c  */
+/*  dev/tests/null-byte_injected.c  */
 
 #include <stdio.h>
 #include <stdlib.h>

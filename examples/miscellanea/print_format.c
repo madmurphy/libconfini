@@ -35,9 +35,7 @@ void print_format_num (IniFormatNum fnum) {
     printf("(IniFormat) {\n" INIFORMAT_TABLE_AS(__PRINTF_STRING__) "}" \
     INIFORMAT_TABLE_AS(__PRINTF_ARGS__))
 
-
   PRINT_FORMAT_NUM();
-
 
   #undef PRINT_FORMAT_NUM
   #undef __PRINTF_ARGS__

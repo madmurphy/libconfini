@@ -88,7 +88,7 @@ int main () {
   struct my_struct my_other;
 
   /*  Define the value to throw with implicit keys, and its length  */
-  ini_global_set_implicit_value("YES", 0);
+  ini_global_set_implicit_value("YES", 3);
 
   my_other.my_date = "Thursday September 22th, 2016";
   my_other.my_ini_file = "../ini_files/self_explaining.conf";
@@ -97,7 +97,8 @@ int main () {
   my_format = INI_DEFAULT_FORMAT;
 
   /*  Enable implicit keys for this format  */
-  my_format.implicit_is_not_empty = TRUE;
+  my_format.implicit_is_not_empty = true;
+  my_format.disabled_can_be_implicit = true;
 
   /*  Load the INI file  */
   if (load_ini_path(

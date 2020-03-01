@@ -57,24 +57,6 @@ if test "${CLEANONLY}" -ne 0; then
 	exit 0
 fi
 
-if [[ `test -z "${OSTYPE}" && uname -s || echo "${OSTYPE}"` =~ ^[Dd]arwin* ]]; then
-	if test -z "${LIBTOOL}"; then
-		echo 'macOS detected. Using glibtool.'
-		LIBTOOL='glibtool'
-	fi
-	if test -z "${LIBTOOLIZE}"; then
-		echo 'macOS detected. Using glibtoolize.'
-		LIBTOOLIZE='glibtoolize'
-	fi
-else
-	if test -z "${LIBTOOL}"; then
-		LIBTOOL='libtool'
-	fi
-	if test -z "${LIBTOOLIZE}"; then
-		LIBTOOLIZE='libtoolize'
-	fi
-fi
-
 if test -n "${GNOME2_DIR}"; then
 	ACLOCAL_FLAGS="-I ${GNOME2_DIR}/share/aclocal ${ACLOCAL_FLAGS}"
 	LD_LIBRARY_PATH="${GNOME2_DIR}/lib:${LD_LIBRARY_PATH}"
@@ -83,14 +65,14 @@ if test -n "${GNOME2_DIR}"; then
 	export LD_LIBRARY_PATH
 fi
 
-(test -f "${srcdir}/configure.ac") || {
+test -f "${srcdir}/configure.ac" || {
 	echo
 	echo "**Error**: Directory \`${srcdir}\` does not look like the top-level package directory"
 	echo
 	exit 1
 } >&2
 
-(autoconf --version) < /dev/null > /dev/null 2>&1 || {
+autoconf --version < /dev/null > /dev/null 2>&1 || {
 	echo
 	echo '**Error**: You must have `autoconf` installed. Download the appropriate package'
 	echo 'for your distribution, or get the source tarball at ftp://ftp.gnu.org/pub/gnu/'
@@ -98,27 +80,44 @@ fi
 	DIE=1
 } >&2
 
-(grep "^IT_PROG_INTLTOOL" "${srcdir}/configure.ac" >/dev/null) && {
-	(intltoolize --version) < /dev/null > /dev/null 2>&1 || {
+if grep "^IT_PROG_INTLTOOL" "${srcdir}/configure.ac" >/dev/null; then
+	intltoolize --version < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo '**Error**: You must have `intltool` installed. You can get it from'
 		echo 'ftp://ftp.gnome.org/pub/GNOME/'
 		echo
 		DIE=1
 	} >&2
-}
+fi
 
-(grep "^AM_PROG_XML_I18N_TOOLS" "${srcdir}/configure.ac" >/dev/null) && {
-	(xml-i18n-toolize --version) < /dev/null > /dev/null 2>&1 || {
+if grep "^AM_PROG_XML_I18N_TOOLS" "${srcdir}/configure.ac" >/dev/null; then
+	xml-i18n-toolize --version < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo '**Error**: You must have `xml-i18n-toolize` installed. You can get it from'
 		echo 'ftp://ftp.gnome.org/pub/GNOME/'
 		echo
 		DIE=1
 	} >&2
-}
+fi
 
-(grep "^LT_INIT" "${srcdir}/configure.ac" >/dev/null) && {
+if grep "^LT_INIT" "${srcdir}/configure.ac" >/dev/null; then
+	if [[ `test -z "${OSTYPE}" && uname -s || echo "${OSTYPE}"` =~ ^[Dd]arwin* ]]; then
+		if test -z "${LIBTOOL}"; then
+			echo 'macOS detected. Using glibtool.'
+			LIBTOOL='glibtool'
+		fi
+		if test -z "${LIBTOOLIZE}"; then
+			echo 'macOS detected. Using glibtoolize.'
+			LIBTOOLIZE='glibtoolize'
+		fi
+	else
+		if test -z "${LIBTOOL}"; then
+			LIBTOOL='libtool'
+		fi
+		if test -z "${LIBTOOLIZE}"; then
+			LIBTOOLIZE='libtoolize'
+		fi
+	fi
 	("${LIBTOOL}" --version) < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo '**Error**: You must have `libtool` installed. You can get it from'
@@ -126,18 +125,18 @@ fi
 		echo
 		DIE=1
 	} >&2
-}
+fi
 
-(grep "^AM_GLIB_GNU_GETTEXT" "${srcdir}/configure.ac" >/dev/null) && {
-	(grep "sed.*POTFILES" "${srcdir}/configure.ac") > /dev/null || \
-	(glib-gettextize --version) < /dev/null > /dev/null 2>&1 || {
+if grep "^AM_GLIB_GNU_GETTEXT" "${srcdir}/configure.ac" >/dev/null; then
+	grep "sed.*POTFILES" "${srcdir}/configure.ac" > /dev/null || \
+	glib-gettextize --version < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo '**Error**: You must have `glib` installed. You can get it from'
 		echo 'ftp://ftp.gtk.org/pub/gtk'
 		echo
 		DIE=1
 	} >&2
-}
+fi
 
 (automake --version) < /dev/null > /dev/null 2>&1 || {
 	echo
@@ -147,7 +146,6 @@ fi
 	DIE=1
 	NO_AUTOMAKE=yes
 } >&2
-
 
 # if no automake, don't bother testing for aclocal
 test -n "${NO_AUTOMAKE}" || (aclocal --version) < /dev/null > /dev/null 2>&1 || {

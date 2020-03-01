@@ -119,7 +119,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to <code>true</code>, string comparisons will be always performed case-sensitive. </p>
+<p>If set to <code>true</code>, string comparisons will be always case-sensitive. </p>
 
 </div>
 </div>
@@ -134,7 +134,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The symbol to be used as delimiter (only ASCII allowed); if set to <code>0</code>, any space is delimiter (<code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code>); if, within the format given, this matches a metacharacter (<code>'\\'</code>, <code>'\''</code>, <code>'\&quot;'</code>), its role as metacharacter will have higher priority than its role as delimiter symbol (i.e., the format will have no delimiter symbol); you may use <code>enum</code> <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8" title="Most used array and key-value delimiters (but a delimiter may also be any other ASCII character not p...">IniDelimiters</a> for this. </p>
+<p>The key-value delimiter character (ASCII only allowed); if set to <code>\0</code>, any space is delimiter (<code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code>); if, within the format given, <code><a class="el" href="structIniFormat.html#a6d9981301f5a16d73e2c38cb80f7f962">IniFormat::delimiter_symbol</a></code> matches a metacharacter (<code>'\\'</code>, <code>'\''</code>, <code>'\&quot;'</code>), its role as metacharacter will have higher priority than its role as delimiter symbol (i.e., the format will have no key-value delimiter); you may use the <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8" title="Common array and key-value delimiters (but a delimiter may also be any other ASCII character not pres...">IniDelimiters</a> <code>enum</code> for this. </p>
 
 </div>
 </div>
@@ -149,7 +149,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to <code>true</code>, allows what follows <code>/[#;]\s/</code> to be parsed as a disabled entry. </p>
+<p>If set to <code>true</code>, what follows <code>/[#;]\s/</code> is allowed to be parsed as a disabled entry. </p>
 
 </div>
 </div>
@@ -164,7 +164,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to <code>true</code>, comments that do not contain a delimiter symbol will never be parsed as disabled keys, but always as simple comments. </p>
+<p>If set to <code>false</code>, comments that do not contain a key-value delimiter will never be parsed as disabled keys, but always as simple comments (even if the format supports implicit keys). </p>
 
 </div>
 </div>
@@ -209,7 +209,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to <code>true</code>, implicit keys (see <a class="el" href="libconfini.html">Library Functions Manual</a>) will always be dispatched using the values given by the global variables <a class="el" href="confini_8c.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL)">INI_GLOBAL_IMPLICIT_VALUE</a> and <a class="el" href="confini_8c.html#acecf086ca074b27365e877f056af2192" title="Length of the value assigned to implicit keys – this may be any unsigned number, independently of the...">INI_GLOBAL_IMPLICIT_V_LEN</a> for the fields <a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a> and to <a class="el" href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">IniDispatch::v_len</a> respectively; if set to <code>false</code>, implicit keys will be considered to be empty keys. </p>
+<p>If set to <code>true</code>, implicit keys (see <a class="el" href="libconfini.html">Library Functions Manual</a>) will be always dispatched using the values given by the global variables <a class="el" href="confini_8c.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL)">INI_GLOBAL_IMPLICIT_VALUE</a> and <a class="el" href="confini_8c.html#acecf086ca074b27365e877f056af2192" title="Length of the value assigned to implicit keys (default value: 0)">INI_GLOBAL_IMPLICIT_V_LEN</a> for the fields <a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a> and to <a class="el" href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">IniDispatch::v_len</a> respectively; if set to <code>false</code>, implicit keys will be considered to be empty keys. </p>
 
 </div>
 </div>

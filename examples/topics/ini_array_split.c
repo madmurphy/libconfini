@@ -11,7 +11,7 @@ static int my_array_memb_handler (
   void * foreach_other
 ) {
 
-  printf("%s\n", arr_member);
+  printf("\"%s\"\n", arr_member);
 
   return 0;
 

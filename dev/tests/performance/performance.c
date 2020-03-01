@@ -1,53 +1,79 @@
-/*  tests/performance/performance.c  */
+/*  dev/tests/performance/performance.c  */
 
 #include <stdio.h>
 #include <confini.h>
 #include <time.h>
 
-static int get_ini_size (IniStatistics * stats, void * v_bytes) {
+static int get_ini_size (IniStatistics * stats, void * v_data) {
 
-	*((size_t *) v_bytes) = stats->bytes;
-
-	return 0;
+  (*(size_t (*)[2]) v_data)[0] = stats->bytes;
+  (*(size_t (*)[2]) v_data)[1] = stats->members;
+  return 0;
 
 }
 
-static int empty_listener (IniDispatch * dispatch, void * v_bytes) {
+static int empty_listener (IniDispatch * dispatch, void * v_data) {
 
-	return 0;
+  return 0;
 
 }
 
 int main () {
 
-	size_t bytes;
-	double seconds;
-	clock_t start, end;
-	start = clock();
+  /*  Hackable clone of `INI_DEFAULT_FORMAT`  */
+  #define performance_format \
+    ((IniFormat) { \
+      .delimiter_symbol = INI_EQUALS, \
+      .case_sensitive = false, \
+      .semicolon_marker = INI_DISABLED_OR_COMMENT, \
+      .hash_marker = INI_DISABLED_OR_COMMENT, \
+      .section_paths = INI_ABSOLUTE_AND_RELATIVE, \
+      .multiline_nodes = INI_MULTILINE_EVERYWHERE, \
+      .no_single_quotes = false, \
+      .no_double_quotes = false, \
+      .no_spaces_in_names = false, \
+      .implicit_is_not_empty = false, \
+      .do_not_collapse_values = false, \
+      .preserve_empty_quotes = false, \
+      .disabled_after_space = false, \
+      .disabled_can_be_implicit = false \
+    })
 
-	/*  Please create an INI file large enough  */
-	if (load_ini_path(
-		"big_file.ini",
-		INI_DEFAULT_FORMAT,
-		get_ini_size,
-		empty_listener,
-		&bytes
-	)) {
+  /*
+    size_t stats[2] = (size_t [2]) {
+      IniStatistics::bytes,
+      IniStatistics::members
+    }
+  */
+  size_t stats[2];
+  double seconds;
 
-		return 1;
+  clock_t start, end;
+  start = clock();
 
-	}
+  /*  Please create an INI file large enough  */
+  if (load_ini_path(
+    "big_file.ini",
+    performance_format,
+    get_ini_size,
+    empty_listener,
+    &stats
+  )) {
 
-	end = clock();
-	seconds = (double) (end - start) / CLOCKS_PER_SEC;
+    return 1;
 
-	printf(
-		"%zu bytes parsed in %f seconds.\n"
-		"Number of bytes parsed per second: %f\n",
-		bytes, seconds, bytes / seconds
-	);
+  }
 
-	return 0;
+  end = clock();
+  seconds = (double) (end - start) / CLOCKS_PER_SEC;
+
+  printf(
+    "%zu bytes (%zu nodes) parsed in %f seconds.\n"
+    "Number of bytes parsed per second: %f\n",
+    stats[0], stats[1], seconds, (double) stats[0] / seconds
+  );
+
+  return 0;
 
 }
 

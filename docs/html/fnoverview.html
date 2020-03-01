@@ -67,34 +67,34 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Complete list of functions</p>
-<p>What follows here is the list of public functions available with <b>libconfini</b>. Almost each of them is independent, hence if you are compiling the library you may decide to remove the functions listed below from the code, with the only exceptions of <code><a class="el" href="confini_8c.html#a731857502fa7f8e31c4a024335a6d5d6" title="Compares two INI strings and checks if they match.">ini_string_match_ii()</a></code>, required by <code><a class="el" href="confini_8c.html#a76a050b341e311cc9bbb79b399691e12" title="Compares two INI arrays and checks if they match.">ini_array_match()</a></code>, and <code><a class="el" href="confini_8c.html#a25d648d387f6e8bc36e7965accfca63b" title="Parses and tokenizes a buffer containing an INI file, then dispatches its content to a custom callbac...">strip_ini_cache()</a></code>, required by both <code><a class="el" href="confini_8c.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parses an INI file and dispatches its content using a FILE structure as argument.">load_ini_file()</a></code> and <code><a class="el" href="confini_8c.html#a54be108d26619db3066ce1c000dc8a17" title="Parses an INI file and dispatches its content using a path as argument.">load_ini_path()</a></code>.</p>
+<p>Here follows the list of public functions available with <b>libconfini</b>. Almost each of them is independent, therefore if you are compiling the library you may decide to remove the functions listed below from the code according to your needs, with the only exceptions of <code><a class="el" href="confini_8c.html#a731857502fa7f8e31c4a024335a6d5d6" title="Compares two INI strings and checks whether they match.">ini_string_match_ii()</a></code>, required by <code><a class="el" href="confini_8c.html#a76a050b341e311cc9bbb79b399691e12" title="Compares two INI arrays and checks whether they match.">ini_array_match()</a></code>, and <code><a class="el" href="confini_8c.html#a25d648d387f6e8bc36e7965accfca63b" title="Parses and tokenizes a buffer containing an INI file, then dispatches its content to a custom callbac...">strip_ini_cache()</a></code>, required by both <code><a class="el" href="confini_8c.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parses an INI file and dispatches its content to a custom callback using a FILE structure as argument...">load_ini_file()</a></code> and <code><a class="el" href="confini_8c.html#a54be108d26619db3066ce1c000dc8a17" title="Parses an INI file and dispatches its content to a custom callback using a path as argument.">load_ini_path()</a></code>.</p>
 <dl>
 <dt><code><a class="el" href="confini_8c.html#a25d648d387f6e8bc36e7965accfca63b" title="Parses and tokenizes a buffer containing an INI file, then dispatches its content to a custom callbac...">strip_ini_cache()</a></code></dt>
 <dd><p class="startdd">Parses and tokenizes a buffer containing an INI file, then dispatches its content to a custom callback. </p>
 <p class="enddd"></p>
 </dd>
-<dt><code><a class="el" href="confini_8c.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parses an INI file and dispatches its content using a FILE structure as argument.">load_ini_file()</a></code></dt>
-<dd><p class="startdd">Parses an INI file and dispatches its content using a <code>FILE</code> structure as argument. </p>
+<dt><code><a class="el" href="confini_8c.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parses an INI file and dispatches its content to a custom callback using a FILE structure as argument...">load_ini_file()</a></code></dt>
+<dd><p class="startdd">Parses an INI file and dispatches its content to a custom callback using a <code>FILE</code> structure as argument. </p>
 <p class="enddd"></p>
 </dd>
-<dt><code><a class="el" href="confini_8c.html#a54be108d26619db3066ce1c000dc8a17" title="Parses an INI file and dispatches its content using a path as argument.">load_ini_path()</a></code></dt>
-<dd><p class="startdd">Parses an INI file and dispatches its content using a path as argument. </p>
+<dt><code><a class="el" href="confini_8c.html#a54be108d26619db3066ce1c000dc8a17" title="Parses an INI file and dispatches its content to a custom callback using a path as argument.">load_ini_path()</a></code></dt>
+<dd><p class="startdd">Parses an INI file and dispatches its content to a custom callback using a path as argument. </p>
 <p class="enddd"></p>
 </dd>
-<dt><code><a class="el" href="confini_8c.html#a8bb35677b6e7c201eb1fe83efee99d9a" title="Compares two simple strings and checks if they match.">ini_string_match_ss()</a></code></dt>
-<dd><p class="startdd">Compares two simple strings and checks if they match. </p>
+<dt><code><a class="el" href="confini_8c.html#a8bb35677b6e7c201eb1fe83efee99d9a" title="Compares two simple strings and checks whether they match.">ini_string_match_ss()</a></code></dt>
+<dd><p class="startdd">Compares two simple strings and checks whether they match. </p>
 <p class="enddd"></p>
 </dd>
-<dt><code><a class="el" href="confini_8c.html#a5773ae8cbe4ce15737dcece84b362fa0" title="Compares a simple string and an INI string and and checks if they match.">ini_string_match_si()</a></code></dt>
-<dd><p class="startdd">Compares a simple string and an INI string and and checks if they match. </p>
+<dt><code><a class="el" href="confini_8c.html#a5773ae8cbe4ce15737dcece84b362fa0" title="Compares a simple string and an INI string and and checks whether they match.">ini_string_match_si()</a></code></dt>
+<dd><p class="startdd">Compares a simple string and an INI string and and checks whether they match. </p>
 <p class="enddd"></p>
 </dd>
-<dt><code><a class="el" href="confini_8c.html#a731857502fa7f8e31c4a024335a6d5d6" title="Compares two INI strings and checks if they match.">ini_string_match_ii()</a></code></dt>
-<dd><p class="startdd">Compares two INI strings and checks if they match. </p>
+<dt><code><a class="el" href="confini_8c.html#a731857502fa7f8e31c4a024335a6d5d6" title="Compares two INI strings and checks whether they match.">ini_string_match_ii()</a></code></dt>
+<dd><p class="startdd">Compares two INI strings and checks whether they match. </p>
 <p class="enddd"></p>
 </dd>
-<dt><code><a class="el" href="confini_8c.html#a76a050b341e311cc9bbb79b399691e12" title="Compares two INI arrays and checks if they match.">ini_array_match()</a></code></dt>
-<dd><p class="startdd">Compares two INI arrays and checks if they match. </p>
+<dt><code><a class="el" href="confini_8c.html#a76a050b341e311cc9bbb79b399691e12" title="Compares two INI arrays and checks whether they match.">ini_array_match()</a></code></dt>
+<dd><p class="startdd">Compares two INI arrays and checks whether they match. </p>
 <p class="enddd"></p>
 </dd>
 <dt><code><a class="el" href="confini_8c.html#ac55f3fab95f697ac5058533df100fc11" title="Unescapes \&#39;, \&quot;, and \\ and removes all unescaped quotes (if single/double quotes are considered met...">ini_unquote()</a></code></dt>
@@ -149,7 +149,7 @@ $(function() {
 <dd><p class="startdd">Constructs a new <a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect)">IniFormat</a> according to an <a class="el" href="confini_8h.html#a8dfc7ebbb087a23d4076c1d688572b1c" title="The unique ID of an INI format (24-bit maximum)">IniFormatNum</a>. </p>
 <p class="enddd"></p>
 </dd>
-<dt><code><a class="el" href="confini_8c.html#a55bd54663adb78ca5cd832edaff65067" title="Checks whether a string matches one of the booleans listed in the private constant INI_BOOLEANS (case...">ini_get_bool()</a></code></dt>
+<dt><code><a class="el" href="confini_8c.html#adf7805f5e47fcf9771da62e30f73786b" title="Checks whether a string matches one of the booleans listed in the private constant INI_BOOLEANS (case...">ini_get_bool()</a></code></dt>
 <dd><p class="startdd">Checks whether a string matches one of the booleans listed in the private constant <a class="el" href="confini_8c.html#afdb9fd02d693536253da07f0f468aaef" title="A list of possible string representations of boolean pairs.">INI_BOOLEANS</a> (case-insensitive) </p>
 <p class="enddd"></p>
 </dd>

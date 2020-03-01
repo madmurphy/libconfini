@@ -15,10 +15,11 @@ var searchData=
   ['confini_5fenoent_16',['CONFINI_ENOENT',['../confini_8h.html#a4b42cb63e48154fb799599eccd25ce29aca147c275760856386fdb9e778525676',1,'confini.h']]],
   ['confini_5fenomem_17',['CONFINI_ENOMEM',['../confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a0e8e1cee80bc4b7839838764f5d661f5',1,'confini.h']]],
   ['confini_5feoor_18',['CONFINI_EOOR',['../confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a82e26058d2b7bb2203fe321d0320d98a',1,'confini.h']]],
-  ['confini_5ferror_19',['CONFINI_ERROR',['../confini_8h.html#a0b9dcb5c0711475ea78b065b0322bde1',1,'confini.h']]],
-  ['confini_5ffeintr_20',['CONFINI_FEINTR',['../confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a133a335ff201d93015a27bd581e6b399',1,'confini.h']]],
-  ['confini_5fiintr_21',['CONFINI_IINTR',['../confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a1435b36fb0e428e18c5f6a32408eb3ea',1,'confini.h']]],
-  ['confini_5fio_5fflavor_22',['CONFINI_IO_FLAVOR',['../confini_8c.html#aff2761409196287c45bb8876c8613aae',1,'confini.c']]],
-  ['confini_5fsuccess_23',['CONFINI_SUCCESS',['../confini_8h.html#a4b42cb63e48154fb799599eccd25ce29ab6180fd6db09408e11eb1c27fb7028e7',1,'confini.h']]],
-  ['confiniinterruptno_24',['ConfiniInterruptNo',['../confini_8h.html#a4b42cb63e48154fb799599eccd25ce29',1,'confini.h']]]
+  ['confini_5feroaddr_19',['CONFINI_EROADDR',['../confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a701eeae64743243474d43bc85d7b3265',1,'confini.h']]],
+  ['confini_5ferror_20',['CONFINI_ERROR',['../confini_8h.html#a0b9dcb5c0711475ea78b065b0322bde1',1,'confini.h']]],
+  ['confini_5ffeintr_21',['CONFINI_FEINTR',['../confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a133a335ff201d93015a27bd581e6b399',1,'confini.h']]],
+  ['confini_5fiintr_22',['CONFINI_IINTR',['../confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a1435b36fb0e428e18c5f6a32408eb3ea',1,'confini.h']]],
+  ['confini_5fio_5fflavor_23',['CONFINI_IO_FLAVOR',['../confini_8c.html#aff2761409196287c45bb8876c8613aae',1,'confini.c']]],
+  ['confini_5fsuccess_24',['CONFINI_SUCCESS',['../confini_8h.html#a4b42cb63e48154fb799599eccd25ce29ab6180fd6db09408e11eb1c27fb7028e7',1,'confini.h']]],
+  ['confiniinterruptno_25',['ConfiniInterruptNo',['../confini_8h.html#a4b42cb63e48154fb799599eccd25ce29',1,'confini.h']]]
 ];

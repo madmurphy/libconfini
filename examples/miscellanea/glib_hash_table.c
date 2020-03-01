@@ -1,217 +1,151 @@
 /*  examples/miscellanea/glib_hash_table.c  */
 /*
 
-The following code will try to use GLib's `GHashTable` object to store
-the entire content of an INI file. Each key will be accessible through its full
-path -- e.g.: `[section.[subsection.[subsubsection.]]]key`. Comments and
-disabled entries will be ignored.
+The following code will try to use GLib's `GHashTable` object to store the
+entire content of an INI file. Each key will be accessible through its full
+path -- e.g.: `[section.subsection.subsubsection...key`. Comments and disabled
+entries will be ignored.
 
 Furthermore, after the content has been stored, the `main()` function will
 attempt to read the value of the key `my_section.my_subsection.find_me`.
 
 */
 
+
 #include <stdio.h>
 #include <confini.h>
 #include <glib.h>
 #include <stdbool.h>
+
 
 /*
 
 In this implementation the dot is a metacharacter and is used as
 delimiter between path parts. Therefore all dots appearing in key names,
 or (within quotes) in section paths, will be replaced with the following
-character. You may choose any character except the dot itself.
+character. You may change it with any other character (except the dot itself).
 
 */
-#define DOT_REPLACEMENT '_'
+#define DOT_REPLACEMENT '-'
 
-/*  Parse and sanitize each part of a section path  */
 
-static int path_part_handler (
-  const char * unparsed_path,
-  size_t offset,
-  size_t len,
-  size_t partnum,
-  IniFormat ini_format,
-  void * v_destp
-) {
-
-  char * dest = *((char **) v_destp);
-
-  for (size_t idx = offset; idx < len + offset; idx++) {
-
-    *dest++ = unparsed_path[idx] == '.' ? DOT_REPLACEMENT : unparsed_path[idx];
-
-  }
-
-  *dest = '\0';
-  dest += ini_unquote(dest - len, ini_format) - len;
-  *dest++ = '.';
-  *((char **) v_destp) = dest;
-
-  return 0;
-
-}
-
-/*  Push each dispatch to the hash table  */
-static int populate_hash_table (
-  IniDispatch * this,
-  void * v_hash_table
-) {
-
+/*  Add each dispatch to the hash table (callback function)  */
+static int populate_hash_table (IniDispatch * this, void * v_hash_table) {
   #define _MALLOC_CHECK_(PTR) \
     if (PTR == NULL) { fprintf(stderr, "malloc error\n"); return 1; }
-
   if (this->type != INI_KEY) {
-
     return 0;
-
   }
-
-  size_t tmp_size;
-  char * str_a, * str_b;
-
-  if (!INIFORMAT_HAS_NO_ESC(this->format)) {
-
-    /*
-
-      We might have quotes to remove or escape sequences to unescape
-
-    */
-
-    this->d_len = ini_unquote(this->data, this->format);
-
-    if (this->value != INI_GLOBAL_IMPLICIT_VALUE) {
-
-      this->v_len = ini_string_parse(this->value, this->format);
-
-    }
-
-  }
-
+  size_t idx;
+  char * ptr_a, * ptr_b, * ptr_c, * ptr_d;
+  this->d_len = ini_unquote(this->data, this->format);
+  /*  remove quoted dots from parent and allocate the first string  */
   if (this->at_len) {
-
-    /*  We are temporary borrowing `tmp_size`, `str_a` and `str_b` to parse the section path  */
-    #define _PATH_LEN_ tmp_size
-    #define _END_PTR_ str_a
-    #define _PARSED_PATH_ str_b
-
-    /*  We cannot edit the buffer `dispatch->append_to`. So let's copy it.  */
-    _END_PTR_ = _PARSED_PATH_ = (char *) malloc(this->at_len + 2);
-    _MALLOC_CHECK_(_PARSED_PATH_)
-    ini_array_foreach(this->append_to, '.', this->format, path_part_handler, &_END_PTR_);
-    *_END_PTR_ = '\0';
-    _PATH_LEN_ = _END_PTR_ - _PARSED_PATH_;
-
-    /*  We can *finally* leave `str_a` available for pointing to the full path  */
-    #undef _END_PTR_
-    str_a = (char *) malloc(_PATH_LEN_ + this->d_len + 1);
-    _MALLOC_CHECK_(str_a)
-    memcpy(str_a, _PARSED_PATH_, _PATH_LEN_);
-    free(_PARSED_PATH_);
-    #undef _PARSED_PATH_
-    /*  `str_b` is now available  */
-
-    /*  For the `data` part we need to borrow again `str_b`  */
-    str_b = str_a + _PATH_LEN_;
-    #undef _PATH_LEN_
-    /*  `tmp_size` is now available  */
-
-  } else {
-
-    /*  For the `data` part we need to borrow `str_b`  */
-    str_a = str_b = (char *) malloc(this->d_len + 1);
-    _MALLOC_CHECK_(str_a)
-
-  }
-
-  #define _DATA_PART_ str_b
-
-  for (
-    tmp_size = this->d_len + 2;
-      tmp_size-- > 0;
-    _DATA_PART_[tmp_size] = this->data[tmp_size] == '.' ? DOT_REPLACEMENT : this->data[tmp_size]
-  );
-
-  #undef _DATA_PART_
-  /*  `str_b` is now available  */
-
-  /*  We are borrowing again `str_b` in order to search for duplicate keys  */
-  #define _EXISTING_ str_b
-
-  if (g_hash_table_lookup_extended((GHashTable *) v_hash_table, str_a, (gpointer) &_EXISTING_, NULL)) {
-
-    fprintf(stderr, "`%s` will be overwritten (duplicate key found)\n", str_a);
-
-    if (!g_hash_table_remove((GHashTable *) v_hash_table, _EXISTING_)) {
-
-      fprintf(stderr, "Unable to remove `%s` from the hash table\n", str_a);
-
+    /*  has parent  */
+    ptr_a = ptr_b = (char *) malloc(this->at_len + 1);
+    _MALLOC_CHECK_(ptr_b)
+    *((const char **) &ptr_d) = this->append_to;
+    while ((ptr_c = ptr_d)) {
+      idx = ini_array_shift((const char **) &ptr_d, '.', this->format);
+      ptr_a[idx] = '\0';
+      do {
+        --idx;
+        ptr_a[idx] = ptr_c[idx] == '.' ? DOT_REPLACEMENT : ptr_c[idx];
+      } while (idx > 0);
+      ptr_a += ini_unquote(ptr_a, this->format);
+      *ptr_a++ = '.';
     }
-
+    idx = ptr_a - ptr_b;
+    ptr_a = (char *) malloc(idx + this->d_len + 1);
+    _MALLOC_CHECK_(ptr_a)
+    memcpy(ptr_a, ptr_b, idx);
+    free(ptr_b);
+    ptr_b = ptr_a + idx;
+  } else {
+    /*  parent is root  */
+    ptr_a = ptr_b = (char *) malloc(this->d_len + 1);
+    _MALLOC_CHECK_(ptr_a)
   }
-
-  #undef _EXISTING_
-  /*  `str_b` is now available  */
-
-  /*  We can *finally* leave `str_b` available for pointing to the value part  */
-  str_b = (char *) malloc(this->v_len + 1);
-  _MALLOC_CHECK_(str_b)
-
-  for (tmp_size = this->v_len + 2; tmp_size-- > 0; str_b[tmp_size] = this->value[tmp_size]);
-
-  g_hash_table_insert((GHashTable *) v_hash_table, str_a, str_b);
-  printf("`%s` has been added to the hash table\n", str_a);
-
-  #undef _MALLOC_CHECK_
-
+  /*  remove dots from key name  */
+  for (
+    idx = this->d_len + 2;
+      idx-- > 0;
+    ptr_b[idx] = this->data[idx] == '.' ? DOT_REPLACEMENT : this->data[idx]
+  );
+  /*  check for duplicate keys  */
+  if (g_hash_table_lookup_extended((GHashTable *) v_hash_table, ptr_a, (gpointer) &ptr_b, NULL)) {
+    fprintf(stderr, "`%s` will be overwritten (duplicate key found)\n", ptr_a);
+    if (!g_hash_table_remove((GHashTable *) v_hash_table, ptr_b)) {
+      fprintf(stderr, "Unable to remove `%s` from the hash table\n", ptr_a);
+    }
+  }
+  /*  allocate the second string  */
+  ptr_b = (char *) malloc(this->v_len + 1);
+  _MALLOC_CHECK_(ptr_b)
+  if (this->value) {
+    for (idx = this->v_len + 2; idx-- > 0; ptr_b[idx] = this->value[idx]);
+  } else {
+    *ptr_b = '\0';
+  }
+  g_hash_table_insert((GHashTable *) v_hash_table, ptr_a, ptr_b);
+  printf("`%s` has been added to the hash table.\n", ptr_a);
   return 0;
+  #undef _MALLOC_CHECK_
 }
 
+
 int main () {
-
-  /*  Important! We are using `g_hash_table_lookup()` to search for the indicized keys, therefore we must fold the character case */
-  INI_GLOBAL_LOWERCASE_MODE = true;
-
-  /*  Important! In this context the length given to implicit values *must* always represent their real length!  */
-  ini_global_set_implicit_value("YES", 3);
-
+  #define my_format \
+    ((IniFormat) { \
+      .delimiter_symbol = INI_EQUALS, \
+      .case_sensitive = false, \
+      .semicolon_marker = INI_IGNORE, \
+      .hash_marker = INI_IGNORE, \
+      .section_paths = INI_ABSOLUTE_AND_RELATIVE, \
+      .multiline_nodes = INI_MULTILINE_EVERYWHERE, \
+      .no_single_quotes = false, \
+      .no_double_quotes = false, \
+      .no_spaces_in_names = false, \
+      .implicit_is_not_empty = true, \
+      .do_not_collapse_values = false, \
+      .preserve_empty_quotes = false, \
+      .disabled_after_space = false, \
+      .disabled_can_be_implicit = true \
+    })
   GHashTable * my_hash_table = g_hash_table_new_full(g_str_hash, g_str_equal, free, free);
-  IniFormat my_format = INI_DEFAULT_FORMAT;
-
-  /*  Comments and disabled keys will be anyway ignored, so let's avoid that they be dispatched at all  */
-  my_format.semicolon_marker = my_format.hash_marker = INI_IGNORE;
-  /*  All other parameters of the INI format may be set freely  */
-
+  ini_global_set_implicit_value("true", 4);
+  /*
+    We are using `g_hash_table_lookup()` to search for the indicized keys,
+    therefore it is better to fold the string case (but you can disagree).
+  */
+  INI_GLOBAL_LOWERCASE_MODE = true;
   if (load_ini_path("../ini_files/hash_table.conf", my_format, NULL, populate_hash_table, my_hash_table)) {
-
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;
-
   }
-
-  /*  Let's have a look at the value of `my_section.my_subsection.find_me`...  */
-
-  const char
+  /*
+    Let's have a look at the value of `my_section.my_subsection.find_me`...
+  */
+  char
     * const my_key = "my_section.my_subsection.find_me",
     * const my_value = (char *) g_hash_table_lookup(my_hash_table, my_key);
-
   if (my_value) {
-
+    /*
+      We call `ini_string_parse()` on the value **after** this has been stored
+      in the hash table. In this example we parse only a simple string, so this
+      will not make any difference, but there might cases where a value can be
+      an array, and in this case the unquoting should be done individually on
+      each member. Using a hash table spares us the `if`/`else` chain when
+      deciding if and how to unquote things.
+    */
+    ini_string_parse(my_value, my_format);
     printf("\nKey `%s` has value `%s`.\n", my_key, my_value);
-
   } else {
-
     printf("\nKey `%s` has not been found.\n", my_key);
-
   }
-
   /*  Destroy the hash table  */
-
   g_hash_table_destroy(my_hash_table);
-
   return 0;
-
+  #undef my_format
 }
 

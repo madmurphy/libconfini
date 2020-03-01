@@ -12,11 +12,12 @@ One obstacle to a GUI editor for configuration files is that these often
 contain commented suggestions on how to write key/values pairs, what the
 default values are, etc.; and these suggestions can make a clear sense while
 editing a plain text, but normally disappear when the text is parsed by some
-application. So, eventually, an editor would have to be able to not loose the
-comments, and also to recognize among comments a disabled (commented) key or an
-entire disabled section, and being flexible enough to support the numerous INI
-dialects (multiline INI files, support for single/double quotes, different
-delimiter symbols, nesting sections, etc.).
+application. So, eventually, an editor would need to be able not to loose the
+comments, and should also recognize among the comments a disabled (commented
+out) key or an entire disabled section, and should be flexible enough to
+support the numerous INI dialects that exist out there in the wild (multiline
+INI files, support for single/double quotes, different delimiter symbols,
+nesting sections, etc.).
 
 With this in mind I wrote down the first algorithms for doing the job. As I
 said, it was the project of an INI editor for GNOME (now abandoned)... But I
@@ -29,11 +30,14 @@ Here is where **libconfini** comes.
 It can be synthetized as a smart parser able to allow a complete lossless
 analysis and parsing of many different types of INI files, but _K.I.S.S._
 enough to not store any parsed data, but rather dispatch it (well formatted)
-to a custom listener. It was born for a GUI editor (which per se needs to read
-_every_ information out of an INI file), but is usable by any other application
-that needs to read INI files but does not need to read commented INI lines.
+to a custom listener. It was born for an editor (which per se needs to read
+_every_ information out of a jungle of different types of INI file), but is
+usable by any other application that needs to read INI files but does not need
+to read commented INI lines. And when a program needs to parse INI files that
+belong to other programs **libconfini** is definitely the perfect tool for the
+job.
 
-Despite highly configurable and flexible, **libconfini** is still a small
-piece of work. I really don't know if it will be useful to the community. For
-sure it did the right job for my editor.
+Despite highly configurable and flexible, the library is still a small piece of
+work. I honestly don't know if it will be useful to the community, but I
+definitely do know one thing: **libconfini** is unique in its field.
 

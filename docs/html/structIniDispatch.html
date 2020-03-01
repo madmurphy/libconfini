@@ -109,7 +109,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The current section path </p>
+<p>The current section path; cannot be <code>NULL</code> </p>
 
 </div>
 </div>
@@ -154,7 +154,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>It can be the content of a comment, a section path or a key name </p>
+<p><a class="el" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">IniDispatch::data</a> can contain a comment, a section path or a key name depending, on <a class="el" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">IniDispatch::type</a>; cannot be <code>NULL</code> </p>
 
 </div>
 </div>
@@ -229,7 +229,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>It can be the value of a key element, an empty string or it can point to the address pointed by the global variable <a class="el" href="confini_8c.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL)">INI_GLOBAL_IMPLICIT_VALUE</a> (the latter is the only case in which <code><a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></code> might be ·<code>NULL</code>) </p>
+<p>It can be the value of a key element, an empty string or it can point to the address pointed by the global variable <a class="el" href="confini_8c.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL)">INI_GLOBAL_IMPLICIT_VALUE</a> (<em>the latter is the only case in which <code><a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></code> can be <code>NULL</code></em>) </p>
 
 </div>
 </div>

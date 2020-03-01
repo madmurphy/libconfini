@@ -6,7 +6,7 @@
     @brief      libconfini header
     @author     Stefano Gioffr&eacute;
     @copyright  GNU General Public License, version 3 or any later version
-    @version    1.13.0
+    @version    1.14.0
     @date       2016-2020
     @see        https://madmurphy.github.io/libconfini
 
@@ -33,16 +33,16 @@ extern "C" {
 /*  PRIVATE (HEADER-SCOPED) MACROS  */
 
 
-#define _LIBCONFINI_INIFORMAT_DESCR_(NAME, OFFSET, SIZE, DEFVAL) \
+#define __INIFORMAT_TABLE_CB_FIELDS__(NAME, OFFSET, SIZE, DEFVAL) \
     unsigned char NAME:SIZE;
-#define _LIBCONFINI_DEFAULT_FMT_DESCR_(NAME, OFFSET, SIZE, DEFVAL) DEFVAL,
-#define _LIBCONFINI_UNIXLIKE_FMT_DESCR_(NAME, OFFSET, SIZE, DEFVAL) 0,
+#define __INIFORMAT_TABLE_CB_DEFAULT__(NAME, OFFSET, SIZE, DEFVAL) DEFVAL,
+#define __INIFORMAT_TABLE_CB_ZERO__(NAME, OFFSET, SIZE, DEFVAL) 0,
 #define _LIBCONFINI_INIFORMAT_TYPE_ \
-    struct IniFormat { INIFORMAT_TABLE_AS(_LIBCONFINI_INIFORMAT_DESCR_) }
+    struct IniFormat { INIFORMAT_TABLE_AS(__INIFORMAT_TABLE_CB_FIELDS__) }
 #define _LIBCONFINI_DEFAULT_FORMAT_ \
-    { INIFORMAT_TABLE_AS(_LIBCONFINI_DEFAULT_FMT_DESCR_) }
+    { INIFORMAT_TABLE_AS(__INIFORMAT_TABLE_CB_DEFAULT__) }
 #define _LIBCONFINI_UNIXLIKE_FORMAT_ \
-    { INIFORMAT_TABLE_AS(_LIBCONFINI_UNIXLIKE_FMT_DESCR_) }
+    { INIFORMAT_TABLE_AS(__INIFORMAT_TABLE_CB_ZERO__) }
 
 
 
@@ -50,7 +50,8 @@ extern "C" {
 
 
 /**
-    @brief  Calls a user-given macro for each row of the table
+    @brief  Calls a user-given macro (that accepts four arguments) for each row
+            of the table
 **/
 /*
     NOTE: The following table and the order of its rows **define** (and link
@@ -62,21 +63,21 @@ extern "C" {
         NAME                      BIT  SIZE DEFAULT
                                                                       */\
  _____( delimiter_symbol,         0,   7,   INI_EQUALS                ) \
- _____( case_sensitive,           7,   1,   0                         )/*
+ _____( case_sensitive,           7,   1,   false                     )/*
                                                                       */\
  _____( semicolon_marker,         8,   2,   INI_DISABLED_OR_COMMENT   ) \
  _____( hash_marker,              10,  2,   INI_DISABLED_OR_COMMENT   ) \
  _____( section_paths,            12,  2,   INI_ABSOLUTE_AND_RELATIVE ) \
  _____( multiline_nodes,          14,  2,   INI_MULTILINE_EVERYWHERE  )/*
                                                                       */\
- _____( no_single_quotes,         16,  1,   0                         ) \
- _____( no_double_quotes,         17,  1,   0                         ) \
- _____( no_spaces_in_names,       18,  1,   0                         ) \
- _____( implicit_is_not_empty,    19,  1,   0                         ) \
- _____( do_not_collapse_values,   20,  1,   0                         ) \
- _____( preserve_empty_quotes,    21,  1,   0                         ) \
- _____( disabled_after_space,     22,  1,   0                         ) \
- _____( disabled_can_be_implicit, 23,  1,   0                         )
+ _____( no_single_quotes,         16,  1,   false                     ) \
+ _____( no_double_quotes,         17,  1,   false                     ) \
+ _____( no_spaces_in_names,       18,  1,   false                     ) \
+ _____( implicit_is_not_empty,    19,  1,   false                     ) \
+ _____( do_not_collapse_values,   20,  1,   false                     ) \
+ _____( preserve_empty_quotes,    21,  1,   false                     ) \
+ _____( disabled_after_space,     22,  1,   false                     ) \
+ _____( disabled_can_be_implicit, 23,  1,   false                     )
 
 
 
@@ -324,7 +325,7 @@ extern IniFormat ini_ntof (
 
 extern int ini_get_bool (
     const char * const ini_string,
-    const int return_value
+    const int when_fail
 );
 
 
@@ -388,7 +389,8 @@ enum ConfiniInterruptNo {
                                  expected [value=7] **/
     CONFINI_EBADF = 8,      /**< The stream specified is not a seekable stream
                                  [value=8] **/
-    CONFINI_EFBIG = 9       /**< File too large [value=9] **/
+    CONFINI_EFBIG = 9,      /**< File too large [value=9] **/
+    CONFINI_EROADDR = 10    /**< Address is read-only [value=10] **/
 };
 
 
@@ -414,8 +416,8 @@ enum IniNodeType {
 
 
 /**
-    @brief  Most used array and key-value delimiters (but a delimiter may also
-            be any other ASCII character not present in this list)
+    @brief  Common array and key-value delimiters (but a delimiter may also be
+            any other ASCII character not present in this list)
 **/
 enum IniDelimiters {
     INI_ANY_SPACE = 0,  /**< In multi-line INIs:
@@ -437,8 +439,9 @@ enum IniCommentMarker {
     INI_DISABLED_OR_COMMENT = 0,    /**< This marker opens a comment or a
                                          disabled entry **/
     INI_ONLY_COMMENT = 1,           /**< This marker opens a comment **/
-    INI_IGNORE = 2,                 /**< This marker opens a comment that must
-                                         not be dispatched or counted **/
+    INI_IGNORE = 2,                 /**< This marker opens a comment that has
+                                         been marked for deletion and must not
+                                         be dispatched or counted **/
     INI_IS_NOT_A_MARKER = 3         /**< This is not a marker at all, but a
                                          normal character instead **/
 };
@@ -510,9 +513,7 @@ extern char * INI_GLOBAL_IMPLICIT_VALUE;
 
 
 /**
-    @brief  Length of the value assigned to implicit keys -- this may be any
-            unsigned number, independently of the real length of
-            #INI_GLOBAL_IMPLICIT_VALUE (default value: `0`)
+    @brief  Length of the value assigned to implicit keys (default value: `0`)
 **/
 extern size_t INI_GLOBAL_IMPLICIT_V_LEN;
 
@@ -524,9 +525,9 @@ extern size_t INI_GLOBAL_IMPLICIT_V_LEN;
 #undef _LIBCONFINI_UNIXLIKE_FORMAT_
 #undef _LIBCONFINI_DEFAULT_FORMAT_
 #undef _LIBCONFINI_INIFORMAT_TYPE_
-#undef _LIBCONFINI_UNIXLIKE_FMT_DESCR_
-#undef _LIBCONFINI_DEFAULT_FMT_DESCR_
-#undef _LIBCONFINI_INIFORMAT_DESCR_
+#undef __INIFORMAT_TABLE_CB_ZERO__
+#undef __INIFORMAT_TABLE_CB_DEFAULT__
+#undef __INIFORMAT_TABLE_CB_FIELDS__
 
 
 
