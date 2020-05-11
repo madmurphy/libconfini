@@ -35,12 +35,10 @@ location = Colosseum
 place = Rome
 
 [sender]
-
 name = John Smith
 email = john.smith@example.com
 
 [receiver]
-
 name = Mario Rossi   # He's a big guy
 email = mario.rossi@example.com
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

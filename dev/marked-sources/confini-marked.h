@@ -2,15 +2,16 @@
 
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ !START_OMISSION! @@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
 
-This is a marked **exact copy** of `src/confini.h`, where replaceable sections
-have been enclosed within special tags that can be parsed and amended by GNU
-Make to create custom forks of the library.
+This is a marked **exact copy** of `src/confini.h`, in which replaceable
+sections have been wrapped within special tags that can be parsed and amended
+by GNU Make during the build process in order to create custom forks of the
+library.
 
 If you want to contribute to the development of this project, please **use this
 file**, as `src/confini.h` is automatically generated from here.
 
-For more information about the tags used here, see the `NA_AMEND()` macro from
-`m4/not-autotools.m4` at https://github.com/madmurphy/not-autotools
+For more information about the tags used here, please see the `NA_AMEND()`
+macro in `m4/not-autotools.m4` at https://github.com/madmurphy/not-autotools
 
 The code below is distributed under the terms of the GPL license version 3 or
 any later version.

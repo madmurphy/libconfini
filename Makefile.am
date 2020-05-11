@@ -56,7 +56,7 @@ endif WANT_DOC
 if WANT_EXAMPLES
 
 examplesdir = $(docdir)/examples
-dist_examples_DATA = \
+dist_examples_SCRIPTS = \
 	examples/run-example.sh
 
 examplesinifilesdir = $(examplesdir)/ini_files
@@ -119,10 +119,6 @@ _examples_insthook_ += \
 
 endif HAVE_TRANSFORMATIONS
 
-
-# Make examples script executable
-_examples_insthook_ += \
-	chmod +x '$(DESTDIR)$(examplesdir)/run-example.sh';
 
 endif WANT_EXAMPLES
 

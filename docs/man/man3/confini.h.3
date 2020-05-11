@@ -1,4 +1,4 @@
-.TH "confini.h" 3 "Sun Mar 1 2020" "libconfini" \" -*- nroff -*-
+.TH "confini.h" 3 "Mon May 11 2020" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -256,7 +256,7 @@ GNU General Public License, version 3 or any later version
 .PP
 \fBVersion\fP
 .RS 4
-1\&.14\&.0 
+1\&.14\&.1 
 .RE
 .PP
 \fBDate\fP
@@ -1413,9 +1413,9 @@ Sets the value to be to be assigned to implicit keys\&.
 .PP
 \fBParameters\fP
 .RS 4
-\fIimplicit_value\fP The string to be used as implicit value (usually \fC'YES'\fP, or \fC'TRUE'\fP) 
+\fIimplicit_value\fP The string to be used as implicit value (usually \fC'YES'\fP, \fC'TRUE'\fP, or \fC'ON'\fP, or any other string; it can be \fCNULL\fP) 
 .br
-\fIimplicit_v_len\fP The length of \fCimplicit_value\fP (usually \fC0\fP, independently of its real length) 
+\fIimplicit_v_len\fP The length of \fCimplicit_value\fP (without counting the NUL terminator; use \fC0\fP for both an empty string and \fCNULL\fP) 
 .RE
 .PP
 \fBReturns\fP

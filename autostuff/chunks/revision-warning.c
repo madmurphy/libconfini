@@ -5,10 +5,9 @@
     ever revised this content, although someone should have. If you are instead
     that human appointed to review this code before it is pasted to the public
     header, please remove this text.
-
     If a "standard" header providing these objects is available for your
-    platform, please replace the entire section below with the following single
-    line:
+    platform, please replace the entire section below with the following
+    content:
 
         #include <some_header.h>
 

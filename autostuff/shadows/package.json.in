@@ -4,7 +4,7 @@
 	"description": "@PROJECT_DESCRIPTION@",
 	"homepage": "@PACKAGE_URL@",
 	"author": "@PACKAGE_BUGREPORT@",
-	"license": "@LICENSE_ID@",
+	"license": "@LICENSE_SPDX@",
 	"main": "@PACKAGE_CONFNAME@",
 	"repo": "@PUBLISHER_ID@/@PACKAGE_TARNAME@",
 	"repository": {

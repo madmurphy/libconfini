@@ -18,7 +18,7 @@ and possibly even without any header at all.
 
 Starting from version 1.13.0 a “bare metal” version of **libconfini** has been
 made available by simply passing a `--without-io-api` option to the `configure`
-script. This modified version has the following characteristics:
+script. This modified version comes with the following characteristics:
 
 * No heap usage (no memory is every allocated or freed)
 * No I/O functions (it is possible to parse only disposable `char` buffers via
@@ -26,7 +26,7 @@ script. This modified version has the following characteristics:
 * Everything else is inherited verbatim from the official version
 
 
-## The `--without-io-api` option
+## The `dev/hackings/baremetal/` subdirectory
 
 When the `configure` script is launched with the `--without-io-api` option (or,
 equivalently, with `--with-io-api=baremetal`), it assumes that no standard

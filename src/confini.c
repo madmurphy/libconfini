@@ -7,7 +7,7 @@
 	@brief		libconfini functions
 	@author		Stefano Gioffr&eacute;
 	@copyright	GNU General Public License, version 3 or any later version
-	@version	1.14.0
+	@version	1.14.1
 	@date		2016-2020
 	@see		https://madmurphy.github.io/libconfini
 
@@ -445,8 +445,9 @@
 
 /*
 
-	Maybe in the future there will be support for UTF-8 casefold (although probably
-	not -- see "Code considerations" in the Manual), but for now only ASCII...
+	Maybe in the future there will be support for UTF-8 case folding (although
+	probably not -- see "Code considerations" in the Manual), but for now only
+	ASCII...
 
 */
 #define _LIBCONFINI_CHR_CASEFOLD_(CHR) (CHR > 0x40 && CHR < 0x5b ? CHR | 0x60 : CHR)
@@ -4829,9 +4830,11 @@ void ini_global_set_lowercase_mode (const bool lowercase) {
 
 	@brief			Sets the value to be to be assigned to implicit keys
 	@param			implicit_value		The string to be used as implicit value
-										(usually `"YES"`, or `"TRUE"`)
-	@param			implicit_v_len		The length of @p implicit_value (usually
-										`0`, independently of its real length)
+										(usually `"YES"`, `"TRUE"`, or `"ON"`, or
+										any other string; it can be `NULL`)
+	@param			implicit_v_len		The length of @p implicit_value (without
+										counting the NUL terminator; use `0` for
+										both an empty string and `NULL`)
 	@return			Nothing
 
 	@warning	This function changes the value of one or more global variables. In

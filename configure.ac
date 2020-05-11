@@ -26,7 +26,7 @@ AC_INIT([lib]n4_mem([GL_PROJECT_NAME], [confini]),
 	m4_joinall([.],
 		n4_mem([GL_PROJECT_MAJVER], [1]),
 		n4_mem([GL_PROJECT_MINVER], [14]),
-		n4_mem([GL_PROJECT_REVVER], [0])),
+		n4_mem([GL_PROJECT_REVVER], [1])),
 	[madmurphy333@gmail.com],
 	[lib]GL_PROJECT_NAME,
 	[https://madmurphy.github.io/libconfini])
@@ -38,7 +38,7 @@ NC_GLOBAL_LITERALS(
 	[PROJECT_DESCRIPTION],		[Yet another INI parser],
 	[LICENSE_STRING],			[GNU General Public License, version 3 or any
 								later version],
-	[LICENSE_ID],				[GPL-3.0-or-later],
+	[LICENSE_SPDX],				[GPL-3.0-or-later],
 	[PUBLISHER_NAME],			[Stefano Gioffré],
 	[PUBLISHER_ID],				[madmurphy],
 	[GIT_HTTP_SERVER],			[https://github.com]
@@ -141,7 +141,7 @@ AC_CONFIG_AUX_DIR([build-aux])
 ###  Add `--enable-extended-config[=MODE]` option
 NC_CONFIG_SHADOW_DIR([autostuff/shadows])
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([gnu])
 
 ###  Add `--enable-author-mode` option
 AC_ARG_ENABLE([author-mode],
@@ -225,7 +225,7 @@ AC_ARG_WITH([io_api],
 AS_VAR_SET([AC_CPPENV], ['$(OFFICIAL_CPPENV)'])
 
 AS_CASE(["${na_tmp_ioflavor}"],
-	[standard], [],
+	[standard], [:],
 	[posix], [
 		AS_IF([test "x${ac_cv_have_posix_c}" = xno], [
 			NC_MSG_WARNBOX([The POSIX I/O API is not supported on this platform
@@ -869,7 +869,7 @@ AS_MKDIR_P(['help'])
 
 ###  Create a `help/make-targets.txt` file to be printed by `make help`
 { cat << 'END_HEREDOC'
-GNU make utility to maintain AC_PACKAGE_NAME
+GNU make utility to maintain AC_PACKAGE_NAME AC_PACKAGE_VERSION
 
 Commonly used targets:
 
@@ -888,19 +888,19 @@ NA_HELP_STRINGS(
 		`make check` tests the compiled objects directly from the source
 		directory, `make installcheck` tests the compiled objects from the
 		installation paths (you can pass a `DESTDIR` variable in case of staged
-		installations), `make finishcheck` tests the compiled objects from
+		installations), and `make finishcheck` tests the compiled objects from
 		the installation paths without passing any information to the compiler
 		about the latter, in order to check that <includedir> and <libdir> are
 		automatically reachable (therefore no `DESTDIR` variable is supported
 		here); note that `make installcheck` and `make finishcheck` can be
-		launched only after `make install(*)` has been launched],
+		launched only after having launched `make install(*)`],
 	[[make mostlyclean], [make clean], [make distclean]],
 		[clean the source directory according to different degrees of fury],
 	[[make clobber]],
 		[launch `make uninstall` followed by `make clean`],
 	[[make alldone]],
 		[launch `make install-strip` followed by `make installcheck` - in case
-		of staged installations it is possible to pass a `DEST` variable (see
+		of staged installations it is possible to pass a `DESTDIR` variable (see
 		below)],
 	[[make binary-release], [make manifest]],
 		[create respectively a package and a manifest in the current location
@@ -956,7 +956,7 @@ NA_HELP_STRINGS(
 		script],
 	[[make approve-revision], [make reject-revision]],
 		[Approve/reject the current customization for a non-standard
-		environment (available only in specific cases))],
+		environment (available only in specific cases)],
 	[[make expired]],
 		[(Re)build all the targets listed in the `EXPIRE` user variable, as in
 		`make EXPIRE=']AC_PACKAGE_TARNAME[-git.tar.gz
@@ -977,9 +977,10 @@ NA_HELP_STRINGS(
 		the `DESTDIR` variable allows to change the final installation path,
 		independently of how the package has been configured; this variable can
 		contain absolute paths only and defaults to an empty string when
-		omitted; the `DESTDIR` variable is meant only for staged installations
-		and must never contain a real installation path - if you need to
-		customize the target directories, launch `./configure --help`],
+		omitted; the `DESTDIR` variable is meant to be used only in case of
+		staged installations and should never contain a real installation path
+		- if you need to customize the target directories, launch `./configure
+		--help`],
 	[[ZIPTYPE]],
 		[Supported by `make authors-copy`, `make binary-release`, `make
 		git-clone`, `make portable-builds` and `make source-release`, this

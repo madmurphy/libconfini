@@ -3,14 +3,14 @@
 
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ !START_OMISSION! @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
 
-This is a marked **exact copy** of `src/confini.c`, where replaceable sections have
-been enclosed within special tags that can be parsed and amended by GNU Make to
-create custom forks of the library.
+This is a marked **exact copy** of `src/confini.c`, in which replaceable sections
+have been wrapped within special tags that can be parsed and amended by GNU Make
+during the build process in order to create custom forks of the library.
 
 If you want to contribute to the development of this project, please **use this
 file**, as `src/confini.c` is automatically generated from here.
 
-For more information about the tags used here, see the `NA_AMEND()` macro from
+For more information about the tags used here, please see the `NA_AMEND()` macro in
 `m4/not-autotools.m4` at https://github.com/madmurphy/not-autotools
 
 The code below is distributed under the terms of the GPL license version 3 or any
@@ -460,8 +460,9 @@ later version.
 
 /*
 
-	Maybe in the future there will be support for UTF-8 casefold (although probably
-	not -- see "Code considerations" in the Manual), but for now only ASCII...
+	Maybe in the future there will be support for UTF-8 case folding (although
+	probably not -- see "Code considerations" in the Manual), but for now only
+	ASCII...
 
 */
 #define _LIBCONFINI_CHR_CASEFOLD_(CHR) (CHR > 0x40 && CHR < 0x5b ? CHR | 0x60 : CHR)
@@ -4846,9 +4847,11 @@ void ini_global_set_lowercase_mode (const bool lowercase) {
 
 	@brief			Sets the value to be to be assigned to implicit keys
 	@param			implicit_value		The string to be used as implicit value
-										(usually `"YES"`, or `"TRUE"`)
-	@param			implicit_v_len		The length of @p implicit_value (usually
-										`0`, independently of its real length)
+										(usually `"YES"`, `"TRUE"`, or `"ON"`, or
+										any other string; it can be `NULL`)
+	@param			implicit_v_len		The length of @p implicit_value (without
+										counting the NUL terminator; use `0` for
+										both an empty string and `NULL`)
 	@return			Nothing
 
 	@warning	This function changes the value of one or more global variables. In

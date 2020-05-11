@@ -17,8 +17,8 @@ dnl  **************************************************************************
 
 
 dnl  **************************************************************************
-dnl  NOTE:  This is only a selection of macros from the Not Autotools project
-dnl         without documentation. For the entire collection and the
+dnl  NOTE:  This is only a selection of macros from the **Not Autotools**
+dnl         project without documentation. For the entire collection and the
 dnl         documentation please refer to the project's website.
 dnl  **************************************************************************
 

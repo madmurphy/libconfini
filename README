@@ -164,34 +164,43 @@ by running the `bootstrap` script. By default, `bootstrap` will also run the
 `./bootstrap --help`.
 
 If you are using **Microsoft Windows**, a batch script for compiling
-**libconfini** with [MinGW][7] without Bash is available (`mgwmake.bat`). If you
-are interested in using Autotools for compiling **libconfini** under Microsoft
-Windows, you can integrate MinGW with [MSYS][8], or you can directly use
-[MSYS2][9]. Alternatively, [an unofficial port][10] of **libconfini** for
-[Cygwin][11] is available.
+**libconfini** with [MinGW][7] without Bash is available (`mgwmake.bat`). If
+you are interested in using Autotools for compiling **libconfini** under
+Microsoft Windows, you can integrate MinGW with [MSYS][8], or you can directly
+use [MSYS2][9] and [its official port][10] of the library. Alternatively, [an
+unofficial port][11] of **libconfini** for [Cygwin][12] is available.
 
-For further information, see [INSTALL][12].
+For further information, see [INSTALL][13].
+
+
+Bindings
+--------
+
+[Danilo Spinella][14] maintains [a D binding package][15] of **libconfini**.
 
 
 Free software
 -------------
 
 This library is free software. You can redistribute it and/or modify it under
-the terms of the GPL license version 3 or any later version. See [COPYING][13]
+the terms of the GPL license version 3 or any later version. See [COPYING][16]
 for details.
 
 
-[1]: https://madmurphy.github.io/libconfini/html/baremetal.html
-[2]: https://madmurphy.github.io/libconfini/html/libconfini.html
-[3]: https://madmurphy.github.io/libconfini/manual.html
-[4]: https://github.com/
-[5]: https://github.com/madmurphy/libconfini
-[6]: https://repology.org/project/libconfini/versions
-[7]: http://www.mingw.org/
-[8]: http://www.mingw.org/wiki/MSYS
-[9]: https://www.msys2.org/
-[10]: https://github.com/fd00/yacp/tree/master/libconfini
-[11]: https://www.cygwin.com/
-[12]: https://github.com/madmurphy/libconfini/blob/master/INSTALL
-[13]: https://github.com/madmurphy/libconfini/blob/master/COPYING
+  [1]: https://madmurphy.github.io/libconfini/html/baremetal.html
+  [2]: https://madmurphy.github.io/libconfini/html/libconfini.html
+  [3]: https://madmurphy.github.io/libconfini/manual.html
+  [4]: https://github.com/
+  [5]: https://github.com/madmurphy/libconfini
+  [6]: https://repology.org/project/libconfini/versions
+  [7]: http://www.mingw.org/
+  [8]: http://www.mingw.org/wiki/MSYS
+  [9]: https://www.msys2.org/
+  [10]: https://packages.msys2.org/base/mingw-w64-libconfini
+  [11]: https://github.com/fd00/yacp/tree/master/libconfini
+  [12]: https://www.cygwin.com/
+  [13]: https://github.com/madmurphy/libconfini/blob/master/INSTALL
+  [14]: https://danyspin97.org/
+  [15]: https://github.com/DanySpin97/libconfini-d
+  [16]: https://github.com/madmurphy/libconfini/blob/master/COPYING
 
