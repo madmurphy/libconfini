@@ -8,19 +8,19 @@ depending on the build settings). On some platforms, however, only a rather
 exotic I/O API is available, while for some other platforms the C Standard
 Library is simply too heavy or just not implementable.
 
-In the past the build environment of **libconfini** did not offer shortcuts for
-facing this kind of situations -- although thanks to the modularity of the
-source code it was still relatively simple to get rid of every tie with the C
+In the past, the build environment of **libconfini** did not offer shortcuts
+for facing this kind of situations -- although, thanks to the modularity of the
+source code, it was still relatively simple to get rid of every tie with the C
 Standard Library and compile **libconfini** as “bare metal”, with
 `strip_ini_cache()` as the only parsing function (since this relies only on a
-buffer for its input) -- i.e. without `load_ini_file()` and `load_ini_path()`,
+buffer for its input), i.e. without `load_ini_file()` and `load_ini_path()`,
 and possibly even without any header at all.
 
 Starting from version 1.13.0 a “bare metal” version of **libconfini** has been
-made available by simply passing a `--without-io-api` option to the `configure`
-script. This modified version comes with the following characteristics:
+made available simply by passing a `--without-io-api` option to the `configure`
+script. This modified version presents the following characteristics:
 
-* No heap usage (no memory is every allocated or freed)
+* No heap usage (no memory is ever allocated or freed)
 * No I/O functions (it is possible to parse only disposable `char` buffers via
   `strip_ini_cache()`)
 * Everything else is inherited verbatim from the official version
@@ -33,18 +33,16 @@ equivalently, with `--with-io-api=baremetal`), it assumes that no standard
 library at all could be present in the system. Hence it runs a series of tests
 and creates an inventory of what is present and what is not, in order to amend
 the source code accordingly -- to ignore all the tests and assume that
-literally nothing from the C Standard library is supported use
+literally nothing from the C Standard Library is supported use
 `--with-io-api=nolibc`. The amendments are necessary (instead of just relying
-on the C preprocessor) because it is required to change the public header, and
-not just the compiled code.
+on the C preprocessor) because it is required to change the public header, not
+just the compiled code.
 
-Fortunately only a very small amount of code in **libconfini**, besides the I/O
-functions, depends on the C Standard library, so it is relatively easy to
-produce a “bare metal” fork with or without it.
-
-The `dev/hackings/baremetal` subdirectory contains all the necessary
-amendments. These are automatically applied when launching `make
-all` or `make baremetal-csources` from the top level directory, after having
+Only a very small amount of code in **libconfini** depends on the C Standard
+Library besides the I/O functions, so it is relatively easy to produce a “bare
+metal” fork with or without the latter. The `dev/hackings/baremetal`
+subdirectory contains all the necessary amendments. These are automatically
+applied when launching `make all` or `make baremetal-csources` after having
 launched `./configure --without-io-api` (the original source code will be
 preserved).
 
@@ -54,16 +52,15 @@ the functions `ini_get_int()`, `ini_get_lint()`, `ini_get_llint()`,
 implemented as pointers to standard functions (see below). These two files
 amend `src/confini.c`.
 
-The file `number-parsers.h` exports the function headers of what
-`number-parsers.c` implements, and amends `src/confini.h` (i.e. the public
-header).
+The file `number-parsers.h`, which amends `src/confini.h` (i.e. the public
+header), exports the function headers of what `number-parsers.c` implements.
 
 The file `confini-header.c` contains only a nominal workaround-amendment to
 `src/confini.c` (for facilitating the build system) that does not change the
 final C code compiled.
 
-To produce the source code of the “bare metal” version of **libconfini** a
-fifth amendment to the public header is also required, containing some common C
+To create the source code of a “bare metal” version of **libconfini** a fifth
+amendment to the public header is also required, containing some common C
 standard definitions. This amendment is automatically generated for each
 platform during the build process and will be located under
 `no-dist/hackings/baremetal/c-standard-library.h`.
@@ -88,21 +85,22 @@ Here follows the summary of what is required by `./configure --without-io-api`:
 The first four files (the ones located in the `dev/hackings/baremetal`
 subdirectory) are static and do not need any intervention from the user, unless
 (s)he wants to participate in the development of **libconfini**. The fifth file
-_might_ require manual intervention in some situations depending on the
-platform (the build system will emit a warning in such cases).
+_might_ require manual intervention in some situations, depending on the
+platform or on the user's choice (the build system will emit a warning in such
+cases).
 
 
 ## Re-implementing `load_ini_file()` and `load_ini_path()` for your platform
 
-Whether you are using the bare-metal version of **libconfini** for a fridge or
-a microwave oven, you might have eventually to deal with some kind of
-filesystem. If the C Standard `fopen()`, `fseek()`, `ftell()`, `rewind()`,
-`fread()` and `fclose()` do not suit your needs, you can re-implement your own
-version of `load_ini_file()` and `load_ini_path()`. The only requirement is
-that at the end of the day you find a way to pass a disposable buffer
-containing an entire INI file to `strip_ini_cache()`. A good way to proceed is
-to hack the original pair of functions that rely on the C Standard I/O API and
-adapt them to your platform.
+Whether you are using the bare-metal version of **libconfini** for a regular
+computer, a fridge or a microwave oven, you might have eventually to deal with
+some kind of filesystem. If the C standard `fopen()`, `fseek()`, `ftell()`,
+`rewind()`, `fread()` and `fclose()` do not suit your needs, you can
+re-implement your own version of `load_ini_file()` and `load_ini_path()`. The
+only requirement is that at the end of the day you find a way to pass a
+disposable buffer containing an entire INI file to `strip_ini_cache()`. A good
+way to proceed is to hack the original pair of functions that rely on the C
+standard I/O API and adapt them to your platform.
 
 `````````````````````````````````````````````````````````````````````````` c
 #include <stdio.h>

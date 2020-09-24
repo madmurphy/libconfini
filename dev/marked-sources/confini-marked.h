@@ -59,7 +59,7 @@ extern "C" {
 
 
 /**
-    @brief  Calls a user-given macro (that accepts four arguments) for each row
+    @brief  Call a user-given macro (that accepts four arguments) for each row
             of the table
 **/
 /*
@@ -91,7 +91,7 @@ extern "C" {
 
 
 /**
-    @brief  Checks whether a format does **not** support escape sequences
+    @brief  Check whether a format does _not_ support escape sequences
 **/
 #define INIFORMAT_HAS_NO_ESC(FORMAT) \
     (FORMAT.multiline_nodes == INI_NO_MULTILINE && \

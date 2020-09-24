@@ -37,7 +37,7 @@ to read commented INI lines. And when a program needs to parse INI files that
 belong to other programs **libconfini** is definitely the perfect tool for the
 job.
 
-Despite highly configurable and flexible, the library is still a small piece of
-work. I honestly don't know if it will be useful to the community, but I
-definitely do know one thing: **libconfini** is unique in its field.
+Despite being highly configurable and flexible, the library is still a small
+piece of work. I honestly don't know if it will be useful to the community. But
+I definitely do know one thing: **libconfini** is unique in its field.
 

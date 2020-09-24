@@ -22,11 +22,14 @@ AC_PREREQ([2.68])
 ###     P A C K A G E   M E T A D A T A
 ###  **************************************************************************
 
+dnl  Please update the version numbers **only here**. All the other occurrences
+dnl  within the package will be automatically updated by launching `./configure
+dnl  --enable-extended-config`.
 AC_INIT([lib]n4_mem([GL_PROJECT_NAME], [confini]),
 	m4_joinall([.],
 		n4_mem([GL_PROJECT_MAJVER], [1]),
 		n4_mem([GL_PROJECT_MINVER], [14]),
-		n4_mem([GL_PROJECT_REVVER], [1])),
+		n4_mem([GL_PROJECT_REVVER], [2])),
 	[madmurphy333@gmail.com],
 	[lib]GL_PROJECT_NAME,
 	[https://madmurphy.github.io/libconfini])
@@ -49,25 +52,27 @@ NC_GLOBAL_LITERALS(
 ###     R E N A M I N G   R U L E S
 ###  **************************************************************************
 
+NC_REQUIRE([AC_PROG_LN_S], [AC_PROG_SED])
+
 AC_SUBST([PROJECT_NAME], [']GL_PROJECT_NAME['])
 
 AS_IF([test "x${program_prefix}" != xNONE], [
 	AS_VAR_SET([na_tmppref],
-		["$(echo "${program_prefix}" | sed \
+		["$(echo "${program_prefix}" | ${SED} \
 		's/@<:@^@<:@:alnum:@:>@@:>@\+/-/g;s/@<:@A-Z@:>@/\L&/g;s/^-//')"])
 	AS_IF([test "x${program_prefix}" != "x${na_tmppref}"],
-		[AC_MSG_WARN(["${program_prefix}" is not a valid prefix - sanitized as "${na_tmppref}"])])
+		[AC_MSG_WARN(["${program_prefix}" is not a valid prefix: sanitized as "${na_tmppref}"])])
 ])
 
 AS_IF([test "x${program_suffix}" != xNONE], [
 	AS_VAR_SET([na_tmpsuff],
-		["$(echo "${program_suffix}" | sed \
+		["$(echo "${program_suffix}" | ${SED} \
 		's/@<:@^@<:@:alnum:@:>@@:>@\+/-/g;s/@<:@A-Z@:>@/\L&/g;s/-@S|@//')"])
 	AS_IF([test "x${program_suffix}" != "x${na_tmpsuff}"],
-		[AC_MSG_WARN(["${program_suffix}" is not a valid suffix - sanitized as "${na_tmpsuff}"])])
+		[AC_MSG_WARN(["${program_suffix}" is not a valid suffix: sanitized as "${na_tmpsuff}"])])
 ])
 
-AS_IF([echo 'x' | sed "${program_transform_name}" 1>/dev/null 2>&1],
+AS_IF([echo 'x' | ${SED} "${program_transform_name}" 1>/dev/null 2>&1],
 	[AS_VAR_COPY([na_tmptransf], [program_transform_name])],
 	[AC_MSG_WARN([ignored --program-transform-name='${program_transform_name}' (invalid sed expression)'])])
 
@@ -222,7 +227,7 @@ AC_ARG_WITH([io_api],
 	])],
 	[AS_VAR_SET([na_tmp_ioflavor], ['check'])])
 
-AS_VAR_SET([AC_CPPENV], ['$(OFFICIAL_CPPENV)'])
+AS_VAR_SET([na_cppenv], ['$(_standard_cppenv_)'])
 
 AS_CASE(["${na_tmp_ioflavor}"],
 	[standard], [:],
@@ -245,7 +250,7 @@ AS_CASE(["${na_tmp_ioflavor}"],
 			information about renaming rules.])])
 		AS_VAR_SET([na_want_baremetal], ['yes'])
 		AS_VAR_SET([na_tmp_ioflavor], ['standard'])
-		AS_VAR_SET([AC_CPPENV], ['$(BAREMETAL_CPPENV)'])
+		AS_VAR_SET([na_cppenv], ['$(_baremetal_cppenv_)'])
 		AS_VAR_SET([na_tmp_further_pp_macros],
 			[' '\''-D_LIBCONFINI_COMPILE_HEADER_="confini-baremetal.h"'\'])
 	],
@@ -263,7 +268,7 @@ AM_CONDITIONAL([WANT_BAREMETAL], [test "x${na_want_baremetal}" = xyes])
 NC_SUBST_NOTMAKE([na_io_api],
 	["CONFINI_$(echo "${na_tmp_ioflavor}" | tr '[a-z]' '[A-Z]')"])
 
-NC_SUBST_NOTMAKE([AC_CPPENV])
+NC_SUBST_NOTMAKE([na_cppenv])
 
 NS_UNSET([na_tmp_further_pp_macros], [na_tmp_ioflavor])
 
@@ -333,7 +338,10 @@ AM_COND_IF([WANT_BAREMETAL], [
 				echo '/*  Re-implementation of `stdbool.h`:  */'
 				echo '@%:@ifndef bool'
 				echo '@%:@define bool unsigned char'
+				echo '@%:@define false 0'
+				echo '@%:@define true 1'
 				echo '@%:@endif'
+
 			} >> 'no-dist/conf-results/stdmissing.h'])
 		AS_IF([test "x${na_tmp_allstdint}" != xno], [
 			echo '@%:@include <stdint.h>' >> \
@@ -405,8 +413,8 @@ AC_ARG_VAR([TESTS_PRINTF_HEADER],
 	applies to checks only and does **not** apply to the library's code
 	@<:@default='<stdio.h>'@:>@])
 
-###  Add `TESTS_PRINTF_NAME` argument variable
-AC_ARG_VAR([TESTS_PRINTF_NAME],
+###  Add `TESTS_PRINTF_FUNCTION` argument variable
+AC_ARG_VAR([TESTS_PRINTF_FUNCTION],
 	[An alternative name for the `printf()` function - this variable applies to
 	checks only and does **not** apply to the library's code
 	@<:@default=printf@:>@])
@@ -415,16 +423,14 @@ AC_SUBST([TESTSONLY_CPPFLAGS],
 	m4_normalize([
 		"$(test "x${TESTS_PRINTF_HEADER}" = x || echo '
 		"-DTESTS_PRINTF_HEADER=$(TESTS_PRINTF_HEADER)"')$(test
-		"x${TESTS_PRINTF_NAME}" = x || echo '
-		"-DTESTS_PRINTF_NAME=$(TESTS_PRINTF_NAME)"')"
+		"x${TESTS_PRINTF_FUNCTION}" = x || echo '
+		"-DTESTS_PRINTF_FUNCTION=$(TESTS_PRINTF_FUNCTION)"')"
 	]))
 
 
 ###  **************************************************************************
 ###     ( A U T O ) M A K E   E N V I R O N M E N T
 ###  **************************************************************************
-
-NC_REQUIRE([AC_PROG_LN_S], [AC_PROG_SED])
 
 ###  Add `RC` argument variable
 AC_ARG_VAR([RC], [Microsoft Windows resource compiler command])
@@ -998,16 +1004,23 @@ NA_HELP_STRINGS(
 		if no recognizable extension is present, a directory will be created
 		instead; archive formats supported are: `tar.gz`, `tar.xz`, `tgz`,
 		`txz`, `zip`; this variable always overrides `ZIPTYPE`],
+	[[DISTFLAGS]],
+		[Supported by `make source-release` and `make authors-copy`, the
+		`DISTFLAGS` variable can contain a space-separated list of options for
+		the generated package. The only flag currently supported is
+		`no-symlinks`, which can be used for replacing all the symbolic links
+		present in the package with hard copies],
 	[[EXPIRE]],
 		[A space-separated list of targets to build even when up-to-date]
 )
 
 For further options, please refer to the documentation of GNU Automake.
 
+Report bugs to <AC_PACKAGE_BUGREPORT>.
+AC_PACKAGE_NAME home page: <AC_PACKAGE_URL>.
 END_HEREDOC
 
 AS_ECHO("This package is currently configured for a ${host_cpu_pretty} CPU running ${host_os}.")
-AS_ECHO
 
 } > 'help/make-targets.txt'
 

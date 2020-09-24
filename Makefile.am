@@ -31,7 +31,7 @@ dist_doc_DATA = \
 	AUTHORS \
 	COPYING
 
-OPTINSTALL =
+_am_installalso_ =
 
 _examples_insthook_ =
 
@@ -66,6 +66,7 @@ dist_examplesinifiles_DATA = \
 	examples/ini_files/bad_ini.conf \
 	examples/ini_files/delivery.conf \
 	examples/ini_files/extreme_ini.conf \
+	examples/ini_files/log.ini \
 	examples/ini_files/hash_table.conf \
 	examples/ini_files/pacman.conf \
 	examples/ini_files/self_explaining.conf \
@@ -76,6 +77,7 @@ dist_examplesinifiles_DATA = \
 examplesmiscdir = $(examplesdir)/miscellanea
 dist_examplesmisc_DATA = \
 	examples/miscellanea/colon_as_delimiter.c \
+	examples/miscellanea/cplusplus.cpp \
 	examples/miscellanea/disambiguate.c \
 	examples/miscellanea/dispatch_everything.c \
 	examples/miscellanea/glib_hash_table.c \
@@ -125,7 +127,7 @@ endif WANT_EXAMPLES
 
 if WANT_HTML
 
-OPTINSTALL += \
+_am_installalso_ += \
 	install-html;
 
 endif WANT_HTML
@@ -224,6 +226,10 @@ RUNJOB = $(INSTALLFLAVOR)
 # Sandbox default path (one word only allowed)
 SANDBOX = volatile
 
+GITFLAGS = \
+	--quiet \
+	--progress
+
 
 ###############################################################################
 ##    R E C I P E S   P A R T   I :   D E V E L O P M E N T   A N D   U S A G E
@@ -237,7 +243,7 @@ install-html-local: $(srcdir)/docs/html $(srcdir)/docs/index.html
 	$(INSTALL_DATA) {} '$(DESTDIR)$(htmldir)/{}' \;) && mv \
 	'$(DESTDIR)$(htmldir)/html' '$(DESTDIR)$(htmldir)/htmldoc';
 
-install-data-local: $(OPTINSTALL)
+install-data-local: $(_am_installalso_)
 
 install-data-hook:
 	$(_examples_insthook_)
@@ -413,7 +419,8 @@ CLEANFILES += \
 	echo; } 1>&2; exit 2; fi; case ' $(APPROVE) ' in *' revision '*) \
 	$(MKDIR_P) 'no-dist/.archived'; mv '$(rvdir)/$(nonportfile)' \
 	'$@'; rmdir '$(rvdir)' 2> /dev/null || :; echo \
-	'User'\''s revision has been accepted.'; ;; *) { echo; echo \
+	'User'\''s revision has been accepted. To undo this, launch `$(MAKE) reject-revision`.'; \
+	;; *) { echo; echo \
 	'There are pending revisions. Please revise the content of the `$(rvdir)`'; \
 	echo \
 	'subdirectory, then launch `$(MAKE) approve-revision` after you are done.'; \
@@ -535,9 +542,10 @@ sandbox-dist sandbox-distdir: sandbox-erase
 
 .PHONY: sandbox-source-release
 sandbox-source-release: sandbox-dist
-	@for _FILE in $$(cd '$(SANDBOX)' && $(FIND) -L . ! -name '.'); do ! \
-	test -L '$(srcdir)/'"$${_FILE}" || (rm -rf '$(SANDBOX)/'"$${_FILE}" \
-	&& cp -d '$(srcdir)/'"$${_FILE}" '$(SANDBOX)/'"$${_FILE}"); done;
+	@case ' $(DISTFLAGS) ' in *' no-symlinks '*) : ;; *) for _FILE in \
+	$$(cd '$(SANDBOX)' && $(FIND) -L . ! -name '.'); do ! test -L \
+	'$(srcdir)/'"$${_FILE}" || (rm -rf '$(SANDBOX)/'"$${_FILE}" && cp -d \
+	'$(srcdir)/'"$${_FILE}" '$(SANDBOX)/'"$${_FILE}"); done ;; esac;
 
 .PHONY: sandbox-authors-copy
 sandbox-authors-copy: sandbox-source-release
@@ -556,7 +564,7 @@ sandbox-snapshot:
 
 .PHONY: sandbox-git-clone
 sandbox-git-clone: sandbox-erase
-	@git clone --quiet --progress \
+	@git clone $(GITFLAGS) \
 	'@GIT_HTTP_SERVER@/@PUBLISHER_ID@/@PACKAGE_TARNAME@.git' '$(SANDBOX)';
 
 # Non-phony targets with names editable on the fly (mostly `Makefile` glue, but
@@ -730,7 +738,7 @@ snapshot:
 	@if test 'x$(DEST)' != x; then rm -rf '$(DEST)' && $(MAKE) "$$(expr \
 	'BAKPATH=$(DEST)' : '\(.*\)\($(_re_archive_allow_)\)' || \
 	echo BAKPATH='$(DEST)')" '$(DEST)'; else \
-	_STAMP="$$(date '+%Y-%m-%d-%H.%M.%S')" && rm -rf \
+	_STAMP="$$(date '+%Y-%m-%d-%H-%M-%S')" && rm -rf \
 	'$(BAKPATH)-'"$${_STAMP}"'.$(ZIPTYPE)' && $(MAKE) \
 	BAKPATH='$(BAKPATH)-'"$${_STAMP}" \
 	'$(BAKPATH)-'"$${_STAMP}"'.$(ZIPTYPE)'; fi;

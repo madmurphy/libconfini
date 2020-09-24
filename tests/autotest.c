@@ -16,8 +16,8 @@
 	Pass `CPPFLAGS='-DSTDOUT_FUNCTION=some_printf_function'` to use a
 	different function name instead of `printf()`
 */
-#ifndef TESTS_PRINTF_NAME
-#define TESTS_PRINTF_NAME printf
+#ifndef TESTS_PRINTF_FUNCTION
+#define TESTS_PRINTF_FUNCTION printf
 #endif
 
 #include TESTS_PRINTF_HEADER
@@ -31,7 +31,7 @@ char ini_cache[] = "testkey=testvalue";
 
 static int test_callback (IniDispatch * dispatch, void * v_null) {
 
-	TESTS_PRINTF_NAME(
+	TESTS_PRINTF_FUNCTION(
 		"DATA: %s, VALUE: %s, NODE TYPE: %u\n",
 		dispatch->data, dispatch->value, dispatch->type
 	);
@@ -53,7 +53,7 @@ int main () {
 
 	if (retval) {
 
-		TESTS_PRINTF_NAME("error: strip_ini_cache() exited with status %d\n", retval);
+		TESTS_PRINTF_FUNCTION("error: strip_ini_cache() exited with status %d\n", retval);
 		return 1;
 
 	}

@@ -1,4 +1,4 @@
-.TH "IniFormat" 3 "Mon May 11 2020" "libconfini" \" -*- nroff -*-
+.TH "IniFormat" 3 "Thu Sep 24 2020" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -58,6 +58,20 @@ IniFormat \- 24-bit bitfield representing the format of an INI file (INI dialect
 .SH "Detailed Description"
 .PP 
 24-bit bitfield representing the format of an INI file (INI dialect) 
+
+
+.PP
+\fBVersion\fP
+.RS 4
+1\&.0 
+.RE
+.PP
+\fBDate\fP
+.RS 4
+October 6th, 2018 (version 1\&.7\&.0 of the library) 
+.RE
+.PP
+
 .SH "Field Documentation"
 .PP 
 .SS "IniFormat::case_sensitive"
@@ -73,7 +87,7 @@ If set to \fCtrue\fP, sequences of one or more spaces in values (\fC/\\s+/\fP) w
 .SS "IniFormat::hash_marker"
 The rule of the hash character (use \fCenum\fP \fBIniCommentMarker\fP for this)\&. 
 .SS "IniFormat::implicit_is_not_empty"
-If set to \fCtrue\fP, implicit keys (see \fBLibrary Functions Manual\fP) will be always dispatched using the values given by the global variables \fBINI_GLOBAL_IMPLICIT_VALUE\fP and \fBINI_GLOBAL_IMPLICIT_V_LEN\fP for the fields \fBIniDispatch::value\fP and to \fBIniDispatch::v_len\fP respectively; if set to \fCfalse\fP, implicit keys will be considered to be empty keys\&. 
+If set to \fCtrue\fP, implicit keys (see \fBLibrary Functions Manual\fP) will be always dispatched using the values provided by the global variables \fBINI_GLOBAL_IMPLICIT_VALUE\fP and \fBINI_GLOBAL_IMPLICIT_V_LEN\fP for the fields \fBIniDispatch::value\fP and to \fBIniDispatch::v_len\fP respectively; if set to \fCfalse\fP, implicit keys will be considered to be empty keys\&. 
 .SS "IniFormat::multiline_nodes"
 Defines which class of entries are allowed to be multi-line (use \fCenum\fP \fBIniMultiline\fP for this)\&. 
 .SS "IniFormat::no_double_quotes"

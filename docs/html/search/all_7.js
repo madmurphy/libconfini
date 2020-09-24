@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['iiniformat_44',['IIniFormat',['../confini_8h.html#a47338cec6606a167df5cabb0b9fcc02e',1,'confini.h']]],
+  ['iniformat_44',['IniFormat',['../confini_8h.html#aea6c9478b46ece5c7d8c56fe00680cf4',1,'confini.h']]],
   ['implicit_5fis_5fnot_5fempty_45',['implicit_is_not_empty',['../structIniFormat.html#ae5722efd535f1d27c624a927eea622c3',1,'IniFormat']]],
   ['ini_5fabsolute_5fand_5frelative_46',['INI_ABSOLUTE_AND_RELATIVE',['../confini_8h.html#a4b01f84229fe403d5b061378ebe86134a369aca51c7228abeae22d232a7fbe1f9',1,'confini.h']]],
   ['ini_5fabsolute_5fonly_47',['INI_ABSOLUTE_ONLY',['../confini_8h.html#a4b01f84229fe403d5b061378ebe86134a1126b82b479382f2d3dada130c08962f',1,'confini.h']]],

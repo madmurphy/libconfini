@@ -1,4 +1,4 @@
-.TH "IniDispatch" 3 "Mon May 11 2020" "libconfini" \" -*- nroff -*-
+.TH "IniDispatch" 3 "Thu Sep 24 2020" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -46,13 +46,13 @@ Dispatch of a single INI node\&.
 .SH "Field Documentation"
 .PP 
 .SS "IniDispatch::append_to"
-The current section path; cannot be \fCNULL\fP 
+The current section path; it cannot be \fCNULL\fP 
 .SS "IniDispatch::at_len"
 The length of the string \fBIniDispatch::append_to\fP 
 .SS "IniDispatch::d_len"
 The length of the string \fBIniDispatch::data\fP 
 .SS "IniDispatch::data"
-\fBIniDispatch::data\fP can contain a comment, a section path or a key name depending, on \fBIniDispatch::type\fP; cannot be \fCNULL\fP 
+It can contain a comment, a section path or a key name, depending on \fBIniDispatch::type\fP; it cannot be \fCNULL\fP 
 .SS "IniDispatch::dispatch_id"
 The dispatch number (the first dispatch is number zero) 
 .SS "IniDispatch::format"
@@ -62,7 +62,7 @@ The dispatch type (see \fCenum\fP \fBIniNodeType\fP)
 .SS "IniDispatch::v_len"
 The length of the string \fBIniDispatch::value\fP 
 .SS "IniDispatch::value"
-It can be the value of a key element, an empty string or it can point to the address pointed by the global variable \fBINI_GLOBAL_IMPLICIT_VALUE\fP (\fIthe latter is the only case in which \fC\fBIniDispatch::value\fP\fP can be \fCNULL\fP\fP) 
+It can contain the value of a key element, an empty string or it can point to the address pointed by the global variable \fBINI_GLOBAL_IMPLICIT_VALUE\fP (\fIthe latter is the only case in which \fC\fBIniDispatch::value\fP\fP can be \fCNULL\fP\fP) 
 
 .SH "Author"
 .PP 

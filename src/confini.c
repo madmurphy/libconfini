@@ -7,7 +7,7 @@
 	@brief		libconfini functions
 	@author		Stefano Gioffr&eacute;
 	@copyright	GNU General Public License, version 3 or any later version
-	@version	1.14.1
+	@version	1.14.2
 	@date		2016-2020
 	@see		https://madmurphy.github.io/libconfini
 
@@ -114,6 +114,9 @@
 
 	@struct		IniFormat
 
+	@version	1.0
+	@date		October 6th, 2018 (version 1.7.0 of the library)
+
 	@property	IniFormat::delimiter_symbol
 					The key-value delimiter character (ASCII only allowed); if set
 					to `\0`, any space is delimiter
@@ -152,7 +155,7 @@
 					considered as a normal character.
 	@property	IniFormat::implicit_is_not_empty
 					If set to `true`, implicit keys (see @ref libconfini) will
-					be always dispatched using the values given by the global
+					be always dispatched using the values provided by the global
 					variables #INI_GLOBAL_IMPLICIT_VALUE and
 					#INI_GLOBAL_IMPLICIT_V_LEN for the fields #IniDispatch::value
 					and to #IniDispatch::v_len respectively; if set to `false`,
@@ -185,11 +188,12 @@
 	@property	IniStatistics::format
 					The format of the INI file (see #IniFormat)
 	@property	IniStatistics::bytes
-					The size in bytes of the parsed file
+					The size of the parsed file in bytes
 	@property	IniStatistics::members
-					The size in number of members (nodes) of the parsed file -- this
-					number always equals the number of dispatches that will be sent
-					by #load_ini_file(), #load_ini_path() or #strip_ini_cache()
+					The size (nodes) of the parsed file in number of members -- this
+					number always equals the number of dispatches that will be
+					produced by #load_ini_file(), #load_ini_path() or
+					#strip_ini_cache()
 
 
 
@@ -200,15 +204,15 @@
 	@property	IniDispatch::type
 					The dispatch type (see `enum` #IniNodeType)
 	@property	IniDispatch::data
-					#IniDispatch::data can contain a comment, a section path or a
-					key name depending, on #IniDispatch::type; cannot be `NULL`
+					It can contain a comment, a section path or a key name,
+					depending on #IniDispatch::type; it cannot be `NULL`
 	@property	IniDispatch::value
-					It can be the value of a key element, an empty string or it can
-					point to the address pointed by the global variable
+					It can contain the value of a key element, an empty string or it
+					can point to the address pointed by the global variable
 					#INI_GLOBAL_IMPLICIT_VALUE (_the latter is the only case in
 					which `IniDispatch::value` can be `NULL`_)
 	@property	IniDispatch::append_to
-					The current section path; cannot be `NULL`
+					The current section path; it cannot be `NULL`
 	@property	IniDispatch::d_len
 					The length of the string #IniDispatch::data
 	@property	IniDispatch::v_len
@@ -516,7 +520,7 @@ static const char * const INI_BOOLEANS[][2] = {
 
 /**
 
-	@brief			Checks whether a character is a space
+	@brief			Check whether a character is a space
 	@param			chr				The target character
 	@param			depth			What is actually considered a space (possible
 									values: `_LIBCONFINI_WITH_EOL_`,
@@ -686,7 +690,7 @@ static inline size_t urtrim_s (const char * const str, const size_t len) {
 
 /**
 
-	@brief			Converts an ASCII string to lower case
+	@brief			Convert an ASCII string to lower case
 	@param			str			The target string
 	@return			Nothing
 
@@ -866,7 +870,7 @@ static inline size_t dqultrim_s (const char * const srcstr, const size_t offs, c
 
 /**
 
-	@brief			Gets the position of the first occurence out of quotes of a
+	@brief			Get the position of the first occurence out of quotes of a
 					given character, stopping after a given number of charcters
 	@param			str				The string where to search
 	@param			chr				The character to to search
@@ -913,7 +917,7 @@ static inline size_t getn_metachar_pos (const char * const str, const char chr, 
 
 /**
 
-	@brief			Gets the position of the first occurence out of quotes of a
+	@brief			Get the position of the first occurence out of quotes of a
 					given character
 	@param			str				The string where to search
 	@param			chr				The character to to search
@@ -955,7 +959,7 @@ static inline size_t get_metachar_pos (const char * const str, const char chr, c
 
 /**
 
-	@brief			Replaces `/\\(\n\r?|\r\n?)[\t \v\f]*[#;]/` or `/\\(\n\r?|\r\n?)/`
+	@brief			Replace `/\\(\n\r?|\r\n?)[\t \v\f]*[#;]/` or `/\\(\n\r?|\r\n?)/`
 					with `"$1"`
 	@param			srcstr			The target string (it may contain multi-line
 									escape sequences)
@@ -1025,7 +1029,7 @@ static size_t unescape_cr_lf (char * const srcstr, const size_t len, const _LIBC
 
 /**
 
-	@brief			Sanitizes a section path
+	@brief			Sanitize a section path
 	@param			secpath			The section path
 	@param			format			The format of the INI file
 	@return			The new length of the string
@@ -1395,7 +1399,7 @@ static size_t collapse_empty_quotes (char * const str, const IniFormat format) {
 
 /**
 
-	@brief			Removes all comment initializers (`#` and/or `;`) from the
+	@brief			Remove all comment initializers (`#` and/or `;`) from the
 					beginning of each line of a comment
 	@param			srcstr			The comment to parse (it may contain multi-line
 									escape sequences)
@@ -1492,7 +1496,7 @@ static size_t uncomment (char * const srcstr, size_t len, const IniFormat format
 
 /**
 
-	@brief			Tries to determine the type of a member "as if it was active"
+	@brief			Try to determine the type of a member "as if it was active"
 	@param			srcstr			String containing an individual node (it may
 									contain multi-line escape sequences)
 	@param			len				Length of the node
@@ -1761,7 +1765,7 @@ static uint8_t get_type_as_active (
 
 /**
 
-	@brief			Examines a (single-/multi-line) segment and checks whether
+	@brief			Examine a (single-/multi-line) segment and check whether
 					it contains more than just one node
 	@param			srcstr			Segment to examine (it may contain multi-line
 									escape sequences)
@@ -2231,8 +2235,8 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 												/** @utility{strip_ini_cache} **/
 /**
 
-	@brief			Parses and tokenizes a buffer containing an INI file, then
-					dispatches its content to a custom callback
+	@brief			Parse and tokenize a buffer containing an INI file, then
+					dispatch its content to a custom callback
 	@param			ini_source		The buffer containing the INI file to tokenize
 	@param			ini_length		The length of @p ini_source without counting the
 									NUL terminator (if any -- se below)
@@ -2761,8 +2765,8 @@ int strip_ini_cache (
 													/** @utility{load_ini_file} **/
 /**
 
-	@brief			Parses an INI file and dispatches its content to a custom
-					callback using a `FILE` structure as argument
+	@brief			Parse an INI file and dispatch its content to a custom callback
+					using a `FILE` structure as argument
 	@param			ini_file		The `FILE` handle pointing to the INI file to
 									parse
 	@param			format			The format of the INI file
@@ -2854,8 +2858,8 @@ int load_ini_file (
 													/** @utility{load_ini_path} **/
 /**
 
-	@brief			Parses an INI file and dispatches its content to a custom
-					callback using a path as argument
+	@brief			Parse an INI file and dispatch its content to a custom callback
+					using a path as argument
 	@param			path			The path of the INI file
 	@param			format			The format of the INI file
 	@param			f_init			The function that will be invoked before the
@@ -2953,7 +2957,7 @@ int load_ini_path (
 											/** @utility{ini_string_match_ss} **/
 /**
 
-	@brief			Compares two simple strings and checks whether they match
+	@brief			Compare two simple strings and check whether they match
 	@param			simple_string_a		The first simple string
 	@param			simple_string_b		The second simple string
 	@param			format				The format of the INI file
@@ -3007,8 +3011,8 @@ bool ini_string_match_ss (
 											/** @utility{ini_string_match_si} **/
 /**
 
-	@brief			Compares a simple string and an INI string and and checks
-					whether they match
+	@brief			Compare a simple string and an INI string and and check whether
+					they match
 	@param			ini_string		The INI string escaped according to
 									@p format
 	@param			simple_string	The simple string
@@ -3179,7 +3183,7 @@ bool ini_string_match_si (
 											/** @utility{ini_string_match_ii} **/
 /**
 
-	@brief			Compares two INI strings and checks whether they match
+	@brief			Compare two INI strings and check whether they match
 	@param			ini_string_a	The first INI string unescaped according to
 									@p format
 	@param			ini_string_b	The second INI string unescaped according to
@@ -3393,7 +3397,7 @@ bool ini_string_match_ii (
 												/** @utility{ini_array_match} **/
 /**
 
-	@brief			Compares two INI arrays and checks whether they match
+	@brief			Compare two INI arrays and check whether they match
 	@param			ini_string_a	The first INI array
 	@param			ini_string_b	The second INI array
 	@param			delimiter		The delimiter between the array members -- if
@@ -3624,8 +3628,8 @@ bool ini_array_match (
 													/** @utility{ini_unquote} **/
 /**
 
-	@brief			Unescapes `\'`, `\"`, and `\\` and removes all unescaped quotes
-					(if single/double quotes are considered metacharacters in
+	@brief			Unescape `\'`, `\"`, and `\\` and remove all unescaped quotes
+					(when single/double quotes are considered metacharacters in
 					respect to the format given)
 	@param			ini_string		The string to be unescaped
 	@param			format			The format of the INI file
@@ -3757,8 +3761,8 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 												/** @utility{ini_string_parse} **/
 /**
 
-	@brief			Unescapes `\'`, `\"`, and `\\` and removes all unescaped quotes
-					(if single/double quotes are considered metacharacters in
+	@brief			Unescape `\'`, `\"`, and `\\` and remove all unescaped quotes
+					(when single/double quotes are considered metacharacters in
 					respect to the format given); if the format allows it, sequences
 					of one or more spaces out of quotes will be collapsed
 	@param			ini_string		The string to be unescaped
@@ -3973,13 +3977,13 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 											/** @utility{ini_array_get_length} **/
 /**
 
-	@brief			Gets the length of a stringified INI array in number of members
+	@brief			Get the length of a stringified INI array in number of members
 	@param			ini_string		The stringified array (it can be `NULL`)
 	@param			delimiter		The delimiter between the array members -- if
 									zero (see #INI_ANY_SPACE), any space is
 									delimiter (`/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/`)
 	@param			format			The format of the INI file
-	@return			The length of the INI array
+	@return			The length of the INI array in number of members
 
 	Usually @p ini_string comes from an #IniDispatch (but any other string may be
 	used as well).
@@ -4077,7 +4081,7 @@ size_t ini_array_get_length (
 												/** @utility{ini_array_foreach} **/
 /**
 
-	@brief			Calls a custom function for each member of a stringified INI
+	@brief			Call a custom function for each member of a stringified INI
 					array, without modifying the content of the buffer -- useful for
 					read-only (`const`) stringified arrays
 	@param			ini_string		The stringified array (it can be `NULL`)
@@ -4220,7 +4224,7 @@ int ini_array_foreach (
 												/** @utility{ini_array_shift} **/
 /**
 
-	@brief			Shifts the location pointed by @p ini_strptr to the next member
+	@brief			Shift the location pointed by @p ini_strptr to the next member
 					of the INI array (without modifying the content of the buffer),
 					or to `NULL` if the INI array has no more members  -- useful for
 					read-only (`const`) stringified arrays
@@ -4282,9 +4286,9 @@ size_t ini_array_shift (const char ** const ini_strptr, const char delimiter, co
 												/** @utility{ini_array_collapse} **/
 /**
 
-	@brief			Compresses the distribution of the data in a stringified INI
-					array by removing all the white spaces that surround its
-					delimiters, empty quotes, collapsable spaces, etc
+	@brief			Compress the distribution of the data in a stringified INI array
+					by removing all the white spaces that surround its delimiters,
+					empty quotes, collapsable spaces, etc
 	@param			ini_string		The stringified array
 	@param			delimiter		The delimiter between the array members --
 									if zero (`INI_ANY_SPACE`) any space is
@@ -4516,8 +4520,8 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 												/** @utility{ini_array_break} **/
 /**
 
-	@brief			Replaces the first delimiter found (together with the spaces
-					that surround it) with `\0`
+	@brief			Replace the first delimiter found (together with the spaces that
+					surround it) with `\0`
 	@param			ini_string		The stringified array (it can be `NULL`)
 	@param			delimiter		The delimiter between the array members -- if
 									zero (see #INI_ANY_SPACE), any space is
@@ -4593,8 +4597,8 @@ char * ini_array_break (char * const ini_string, const char delimiter, const Ini
 												/** @utility{ini_array_release} **/
 /**
 
-	@brief			Replaces the first delimiter found (together with the spaces
-					that surround it) with `\0`, then shifts the location pointed by
+	@brief			Replace the first delimiter found (together with the spaces that
+					surround it) with `\0`, then shifts the location pointed by
 					@p ini_strptr to the next member of the INI array, or to `NULL`
 					if the INI array has no more members
 	@param			ini_strptr		The memory location of the stringified array --
@@ -4655,8 +4659,8 @@ char * ini_array_release (char ** const ini_strptr, const char delimiter, const 
 												/** @utility{ini_array_split} **/
 /**
 
-	@brief			Splits a stringified INI array into NUL-separated members and
-					calls a custom function for each member
+	@brief			Split a stringified INI array into NUL-separated members and
+					call a custom function for each member
 	@param			ini_string		The stringified array (it cannot be `NULL`)
 	@param			delimiter		The delimiter between the array members -- if
 									zero (see #INI_ANY_SPACE), any space is
@@ -4804,7 +4808,7 @@ int ini_array_split (
 									/** @utility{ini_global_set_lowercase_mode} **/
 /**
 
-	@brief			Sets the value of the global variable
+	@brief			Set the value of the global variable
 					#INI_GLOBAL_LOWERCASE_MODE
 	@param			lowercase		The new value
 	@return			Nothing
@@ -4828,7 +4832,7 @@ void ini_global_set_lowercase_mode (const bool lowercase) {
 									/** @utility{ini_global_set_implicit_value} **/
 /**
 
-	@brief			Sets the value to be to be assigned to implicit keys
+	@brief			Set the value to be to be assigned to implicit keys
 	@param			implicit_value		The string to be used as implicit value
 										(usually `"YES"`, `"TRUE"`, or `"ON"`, or
 										any other string; it can be `NULL`)
@@ -4856,7 +4860,7 @@ void ini_global_set_implicit_value (char * const implicit_value, const size_t im
 														/** @utility{ini_fton} **/
 /**
 
-	@brief			Calculates the #IniFormatNum of an #IniFormat
+	@brief			Calculate the #IniFormatNum of an #IniFormat
 	@param			source			The #IniFormat to compute
 	@return			The unique unsigned integer that identifies the format given
 
@@ -4875,7 +4879,7 @@ IniFormatNum ini_fton (const IniFormat source) {
 														/** @utility{ini_ntof} **/
 /**
 
-	@brief			Constructs a new #IniFormat according to an #IniFormatNum
+	@brief			Construct a new #IniFormat according to an #IniFormatNum
 	@param			format_num		The #IniFormatNum to parse
 	@return			The new #IniFormat constructed
 
@@ -4913,8 +4917,8 @@ IniFormat ini_ntof (const IniFormatNum format_num) {
 													/** @utility{ini_get_bool} **/
 /**
 
-	@brief			Checks whether a string matches one of the booleans listed in
-					the private constant #INI_BOOLEANS (case-insensitive)
+	@brief			Check whether a string matches one of the booleans listed in the
+					private constant #INI_BOOLEANS (case-insensitive)
 	@param			ini_string			A string to check (it can be `NULL`)
 	@param			when_fail			A value that is returned if no matching
 										boolean is found

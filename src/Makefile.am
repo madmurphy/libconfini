@@ -11,21 +11,21 @@
 
 LTVERSIONINFO = @INTERFACE_NUMBER@:@IMPLEMENTATION_NUMBER@:@INTERFACE_COMPATIBILITY@
 
-AM_CPPENV = \
+_common_cppenv_ = \
 	"-DPACKAGE_LOCALE_DIR=\"$(localedir)\"" \
 	"-DPACKAGE_SRC_DIR=\"$(srcdir)\"" \
 	"-DPACKAGE_DATA_DIR=\"$(pkgdatadir)\""
 
-OFFICIAL_CPPENV = \
+_standard_cppenv_ = \
 	"-DCONFINI_IO_FLAVOR=@na_io_api@"
 
-BAREMETAL_CPPENV = \
+_baremetal_cppenv_ = \
 	"-DCONFINI_IO_FLAVOR=CONFINI_BAREMETAL" \
 	"-D_LIBCONFINI_COMPILE_HEADER_=\"confini-baremetal.h\""
 
 AM_CPPFLAGS = \
-	$(AM_CPPENV) \
-	@AC_CPPENV@
+	$(_common_cppenv_) \
+	@na_cppenv@
 
 AM_CFLAGS = \
 	@guessed_am_cflags@ \
@@ -252,13 +252,13 @@ MOSTLYCLEANFILES += \
 confini.def confini.exp: \
  confini.c \
  confini.h
-	$(MAKE) AM_CPPFLAGS='$(AM_CPPENV) $(OFFICIAL_CPPENV)' '$@_' && mv \
+	$(MAKE) AM_CPPFLAGS='$(_common_cppenv_) $(_standard_cppenv_)' '$@_' && mv \
 	'$@_' '$@';
 
 confini-baremetal.def confini-baremetal.exp: \
  confini-baremetal.c \
  confini-baremetal.h
-	$(MAKE) AM_CPPFLAGS='$(AM_CPPENV) $(BAREMETAL_CPPENV)' '$@_' && mv \
+	$(MAKE) AM_CPPFLAGS='$(_common_cppenv_) $(_baremetal_cppenv_)' '$@_' && mv \
 	'$@_' '$@';
 
 endif HAVE_DLLTOOL
@@ -284,7 +284,7 @@ if HAVE_DLLTOOL
 @PACKAGE_TARNAME@.def: \
  confini.c \
  confini.h
-	$(MAKE) AM_CPPFLAGS='$(AM_CPPENV) $(OFFICIAL_CPPENV)' 'confini.def_' \
+	$(MAKE) AM_CPPFLAGS='$(_common_cppenv_) $(_standard_cppenv_)' 'confini.def_' \
 	&& mv 'confini.def_' '$@';
 
 endif HAVE_DLLTOOL

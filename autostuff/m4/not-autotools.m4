@@ -315,7 +315,7 @@ AC_DEFUN_ONCE([NC_CONFIG_SHADOW_DIR], [
 			changes only and not on the state of this machine; possible values
 			for MODE are: omitted or "yes" or "merge" for updating these files
 			immediately, "sandbox" for safely putting their updated version
-			into the ]m4_quote(NC_CONFNEW_SUBDIR)[ directory without modifying
+			into the `]m4_quote(NC_CONFNEW_SUBDIR)[` directory without modifying
 			the package tree, or "no" for doing nothing @<:@default=no@:>@])],
 			[AS_IF([test "x${enableval}" = x -o "x${enableval}" = xyes],
 					[AS_VAR_SET([enable_extended_config], ['merge'])],

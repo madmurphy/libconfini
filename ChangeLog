@@ -2,6 +2,16 @@ Change Log {#changelog}
 =======================
 
 
+## 1.14.2 -- 2020-09-24
+
+Changes:
+
+* Improved re-implementation of `stdbool.h` in case of `--with-io-api=nolibc`
+* Documentation
+* Examples
+* General package maintenance
+
+
 ## 1.14.1 -- 2020-05-11
 
 Changes:

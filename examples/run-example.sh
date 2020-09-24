@@ -8,7 +8,7 @@ if [[ ! -t 0 ]]; then
 	exit 1
 fi
 
-if [[ ! $(which gcc 2>/dev/null) ]]; then
+if ! which gcc 2>/dev/null; then
 	echo 'You need to have gcc installed on your machine.' 1>&2
 	exit 1
 fi
@@ -18,13 +18,13 @@ _TMP_FOLDER_="$(mktemp -d)"
 _THIS_PATH_="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 _THIS_PATH_LENGTH_=$(expr "${#_THIS_PATH_}" + 1)
 _COMPILE_TO_="${_TMP_FOLDER_}/libconfini_example"
-_SRCS_=("${_THIS_PATH_}/miscellanea"/*.c
+_SRCS_=("${_THIS_PATH_}/miscellanea"/{*.c,*.cpp}
 	"${_THIS_PATH_}/topics"/*.c)
 _COLORS_=0
 _HIGHLIGHT_=0
 
 if which tput > /dev/null 2>&1; then 
-	_COLORS_=$(tput -T "${TERM}" colors)
+	_COLORS_="$(tput -T "${TERM}" colors)"
 fi
 
 if [[ "${_COLORS_}" -ge 8 ]]; then
@@ -47,7 +47,8 @@ fi
 _DONE_=0
 
 # other variables declared in this script:
-# _GOOD_ANSWER_, _DONT_RUN_, _ITER_, _FILENAME_, _CHOICE_, _CHOSEN_LONG_, _CHOSEN_SHORT_, _GCC_CMD_, _EXIT_CODE_
+# _GOOD_ANSWER_, _DONT_RUN_, _ITER_, _FILENAME_, _CHOICE_,
+# _CHOSEN_LONG_, _CHOSEN_SHORT_, _GCC_CMD_, _EXIT_CODE_
 
 while [[ "${_DONE_}" -eq 0 ]]; do
 	_GOOD_ANSWER_=0
@@ -68,7 +69,7 @@ while [[ "${_DONE_}" -eq 0 ]]; do
 			_GOOD_ANSWER_=1
 			_DONT_RUN_=1
 			_DONE_=1
-		elif [[ ! "${_CHOICE_}" =~ ^[0-9]+$ ]] || [[ "${_CHOICE_}" -lt 0 ]] || [[ "${_CHOICE_}" -gt "${_ITER_}" ]]; then
+		elif [[ ! "${_CHOICE_}" =~ ^[0-9]+$ ]] || [[ "${_CHOICE_}" -lt 0 ]] || [[ "${_CHOICE_}" -gt "${#_SRCS_[@]}" ]]; then
 			echo -e "  ${_COL_BBLUE_}->${_COL_DEFAULT_} ${_COL_BRED_}Invalid number${_COL_DEFAULT_}"
 			echo
 		else
@@ -79,7 +80,8 @@ while [[ "${_DONE_}" -eq 0 ]]; do
 	if [[ "${_DONT_RUN_}" -eq 0 ]]; then
 		_CHOSEN_LONG_="${_SRCS_[$(expr ${_CHOICE_} - 1)]}"
 		_CHOSEN_SHORT_="${_CHOSEN_LONG_:_THIS_PATH_LENGTH_}"
-		_GCC_CMD_="gcc -Wall -pedantic -lconfini"
+		case "${_CHOSEN_SHORT_}" in *'.cpp') _GCC_CMD_=g++ ;; *'.c') _GCC_CMD_=gcc ;; esac
+		_GCC_CMD_="${_GCC_CMD_} -Wall -pedantic -lconfini"
 		if [[ "${_CHOSEN_SHORT_}" == *"glib_"* ]]; then
 			# We need glib for these...
 			_GCC_CMD_="${_GCC_CMD_} -lglib-2.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include"
@@ -109,7 +111,7 @@ while [[ "${_DONE_}" -eq 0 ]]; do
 				if [[ "${_HIGHLIGHT_}" -eq 0 ]] || [[ ! "${_COLORS_}" -ge 8 ]]; then
 					cat "${_CHOSEN_LONG_}" | less
 					[[ "${_COLORS_}" -ge 8 ]] &&\
-					echo -e "  ${_COL_BBLUE_}->${_COL_DEFAULT_} ${_COL_BRED_}NOTE:${_COL_DEFAULT_} For a better output of the C source code consider to install\n     ${_COL_BPURPLE_}highlight${_COL_DEFAULT_} on your system."
+					echo -e "  ${_COL_BBLUE_}->${_COL_DEFAULT_} ${_COL_BRED_}NOTE:${_COL_DEFAULT_} For a better output of the C source code consider installing\n     ${_COL_BPURPLE_}highlight${_COL_DEFAULT_} on your system."
 				else
 					highlight -O $([[ "${_COLORS_}" -ge 256 ]] && echo -n 'xterm256' || echo -n 'ansi') "${_CHOSEN_LONG_}" | less -r
 				fi
