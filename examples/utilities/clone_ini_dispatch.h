@@ -7,14 +7,22 @@
 
 /**
 
-  @brief    Makes a newly allocated hard copy of an `IniDispatch`
+  @brief    Make a newly allocated hard copy of an `IniDispatch`
   @param    source          The `IniDispatch` to copy
+  @param    nonconst_at     A placeholder for a non-`const` version of the
+                            cloned `IniDispatch::append_to` pointer (it can be
+                            `NULL`)
   @return   A hard copy of the `IniDispatch` passed as argument
 
   Example:
 
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-  IniDispatch * my_clone = clone_ini_dispatch(dispatch);
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+  char * nonconst_at;
+
+  IniDispatch * my_clone = clone_ini_dispatch(
+    dispatch,
+    &nonconst_at
+  );
 
   if (!my_clone) {
     fprintf(stderr, "malloc() failed");
@@ -23,27 +31,32 @@
 
   printf("DATA: |%s|\n", my_clone->data);
   printf("VALUE: |%s|\n", my_clone->value);
-  printf("PARENT: |%s|\n", my_clone->append_to);
-
-  free(my_clone);
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  printf("PARENT: |%s|\n", nonconst_at);
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   The address returned (and **only that**) must be freed afterwards.
 
 **/
-IniDispatch * clone_ini_dispatch (IniDispatch * source) {
+IniDispatch * clone_ini_dispatch (
+  const IniDispatch * const source,
+  char ** const nonconst_at
+) {
 
   IniDispatch * dest = malloc(sizeof(IniDispatch) + source->d_len + source->v_len + source->at_len + 3);
 
   if (dest) {
 
-    dest->d_len = source->d_len;
-    dest->v_len = source->v_len;
-    dest->at_len = source->at_len;
-    dest->append_to = memcpy((char *) dest + sizeof(IniDispatch), source->append_to, source->at_len + 1);
-    dest->data = memcpy((char *) dest->append_to + dest->at_len + 1, source->data, source->d_len + 1);
-    dest->value = dest->data ? memcpy((char *) dest->data + dest->d_len + 1, source->value, source->v_len) : dest->data + dest->d_len + 1;
+    char * _append_to_;
+    memcpy(dest, source, sizeof(IniDispatch));
+    _append_to_ = memcpy((char *) dest + sizeof(IniDispatch), source->append_to, source->at_len + 1);
+    dest->append_to = _append_to_;
+    dest->data = memcpy(_append_to_ + dest->at_len + 1, source->data, source->d_len + 1);
+    dest->value = dest->data ? memcpy(dest->data + dest->d_len + 1, source->value, source->v_len) : dest->data + dest->d_len + 1;
     dest->value[dest->v_len] = '\0';
+
+    if (nonconst_at) {
+      *nonconst_at = _append_to_;
+    }
 
   }
 

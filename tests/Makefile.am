@@ -34,9 +34,9 @@ TESTS = \
 
 # User's rule for forcing non-phony targets to be built, as in `make
 # EXPIRE='autotest' autotest` or (equivalently) `make EXPIRE='autotest'
-# expired`
-.PHONY: $(EXPIRE) expired
-expired: $(EXPIRE)
+# refresh`
+.PHONY: $(EXPIRE) refresh
+refresh: $(EXPIRE)
 
 
 ## EOF

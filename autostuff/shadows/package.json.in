@@ -6,6 +6,7 @@
 	"author": "@PACKAGE_BUGREPORT@",
 	"license": "@LICENSE_SPDX@",
 	"main": "@PACKAGE_CONFNAME@",
+	"binaryVersion": "@LIBRARY_BINVERSION@",
 	"repo": "@PUBLISHER_ID@/@PACKAGE_TARNAME@",
 	"repository": {
 		"type": "git",
@@ -27,6 +28,7 @@
 		"docs/man/man3/@PACKAGE_TARNAME@.3"
 	],
 	"keywords": [
+		"bare-metal",
 		"c",
 		"conf",
 		"conf-file",

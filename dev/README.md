@@ -15,7 +15,7 @@ generated). You can afterwards launch
 
 ```````````````````````````````` sh
 ./configure --enable-author-mode
-make official-sources
+make all-official-sources
 ````````````````````````````````
 
 to update the `src` subdirectory.
@@ -26,5 +26,5 @@ provided by a non-standard header (such as `fsio.h`, `mem-ffs.h`, `efs.h` or
 `ff.h`), please do not hesitate to [propose it][1].
 
 
-[1]: https://github.com/madmurphy/libconfini/issues
+  [1]: https://github.com/madmurphy/libconfini/issues
 

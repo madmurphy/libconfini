@@ -124,7 +124,8 @@ dnl
 dnl  From: not-autotools/m4/not-autoshell.m4
 dnl
 AC_DEFUN([NS_TEST_AEQ],
-	[test "x[]_AS_QUOTE(m4_dquote(m4_joinall(, m4_shift($@))))" = "x[]_AS_QUOTE(m4_dquote(m4_for([], [2], [$#], [1], [[$1]])))"])
+	[m4_if([$#], [0], [:], [$#], [1], [:],
+		[test "_AS_QUOTE(m4_dquote(?[]m4_joinall(?, m4_shift($@))))" = "_AS_QUOTE(m4_dquote(m4_for([], [2], [$#], [1], [[?$1]])))"])])
 
 
 dnl  NS_TEST_NAE(string1, string2[, string3[, ... stringN]])
@@ -136,7 +137,8 @@ dnl
 dnl  From: not-autotools/m4/not-autoshell.m4
 dnl
 AC_DEFUN([NS_TEST_NAE],
-	[test "x[]_AS_QUOTE(m4_dquote(m4_joinall(, m4_shift($@))))" != "x[]_AS_QUOTE(m4_dquote(m4_for([], [2], [$#], [1], [[$1]])))"])
+	[m4_if([$#], [0], [:], [$#], [1], [:],
+		[test "_AS_QUOTE(m4_dquote(?[]m4_joinall(?, m4_shift($@))))" != "_AS_QUOTE(m4_dquote(m4_for([], [2], [$#], [1], [[?$1]])))"])])
 
 
 dnl  NC_REQUIRE(macro1[, macro2[, macro3[, ... macroN]]])
@@ -408,15 +410,15 @@ dnl  Requires: `NA_SANITIZE_VARNAME()`
 dnl  From: not-autotools/m4/not-autotools.m4
 dnl
 AC_DEFUN([NC_REQ_PROGS],
-	[m4_ifnblank([$1], [
-		AC_ARG_VAR(m4_toupper(NA_SANITIZE_VARNAME([$1])),
+	[m4_ifnblank([$1],
+		[m4_pushdef([_lit_], m4_quote(m4_toupper(NA_SANITIZE_VARNAME([$1]))))
+		AC_ARG_VAR(_lit_,
 			m4_default_quoted(m4_normalize([$2]), [$1 utility]))
-		AS_IF([test "x@S|@{]m4_toupper(NA_SANITIZE_VARNAME([$1]))[}" = x], [
-			AC_PATH_PROG(m4_toupper(NA_SANITIZE_VARNAME([$1])), [$1])
-			AS_IF([test "x@S|@{]m4_toupper(NA_SANITIZE_VARNAME([$1]))[}" = x],
-				[AC_MSG_ERROR([$1 utility not found])])
-		])[]NC_REQ_PROGS(m4_shift2($@))
-	])])
+		AS_IF([test "x@S|@{]_lit_[}" = x], [
+			AC_PATH_PROG(_lit_, [$1])
+			AS_IF([test "x@S|@{]_lit_[}" = x],
+				[AC_MSG_ERROR([$1 utility not found])])[]m4_popdef([_lit_])
+		])[]NC_REQ_PROGS(m4_shift2($@))])])
 
 
 dnl  NA_HELP_STRINGS(list1, help1[, list2, help2[, ... listN, helpN]])
@@ -529,11 +531,11 @@ dnl
 dnl  Requires: `NA_SANITIZE_VARNAME()` and `NA_ESC_APOS()`
 dnl  From: not-autotools/m4/not-autotools.m4
 dnl
-AC_DEFUN([NC_GLOBAL_LITERALS], [
-	m4_define([GL_]NA_SANITIZE_VARNAME([$1]), m4_normalize([$2]))
-	AC_SUBST(NA_SANITIZE_VARNAME([$1]), ['NA_ESC_APOS(m4_normalize([$2]))'])
-	m4_if(m4_eval([$# > 2]), [1], [NC_GLOBAL_LITERALS(m4_shift2($@))])
-])
+AC_DEFUN([NC_GLOBAL_LITERALS],
+	[m4_pushdef([_lit_], m4_quote(NA_SANITIZE_VARNAME([$1])))[]m4_define([GL_]_lit_,
+		m4_normalize([$2]))
+	AC_SUBST(_lit_, ['NA_ESC_APOS(m4_normalize([$2]))'])[]m4_popdef([_lit_])[]m4_if(m4_eval([$# > 2]), [1],
+		[NC_GLOBAL_LITERALS(m4_shift2($@))])])
 
 
 

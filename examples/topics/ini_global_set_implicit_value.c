@@ -38,7 +38,7 @@ int main () {
 
   ini_global_set_implicit_value("[implicit default value]", 24);
 
-  /*  Without setting this implicit keys will be considered empty  */
+  /*  Without this implicit keys will be considered empty  */
   my_format.implicit_is_not_empty = true;
   my_format.disabled_can_be_implicit = true;
 

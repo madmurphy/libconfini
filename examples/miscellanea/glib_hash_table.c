@@ -28,6 +28,11 @@ character. You may change it with any other character (except the dot itself).
 */
 #define DOT_REPLACEMENT '-'
 
+static inline void string_tolower (char * const str) {
+  for (register char * chrptr = str; *chrptr; chrptr++) {
+    *chrptr = *chrptr > 0x40 && *chrptr < 0x5b ? *chrptr | 0x60 : *chrptr;
+  }
+}
 
 /*  Add each dispatch to the hash table (callback function)  */
 static int populate_hash_table (IniDispatch * this, void * v_hash_table) {
@@ -72,6 +77,14 @@ static int populate_hash_table (IniDispatch * this, void * v_hash_table) {
       idx-- > 0;
     ptr_b[idx] = this->data[idx] == '.' ? DOT_REPLACEMENT : this->data[idx]
   );
+  /*
+    we are using `g_hash_table_lookup()` to search for the indicized keys,
+    therefore it is better to convert the string to lower case -- but you
+    may disagree
+  */
+  if (!this->format.case_sensitive) {
+    string_tolower(ptr_a);
+  }
   /*  check for duplicate keys  */
   if (g_hash_table_lookup_extended((GHashTable *) v_hash_table, ptr_a, (gpointer) &ptr_b, NULL)) {
     fprintf(stderr, "`%s` will be overwritten (duplicate key found)\n", ptr_a);
@@ -114,11 +127,6 @@ int main () {
     })
   GHashTable * my_hash_table = g_hash_table_new_full(g_str_hash, g_str_equal, free, free);
   ini_global_set_implicit_value("true", 4);
-  /*
-    We are using `g_hash_table_lookup()` to search for the indicized keys,
-    therefore it is better to fold the string case (but you can disagree).
-  */
-  INI_GLOBAL_LOWERCASE_MODE = true;
   if (load_ini_path("../ini_files/hash_table.conf", my_format, NULL, populate_hash_table, my_hash_table)) {
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;

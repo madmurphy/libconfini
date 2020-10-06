@@ -11,7 +11,7 @@ See: Manual > Ini Syntax Considerations
 static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
   printf(
-    "#%zu - TYPE: %u, DATA: \"%s\", VALUE: \"%s\"\n",
+    "#%zu - Type: %u; Data: \"%s\"; Value: \"%s\"\n",
     dispatch->dispatch_id,
     dispatch->type,
     dispatch->data,

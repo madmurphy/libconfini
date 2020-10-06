@@ -1,5 +1,13 @@
-NEWS
+News
 ====
+
+
+## 1.15.0
+
+* Public function `ini_global_set_lowercase_mode()` and global variable
+  `INI_GLOBAL_LOWERCASE_MODE` have been marked as deprecated
+* Global integer constant `INI_DISABLED_FLAG` and macro
+  `INI_IS_IMPLICIT_SUBSTR()` have been added to the public header
 
 
 ## 1.14.0

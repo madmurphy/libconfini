@@ -1,11 +1,12 @@
 {
 	"name": "libconfini",
-	"version": "1.14.2",
+	"version": "1.15.0",
 	"description": "Yet another INI parser",
 	"homepage": "https://madmurphy.github.io/libconfini",
 	"author": "madmurphy333@gmail.com",
 	"license": "GPL-3.0-or-later",
 	"main": "libconfini",
+	"binaryVersion": "0.4.1",
 	"repo": "madmurphy/libconfini",
 	"repository": {
 		"type": "git",
@@ -27,6 +28,7 @@
 		"docs/man/man3/libconfini.3"
 	],
 	"keywords": [
+		"bare-metal",
 		"c",
 		"conf",
 		"conf-file",

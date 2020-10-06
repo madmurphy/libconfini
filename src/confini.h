@@ -6,7 +6,7 @@
     @brief      libconfini header
     @author     Stefano Gioffr&eacute;
     @copyright  GNU General Public License, version 3 or any later version
-    @version    1.14.2
+    @version    1.15.0
     @date       2016-2020
     @see        https://madmurphy.github.io/libconfini
 
@@ -32,6 +32,17 @@ extern "C" {
 
 /*  PRIVATE (HEADER-SCOPED) MACROS  */
 
+
+#ifdef _LIBCONFINI_NOCCWARN_
+#define _LIBCONFINI_DO_PRAGMA_(PBODY)
+#define _LIBCONFINI_WARNING_(MSG)
+#elif defined(_MSC_VER)
+#define _LIBCONFINI_DO_PRAGMA_(PBODY) __pragma(PBODY)
+#define _LIBCONFINI_WARNING_(MSG) _LIBCONFINI_DO_PRAGMA_(message("*WARNING*: " MSG))
+#else
+#define _LIBCONFINI_DO_PRAGMA_(PBODY) _Pragma(#PBODY)
+#define _LIBCONFINI_WARNING_(MSG) _LIBCONFINI_DO_PRAGMA_(GCC warning #MSG)
+#endif
 
 #define __INIFORMAT_TABLE_CB_FIELDS__(NAME, OFFSET, SIZE, DEFVAL) \
     unsigned char NAME:SIZE;
@@ -87,6 +98,16 @@ extern "C" {
 #define INIFORMAT_HAS_NO_ESC(FORMAT) \
     (FORMAT.multiline_nodes == INI_NO_MULTILINE && \
     FORMAT.no_double_quotes && FORMAT.no_single_quotes)
+
+
+
+/**
+    @brief  Check whether a given `char *` data type points to the global
+            variable #INI_GLOBAL_IMPLICIT_VALUE or to any fragment of it
+**/
+#define INI_IS_IMPLICIT_SUBSTR(CHAR_PTR) \
+    (CHAR_PTR >= INI_GLOBAL_IMPLICIT_VALUE && CHAR_PTR <= \
+    INI_GLOBAL_IMPLICIT_VALUE + INI_GLOBAL_IMPLICIT_V_LEN)
 
 
 
@@ -305,6 +326,9 @@ extern int ini_array_split (
 extern void ini_global_set_lowercase_mode (
     const bool lowercase
 );
+#define ini_global_set_lowercase_mode \
+    _LIBCONFINI_WARNING_("deprecated function `ini_global_set_lowercase_mode()`") \
+    ini_global_set_lowercase_mode
 
 
 extern void ini_global_set_implicit_value (
@@ -353,12 +377,12 @@ extern double (* const ini_get_double) (
 );
 
 
-/**
-    @brief  Legacy support, soon to be replaced with a `float` data type --
-            please **do not use `ini_get_float()`!**
-**/
+/*
+    Legacy support, soon to be replaced with a `float` data type -- please **do
+    not use `ini_get_float()`!**
+*/
 #define ini_get_float \
-    _Pragma("GCC warning \"function `ini_get_float()` is deprecated for parsing a `double` data type; use `ini_get_double()` instead\"") \
+    _LIBCONFINI_WARNING_("function `ini_get_float()` is deprecated for parsing a `double` data type; use `ini_get_double()` instead") \
     ini_get_double
 
 
@@ -395,7 +419,16 @@ enum ConfiniInterruptNo {
 
 
 /**
-    @brief  INI node types
+    @brief  Disabled flag (i.e. third bit, present only in non-active node
+            types)
+**/
+#define INI_DISABLED_FLAG 4
+
+
+/**
+    @brief  INI node types and possible values of #IniDispatch::type
+
+    See also #INI_DISABLED_FLAG.
 **/
 enum IniNodeType {
     INI_UNKNOWN = 0,            /**< This is a node impossible to categorize
@@ -405,8 +438,7 @@ enum IniNodeType {
                                      available for user's implementations
                                      [value=1] **/
     INI_KEY = 2,                /**< This is a key [value=2] **/
-    INI_SECTION = 3,            /**< This is a section or a section path
-                                     [value=3] **/
+    INI_SECTION = 3,            /**< This is a section path [value=3] **/
     INI_COMMENT = 4,            /**< This is a comment [value=4] **/
     INI_INLINE_COMMENT = 5,     /**< This is an inline comment [value=5] **/
     INI_DISABLED_KEY = 6,       /**< This is a disabled key [value=6] **/
@@ -499,11 +531,17 @@ static const IniFormat INI_UNIXLIKE_FORMAT = _LIBCONFINI_UNIXLIKE_FORMAT_;
 
 
 /**
-    @brief  If set to `true`, key and section names in case-insensitive INI
-            formats will be dispatched lowercase, verbatim otherwise (default
-            value: `false`)
+
+    @brief          If set to `true`, key and section names in case-insensitive
+                    INI formats will be dispatched lowercase, verbatim
+                    otherwise (default value: `false`)
+    @deprecated     Deprecated since version 1.15.0 (it will be removed in
+                    version 2.0.0)
 **/
 extern bool INI_GLOBAL_LOWERCASE_MODE;
+#define INI_GLOBAL_LOWERCASE_MODE \
+    _LIBCONFINI_WARNING_("global variable `INI_GLOBAL_LOWERCASE_MODE` is deprecated") \
+    INI_GLOBAL_LOWERCASE_MODE
 
 
 /**

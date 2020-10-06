@@ -6,7 +6,7 @@
 
 /**
 
-  @brief    Parses a `const` string containing an INI file
+  @brief    Parse a `const` string containing an INI file
   @param    ini_buffer      The buffer containing the INI file to
                             parse
   @param    ini_length      The length of @p ini_buffer

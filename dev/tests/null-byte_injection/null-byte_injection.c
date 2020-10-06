@@ -7,7 +7,7 @@
 static int my_ini_listener (IniDispatch *dispatch, void *user_data) {
 
   printf(
-    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n",
+    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
     dispatch->data, dispatch->value, dispatch->type
   );
 

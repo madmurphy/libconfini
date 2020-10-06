@@ -8,6 +8,7 @@ You can get started by having a look at the [README](@ref readme) and
 
 * [**Source Code**](https://github.com/madmurphy/libconfini)
 * [**Releases**](https://github.com/madmurphy/libconfini/releases)
+* @ref install
 * @ref fnoverview
 * [Complete Reference Book](@ref confini.h)
 * @ref rationale

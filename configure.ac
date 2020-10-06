@@ -28,16 +28,16 @@ dnl  --enable-extended-config`.
 AC_INIT([lib]n4_mem([GL_PROJECT_NAME], [confini]),
 	m4_joinall([.],
 		n4_mem([GL_PROJECT_MAJVER], [1]),
-		n4_mem([GL_PROJECT_MINVER], [14]),
-		n4_mem([GL_PROJECT_REVVER], [2])),
+		n4_mem([GL_PROJECT_MINVER], [15]),
+		n4_mem([GL_PROJECT_REVVER], [0])),
 	[madmurphy333@gmail.com],
 	[lib]GL_PROJECT_NAME,
 	[https://madmurphy.github.io/libconfini])
 
 NC_GLOBAL_LITERALS(
-	[INTERFACE_NUMBER],			[4],
-	[IMPLEMENTATION_NUMBER],	[0],
-	[INTERFACE_COMPATIBILITY],	[4],
+	[INTERFACE_NUM],			[4],
+	[IMPLEMENTATION_NUM],		[1],
+	[INTERFACES_SUPPORTED],		[4],
 	[PROJECT_DESCRIPTION],		[Yet another INI parser],
 	[LICENSE_STRING],			[GNU General Public License, version 3 or any
 								later version],
@@ -121,7 +121,6 @@ AM_COND_IF([HAVE_TRANSFORMATIONS],
 NS_UNSET([na_tmppref], [na_tmpsuff], [na_tmptransf], [na_tmpvsuff],
 	[na_tmphvsuff])
 
-
 ###  Prevent any further transformations from Autoconf (unless
 ###  `AC_CANONICAL_TARGET` is invoked after these lines)
 
@@ -155,8 +154,12 @@ AC_ARG_ENABLE([author-mode],
 		workflow for developing ]AC_PACKAGE_NAME[ but are not useful (or are
         even counterproductive) to the casual installer
 		@<:@default=<enable-extended-config>@:>@])],
-	[AS_IF([test "x${enable_author_mode}" != xyes -a "x${enable_author_mode}" != xno],
-		[AC_MSG_ERROR([unrecognized option: --enable-author-mode=${enable_author_mode}])])],
+	[AS_IF([test "x${enable_author_mode}" != xno],
+		[AS_VAR_SET([enable_author_mode], ['yes'])],
+		[AS_IF([test "x${enable_extended_config}" != xno], [
+				AC_MSG_WARN([ignoring --disable-author-mode @{:@--enable-extended-config@:}@])
+				AS_VAR_SET([enable_author_mode], ['yes'])
+		])])],
 	[AM_COND_IF([HAVE_EXTENDED_CONFIG],
 		[AS_VAR_SET([enable_author_mode], ['yes'])],
 		[AS_VAR_SET([enable_author_mode], ['no'])])])
@@ -204,7 +207,14 @@ NC_SUBST_NOTMAKE([guessed_am_cflags], ["${CFLAGS}"])
 ###  Restore `CFLAGS` according to the user's will
 NS_MOVEVAR([CFLAGS], [na_tmpusrcflags])
 
-AS_VAR_SET([na_allow_stdc], [yes])
+###  Add `--without-libc` option
+AC_ARG_WITH([libc],
+	[AS_HELP_STRING([--without-libc],
+		[Assume that no C Standard Library is present in the system
+		@<:@default=no@:>@])],
+	[AS_IF([test "x${with_libc}" != xno],
+		[AS_VAR_SET([with_libc], ['yes'])])],
+	[AS_VAR_SET([with_libc], ['yes'])])
 
 ###  Add `--with-io-api=API` option
 AC_ARG_WITH([io_api],
@@ -212,22 +222,23 @@ AC_ARG_WITH([io_api],
 		[build this package with a specific I/O API; possible values for API
 		are: "standard" for using the C Standard I/O API, "posix" for using the
 		POSIX I/O API, "baremetal" or "no" (--without-io-api) for using no I/O
-		API at all, "nolibc" for using neither a I/O API or any C Standard
-		object whatsoever, or "check" for automatically selecting the best I/O
-		API supported by this machine @<:@default=check@:>@])],
+		API at all, or "check" for automatically selecting the best I/O API
+		supported by this machine @<:@default=check@:>@])],
 	[AS_IF([test "x${withval}" = x -o "x${with_io_api}" = xyes], [
-		AC_MSG_ERROR([an API value must be specified for option --with-io-api=API])
-	], [test "x${with_io_api}" = xno], [
-		AS_VAR_SET([na_tmp_ioflavor], [baremetal])
-	], [test "x${withval}" = 'xnolibc'], [
-		AS_VAR_SET([na_allow_stdc], [no])
-		AS_VAR_SET([na_tmp_ioflavor], [baremetal])
-	], [
-		AS_VAR_COPY([na_tmp_ioflavor], [withval])
+			AC_MSG_ERROR([an API value must be specified for option --with-io-api=API])
+		], [test "x${with_io_api}" = xno], [
+			AS_VAR_SET([na_tmp_ioflavor], [baremetal])
+		], [test "x${with_libc}" = xno -a "x${with_val}" != xbaremetal], [
+			AC_MSG_WARN([ignoring --with-io-api @{:@--without-libc@:}@])
+			AS_VAR_SET([na_tmp_ioflavor], [baremetal])
+		], [
+			AS_VAR_COPY([na_tmp_ioflavor], [withval])
 	])],
-	[AS_VAR_SET([na_tmp_ioflavor], ['check'])])
+	[AS_IF([test "x${with_libc}" = xno],
+		[AS_VAR_SET([na_tmp_ioflavor], ['baremetal'])],
+		[AS_VAR_SET([na_tmp_ioflavor], ['check'])])])
 
-AS_VAR_SET([na_cppenv], ['$(_standard_cppenv_)'])
+AS_VAR_SET([na_cppenv], ['$(_with_io_cppenv_)'])
 
 AS_CASE(["${na_tmp_ioflavor}"],
 	[standard], [:],
@@ -285,24 +296,24 @@ AC_SUBST([nonportfile], ['non-portable.h'])
 ###  are missing...
 AM_COND_IF([WANT_BAREMETAL], [
 	AS_IF([NS_TEST_AEQ([yes],
-		[${na_allow_stdc}], [${ac_cv_header_stdint_h}],
-		[${ac_cv_c_uint8_t}], [${ac_cv_c_int8_t}], [${ac_cv_c_uint16_t}],
-		[${ac_cv_c_uint32_t}])],
-			[AS_VAR_SET([na_tmp_allstdint], ['yes'])],
-		[NS_TEST_AEQ([yes],
-			[${na_allow_stdc}], [${ac_cv_header_stdint_h}]) \
-		&& NS_TEST_NAE([no],
-			[${ac_cv_c_uint8_t}], [${ac_cv_c_int8_t}], [${ac_cv_c_uint16_t}],
-			[${ac_cv_c_uint32_t}])],
-			[AS_VAR_SET([na_tmp_allstdint], ['some'])],
-			[AS_VAR_SET([na_tmp_allstdint], ['no'])])
+	[${with_libc}], [${ac_cv_header_stdint_h}],
+	[${ac_cv_c_uint8_t}], [${ac_cv_c_int8_t}], [${ac_cv_c_uint16_t}],
+	[${ac_cv_c_uint32_t}])],
+		[AS_VAR_SET([na_tmp_allstdint], ['yes'])],
+	[NS_TEST_AEQ([yes],
+	[${with_libc}], [${ac_cv_header_stdint_h}]) \
+	&& NS_TEST_NAE([no],
+	[${ac_cv_c_uint8_t}], [${ac_cv_c_int8_t}], [${ac_cv_c_uint16_t}],
+	[${ac_cv_c_uint32_t}])],
+		[AS_VAR_SET([na_tmp_allstdint], ['some'])],
+		[AS_VAR_SET([na_tmp_allstdint], ['no'])])
 	AS_IF([NS_TEST_AEQ([yes],
-		[${na_allow_stdc}], [${ac_cv_header_stddef_h}],
-		[${ac_cv_header_stdbool_h}], [${ac_cv_header_stdint_h}],
-		[${ac_cv_type_size_t}], [${na_tmp_allstdint}])], [
-		AS_VAR_SET([na_revise_baremetal], ['no'])
+	[${with_libc}], [${ac_cv_header_stddef_h}],
+	[${ac_cv_header_stdbool_h}], [${ac_cv_header_stdint_h}],
+	[${ac_cv_type_size_t}], [${na_tmp_allstdint}])], [
+		AS_VAR_SET([na_revise_libc], ['no'])
 	], [
-		AS_VAR_SET([na_revise_baremetal], ['yes'])
+		AS_VAR_SET([na_revise_libc], ['yes'])
 		AS_MKDIR_P(["${rvdir}"])
 		NC_CC_CHECK_SIZEOF([unsigned short int], [], [ushort])
 		NC_CC_CHECK_SIZEOF([unsigned int], [], [uint])
@@ -312,13 +323,13 @@ AM_COND_IF([WANT_BAREMETAL], [
 			'no-dist/conf-results/stdmissing.h'
 		rm -f 'no-dist/conf-results/noioheaders.h'
 		AS_IF([NS_TEST_AEQ([yes],
-			[${na_allow_stdc}], [${ac_cv_header_stddef_h}],
-			[${ac_cv_type_size_t}])],
+		[${with_libc}], [${ac_cv_header_stddef_h}],
+		[${ac_cv_type_size_t}])],
 			[echo '@%:@include <stddef.h>' >> \
 				'no-dist/conf-results/noioheaders.h'],
 			[{
 				# `size_t`...
-				echo '/*  Partial re-implementation of `stddef.h`:  */'
+				echo '/*  Partial re-implementation of `stddef.h`  */'
 				AS_IF([test "${ac_cv_sizeof_size_t}" -eq 1],
 					[echo 'typedef unsigned char size_t;'],
 				[test "${ac_cv_sizeof_ushort}" -ge "${ac_cv_sizeof_size_t}"],
@@ -330,18 +341,17 @@ AM_COND_IF([WANT_BAREMETAL], [
 					[echo 'typedef unsigned long long int size_t;'])
 			} >> 'no-dist/conf-results/stdmissing.h'])
 		AS_IF([NS_TEST_AEQ([yes],
-			[${na_allow_stdc}], [${ac_cv_header_stdbool_h}])],
+		[${with_libc}], [${ac_cv_header_stdbool_h}])],
 			[echo '@%:@include <stdbool.h>' >> \
 				'no-dist/conf-results/noioheaders.h'],
 			[{
 				# `bool`...
-				echo '/*  Re-implementation of `stdbool.h`:  */'
+				echo '/*  Re-implementation of `stdbool.h`  */'
 				echo '@%:@ifndef bool'
 				echo '@%:@define bool unsigned char'
 				echo '@%:@define false 0'
 				echo '@%:@define true 1'
 				echo '@%:@endif'
-
 			} >> 'no-dist/conf-results/stdmissing.h'])
 		AS_IF([test "x${na_tmp_allstdint}" != xno], [
 			echo '@%:@include <stdint.h>' >> \
@@ -355,18 +365,18 @@ AM_COND_IF([WANT_BAREMETAL], [
 				["$(expr "${ac_cv_sizeof_uint}" '*' "${ac_cv_char_bit}")"])
 			{
 				# `uint8_t`, `int8_t`, `uint16_t`, `uint32_t`...
-				echo '/*  Partial re-implementation of `stdint.h`:  */'
+				echo '/*  Partial re-implementation of `stdint.h`  */'
 				# `unsigned char` is guaranteed to be at least 8-bit...
 				AS_IF([NS_TEST_NAE([yes],
-					[${na_allow_stdc}], [${ac_cv_c_uint8_t}])],
+				[${with_libc}], [${ac_cv_c_uint8_t}])],
 					[echo 'typedef unsigned char uint8_t;'])
 				# `signed char` is guaranteed to be at least 8-bit...
 				AS_IF([NS_TEST_NAE([yes],
-					[${na_allow_stdc}], [${ac_cv_c_int8_t}])],
+				[${with_libc}], [${ac_cv_c_int8_t}])],
 					[echo 'typedef signed char int8_t;'])
 				# `unsigned int` is guaranteed to be at least 16-bit...
 				AS_IF([NS_TEST_NAE([yes],
-					[${na_allow_stdc}], [${ac_cv_c_uint16_t}])],
+				[${with_libc}], [${ac_cv_c_uint16_t}])],
 					[AS_IF([test "${ac_cv_char_bit}" -ge 16],
 						[echo 'typedef unsigned char uint16_t;'],
 					[test "${na_tmp_ushort_bit}" -ge 16],
@@ -374,7 +384,7 @@ AM_COND_IF([WANT_BAREMETAL], [
 						[echo 'typedef unsigned int uint16_t;'])])
 				# `unsigned long int` is guaranteed to be at least 32-bit...
 				AS_IF([NS_TEST_NAE([yes],
-					[${na_allow_stdc}], [${ac_cv_c_uint32_t}])],
+				[${with_libc}], [${ac_cv_c_uint32_t}])],
 					[AS_IF([test "${ac_cv_char_bit}" -ge 32],
 						[echo 'typedef unsigned char uint32_t;'],
 					[test "${na_tmp_ushort_bit}" -ge 32],
@@ -393,12 +403,12 @@ AM_COND_IF([WANT_BAREMETAL], [
 	])
 	AS_UNSET([na_tmp_allstdint])
 ], [
-	AS_VAR_SET([na_revise_baremetal], ['no'])
+	AS_VAR_SET([na_revise_libc], ['no'])
 ])
 
-AM_CONDITIONAL([REVISE_BAREMETAL], [test "x${na_revise_baremetal}" = xyes])
+AM_CONDITIONAL([REVISE_LIBC], [test "x${na_revise_libc}" = xyes])
 
-AM_COND_IF([REVISE_BAREMETAL],
+AM_COND_IF([REVISE_LIBC],
 	[AS_VAR_SET([revision_clean_recipe],
 		m4_normalize(['test -f '\''$(rvdir)/$(nonportfile)'\'' ||
 			$(MAKE) '\''$(rvdir)/$(nonportfile)'\'';']))],
@@ -489,6 +499,16 @@ AC_ARG_ENABLE([doc],
 	])],
 	[AS_VAR_COPY([enable_doc], [enable_devel])])
 
+###  Add `--disable-man` option
+AC_ARG_ENABLE([man],
+	[AS_HELP_STRING([--disable-man],
+		[don't generate man pages @<:@default=<disable-doc>@:>@])],
+	[AS_IF([test "x${enable_doc}" = xno -a "x${enable_man}" != xno], [
+		AC_MSG_WARN([ignoring --enable-man @{:@--disable-doc@:}@])
+		AS_VAR_SET([enable_man], ['no'])
+	])],
+	[AS_VAR_COPY([enable_man], [enable_doc])])
+
 ###  Add `--enable-examples` and `--disable-examples` options
 AC_ARG_ENABLE([examples],
 	[AS_HELP_STRING([--disable-examples],
@@ -505,8 +525,8 @@ AC_ARG_ENABLE([examples],
 AC_ARG_ENABLE([htmldoc],
 	[AS_HELP_STRING([--enable-htmldoc],
 		[generate the html documentation @<:@default=no@:>@])],
-	[AS_IF([test "x${enable_devel}" = xno -a "x${enable_htmldoc}" != xno], [
-		AC_MSG_WARN([ignoring --enable-htmldoc @{:@--disable-devel@:}@])
+	[AS_IF([test "x${enable_doc}" = xno -a "x${enable_htmldoc}" != xno], [
+		AC_MSG_WARN([ignoring --enable-htmldoc @{:@--disable-doc@:}@])
 		AS_VAR_SET([enable_htmldoc], ['no'])
 	])],
 	[AS_VAR_SET([enable_htmldoc], ['no'])])
@@ -514,6 +534,8 @@ AC_ARG_ENABLE([htmldoc],
 AM_CONDITIONAL([WANT_DEVEL], [test "x${enable_devel}" != xno])
 
 AM_CONDITIONAL([WANT_DOC], [test "x${enable_doc}" != xno])
+
+AM_CONDITIONAL([WANT_MAN], [test "x${enable_man}" != xno])
 
 AM_CONDITIONAL([WANT_EXAMPLES], [test "x${enable_examples}" != xno])
 
@@ -610,6 +632,22 @@ AM_CONDITIONAL([HAVE_DLLTOOL],
 # `LT_PROG_RC` should set the `${RC}` variable
 AM_CONDITIONAL([HAVE_RC],
 	[test "x${RC}" != xfalse -a "x${RC}" != x])
+
+###  Add `--enable-dllexp` option
+AC_ARG_ENABLE([dllexp],
+	[AS_HELP_STRING([--enable-dllexp],
+		[create module-definition (.def) and export (.exp) files when compiling
+		for Microsoft Windows @<:@default=no@:>@])],
+	[AS_IF([test "x${enable_dllexp}" != xno],
+		[AM_COND_IF([HAVE_DLLTOOL], [
+				AS_VAR_SET([enable_dllexp], ['yes'])
+			], [
+				AC_MSG_WARN([dlltool not available, ignoring --enable-dllexp])
+				AS_VAR_SET([enable_dllexp], ['no'])
+		])])],
+	[AS_VAR_SET([enable_dllexp], ['no'])])
+
+AM_CONDITIONAL([WANT_DLLEXP], [test "x${enable_dllexp}" != xno])
 
 
 ###  **************************************************************************
@@ -737,6 +775,8 @@ NC_SUBST_NOTMAKE([transf_distclean_recipe])
 
 NC_SUBST_NOTMAKE([mergenew_recipe])
 
+AC_SUBST([lt_cv_objdir])
+
 AC_SUBST([PROJECT_MAJVER], [']GL_PROJECT_MAJVER['])
 
 AC_SUBST([PROJECT_MINVER], [']GL_PROJECT_MINVER['])
@@ -745,7 +785,9 @@ AC_SUBST([PROJECT_REVVER], [']GL_PROJECT_REVVER['])
 
 AC_SUBST([PROJECT_EFFVER], [']GL_PROJECT_MAJVER[.]GL_PROJECT_MINVER['])
 
-AC_SUBST([lt_cv_objdir])
+AC_SUBST([LIBRARY_BINVERSION],
+	m4_do(m4_eval(GL_INTERFACE_NUM[ - ]GL_INTERFACES_SUPPORTED),
+		[.]GL_INTERFACES_SUPPORTED[.]GL_IMPLEMENTATION_NUM))
 
 
 ###  **************************************************************************
@@ -801,14 +843,14 @@ NC_SUBST_NOTMAKE([confini_baremetal_c_recipe],
 			[[IO_FUNCTIONS],
 				[]],
 			[[NUMBER_PARSERS],
-				[<top_srcdir>/dev/hackings/baremetal/number-parsers.c]])))))))[
+				[<top_srcdir>/dev/hackings/baremetal/str2num.c]])))))))[
 			;'
 	]))
 
 ##  src/Makefile.am, `make confini-baremetal.h`
 NC_SUBST_NOTMAKE([confini_baremetal_h_recipe],
 	m4_normalize([
-		"@S|@@{:@test "x${na_revise_baremetal}" != xyes || echo 'test
+		"@S|@@{:@test "x${na_revise_libc}" != xyes || echo 'test
 		-e '\''../no-dist/hackings/baremetal/c-standard-library.h'\'' && @{:@
 		'@:}@"'@S|@@{:@MKDIR_P@:}@ '\''@S|@@{:@@D@:}@'\'' &&
 		]NA_ESC_APOS(m4_quote(NA_TRIANGLE_BRACKETS_TO_MAKE_VARS(m4_quote(
@@ -821,8 +863,8 @@ NC_SUBST_NOTMAKE([confini_baremetal_h_recipe],
 			[[IO_FUNCTIONS],
 				[]],
 			[[NUMBER_PARSERS],
-				[<top_srcdir>/dev/hackings/baremetal/number-parsers.h]])))))))[
-		'"@S|@@{:@test "x${na_revise_baremetal}" != xyes || echo '@:}@ ||
+				[<top_srcdir>/dev/hackings/baremetal/str2num.h]])))))))[
+		'"@S|@@{:@test "x${na_revise_libc}" != xyes || echo '@:}@ ||
 		@{:@echo >&2 && { echo '\''I am not ready to build `@S|@@{:@D@:}@` yet.
 		Please revise'\''; echo '\''the content of the `@S|@@{:@rvdir@:}@`
 		subdirectory, then launch `@S|@@{:@MAKE@:}@'\''; echo
@@ -838,8 +880,8 @@ NC_SUBST_NOTMAKE([confini_baremetal_h_recipe],
 AC_OUTPUT
 
 NC_SHADOW_AFTER_OUTPUT([
-	AC_MSG_NOTICE([updating the source code with `${ac_make} official-sources`...])
-	"${ac_make}" official-sources 1>/dev/null
+	AC_MSG_NOTICE([updating the source code with `${ac_make} all-official-sources`...])
+	"${ac_make}" all-official-sources
 ])
 
 
@@ -847,12 +889,12 @@ NC_SHADOW_AFTER_OUTPUT([
 ###     H E L P   A N D   F I N A L   M E S S A G E S
 ###  **************************************************************************
 
-AM_COND_IF([REVISE_BAREMETAL],
+AM_COND_IF([REVISE_LIBC],
 	[AS_IF([test "x${na_tmp_pending_rv}" = xyes], [
 		NC_MSG_WARNBOX([Do not forget to revise the content of the `${rvdir}`
-		subdirectory before proceeding! (--with-io-api=${with_io_api})])
-	], [test "x${na_allow_stdc}" = xyes], [
-		NC_MSG_WARNBOX([I could not access one or more C standard headers. I am
+		subdirectory before proceeding (--without-io-api).])
+	], [test "x${with_libc}" = xyes], [
+		NC_MSG_WARNBOX([I could not access one or more C standard objects. I am
 		assuming that you are compiling for some exotic platform
 		(--without-io-api), so I have tried to guess a possible
 		re-implementation of the standard data types needed to build
@@ -861,11 +903,11 @@ AM_COND_IF([REVISE_BAREMETAL],
 		Launch `make approve-revision` after you are done.])
 	], [
 		NC_MSG_WARNBOX([The C Standard Library has been disabled
-		(--with-io-api=nolibc), so I have tried to guess a possible
-		re-implementation of the standard data types needed to build
-		]AC_PACKAGE_NAME[ for your machine. You will need to review the guessed
-		content in the `${rvdir}` subdirectory before launching `make all`.
-		Launch `make approve-revision` after you are done.])
+		(--without-libc), so I have tried to guess a possible re-implementation
+		of the standard data types needed to build ]AC_PACKAGE_NAME[ for your
+		machine. You will need to review the guessed content in the `${rvdir}`
+		subdirectory before launching `make all`. Launch `make
+		approve-revision` after you are done.])
 	])])
 
 AS_UNSET([na_tmp_pending_rv])
@@ -916,15 +958,16 @@ NA_HELP_STRINGS(
 	[[make portable-builds]],
 		[create a package containing all the files that would be installed by
 		`make install-exec-strip`, but without any directory structure - if
-		`make (all)` has not been launched yet, it will be launched first]
+		`make (all)` has not been launched yet, it will be launched first],
+	[[make git-clone]],
+		[download the latest revision of ]AC_PACKAGE_NAME[ from the server (the
+		`git` utility is required); note that the downloaded archive might
+		be a work in progress and not an official release yet]
 )
 
 Package maintenance targets:
 
 NA_HELP_STRINGS(
-	[[make mergenew]],
-		[merge all the files created by the `configure` option
-		`--enable-extended-config=sandbox`],
 	[[make dist(-*)], [make source-release], [make authors-copy]],
 		[create a re-distributable copy of this package, ignoring any local
 		configuration; the `make dist(*)` targets are GNU Automake's built-in
@@ -945,28 +988,40 @@ NA_HELP_STRINGS(
 	[[make distcheck]],
 		[create a redistributable package and check that everything in it
 		works as it is supposed to work],
-	[[make git-clone]],
-		[download the latest revision of ]AC_PACKAGE_NAME[ from the server (the
-		`git` utility is required); note that the downloaded archive might
-		be a work in progress and not yet an official release]
+	[[make snapshot]],
+		[create a clean backup of everything, including non-distributable
+		files, but without the files generated by GNU Autotools]
+)
+
+Package development targets:
+
+NA_HELP_STRINGS(
+	[[make mergenew]],
+		[merge all the files created by the `configure` option
+		`--enable-extended-config=sandbox`],
+	[[make all-baremetal-sources], [make baremetal-source-code],
+	[make baremetal-symbols], [make all-official-sources],
+	[make official-source-code], [make official-symbols], [make all-sources]],
+		[(Re-)generate the source code of ]AC_PACKAGE_NAME[ using the content
+		of the `dev` subdirectory these targets are available only after
+		passing the `--enable-author-mode` option to the `configure` script]
 )
 
 Special targets:
 
 NA_HELP_STRINGS(
-	[[make all-sources], [make baremetal-csources], [make official-csources],
-	[make official-symbols], [make official-sources]],
-		[(Re-)generate the source code of ]AC_PACKAGE_NAME[ using the content
-		of the `dev` subdirectory - some of these targets might be available
-		only after passing the `--enable-author-mode` option to the `configure`
-		script],
+	[[make all-baremetal-sources], [make baremetal-source-code],
+	[make baremetal-symbols]],
+		[Generate the "bare metal" source code of ]AC_PACKAGE_NAME[ - these
+		targets are available only after passing the `--without-io-api` option
+		to the `configure` script],
 	[[make approve-revision], [make reject-revision]],
 		[Approve/reject the current customization for a non-standard
 		environment (available only in specific cases)],
-	[[make expired]],
+	[[make refresh]],
 		[(Re)build all the targets listed in the `EXPIRE` user variable, as in
 		`make EXPIRE=']AC_PACKAGE_TARNAME[-git.tar.gz
-		]AC_PACKAGE_TARNAME[-snapshot.tar.gz' expired`]
+		]AC_PACKAGE_TARNAME[-snapshot.tar.gz' refresh`]
 )
 
 Optional variables:
@@ -989,9 +1044,10 @@ NA_HELP_STRINGS(
 		--help`],
 	[[ZIPTYPE]],
 		[Supported by `make authors-copy`, `make binary-release`, `make
-		git-clone`, `make portable-builds` and `make source-release`, this
-		variable allows to change the compression format of the archives
-		created; possible values are: `tar.gz`, `tar.xz`, `tgz`, `txz`, `zip`],
+		git-clone`, `make portable-builds`, `make source-release` and `make
+		snapshot`, this variable allows to change the compression format of the
+		archives created; possible values are: `tar.gz`, `tar.xz`, `tgz`,
+		`txz`, `zip`],
 	[[DEST]],
 		[Supported by `make authors-copy`, `make binary-release`, `make
 		git-clone`, `make manifest`, `make portable-builds` and `make
@@ -1032,7 +1088,7 @@ AC_MSG_NOTICE([all done, launch `${ac_make} help` to list the commonly used targ
 
 dnl  **************************************************************************
 dnl     NOTE:  About the macros whose names begin with `GL_`, `NA_`, `NC_`,
-dnl            `NM_`, `NS_` `n4_`, and what these prefixes are, see
+dnl            `NM_`, `NS_`, `n4_` and what these prefixes are, see
 dnl            `autostuff/m4/not-autotools.m4`.
 dnl  **************************************************************************
 

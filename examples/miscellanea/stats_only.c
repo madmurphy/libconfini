@@ -2,7 +2,7 @@
 /*
 
 The following code will try to load an INI file in order to get some statistics
-about it without dispatching its content.
+about it, without dispatching its content.
 
 */
 

@@ -9,14 +9,14 @@
 #        case variables, especially those beginning with an underscore, are for
 #        internal use only.
 
-LTVERSIONINFO = @INTERFACE_NUMBER@:@IMPLEMENTATION_NUMBER@:@INTERFACE_COMPATIBILITY@
+LTVERSIONINFO = $(INTERFACE_NUM):$(IMPLEMENTATION_NUM):$(INTERFACES_SUPPORTED)
 
 _common_cppenv_ = \
 	"-DPACKAGE_LOCALE_DIR=\"$(localedir)\"" \
 	"-DPACKAGE_SRC_DIR=\"$(srcdir)\"" \
 	"-DPACKAGE_DATA_DIR=\"$(pkgdatadir)\""
 
-_standard_cppenv_ = \
+_with_io_cppenv_ = \
 	"-DCONFINI_IO_FLAVOR=@na_io_api@"
 
 _baremetal_cppenv_ = \
@@ -38,7 +38,8 @@ MOSTLYCLEANFILES =
 
 CLEANFILES = \
 	confini-baremetal.c \
-	confini-baremetal.h
+	confini-baremetal.h \
+	libconfini-baremetal.def
 
 lib_LTLIBRARIES = \
 	lib@PROJECT_LOCALNAME@.la
@@ -87,12 +88,13 @@ lib@PROJECT_LOCALNAME@_la_LDFLAGS += \
 endif NATIVE_MSWIN
 
 
-if HAVE_DLLTOOL
+if WANT_DLLEXP
 
-noinst_SCRIPTS = \
-	@lt_cv_objdir@/@PACKAGE_LOCALNAME@.def
+nodist_noinst_DATA = \
+	@lt_cv_objdir@/@PACKAGE_LOCALNAME@.def \
+	@lt_cv_objdir@/@PACKAGE_LOCALNAME@.exp
 
-endif HAVE_DLLTOOL
+endif WANT_DLLEXP
 
 
 if HAVE_RC
@@ -140,7 +142,8 @@ endif WANT_DEVEL
 
 EXTRA_DIST = \
 	@PACKAGE_TARNAME@.def \
-	@PACKAGE_TARNAME@.pc.in
+	@PACKAGE_TARNAME@.pc.in \
+	winres.rc
 
 UNINSTALLFILES =
 
@@ -185,6 +188,9 @@ UNINSTALLFILES += \
 endif WANT_DEVEL
 
 
+LOCALSYMBOLS = @PACKAGE_LOCALNAME@-current.def
+
+
 ###############################################################################
 ##    R E C I P E S
 ###############################################################################
@@ -223,8 +229,6 @@ endif HAVE_RC
 if HAVE_DLLTOOL
 
 MOSTLYCLEANFILES += \
-	*.def_ \
-	*.exp_ \
 	confini.def \
 	confini.exp \
 	confini-baremetal.def \
@@ -232,34 +236,25 @@ MOSTLYCLEANFILES += \
 
 # Inference rules
 
-.@OBJEXT@.def_:
+.a.def:
 	$(DLLTOOL) -z '$@' --export-all-symbols '$<' && sed -i '/^\s*\;/{d};' \
 	'$@';
 
-.@OBJEXT@.exp_:
+.@OBJEXT@.def:
+	$(DLLTOOL) -z '$@' --export-all-symbols '$<' && sed -i '/^\s*\;/{d};' \
+	'$@';
+
+.a.exp:
 	$(DLLTOOL) -e '$@' --export-all-symbols '$<';
 
-@lt_cv_objdir@/@PACKAGE_LOCALNAME@.def: lib@PROJECT_LOCALNAME@.la
-	$(DLLTOOL) -z '$@' --export-all-symbols \
-	'@lt_cv_objdir@/lib@PROJECT_LOCALNAME@.a';
+.@OBJEXT@.exp:
+	$(DLLTOOL) -e '$@' --export-all-symbols '$<';
 
-@lt_cv_objdir@/@PACKAGE_LOCALNAME@.exp: lib@PROJECT_LOCALNAME@.la
-	$(DLLTOOL) -e '$@' --export-all-symbols \
-	'@lt_cv_objdir@/lib@PROJECT_LOCALNAME@.a';
+ .PHONY: current-symbols
+ current-symbols: lib@PROJECT_LOCALNAME@.la
+	@$(MAKE) '@lt_cv_objdir@/lib@PROJECT_LOCALNAME@.def' && \
+	cp '@lt_cv_objdir@/lib@PROJECT_LOCALNAME@.def' '$(LOCALSYMBOLS)';
 
-# Ordinary targets
-
-confini.def confini.exp: \
- confini.c \
- confini.h
-	$(MAKE) AM_CPPFLAGS='$(_common_cppenv_) $(_standard_cppenv_)' '$@_' && mv \
-	'$@_' '$@';
-
-confini-baremetal.def confini-baremetal.exp: \
- confini-baremetal.c \
- confini-baremetal.h
-	$(MAKE) AM_CPPFLAGS='$(_common_cppenv_) $(_baremetal_cppenv_)' '$@_' && mv \
-	'$@_' '$@';
 
 endif HAVE_DLLTOOL
 
@@ -267,33 +262,36 @@ endif HAVE_DLLTOOL
 if AUTHOR_MODE
 
 # Accept `dev/marked-sources/confini-marked.c` without amendments
-confini.c: \
+$(srcdir)/confini.c: \
  $(top_srcdir)/dev/marked-sources/confini-marked.c \
  $(top_srcdir)/dev/hackings/all/confini-metadata.c
 	@@confini_c_recipe@
 
 # Accept `dev/marked-sources/confini-marked.h` without amendments
-confini.h: \
+$(srcdir)/confini.h: \
  $(top_srcdir)/dev/marked-sources/confini-marked.h \
  $(top_srcdir)/dev/hackings/all/confini-metadata.h
 	@@confini_h_recipe@
 
 
+if !WANT_BAREMETAL
+
+
 if HAVE_DLLTOOL
 
-@PACKAGE_TARNAME@.def: \
- confini.c \
- confini.h
-	$(MAKE) AM_CPPFLAGS='$(_common_cppenv_) $(_standard_cppenv_)' 'confini.def_' \
-	&& mv 'confini.def_' '$@';
+$(srcdir)/@PACKAGE_TARNAME@.def: $(srcdir)/confini.c $(srcdir)/confini.h
+	$(MAKE) LOCALSYMBOLS='$@' current-symbols;
 
 endif HAVE_DLLTOOL
+
+
+endif !WANT_BAREMETAL
 
 
 endif AUTHOR_MODE
 
 
-if REVISE_BAREMETAL
+if REVISE_LIBC
 
 $(top_builddir)/no-dist/.archived/$(nonportfile):
 	@$(MAKE) -C '$(top_builddir)' 'no-dist/.archived/$(nonportfile)';
@@ -303,7 +301,21 @@ $(top_builddir)/no-dist/hackings/baremetal/c-standard-library.h: \
 	@$(MAKE) -C '$(top_builddir)' \
 	'no-dist/hackings/baremetal/c-standard-library.h';
 
-endif REVISE_BAREMETAL
+endif REVISE_LIBC
+
+
+if WANT_BAREMETAL
+
+
+if HAVE_DLLTOOL
+
+@PACKAGE_TARNAME@-baremetal.def: confini-baremetal.c confini-baremetal.h
+	$(MAKE) LOCALSYMBOLS='$@' current-symbols;
+
+endif HAVE_DLLTOOL
+
+
+endif WANT_BAREMETAL
 
 
 # Amend `dev/marked-sources/confini-marked.c`
@@ -311,7 +323,7 @@ built-sources/baremetal/confini.c: \
  $(top_srcdir)/dev/marked-sources/confini-marked.c \
  $(top_srcdir)/dev/hackings/all/confini-metadata.c \
  $(top_srcdir)/dev/hackings/baremetal/confini-header.c \
- $(top_srcdir)/dev/hackings/baremetal/number-parsers.c \
+ $(top_srcdir)/dev/hackings/baremetal/str2num.c \
  $(top_srcdir)/dev/hackings/baremetal/pp-utils.c
 	@@confini_baremetal_c_recipe@
 
@@ -319,7 +331,7 @@ built-sources/baremetal/confini.c: \
 built-sources/baremetal/confini.h: \
  $(top_srcdir)/dev/marked-sources/confini-marked.h \
  $(top_srcdir)/dev/hackings/all/confini-metadata.h \
- $(top_srcdir)/dev/hackings/baremetal/number-parsers.h \
+ $(top_srcdir)/dev/hackings/baremetal/str2num.h \
  $(top_builddir)/no-dist/hackings/baremetal/c-standard-library.h
 	@@confini_baremetal_h_recipe@
 
@@ -335,9 +347,9 @@ confini-baremetal.h: \
 
 # User's rule for forcing non-phony targets to be built, as in `make
 # EXPIRE='confini.c confini.h' confini.c confini.h` or (equivalently) `make
-# EXPIRE='confini.c confini.h' expired`
-.PHONY: $(EXPIRE) expired
-expired: $(EXPIRE)
+# EXPIRE='confini.c confini.h' refresh`
+.PHONY: $(EXPIRE) refresh
+refresh: $(EXPIRE)
 
 
 ## EOF

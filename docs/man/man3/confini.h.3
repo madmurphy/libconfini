@@ -1,4 +1,4 @@
-.TH "confini.h" 3 "Thu Sep 24 2020" "libconfini" \" -*- nroff -*-
+.TH "confini.h" 3 "Tue Oct 6 2020" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -42,9 +42,17 @@ confini.h \- libconfini header
 .br
 .RI "Check whether a format does \fInot\fP support escape sequences\&. "
 .ti -1c
+.RI "#define \fBINI_IS_IMPLICIT_SUBSTR\fP(CHAR_PTR)"
+.br
+.RI "Check whether a given \fCchar *\fP data type points to the global variable \fBINI_GLOBAL_IMPLICIT_VALUE\fP or to any fragment of it\&. "
+.ti -1c
 .RI "#define \fBCONFINI_ERROR\fP   252"
 .br
 .RI "Error mask (flags not present in user-generated interruptions) "
+.ti -1c
+.RI "#define \fBINI_DISABLED_FLAG\fP   4"
+.br
+.RI "Disabled flag (i\&.e\&. third bit, present only in non-active node types) "
 .in -1c
 .SS "Typedefs"
 
@@ -92,7 +100,7 @@ confini.h \- libconfini header
 .ti -1c
 .RI "enum \fBIniNodeType\fP { \fBINI_UNKNOWN\fP = 0, \fBINI_VALUE\fP = 1, \fBINI_KEY\fP = 2, \fBINI_SECTION\fP = 3, \fBINI_COMMENT\fP = 4, \fBINI_INLINE_COMMENT\fP = 5, \fBINI_DISABLED_KEY\fP = 6, \fBINI_DISABLED_SECTION\fP = 7 }"
 .br
-.RI "INI node types\&. "
+.RI "INI node types and possible values of \fBIniDispatch::type\fP\&. "
 .ti -1c
 .RI "enum \fBIniDelimiters\fP { \fBINI_ANY_SPACE\fP = 0, \fBINI_EQUALS\fP = '=', \fBINI_COLON\fP = ':', \fBINI_DOT\fP = '\&.', \fBINI_COMMA\fP = ',' }"
 .br
@@ -144,11 +152,11 @@ confini.h \- libconfini header
 .ti -1c
 .RI "size_t \fBini_unquote\fP (char *const ini_string, const \fBIniFormat\fP format)"
 .br
-.RI "Unescape \fC\\'\fP, \fC\\"\fP, and \fC\\\\\fP and remove all unescaped quotes (when single/double quotes are considered metacharacters in respect to the format given) "
+.RI "Unescape \fC\e\'\fP, \fC\e\(dq\fP and \fC\e\e\fP and remove all unescaped quotes (when single/double quotes are considered metacharacters in respect to the format given) "
 .ti -1c
 .RI "size_t \fBini_string_parse\fP (char *const ini_string, const \fBIniFormat\fP format)"
 .br
-.RI "Unescape \fC\\'\fP, \fC\\"\fP, and \fC\\\\\fP and remove all unescaped quotes (when single/double quotes are considered metacharacters in respect to the format given); if the format allows it, sequences of one or more spaces out of quotes will be collapsed\&. "
+.RI "Unescape \fC\e\'\fP, \fC\e\(dq\fP and \fC\e\e\fP and remove all unescaped quotes (when single/double quotes are considered metacharacters in respect to the format given); if the format allows it, sequences of one or more spaces out of quotes will be collapsed\&. "
 .ti -1c
 .RI "size_t \fBini_array_get_length\fP (const char *const ini_string, const char delimiter, const \fBIniFormat\fP format)"
 .br
@@ -218,6 +226,10 @@ confini.h \- libconfini header
 .br
 .RI "Pointer to \fC\fCatof()\fP\fP "
 .ti -1c
+.RI "double(*const \fBini_get_float\fP )(const char *ini_string)"
+.br
+.RI "Legacy support for parsing a \fCdouble\fP data type – please \fIdo not use this function\fP: use \fC\fBini_get_double()\fP\fP instead\&. "
+.ti -1c
 .RI "static const \fBIniFormat\fP \fBINI_DEFAULT_FORMAT\fP = { \fBINI_EQUALS\fP, false, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_ABSOLUTE_AND_RELATIVE\fP, \fBINI_MULTILINE_EVERYWHERE\fP, false, false, false, false, false, false, false, false }"
 .br
 .RI "A model format for standard INI files\&. "
@@ -256,7 +268,7 @@ GNU General Public License, version 3 or any later version
 .PP
 \fBVersion\fP
 .RS 4
-1\&.14\&.2 
+1\&.15\&.0 
 .RE
 .PP
 \fBDate\fP
@@ -276,6 +288,39 @@ https://madmurphy.github.io/libconfini
 
 .PP
 Error mask (flags not present in user-generated interruptions) 
+.SS "#define INI_DISABLED_FLAG   4"
+
+.PP
+Disabled flag (i\&.e\&. third bit, present only in non-active node types) Example #1:
+.PP
+.PP
+.nf
+if (dispatch->type & INI_DISABLED_FLAG) {
+    printf("This is not a real INI node\&.\&.\&.\\n");
+}
+.fi
+.PP
+.PP
+Example #2:
+.PP
+.PP
+.nf
+if ((dispatch->type | INI_DISABLED_FLAG) == INI_DISABLED_KEY) {
+    printf("Hey! This is either an INI_KEY or an INI_DISABLED_KEY!\\n");
+}
+.fi
+.PP
+.PP
+See also \fBIniNodeType\fP\&. 
+.SS "#define INI_IS_IMPLICIT_SUBSTR(CHAR_PTR)"
+\fBValue:\fP
+.PP
+.nf
+    (CHAR_PTR >= INI_GLOBAL_IMPLICIT_VALUE && CHAR_PTR <= \e
+    INI_GLOBAL_IMPLICIT_VALUE + INI_GLOBAL_IMPLICIT_V_LEN)
+.fi
+.PP
+Check whether a given \fCchar *\fP data type points to the global variable \fBINI_GLOBAL_IMPLICIT_VALUE\fP or to any fragment of it\&. 
 .SS "#define INIFORMAT_HAS_NO_ESC(FORMAT)"
 \fBValue:\fP
 .PP
@@ -507,7 +552,7 @@ Multi-line escape sequences are disabled
 .SS "enum \fBIniNodeType\fP"
 
 .PP
-INI node types\&. 
+INI node types and possible values of \fBIniDispatch::type\fP\&. See also \fBINI_DISABLED_FLAG\fP\&. 
 .PP
 \fBEnumerator\fP
 .in +1c
@@ -522,7 +567,7 @@ Not used by \fBlibconfini\fP (values are dispatched together with keys) – but 
 This is a key [value=2] 
 .TP
 \fB\fIINI_SECTION \fP\fP
-This is a section or a section path [value=3] 
+This is a section path [value=3] 
 .TP
 \fB\fIINI_COMMENT \fP\fP
 This is a comment [value=4] 
@@ -609,7 +654,7 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 
       part_b = ini_array_break(part_b, DELIMITER, dispatch->format);
       ini_string_parse(part_a, dispatch->format);
-      printf("%s\n", part_a);
+      printf("%s\\n", part_a);
 
     }
 
@@ -631,7 +676,7 @@ int main () {
     NULL
   )) {
 
-    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
 
   }
@@ -780,11 +825,11 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
     #undef DELIMITER
 
     /*  Do something with `my_array`  */
-    printf("Array `my_array` has been created\&.\n\n");
+    printf("Array `my_array` has been created\&.\\n\\n");
 
     for (size_t idx = 0; idx < my_array_length; idx++) {
 
-      printf("my_array[%zu] -> %s\n", idx, my_array[idx]);
+      printf("my_array[%zu] -> %s\\n", idx, my_array[idx]);
 
     }
 
@@ -804,7 +849,7 @@ int main () {
     NULL
   )) {
 
-    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
 
   }
@@ -872,7 +917,7 @@ static int my_array_fragm_handler (
   void * user_data
 ) {
 
-  printf("\"%\&.*s\"\n", (unsigned int) fragm_length, ini_array + fragm_offset);
+  printf("\"%\&.*s\"\\n", (unsigned int) fragm_length, ini_array + fragm_offset);
 
   return 0;
 
@@ -1017,7 +1062,7 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
     )) {
 
       ini_string_parse(token, dispatch->format);
-      printf("%s\n", token);
+      printf("%s\\n", token);
 
     }
 
@@ -1039,7 +1084,7 @@ int main () {
     NULL
   )) {
 
-    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
 
   }
@@ -1105,7 +1150,7 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
                  dispatch->format
                );
 
-      printf("%\&.*s\n", (unsigned int) length, left_behind);
+      printf("%\&.*s\\n", (unsigned int) length, left_behind);
 
     }
 
@@ -1127,7 +1172,7 @@ int main () {
     NULL
   )) {
 
-    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
 
   }
@@ -1192,7 +1237,7 @@ static int my_array_memb_handler (
   void * foreach_other
 ) {
 
-  printf("\"%s\"\n", arr_member);
+  printf("\"%s\"\\n", arr_member);
 
   return 0;
 
@@ -1290,7 +1335,7 @@ struct ini_store {
   char * my_section_my_string;
   signed int my_section_my_number;
   bool my_section_my_boolean;
-  bool my_section_my_implicit_boolean;
+  bool my_section_my_implicit_bool;
   char ** my_section_my_array;
   size_t my_section_my_arr_len;
 };
@@ -1300,51 +1345,54 @@ static int my_init (IniStatistics * statistics, void * v_store) {
     \&.my_section_my_string = NULL,
     \&.my_section_my_number = -1,
     \&.my_section_my_boolean = false,
-    \&.my_section_my_implicit_boolean = false,
+    \&.my_section_my_implicit_bool = false,
     \&.my_section_my_array = NULL,
     \&.my_section_my_arr_len = 0
   };
   return 0;
 }
 
-static int my_handler (IniDispatch * disp, void * v_store) {
+static int my_handler (IniDispatch * dsp, void * v_store) {
   #define store ((struct ini_store *) v_store)
-  if (disp->type == INI_KEY && ini_string_match_si("my_section", disp->append_to, disp->format)) {
-    if (ini_string_match_si("my_string", disp->data, disp->format)) {
-      disp->v_len = ini_string_parse(disp->value, disp->format);
+  #define THEYMATCH(SSTR, ISTR) \e
+    ini_string_match_si(SSTR, ISTR, dsp->format)
+  if (dsp->type == INI_KEY && THEYMATCH("my_section", dsp->append_to)) {
+    if (THEYMATCH("my_string", dsp->data)) {
+      dsp->v_len = ini_string_parse(dsp->value, dsp->format);
       /*  Free previous duplicate key (if any)  */
       if (store->my_section_my_string) {
         free(store->my_section_my_string);
       }
       /*  Allocate the new string  */
-      store->my_section_my_string = strndup(disp->value, disp->v_len);
+      store->my_section_my_string = strndup(dsp->value, dsp->v_len);
       if (!store->my_section_my_string) {
         return 1;
       }
-    } else if (ini_string_match_si("my_number", disp->data, disp->format)) {
-      store->my_section_my_number = ini_get_int(disp->value);
-    } else if (ini_string_match_si("my_boolean", disp->data, disp->format)) {
-      store->my_section_my_boolean = ini_get_bool(disp->value, 0);
-    } else if (ini_string_match_si("my_implicit_boolean", disp->data, disp->format)) {
-      store->my_section_my_implicit_boolean = ini_get_bool(disp->value, 1);
-    } else if (ini_string_match_si("my_array", disp->data, disp->format)) {
+    } else if (THEYMATCH("my_number", dsp->data)) {
+      store->my_section_my_number = ini_get_int(dsp->value);
+    } else if (THEYMATCH("my_boolean", dsp->data)) {
+      store->my_section_my_boolean = ini_get_bool(dsp->value, 0);
+    } else if (THEYMATCH("my_implicit_boolean", dsp->data)) {
+      store->my_section_my_implicit_bool = ini_get_bool(dsp->value, 1);
+    } else if (THEYMATCH("my_array", dsp->data)) {
       /*  Save memory (not strictly needed)  */
-      disp->v_len = ini_array_collapse(
-        disp->value,
+      dsp->v_len = ini_array_collapse(
+        dsp->value,
         MY_ARRAY_DELIMITER,
-        disp->format
+        dsp->format
       );
       /*  Free previous duplicate key (if any)  */
       if (store->my_section_my_array) {
         free(store->my_section_my_array);
       }
-      /*  Allocate a new array of strings (see examples/utilities/make_strarray\&.h)  */
+      /*  Allocate a new array of strings  */
+      /*  Function in examples/utilities/make_strarray\&.h  */
       store->my_section_my_array = make_strarray(
         &store->my_section_my_arr_len,
-        disp->value,
-        disp->v_len,
+        dsp->value,
+        dsp->v_len,
         MY_ARRAY_DELIMITER,
-        disp->format
+        dsp->format
       );
       if (!store->my_section_my_array) {
         return 1;
@@ -1352,27 +1400,28 @@ static int my_handler (IniDispatch * disp, void * v_store) {
     }
   }
   return 0;
+  #undef THEYMATCH
   #undef store
 }
 
 static void print_stored_data (const struct ini_store * const store) {
   printf(
-    "my_string -> %s\n"
-    "my_number -> %d\n"
-    "my_boolean -> %s\n"
-    "my_implicit_boolean -> %s\n"
+    "my_string -> %s\\n"
+    "my_number -> %d\\n"
+    "my_boolean -> %s\\n"
+    "my_implicit_boolean -> %s\\n"
     "my_array[%zu] -> [%s",
     store->my_section_my_string,
     store->my_section_my_number,
     store->my_section_my_boolean ? "True (`1`)" : "False (`0`)",
-    store->my_section_my_implicit_boolean ? "True (`1`)" : "False (`0`)",
+    store->my_section_my_implicit_bool ? "True (`1`)" : "False (`0`)",
     store->my_section_my_arr_len,
     store->my_section_my_arr_len ? store->my_section_my_array[0] : ""
   );
   for (size_t idx = 1; idx < store->my_section_my_arr_len; idx++) {
     printf("|%s", store->my_section_my_array[idx]);
   }
-  printf("]\n");
+  printf("]\\n");
 }
 
 int main () {
@@ -1390,7 +1439,7 @@ int main () {
     my_handler,
     &my_store
   )) {
-    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
   }
   print_stored_data(&my_store);
@@ -1440,8 +1489,8 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   if (dispatch->value == INI_GLOBAL_IMPLICIT_VALUE) {
 
     printf(
-      "\nDATA: %s\nVALUE: %s\nNODE TYPE: %u\n"
-      "(This is an implicit key element)\n",
+      "\\nDATA: %s\\nVALUE: %s\\nNODE TYPE: %u\\n"
+      "(This is an implicit key element)\\n",
 
       dispatch->data,
       dispatch->value,
@@ -1451,7 +1500,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   } else {
 
     printf(
-      "\nDATA: %s\nVALUE: %s\nNODE TYPE: %u\n",
+      "\\nDATA: %s\\nVALUE: %s\\nNODE TYPE: %u\\n",
 
       dispatch->data,
       dispatch->value,
@@ -1470,7 +1519,7 @@ int main () {
 
   ini_global_set_implicit_value("[implicit default value]", 24);
 
-  /*  Without setting this implicit keys will be considered empty  */
+  /*  Without this implicit keys will be considered empty  */
   my_format\&.implicit_is_not_empty = true;
   my_format\&.disabled_can_be_implicit = true;
 
@@ -1482,7 +1531,7 @@ int main () {
     NULL
   )) {
 
-    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
 
   }
@@ -1496,6 +1545,11 @@ int main () {
 
 .PP
 Set the value of the global variable \fBINI_GLOBAL_LOWERCASE_MODE\fP\&. 
+.PP
+\fBDeprecated\fP
+.RS 4
+Deprecated since version 1\&.15\&.0 (it will be removed in version 2\&.0\&.0) 
+.RE
 .PP
 \fBParameters\fP
 .RS 4
@@ -1560,7 +1614,7 @@ This function grants that the result of the comparison between two INI strings
 .PP
 .nf
 printf(
-    "%s\n",
+    "%s\\n",
     ini_string_match_ii(my_ini_string_1, my_ini_string_2, format) ?
         "They match"
     :
@@ -1576,7 +1630,7 @@ will always match the result of the \fIliteral\fP comparison between the same tw
 ini_string_parse(my_ini_string_1, format);
 ini_string_parse(my_ini_string_2, format);
 
-printf("%s\n",
+printf("%s\\n",
     ini_string_match_ss(my_ini_string_1, my_ini_string_2, format) ?
         "They match"
     :
@@ -1625,7 +1679,7 @@ This function grants that the result of the comparison between a simple string a
 .PP
 .nf
 printf(
-    "%s\n",
+    "%s\\n",
     ini_string_match_si(my_simple_string, my_ini_string, format) ?
         "They match"
     :
@@ -1641,7 +1695,7 @@ will always match the result of the \fIliteral\fP comparison between the simple 
 ini_string_parse(my_ini_string, format);
 
 printf(
-    "%s\n",
+    "%s\\n",
     ini_string_match_ss(my_simple_string, my_ini_string, format) ?
         "They match"
     :
@@ -1706,7 +1760,7 @@ int main () {
   /*  Check for errors  */
   if (retval & CONFINI_ERROR) {
 
-    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
 
   }
@@ -1714,11 +1768,11 @@ int main () {
   /*  Check if parsing has been interrupted by `passfinder()`  */
   retval  ==  CONFINI_FEINTR ?
                 printf(
-                  "We found it! It's the INI node number #%zu!\n",
+                  "We found it! It's the INI node number %zu!\\n",
                   membid
                 )
               :
-                printf("We didn't find it :-(\n");
+                printf("We didn't find it :-(\\n");
 
   return 0;
 
@@ -1816,7 +1870,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   }
 
   printf(
-    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
+    "DATA: %s\\nVALUE: %s\\nNODE TYPE: %u\\n\\n",
     dispatch->data,
     dispatch->value,
     dispatch->type
@@ -1836,7 +1890,7 @@ int main () {
     NULL
   )) {
 
-    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
 
   }
@@ -1904,7 +1958,7 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
   }
 
   printf(
-    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
+    "DATA: %s\\nVALUE: %s\\nNODE TYPE: %u\\n\\n",
     dispatch->data,
     dispatch->value,
     dispatch->type
@@ -1924,7 +1978,7 @@ int main () {
     NULL
   )) {
 
-    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
 
   }
@@ -1992,7 +2046,7 @@ Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFI
 static int my_callback (IniDispatch * dispatch, void * v_null) {
 
   printf(
-    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
+    "DATA: %s\\nVALUE: %s\\nNODE TYPE: %u\\n\\n",
     dispatch->data, dispatch->value, dispatch->type
   );
 
@@ -2006,7 +2060,7 @@ int main () {
 
   if (ini_file == NULL) {
 
-    fprintf(stderr, "File doesn't exist :-(\n");
+    fprintf(stderr, "File doesn't exist :-(\\n");
     return 1;
 
   }
@@ -2019,7 +2073,7 @@ int main () {
     NULL
   )) {
 
-    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
 
   }
@@ -2082,7 +2136,7 @@ Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFI
 static int my_callback (IniDispatch * dispatch, void * v_null) {
 
   printf(
-    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
+    "DATA: %s\\nVALUE: %s\\nNODE TYPE: %u\\n\\n",
     dispatch->data, dispatch->value, dispatch->type
   );
 
@@ -2100,7 +2154,7 @@ int main () {
     NULL
   )) {
 
-    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
 
   }
@@ -2170,7 +2224,7 @@ Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFI
 static int my_callback (IniDispatch * dispatch, void * v_null) {
 
   printf(
-    "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
+    "DATA: %s\\nVALUE: %s\\nNODE TYPE: %u\\n\\n",
     dispatch->data, dispatch->value, dispatch->type
   );
 
@@ -2181,13 +2235,13 @@ static int my_callback (IniDispatch * dispatch, void * v_null) {
 int main () {
 
   const char original_ini_buffer[] = 
-    "[SectionOne]\n"
-    "\n"
-    "key = \"value\"\n"
-    "integer = 1234\n"
-    "real = 3\&.14\n"
-    "string1 = \"Case 1\"\n"
-    "string2 = 'Case 2'\n"
+    "[SectionOne]\\n"
+    "\\n"
+    "key = \"value\"\\n"
+    "integer = 1234\\n"
+    "real = 3\&.14\\n"
+    "string1 = \"Case 1\"\\n"
+    "string2 = 'Case 2'\\n"
   ;
 
   size_t ini_length = strlen(original_ini_buffer);
@@ -2202,17 +2256,17 @@ int main () {
     NULL
   )) {
 
-    fprintf(stderr, "Sorry, something went wrong :-(\n");
+    fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
 
   }
 
   printf(
 
-    "The previous dispatches come from the following buffer:\n\n"
-    "-----------------[original INI buffer]-----------------\n"
+    "The previous dispatches come from the following buffer:\\n\\n"
+    "-------------[original INI buffer]-------------\\n"
     "%s"
-    "-------------------------------------------------------\n\n",
+    "-----------------------------------------------\\n\\n",
 
     original_ini_buffer
 
@@ -2220,10 +2274,10 @@ int main () {
 
   printf(
     "After being processed by `strip_ini_cache()`, the buffer looks "
-    "like this:\n"
+    "like this:\\n"
   );
 
-  printf("\n-------------------[disposed buffer]-------------------\n");
+  printf("\\n---------------[disposed buffer]---------------\\n");
 
   for (size_t idx = 0; idx <= ini_length; idx++) {
 
@@ -2231,12 +2285,12 @@ int main () {
 
   }
 
-  printf("\n-------------------------------------------------------\n\n");
+  printf("\\n-----------------------------------------------\\n\\n");
 
   printf(
     "The dots in the example above represent NUL characters\&. Remember "
-    "that\n`strip_ini_cache()` does not free the buffer passed, you will "
-    "have to do that\nby yourself\&.\n"
+    "that\\n`strip_ini_cache()` does not free the buffer passed, you "
+    "will have to do that\\nby yourself\&.\\n"
   );
 
   free(ini_cache);
@@ -2258,6 +2312,22 @@ A model format for standard INI files\&.
 
 .PP
 Pointer to \fC\fCatof()\fP\fP 
+.SS "double(* const ini_get_float) (const char *ini_string)\fC [extern]\fP"
+
+.PP
+Legacy support for parsing a \fCdouble\fP data type – please \fIdo not use this function\fP: use \fC\fBini_get_double()\fP\fP instead\&. 
+.PP
+\fBDeprecated\fP
+.RS 4
+Deprecated since version 1\&.12\&.0 (either it will be removed or it will return a \fCfloat\fP data type in version 2\&.0\&.0) 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fIini_string\fP 
+.RE
+.PP
+
 .SS "ini_get_int\fC [extern]\fP"
 
 .PP
@@ -2282,6 +2352,13 @@ Value to be assigned to implicit keys (default value: \fCNULL\fP)
 
 .PP
 If set to \fCtrue\fP, key and section names in case-insensitive INI formats will be dispatched lowercase, verbatim otherwise (default value: \fCfalse\fP) 
+.PP
+\fBDeprecated\fP
+.RS 4
+Deprecated since version 1\&.15\&.0 (it will be removed in version 2\&.0\&.0) 
+.RE
+.PP
+
 .SS "const \fBIniFormat\fP INI_UNIXLIKE_FORMAT = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }\fC [static]\fP"
 
 .PP

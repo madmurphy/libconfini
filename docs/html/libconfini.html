@@ -66,14 +66,62 @@ $(function() {
 <div class="title">Library Functions Manual </div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="toc"><h3>Table of Contents</h3>
+<ul><li class="level1"><a href="#description">Description</a></li>
+<li class="level1"><a href="#what-is-an-ini-file">What is an INI file?</a></li>
+<li class="level1"><a href="#supported-syntaxes">Supported syntaxes</a><ul><li class="level2"><a href="#keys">Keys</a></li>
+<li class="level2"><a href="#sections">Sections</a></li>
+<li class="level2"><a href="#comments">Comments</a></li>
+<li class="level2"><a href="#disabled-entries">Disabled entries</a></li>
+<li class="level2"><a href="#escape-sequences">Escape sequences</a></li>
+</ul>
+</li>
+<li class="level1"><a href="#getting-started">Getting started</a></li>
+<li class="level1"><a href="#reading-an-ini-file">Reading an INI file</a><ul><li class="level2"><a href="#basic-examples">Basic examples</a></li>
+<li class="level2"><a href="#how-it-works">How it works</a></li>
+</ul>
+</li>
+<li class="level1"><a href="#parsing-a-buffer-instead-of-a-file">Parsing a buffer instead of a file</a></li>
+<li class="level1"><a href="#the-iniformat-data-type">The <code>IniFormat</code> data type</a><ul><li class="level2"><a href="#the-model-formats">The model formats</a></li>
+</ul>
+</li>
+<li class="level1"><a href="#the-iniformatnum-data-type">The <code>IniFormatNum</code> data type</a></li>
+<li class="level1"><a href="#the-inistatistics-and-inidispatch-structures">The <code>IniStatistics</code> and <code>IniDispatch</code> structures</a></li>
+<li class="level1"><a href="#rendering">Rendering</a></li>
+<li class="level1"><a href="#string-comparisons">String comparisons</a></li>
+<li class="level1"><a href="#editing-the-dispatched-data">Editing the dispatched data</a><ul><li class="level2"><a href="#formatting-the-values">Formatting the values</a></li>
+<li class="level2"><a href="#formatting-the-key-names">Formatting the key names</a></li>
+<li class="level2"><a href="#formatting-the-section-paths">Formatting the section paths</a></li>
+</ul>
+</li>
+<li class="level1"><a href="#implicit-keys">Implicit keys</a></li>
+<li class="level1"><a href="#code-considerations">Code considerations</a><ul><li class="level2"><a href="#return-values">Return values</a></li>
+<li class="level2"><a href="#the-formatting-functions">The formatting functions</a></li>
+<li class="level2"><a href="#common-mistakes">Common mistakes</a></li>
+<li class="level2"><a href="#storing-the-dispatched-data">Storing the dispatched data</a></li>
+<li class="level2"><a href="#size-of-the-dispatched-data">Size of the dispatched data</a></li>
+<li class="level2"><a href="#other-global-settings">Other global settings</a></li>
+<li class="level2"><a href="#the-unicode-problem">The unicode problem</a></li>
+<li class="level2"><a href="#thread-safety">Thread safety</a></li>
+<li class="level2"><a href="#error-exceptions">Error exceptions</a></li>
+<li class="level2"><a href="#performance">Performance</a></li>
+</ul>
+</li>
+<li class="level1"><a href="#ini-syntax-considerations">INI syntax considerations</a><ul><li class="level2"><a href="#comment-or-disabled-entry">Comment or disabled entry?</a></li>
+</ul>
+</li>
+</ul>
+</div>
 <div class="textblock"><p>User Guide for <b>libconfini</b></p>
 <dl class="section copyright"><dt>Copyright</dt><dd>GPL license version 3 or any later version</dd></dl>
 <p><a class="anchor" id="md_MANUAL"></a></p>
-<h1>DESCRIPTION</h1>
+<h1><a class="anchor" id="description"></a>
+Description</h1>
 <p><b>libconfini</b> is a simple INI parsing library with the ability to read disabled entries (i.e. valid entries nested in comments). <b>libconfini</b> does not store the data read from an INI file, but rather dispatches it, formatted, to a custom listener.</p>
 <p>The code is written in C (C99) and does not depend on any particular library, except for the C standard headers <b>stdio.h</b>, <b>stdlib.h</b>, <b>stdbool.h</b> and <b>stdint.h</b>.</p>
 <p>If you want to start learning directly from the code, you can find partially self-documented sample usages of <b>libconfini</b> under <code>/usr/share/doc/libconfini/examples</code>.</p>
-<h1>WHAT IS AN INI FILE?</h1>
+<h1><a class="anchor" id="what-is-an-ini-file"></a>
+What is an INI file?</h1>
 <p>INI files were introduced with the early versions of Microsoft Windows, where the .ini file name extension stood for INItialization. An INI file can be considered as a string representation of a tree object, with new lines used as delimiters between nodes. A typical INI file is a plain text file looking like the following example:</p>
 <div class="fragment"><div class="line"># delivery.conf</div>
 <div class="line"> </div>
@@ -89,7 +137,8 @@ $(function() {
 <div class="line">[receiver]</div>
 <div class="line">name = Mario Rossi   # He&#39;s a big guy</div>
 <div class="line">email = mario.rossi@example.com</div>
-</div><!-- fragment --><h1>SUPPORTED SYNTAXES</h1>
+</div><!-- fragment --><h1><a class="anchor" id="supported-syntaxes"></a>
+Supported syntaxes</h1>
 <p>During the years several interpretations of INI files have appeared. In some implementations the colon character (<code>:</code>) has been adopted as delimiter between keys and values instead of the classic equals sign (a typical example under GNU/Linux is <code>/etc/nsswitch.conf</code>); in other implementations, under the influence of Unix standard configuration files, a sequence of one or more spaces (<code>/[ \t\v\f]+/</code> or <code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code>) has been used instead (see for example <code>/etc/host.conf</code>).</p>
 <p>Equals sign used as delimiter between keys and values:</p>
 <div class="fragment"><div class="line"># example1.ini</div>
@@ -117,7 +166,8 @@ $(function() {
 <div class="line">[receiver] name=Mario Rossi; # He&#39;s a big guy</div>
 <div class="line">email=mario.rossi@example.com</div>
 </div><!-- fragment --><p>For several reasons the use of semicolon as node delimiter is not (and will never be) supported by <b>libconfini</b>.</p>
-<h2>KEYS</h2>
+<h2><a class="anchor" id="keys"></a>
+Keys</h2>
 <p>A <b>key-value element</b> is identified as a string placed after a new line and followed by a key-value delimiter &ndash; typically the equals sign (<code>=</code>) or the colon sign (<code>:</code>) or a space sequence (<code>/\s+/</code>) &ndash; which is followed by a value, which is followed by a new line or an inline comment.</p>
 <p>Both the <b>key part</b> and the <b>value part</b> may be enclosed within quotes (<code>'</code> or <code>&quot;</code>):</p>
 <div class="fragment"><div class="line">foo = &#39;bar&#39;</div>
@@ -140,7 +190,8 @@ $(function() {
 <div class="line">my_implicit_boolean</div>
 <div class="line">my_array = Asia, Africa, &#39;North America&#39;, South America, \</div>
 <div class="line">           Antarctica, Europe, Australia</div>
-</div><!-- fragment --><h2>SECTIONS</h2>
+</div><!-- fragment --><h2><a class="anchor" id="sections"></a>
+Sections</h2>
 <p>A <b>section</b> can be imagined as a directory. A <b>section path</b> is identified as the string <code>"$1"</code> in the regular expression <code>/(?:^|\n|\r)[ \t\v\f]*\[[ \t\v\f]*([^\]]*)[ \t\v\f]*\][ \t\v\f]*(?:\n|\r|$)/</code> globally applied to an INI file. A section path expresses nesting using the “dot” character, as in the following example:</p>
 <div class="fragment"><div class="line">[section]</div>
 <div class="line"> </div>
@@ -172,7 +223,8 @@ $(function() {
 <div class="fragment"><div class="line">[&quot;world&quot;.europe.&#39;germany&#39;.berlin]</div>
 <div class="line"> </div>
 <div class="line">foo = bar</div>
-</div><!-- fragment --><h2>COMMENTS</h2>
+</div><!-- fragment --><h2><a class="anchor" id="comments"></a>
+Comments</h2>
 <p>Comments are string segments enclosed within the sequence <code>/(?:^|\s)[;#]/</code> and a new line sequence, as in the following example:</p>
 <div class="fragment"><div class="line"># this is a comment</div>
 <div class="line"> </div>
@@ -193,16 +245,18 @@ $(function() {
 <div class="line">                      #                                             \</div>
 <div class="line">                      #     Orsino, scene I</div>
 <div class="line"> </div>
-<div class="line"># This is also a masterpiece!</div>
+<div class="line"># This is also a masterpiece</div>
 <div class="line">play3 = The Merchant of Venice</div>
-</div><!-- fragment --><h2>DISABLED ENTRIES</h2>
+</div><!-- fragment --><h2><a class="anchor" id="disabled-entries"></a>
+Disabled entries</h2>
 <p>A disabled entry is either a section or a key that has been nested inside a comment as its only child. Inline comments cannot represent disabled entries. According to some formats disabled entries can be multi-line, using <code>/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]/</code> as multi-line escape sequence. For example:</p>
 <div class="fragment"><div class="line">#this = is\</div>
 <div class="line"> #a\</div>
 <div class="line">    #multi-line\</div>
 <div class="line">#disabled\</div>
 <div class="line">  #entry</div>
-</div><!-- fragment --><h2>ESCAPE SEQUENCES</h2>
+</div><!-- fragment --><h2><a class="anchor" id="escape-sequences"></a>
+Escape sequences</h2>
 <p>In order to maximize the flexibility of the data, only four escape sequences are supported by <b>libconfini</b>: <code>\'</code>, <code>\&quot;</code>, <code>\\</code> and the multi-line escape sequence (<code>/\\(?:\n\r?|\r\n?)/</code>).</p>
 <p>The first three escape sequences are left untouched by all functions except <code><a class="el" href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_string_parse()</a></code> and <code><a class="el" href="confini_8h.html#ac55f3fab95f697ac5058533df100fc11" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_unquote()</a></code> (see below). Nevertheless, the characters <code>'</code>, <code>&quot;</code> and <code>\</code> can determine different behaviors during the parsing depending on whether they are escaped or unescaped. For instance, the string <code>johnsmith !"</code> in the following example will not be parsed as a comment:</p>
 <div class="fragment"><div class="line">[users.jsmith]</div>
@@ -214,12 +268,14 @@ $(function() {
 <div class="line">a\</div>
 <div class="line">multi-line\</div>
 <div class="line">value</div>
-</div><!-- fragment --><h1>GETTING STARTED</h1>
+</div><!-- fragment --><h1><a class="anchor" id="getting-started"></a>
+Getting started</h1>
 <p>The API is contained in one single public header named <code><a class="el" href="confini_8h.html" title="libconfini header">confini.h</a></code>.</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div>
 </div><!-- fragment --><p>When <b>libconfini</b> is used as a shared library, it might be wiser to include the <em>versioned header</em> (with only the major version number appended to the file name), in order to ensure that the code will compile correctly even when different major versions of the library cohabit in the same machine. This can apply also to version 1.X.X:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;confini-1.h&gt;</span></div>
-</div><!-- fragment --><h1>READING AN INI FILE</h1>
+</div><!-- fragment --><h1><a class="anchor" id="reading-an-ini-file"></a>
+Reading an INI file</h1>
 <p>#1 Using a pointer to a <code>FILE</code> handle:</p>
 <div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d">load_ini_file</a> (</div>
 <div class="line">    FILE * ini_file,</div>
@@ -240,7 +296,7 @@ $(function() {
 <ul>
 <li><code>ini_file</code> in <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code> is the <code>FILE</code> handle pointing to the INI file</li>
 <li><code>path</code> in <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code> is the path where the INI file is located (pointer to a char array, a.k.a. a "C string")</li>
-<li><code>format</code> is a bitfield that defines the syntax of the INI file (see the <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect)">IniFormat</a></code> <code>struct</code>)</li>
+<li><code>format</code> is a bitfield that defines the syntax of the INI file (see <code>struct</code> <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect)">IniFormat</a></code>)</li>
 <li><code>f_init</code> is the function that will be invoked <em>before</em> any dispatching begins &ndash; it can be <code>NULL</code></li>
 <li><code>f_foreach</code> is the callback function that will be repeatedly invoked for each member of the INI file - it can be <code>NULL</code></li>
 <li><code>user_data</code> is a pointer to a custom argument &ndash; it can be <code>NULL</code></li>
@@ -256,8 +312,9 @@ $(function() {
 <li><code>user_data</code> &ndash; a pointer to the custom argument previously passed to the <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code> / <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code> functions</li>
 </ul>
 <p>Both functions <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code> and <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code> will return zero if the INI file has been completely dispatched, non-zero otherwise.</p>
-<h2>BASIC EXAMPLES</h2>
-<p>#1:</p>
+<h2><a class="anchor" id="basic-examples"></a>
+Basic examples</h2>
+<p>#1 Using a pointer to a <code>FILE</code> handle:</p>
 <div class="fragment"><div class="line"><span class="comment">/*  examples/topics/load_ini_file.c  */</span></div>
 <div class="line"> </div>
 <div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
@@ -303,7 +360,7 @@ $(function() {
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
 <div class="line"> </div>
 <div class="line">}</div>
-</div><!-- fragment --><p>#2:</p>
+</div><!-- fragment --><p>#2 Using a path:</p>
 <div class="fragment"><div class="line"><span class="comment">/*  examples/topics/load_ini_path.c  */</span></div>
 <div class="line"> </div>
 <div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
@@ -338,14 +395,16 @@ $(function() {
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
 <div class="line"> </div>
 <div class="line">}</div>
-</div><!-- fragment --><h2>HOW IT WORKS</h2>
+</div><!-- fragment --><h2><a class="anchor" id="how-it-works"></a>
+How it works</h2>
 <p>The function <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code> is a clone of <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code> that requires a path instead of a <code>FILE</code> handle.</p>
 <p>Both functions <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code> and <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code> dynamically allocate at once the whole INI file into the heap, and the two structures <code><a class="el" href="structIniStatistics.html" title="Global statistics about an INI file.">IniStatistics</a></code> and <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI node.">IniDispatch</a></code> into the stack. All members of the INI file are then dispatched to the custom listener <code>f_foreach()</code>. Finally the allocated memory gets automatically freed.</p>
-<p>Because of this mechanism <em>it is very important that all the dispatched data be <b>immediately</b> copied by the user (when needed), and no pointers to the passed data be saved</em>: after the end of the functions <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code> / <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code> all the allocated data will be destroyed indeed, and moreover each dispatch might overwrite data from previous dispatches.</p>
+<p>Because of this mechanism <em>it is very important that all the dispatched data be <b>immediately</b> copied by the user (when needed), and no pointers to the passed data be saved</em>: after the end of the functions <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code> / <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code> all the allocated data will be destroyed indeed &ndash; and moreover each dispatch might overwrite data from previous dispatches.</p>
 <p>Within a dispatching cycle, the structure containing each dispatch (<code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI node.">IniDispatch</a> * dispatch</code>) is always the same <code>struct</code> that gets constantly updated with new information.</p>
 <p><em><b>Note:</b> In some platforms, such as Microsoft Windows, it might be needed to add the binary specifier (<code>"b"</code>) to the mode string of the <code>FILE</code> handle passed to <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code> in order to prevent discrepancies between the physical size and the computed size of the file:</em></p>
 <div class="fragment"><div class="line">FILE * ini_file = fopen(<span class="stringliteral">&quot;example.conf&quot;</span>, <span class="stringliteral">&quot;rb&quot;</span>);</div>
-</div><!-- fragment --><h1>PARSING A BUFFER INSTEAD OF A FILE</h1>
+</div><!-- fragment --><h1><a class="anchor" id="parsing-a-buffer-instead-of-a-file"></a>
+Parsing a buffer instead of a file</h1>
 <p>Starting from version 1.10.0, it is possible to parse a disposable buffer containing an INI file instead of a physical file (i.e., to parse a <code>char</code> array). The function that allows to do so is named <code><a class="el" href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b" title="Parse and tokenize a buffer containing an INI file, then dispatch its content to a custom callback.">strip_ini_cache()</a></code>. This function presents some important differences when compared to <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code> and <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code>:</p>
 <ol type="1">
 <li>As the name suggests, the buffer passed is not left untouched, but gets tokenized and rearranged instead &ndash; if you want to keep the original buffer you must pass a copy of it to <code><a class="el" href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b" title="Parse and tokenize a buffer containing an INI file, then dispatch its content to a custom callback.">strip_ini_cache()</a></code> &ndash; you can use <code>strndup()</code> for this, or use the example below</li>
@@ -402,9 +461,10 @@ $(function() {
 <div class="line">  my_other_data</div>
 <div class="line">);</div>
 </div><!-- fragment --><p>Since in most cases an INI buffer <em>is</em> a disposable buffer (unless one wants to parse the very same buffer more than once), <b>libconfini</b>'s interface does not include the function in the example above.</p>
-<h1>THE <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect)">IniFormat</a></code> DATA TYPE</h1>
-<p>For a correct use of this library it can be helpful to understand the <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect)">IniFormat</a></code> data type. <b>libconfini</b> has been born as a general INI parser, with the main purpose of <em>being able to parse INI files written by other programs</em> (see <a class="el" href="rationale.html">Rationale</a>), therefore some flexibility was required. When an INI file is parsed it is parsed according to a particular format. The <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect)">IniFormat</a></code> data type is a univocal description of such format. It is implemented as a 24-bit bitfield. Its small size (3 bytes) allows it to be passed by value to the functions that require it.</p>
-<p>Since no function requires a pointer to an <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect)">IniFormat</a></code> data type as argument, a preprocessor macro can be a good place where to store a custom format:</p>
+<h1><a class="anchor" id="the-iniformat-data-type"></a>
+The <code>IniFormat</code> data type</h1>
+<p>For a correct use of this library it is helpful to understand the <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect)">IniFormat</a></code> data type. <b>libconfini</b> has been born as a general INI parser, with the main purpose of <em>being able to parse INI files written by other programs</em> (see <a class="el" href="rationale.html">Rationale</a>), therefore some flexibility was required. When an INI file is parsed it is parsed according to a particular format. The <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect)">IniFormat</a></code> data type is a univocal description of such format. It is implemented as a 24-bit bitfield. Its small size (3 bytes) allows it to be passed by value to the functions that require it.</p>
+<p>Since no functions require a pointer to an <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect)">IniFormat</a></code> data type as argument, a preprocessor macro can be a good place where to store a custom format:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#define MY_FORMAT \</span></div>
 <div class="line"><span class="preprocessor">  ((IniFormat) { \</span></div>
 <div class="line"><span class="preprocessor">    .delimiter_symbol = INI_EQUALS, \</span></div>
@@ -429,7 +489,8 @@ $(function() {
 <div class="line">  <span class="keywordflow">return</span> 1;</div>
 <div class="line"> </div>
 <div class="line">}</div>
-</div><!-- fragment --><h2>THE MODEL FORMATS</h2>
+</div><!-- fragment --><h2><a class="anchor" id="the-model-formats"></a>
+The model formats</h2>
 <p>A default format named <a class="el" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f" title="A model format for standard INI files.">INI_DEFAULT_FORMAT</a> is available.</p>
 <div class="fragment"><div class="line"><a class="code" href="structIniFormat.html">IniFormat</a> my_default_format;</div>
 <div class="line"> </div>
@@ -469,7 +530,7 @@ $(function() {
 <div class="line"><span class="preprocessor">    .disabled_after_space = false, \</span></div>
 <div class="line"><span class="preprocessor">    .disabled_can_be_implicit = false \</span></div>
 <div class="line"><span class="preprocessor">  })</span></div>
-</div><!-- fragment --><p>Since version 1.7.0 a format named <a class="el" href="confini_8h.html#a724e3c7be7055b35bccb080f748868b5" title="A model format for Unix-like .conf files (where space characters are delimiters between keys and valu...">INI_UNIXLIKE_FORMAT</a> is available.</p>
+</div><!-- fragment --><p>Starting from version 1.7.0 a format named <a class="el" href="confini_8h.html#a724e3c7be7055b35bccb080f748868b5" title="A model format for Unix-like .conf files (where space characters are delimiters between keys and valu...">INI_UNIXLIKE_FORMAT</a> is available.</p>
 <div class="fragment"><div class="line"><a class="code" href="structIniFormat.html">IniFormat</a> my_format = <a class="code" href="confini_8h.html#a724e3c7be7055b35bccb080f748868b5">INI_UNIXLIKE_FORMAT</a>;</div>
 </div><!-- fragment --><p>This format is a clone of <a class="el" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f" title="A model format for standard INI files.">INI_DEFAULT_FORMAT</a> with the only exception of <code><a class="el" href="structIniFormat.html#a6d9981301f5a16d73e2c38cb80f7f962">IniFormat::delimiter_symbol</a></code>, whose value is set to <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd">INI_ANY_SPACE</a> instead of <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f">INI_EQUALS</a>.</p>
 <p>The semantics of the <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect)">IniFormat</a></code> bitfield has been designed in order to ensure that when all its fields are set to zero it equals <a class="el" href="confini_8h.html#a724e3c7be7055b35bccb080f748868b5" title="A model format for Unix-like .conf files (where space characters are delimiters between keys and valu...">INI_UNIXLIKE_FORMAT</a>.</p>
@@ -486,8 +547,9 @@ $(function() {
 <div class="line"> </div>
 <div class="line">); <span class="comment">// &quot;`format_zero` and `INI_UNIXLIKE_FORMAT` are equal.&quot;</span></div>
 </div><!-- fragment --><p>For further formats, please refer to the <a href="https://github.com/madmurphy/libconfini/wiki/INI-formats">extensible list of common formats</a> in the project's wiki. Feel free to contribute.</p>
-<h1>THE <a class="el" href="confini_8h.html#a8dfc7ebbb087a23d4076c1d688572b1c" title="The unique ID of an INI format (24-bit maximum)">IniFormatNum</a> DATA TYPE</h1>
-<p>Each format can be represented also as a univocal 24-bit unsigned integer. In order to convert an <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect)">IniFormat</a></code> to an unsigned integer and vice versa the functions <code><a class="el" href="confini_8h.html#af663493e17740c707d3b6a13ddde5b2e" title="Calculate the IniFormatNum of an IniFormat.">ini_fton()</a></code> and <code><a class="el" href="confini_8h.html#a777f4548185711a000e3d9feea8d9017" title="Construct a new IniFormat according to an IniFormatNum.">ini_ntof()</a></code> are available.</p>
+<h1><a class="anchor" id="the-iniformatnum-data-type"></a>
+The <code>IniFormatNum</code> data type</h1>
+<p>Each format can be represented also as a univocal 24-bit unsigned integer. In order to convert an <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect)">IniFormat</a></code> to an unsigned integer and vice versa the functions <code><a class="el" href="confini_8h.html#af663493e17740c707d3b6a13ddde5b2e" title="Calculate the IniFormatNum of an IniFormat.">ini_fton()</a></code> and <code><a class="el" href="confini_8h.html#a777f4548185711a000e3d9feea8d9017" title="Construct a new IniFormat according to an IniFormatNum.">ini_ntof()</a></code> are available. For simplicity, instead of using the <code>uint32_t</code> type, a size-agnostic custom type is used for this: the <a class="el" href="confini_8h.html#a8dfc7ebbb087a23d4076c1d688572b1c" title="The unique ID of an INI format (24-bit maximum)">IniFormatNum</a> data type.</p>
 <p>For instance, imagine we want to create a format as close as possible to the typical Windows INI files. Probably we would define our format as follows:</p>
 <div class="fragment"><div class="line"><a class="code" href="structIniFormat.html">IniFormat</a> my_format = {</div>
 <div class="line">  .<a class="code" href="structIniFormat.html#a6d9981301f5a16d73e2c38cb80f7f962">delimiter_symbol</a> = <a class="code" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f">INI_EQUALS</a>,</div>
@@ -511,11 +573,12 @@ $(function() {
 <div class="line">printf(<span class="stringliteral">&quot;Format No. %u\n&quot;</span>, my_format_num); <span class="comment">// &quot;Format No. 56637&quot;</span></div>
 </div><!-- fragment --><p>According to the <code><a class="el" href="confini_8h.html#af663493e17740c707d3b6a13ddde5b2e" title="Calculate the IniFormatNum of an IniFormat.">ini_fton()</a></code> function this format is univocally the format No. 56637. The function <code><a class="el" href="confini_8h.html#a777f4548185711a000e3d9feea8d9017" title="Construct a new IniFormat according to an IniFormatNum.">ini_ntof()</a></code> then gives us a shortcut to construct the very same format using its format number. Hence, the code above corresponds to:</p>
 <div class="fragment"><div class="line"><a class="code" href="structIniFormat.html">IniFormat</a> my_format = <a class="code" href="confini_8h.html#a777f4548185711a000e3d9feea8d9017">ini_ntof</a>(56637);</div>
-</div><!-- fragment --><p><em>Please be aware that the same INI format might have different format numbers in old versions of this library.</em></p>
-<h1>THE <code><a class="el" href="structIniStatistics.html" title="Global statistics about an INI file.">IniStatistics</a></code> AND <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI node.">IniDispatch</a></code> STRUCTURES</h1>
+</div><!-- fragment --><h1><a class="anchor" id="the-inistatistics-and-inidispatch-structures"></a>
+The <code>IniStatistics</code> and <code>IniDispatch</code> structures</h1>
 <p>When the functions <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code>, <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code> read an INI file, or when the function <code><a class="el" href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b" title="Parse and tokenize a buffer containing an INI file, then dispatch its content to a custom callback.">strip_ini_cache()</a></code> parses a buffer, they dispatch the file content to the <code>f_foreach()</code> listener. Before the dispatching begins some statistics about the parsed file can be dispatched to the <code>f_init()</code> listener (if this is non-<code>NULL</code>).</p>
 <p>The information passed to <code>f_init()</code> is passed through an <code><a class="el" href="structIniStatistics.html" title="Global statistics about an INI file.">IniStatistics</a></code> structure, while the information passed to <code>f_foreach()</code> is passed through an <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI node.">IniDispatch</a></code> structure.</p>
-<h1>RENDERING</h1>
+<h1><a class="anchor" id="rendering"></a>
+Rendering</h1>
 <p>The output strings dispatched by <b>libconfini</b> follow some formatting rules depending on their role within the INI file. First, multi-line escape sequences will be unescaped, then</p>
 <ul>
 <li><b>Key names</b> will be rendered according to ECMAScript <code>key_name.replace(/^[\n\r]\s*|\s+/g, " ")</code> &ndash; within single or double quotes, if active, the text will be rendered verbatim.</li>
@@ -524,7 +587,8 @@ $(function() {
 <li><b>Comments</b>, in multi-line formats, will be rendered according to ECMAScript <code>comment_string.replace(/(^|\n\r?|\r\n?)[ \t\v\f]*[#;]+/g, "$1")</code>; elsewhere, according to ECMAScript <code>comment_string.replace(/^[ \t\v\f]*[#;]+/, "")</code>.</li>
 <li><b>Unknown nodes</b> will be rendered verbatim.</li>
 </ul>
-<h1>STRING COMPARISONS</h1>
+<h1><a class="anchor" id="string-comparisons"></a>
+String comparisons</h1>
 <p>In order to perform comparisons between the strings dispatched the functions <code><a class="el" href="confini_8h.html#a8bb35677b6e7c201eb1fe83efee99d9a" title="Compare two simple strings and check whether they match.">ini_string_match_ss()</a></code>, <code><a class="el" href="confini_8h.html#a5773ae8cbe4ce15737dcece84b362fa0" title="Compare a simple string and an INI string and and check whether they match.">ini_string_match_si()</a></code>, <code><a class="el" href="confini_8h.html#a731857502fa7f8e31c4a024335a6d5d6" title="Compare two INI strings and check whether they match.">ini_string_match_ii()</a></code> and <code><a class="el" href="confini_8h.html#a76a050b341e311cc9bbb79b399691e12" title="Compare two INI arrays and check whether they match.">ini_array_match()</a></code> are available. The function <code><a class="el" href="confini_8h.html#a8bb35677b6e7c201eb1fe83efee99d9a" title="Compare two simple strings and check whether they match.">ini_string_match_ss()</a></code> compares two simple strings, the function <code><a class="el" href="confini_8h.html#a5773ae8cbe4ce15737dcece84b362fa0" title="Compare a simple string and an INI string and and check whether they match.">ini_string_match_si()</a></code> compares a simple string with an unparsed INI string, the function <code><a class="el" href="confini_8h.html#a731857502fa7f8e31c4a024335a6d5d6" title="Compare two INI strings and check whether they match.">ini_string_match_ii()</a></code> compares two unparsed INI strings, and the function <code><a class="el" href="confini_8h.html#a76a050b341e311cc9bbb79b399691e12" title="Compare two INI arrays and check whether they match.">ini_array_match()</a></code> compares two INI arrays. INI strings are the strings typically dispatched by <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code>, <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code> or <code><a class="el" href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b" title="Parse and tokenize a buffer containing an INI file, then dispatch its content to a custom callback.">strip_ini_cache()</a></code> which may contain quotes and the three escape sequences <code>\\</code>, <code>\'</code>, <code>\&quot;</code>. Simple strings are user-given strings or the result of <code><a class="el" href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_string_parse()</a></code>.</p>
 <p>As a consequence, the functions <code><a class="el" href="confini_8h.html#a5773ae8cbe4ce15737dcece84b362fa0" title="Compare a simple string and an INI string and and check whether they match.">ini_string_match_si()</a></code>, <code><a class="el" href="confini_8h.html#a731857502fa7f8e31c4a024335a6d5d6" title="Compare two INI strings and check whether they match.">ini_string_match_ii()</a></code> and <code><a class="el" href="confini_8h.html#a76a050b341e311cc9bbb79b399691e12" title="Compare two INI arrays and check whether they match.">ini_array_match()</a></code> do not perform literal comparisons of equality between strings. For example, in the following (absurd) INI file the two keys <code>foo</code> and <code>hello</code> belong to the same section named <code>this is a double quotation mark: "!</code> (after being parsed by <code><a class="el" href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_string_parse()</a></code>).</p>
 <div class="fragment"><div class="line">[this is a double quotation mark: \&quot;!]</div>
@@ -578,7 +642,7 @@ $(function() {
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
 <div class="line"> </div>
 <div class="line">}</div>
-</div><!-- fragment --><p>In formats that support quotes, the function <code><a class="el" href="confini_8h.html#a76a050b341e311cc9bbb79b399691e12" title="Compare two INI arrays and check whether they match.">ini_array_match()</a></code> is also the function that should be used, with <code>'.'</code> or <code>INI_DOT</code> as delimiter (see <code>enum</code> <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8" title="Common array and key-value delimiters (but a delimiter may also be any other ASCII character not pres...">IniDelimiters</a>), to properly compare section paths containing more than one level of nesting.</p>
+</div><!-- fragment --><p>In formats that support quotes, the function <code><a class="el" href="confini_8h.html#a76a050b341e311cc9bbb79b399691e12" title="Compare two INI arrays and check whether they match.">ini_array_match()</a></code> is also the function that should be used, with <code>'.'</code> or <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8af0db47175de95d7edd6178724341da2a">INI_DOT</a> as delimiter (see <code>enum</code> <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8" title="Common array and key-value delimiters (but a delimiter may also be any other ASCII character not pres...">IniDelimiters</a>), to compare properly section paths containing more than one level of nesting.</p>
 <div class="fragment"><div class="line"><span class="keywordflow">if</span> (</div>
 <div class="line">  <a class="code" href="confini_8h.html#a76a050b341e311cc9bbb79b399691e12">ini_array_match</a>(<span class="stringliteral">&quot;foo.bar&quot;</span>, disp-&gt;<a class="code" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">append_to</a>, <span class="charliteral">&#39;.&#39;</span>, disp-&gt;<a class="code" href="structIniDispatch.html#adfda221d4a9effcb4f3ee6a99c5f2de2">format</a>) &amp;&amp;</div>
 <div class="line">  <a class="code" href="confini_8h.html#a5773ae8cbe4ce15737dcece84b362fa0">ini_string_match_si</a>(<span class="stringliteral">&quot;username&quot;</span>, disp-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>, disp-&gt;<a class="code" href="structIniDispatch.html#adfda221d4a9effcb4f3ee6a99c5f2de2">format</a>)</div>
@@ -617,15 +681,18 @@ $(function() {
 <div class="line">}</div>
 </div><!-- fragment --><p>The four functions <code><a class="el" href="confini_8h.html#a8bb35677b6e7c201eb1fe83efee99d9a" title="Compare two simple strings and check whether they match.">ini_string_match_ss()</a></code>, <code><a class="el" href="confini_8h.html#a5773ae8cbe4ce15737dcece84b362fa0" title="Compare a simple string and an INI string and and check whether they match.">ini_string_match_si()</a></code>, <code><a class="el" href="confini_8h.html#a731857502fa7f8e31c4a024335a6d5d6" title="Compare two INI strings and check whether they match.">ini_string_match_ii()</a></code>, <code><a class="el" href="confini_8h.html#a76a050b341e311cc9bbb79b399691e12" title="Compare two INI arrays and check whether they match.">ini_array_match()</a></code> perform case-sensitive or case-insensitive comparisons depending on the format given. UTF-8 codepoints out of the ASCII range are always compared case-sensitive.</p>
 <p>Note that within INI strings empty quotes and spaces out of quotes are always collapsed during comparisons. Furthermore, remember that the multi-line escape sequence <code>/\\(?:\n\r?|\r\n?)/</code> is <em>not</em> considered as such in INI strings, since this is the only escape sequence automatically unescaped by <b>libconfini</b> <em>before</em> each dispatch.</p>
-<h1>EDITING THE DISPATCHED DATA</h1>
+<h1><a class="anchor" id="editing-the-dispatched-data"></a>
+Editing the dispatched data</h1>
 <p>The strings dispatched, as already said, must not be freed. <em>Nevertheless, before being copied or analyzed they can be edited, <b>with some precautions</b></em>:</p>
 <ol type="1">
 <li>Be sure that your edit remains within the buffer lengths given (see <code><a class="el" href="structIniDispatch.html#a34937218fa772fa66ceaa38923437791">IniDispatch::d_len</a></code> and <code><a class="el" href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">IniDispatch::v_len</a></code>).</li>
-<li>If you want to edit the content of <code><a class="el" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">IniDispatch::data</a></code> and this contains a section path, the <code><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></code> properties of its children may share this buffer. In this case, if you edit its content, you can no more rely on the <code><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></code> properties of this node's children (you will not make any damage, the loop will continue just fine: so if you think you are never going to use the property <code><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></code> just do it); alternatively, use <code>strndup()</code>. If, instead, <code><a class="el" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">IniDispatch::data</a></code> contains a key name or a comment, it is granted that no other dispatch will share this buffer, so feel free to edit it before it gets lost.</li>
-<li>Regarding <code><a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></code>, if it does not represent an implicit value (see below) or if <code><a class="el" href="structIniFormat.html#ae5722efd535f1d27c624a927eea622c3">IniFormat::implicit_is_not_empty</a></code> is set to <code>false</code>, this buffer is never shared between dispatches, so feel free to edit it.</li>
+<li>If you want to edit the content of <code><a class="el" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">IniDispatch::data</a></code> and this contains a section path, the <code><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></code> properties of its children will either share this buffer or will concatenate it to another buffer. Hence, if you edit its content &ndash; and depending on how you edit it &ndash; you might no more be able to rely on the <code><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></code> properties of this node's children. You would not make any damage, the loop will continue just fine: so if you think you are never going to use the property <code><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></code>, just do it; alternatively, use <code>strndup()</code>. If instead <code><a class="el" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">IniDispatch::data</a></code> contains a key name or a comment, it is granted that no other dispatch will share this buffer, so feel free to edit it before it gets lost.</li>
+<li>Regarding <code><a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></code>, if it does not represent an implicit value (see <b>§ <a class="el" href="libconfini.html#implicit-keys">Implicit keys</a></b>) or if <code><a class="el" href="structIniFormat.html#ae5722efd535f1d27c624a927eea622c3">IniFormat::implicit_is_not_empty</a></code> is set to <code>false</code>, this buffer is never shared between dispatches, so feel free to edit it.</li>
 <li>Regarding <code><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></code>, this buffer is likely to be shared with other dispatches. Again, you would not destroy the world nor generate errors, but you would make the next <code><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></code>s useless. For this reason <b>the buffer pointed by <code><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></code> is passed as constant</b>. To unquote the path parts listed in this field please use <code>strndup()</code>.</li>
+<li>The numerical addresses of the pointers <code><a class="el" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">IniDispatch::data</a></code>, <code><a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></code> and <code><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></code> and the fields <code><a class="el" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">IniDispatch::type</a></code>, <code><a class="el" href="structIniDispatch.html#a34937218fa772fa66ceaa38923437791">IniDispatch::d_len</a></code>, <code><a class="el" href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">IniDispatch::v_len</a></code> and <code><a class="el" href="structIniDispatch.html#a12438a7f6cc343ad3202ffad82de671f">IniDispatch::at_len</a></code>, are constantly reset, so feel free to use them as custom placeholders if you like &ndash; but check their types: <code><a class="el" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">IniDispatch::type</a></code> has only eight bits available and <code><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></code> will always point to a <code>const</code> buffer.</li>
+<li>The numerical field <code><a class="el" href="structIniDispatch.html#a795864cff55f67498aa22722c17fc6d2">IniDispatch::dispatch_id</a></code> will be checked right before the next dispatch, so you should not edit it. The reading happens only as further diagnostics: if you constantly set this field to <code>0</code> the loop will still end at the right moment (hopefully), but if you set it instead to a value equal or higher than the <code><a class="el" href="structIniStatistics.html#ab4af1f388bd4109a9a9b1bc449146ec7">IniStatistics::members</a></code> previously received the loop will immediately stop and a <a class="el" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a82e26058d2b7bb2203fe321d0320d98a">CONFINI_EOOR</a> will be thrown (see <code>enum</code> <a class="el" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29" title="Error codes.">ConfiniInterruptNo</a>). You can think of it as a dirty way of writing <code>return !0</code> at the end of your listener. Unless you really know what you are doing, do not edit <code><a class="el" href="structIniDispatch.html#a795864cff55f67498aa22722c17fc6d2">IniDispatch::dispatch_id</a></code>.</li>
 </ol>
-<p>Typical peaceful edits are the ones obtained by calling the functions <code><a class="el" href="confini_8h.html#aa0721fcae5f04e5a9edd485dc1ddd2fa" title="Compress the distribution of the data in a stringified INI array by removing all the white spaces tha...">ini_array_collapse()</a></code> and <code><a class="el" href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_string_parse()</a></code> directly on the buffer <code><a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></code> &ndash; but make sure that you are not going to edit the global string <a class="el" href="confini_8c.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL)">INI_GLOBAL_IMPLICIT_VALUE</a>, if used (see below):</p>
+<p>Typical peaceful edits are the ones obtained by calling the functions <code><a class="el" href="confini_8h.html#aa0721fcae5f04e5a9edd485dc1ddd2fa" title="Compress the distribution of the data in a stringified INI array by removing all the white spaces tha...">ini_array_collapse()</a></code> and <code><a class="el" href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_string_parse()</a></code> directly on the buffer <code><a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></code>:</p>
 <div class="fragment"><div class="line"><span class="comment">/*  examples/topics/ini_string_parse.c  */</span></div>
 <div class="line"> </div>
 <div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
@@ -672,7 +739,8 @@ $(function() {
 <div class="line"> </div>
 <div class="line">}</div>
 </div><!-- fragment --><p>If all these rules, although thoroughly exposed, sound still confusing to you, use always <code>strndup()</code> on the strings dispatched and feel free to edit your own buffers as you wish. Under <code>examples/utilities/clone_ini_dispatch.h</code> you can find a function designed to make a hard copy of an entire <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI node.">IniDispatch</a></code>, including all the strings that this points to.</p>
-<h2>FORMATTING THE VALUES</h2>
+<h2><a class="anchor" id="formatting-the-values"></a>
+Formatting the values</h2>
 <p>Once your listener starts to receive the parsed data you may want to format and better parse the <code>value</code> part of key-value elements. The following functions might be useful for this purpose:</p>
 <ul>
 <li><code><a class="el" href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_string_parse()</a></code></li>
@@ -697,14 +765,17 @@ $(function() {
 <li><code>examples/utilities/clone_ini_dispatch.h</code></li>
 <li><code>examples/utilities/make_strarray.h</code></li>
 </ul>
-<h2>FORMATTING THE KEY NAMES</h2>
+<h2><a class="anchor" id="formatting-the-key-names"></a>
+Formatting the key names</h2>
 <p>The function <code><a class="el" href="confini_8h.html#ac55f3fab95f697ac5058533df100fc11" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_unquote()</a></code> can be useful for key names enclosed within quotes. This function is very similar to <code><a class="el" href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_string_parse()</a></code>, except that does not bother collapsing the sequences of more than one space that might result from removing empty quotes &ndash; this is never necessary, since empty quotes surrounded by spaces in key and section names are always automatically collapsed before being dispatched.</p>
 <p>You could use <code><a class="el" href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_string_parse()</a></code> as well to parse key and section names, but you would obtain the same result with a slightly bigger effort from the CPU.</p>
-<h2>FORMATTING THE SECTION PATHS</h2>
-<p>In order to retrieve the parts of a section path, the functions <code><a class="el" href="confini_8h.html#a312803fa24be2d7f164f3041fbfa6865" title="Get the length of a stringified INI array in number of members.">ini_array_get_length()</a></code>, <code><a class="el" href="confini_8h.html#a414c3b92adf45dbb966df1606b71ccdf" title="Call a custom function for each member of a stringified INI array, without modifying the content of t...">ini_array_foreach()</a></code>, <code><a class="el" href="confini_8h.html#a75809c0e952d9f9e14333e085ba6b910" title="Replace the first delimiter found (together with the spaces that surround it) with \0">ini_array_break()</a></code>, <code><a class="el" href="confini_8h.html#a2b34dc032fc37dda829dadf80bf34d26" title="Replace the first delimiter found (together with the spaces that surround it) with \0,...">ini_array_release()</a></code>, <code><a class="el" href="confini_8h.html#a6ca567ad863caef4609f8def7de0401a" title="Shift the location pointed by ini_strptr to the next member of the INI array (without modifying the c...">ini_array_shift()</a></code> and <code><a class="el" href="confini_8h.html#a04acd6a01a6a78810e7aab8e02923218" title="Split a stringified INI array into NUL-separated members and call a custom function for each member.">ini_array_split()</a></code> can be used with <code>'.'</code> or <code>INI_DOT</code> as delimiter (see <code>enum</code> <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8" title="Common array and key-value delimiters (but a delimiter may also be any other ASCII character not pres...">IniDelimiters</a>). Note that section paths dispatched by <b>libconfini</b> are <em>always</em> collapsed arrays, therefore calling the function <code><a class="el" href="confini_8h.html#aa0721fcae5f04e5a9edd485dc1ddd2fa" title="Compress the distribution of the data in a stringified INI array by removing all the white spaces tha...">ini_array_collapse()</a></code> on them will have no effects.</p>
+<h2><a class="anchor" id="formatting-the-section-paths"></a>
+Formatting the section paths</h2>
+<p>In order to retrieve the parts of a section path, the functions <code><a class="el" href="confini_8h.html#a312803fa24be2d7f164f3041fbfa6865" title="Get the length of a stringified INI array in number of members.">ini_array_get_length()</a></code>, <code><a class="el" href="confini_8h.html#a414c3b92adf45dbb966df1606b71ccdf" title="Call a custom function for each member of a stringified INI array, without modifying the content of t...">ini_array_foreach()</a></code>, <code><a class="el" href="confini_8h.html#a75809c0e952d9f9e14333e085ba6b910" title="Replace the first delimiter found (together with the spaces that surround it) with \0">ini_array_break()</a></code>, <code><a class="el" href="confini_8h.html#a2b34dc032fc37dda829dadf80bf34d26" title="Replace the first delimiter found (together with the spaces that surround it) with \0,...">ini_array_release()</a></code>, <code><a class="el" href="confini_8h.html#a6ca567ad863caef4609f8def7de0401a" title="Shift the location pointed by ini_strptr to the next member of the INI array (without modifying the c...">ini_array_shift()</a></code> and <code><a class="el" href="confini_8h.html#a04acd6a01a6a78810e7aab8e02923218" title="Split a stringified INI array into NUL-separated members and call a custom function for each member.">ini_array_split()</a></code> can be used with <code>'.'</code> or <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8af0db47175de95d7edd6178724341da2a">INI_DOT</a> as delimiter (see <code>enum</code> <a class="el" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8" title="Common array and key-value delimiters (but a delimiter may also be any other ASCII character not pres...">IniDelimiters</a>). Note that section paths dispatched by <b>libconfini</b> are always collapsed arrays, therefore calling the function <code><a class="el" href="confini_8h.html#aa0721fcae5f04e5a9edd485dc1ddd2fa" title="Compress the distribution of the data in a stringified INI array by removing all the white spaces tha...">ini_array_collapse()</a></code> on them will have no effects.</p>
 <p>It might be required that the function <code><a class="el" href="confini_8h.html#ac55f3fab95f697ac5058533df100fc11" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_unquote()</a></code> be applied to each part of a section path, depending on the content and the format of the INI file.</p>
-<h2>IMPLICIT KEYS</h2>
-<p>In order to set the value to assign to implicit keys (i.e. keys without a delimiter and a value), please use the <code><a class="el" href="confini_8h.html#a3a6eb3b79a88304864341075240ee412" title="Set the value to be to be assigned to implicit keys.">ini_global_set_implicit_value()</a></code> function. A <code>true</code> boolean_ is usually a good choice:</p>
+<h1><a class="anchor" id="implicit-keys"></a>
+Implicit keys</h1>
+<p>In order to set the value to assign to implicit keys (i.e. keys without a delimiter and a value), please use the <code><a class="el" href="confini_8h.html#a3a6eb3b79a88304864341075240ee412" title="Set the value to be to be assigned to implicit keys.">ini_global_set_implicit_value()</a></code> function. A <code>true</code> boolean is usually a good choice:</p>
 <div class="fragment"><div class="line"><a class="code" href="confini_8h.html#a3a6eb3b79a88304864341075240ee412">ini_global_set_implicit_value</a>(<span class="stringliteral">&quot;YES&quot;</span>, 3);</div>
 </div><!-- fragment --><p>Alternatively, instead of <code><a class="el" href="confini_8h.html#a3a6eb3b79a88304864341075240ee412" title="Set the value to be to be assigned to implicit keys.">ini_global_set_implicit_value()</a></code> you can manually declare at the beginning of your code the two global variables <a class="el" href="confini_8c.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL)">INI_GLOBAL_IMPLICIT_VALUE</a> and <a class="el" href="confini_8c.html#acecf086ca074b27365e877f056af2192" title="Length of the value assigned to implicit keys (default value: 0)">INI_GLOBAL_IMPLICIT_V_LEN</a>, which will be retrieved by <b>libconfini</b>:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div>
@@ -763,9 +834,9 @@ $(function() {
 <div class="line"> </div>
 <div class="line">  <a class="code" href="structIniFormat.html">IniFormat</a> my_format = <a class="code" href="confini_8h.html#a724e3c7be7055b35bccb080f748868b5">INI_UNIXLIKE_FORMAT</a>;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="confini_8h.html#a3a6eb3b79a88304864341075240ee412">ini_global_set_implicit_value</a>(<span class="stringliteral">&quot;[implicit default value]&quot;</span>, 0);</div>
+<div class="line">  <a class="code" href="confini_8h.html#a3a6eb3b79a88304864341075240ee412">ini_global_set_implicit_value</a>(<span class="stringliteral">&quot;[implicit default value]&quot;</span>, 24);</div>
 <div class="line"> </div>
-<div class="line">  <span class="comment">/*  Without setting this implicit keys will be considered empty  */</span></div>
+<div class="line">  <span class="comment">/*  Without this implicit keys will be considered empty  */</span></div>
 <div class="line">  my_format.<a class="code" href="structIniFormat.html#ae5722efd535f1d27c624a927eea622c3">implicit_is_not_empty</a> = <span class="keyword">true</span>;</div>
 <div class="line">  my_format.<a class="code" href="structIniFormat.html#ab5937aaf72b0ce5b62aece8d23ad7b82">disabled_can_be_implicit</a> = <span class="keyword">true</span>;</div>
 <div class="line"> </div>
@@ -783,14 +854,31 @@ $(function() {
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line">}</div>
+</div><!-- fragment --><p>To check whether a particular substring belongs to <a class="el" href="confini_8c.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL)">INI_GLOBAL_IMPLICIT_VALUE</a>, the <code><a class="el" href="confini_8h.html#a22185e778bfd2a35407a4915dc56e02e" title="Check whether a given char * data type points to the global variable INI_GLOBAL_IMPLICIT_VALUE or to ...">INI_IS_IMPLICIT_SUBSTR()</a></code> macro can be used:</p>
+<div class="fragment"><div class="line"><span class="keywordflow">if</span> (dispatch-&gt;<a class="code" href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">v_len</a> &gt; 0) {</div>
+<div class="line"> </div>
+<div class="line">  <span class="comment">/*  Let us create a substring of `dispatch-&gt;value`...  */</span></div>
+<div class="line">  <span class="keywordtype">char</span> * my_substring = dispatch-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a> + 1;</div>
+<div class="line"> </div>
+<div class="line">  printf(<span class="stringliteral">&quot;%s\n&quot;</span>, my_substring);</div>
+<div class="line"> </div>
+<div class="line">  <span class="keywordflow">if</span> (<a class="code" href="confini_8h.html#a22185e778bfd2a35407a4915dc56e02e">INI_IS_IMPLICIT_SUBSTR</a>(my_substring)) {</div>
+<div class="line"> </div>
+<div class="line">    printf(<span class="stringliteral">&quot;\n\tYou tricky one! This was an implicit value too!\n&quot;</span>);</div>
+<div class="line"> </div>
+<div class="line">  }</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordflow">return</span> 0;</div>
 </div><!-- fragment --><p>Implicit keys can be parsed as booleans also without setting <code><a class="el" href="structIniFormat.html#ae5722efd535f1d27c624a927eea622c3">IniFormat::implicit_is_not_empty</a></code> to <code>true</code>. By doing so there will be no distinction between empty and implicit keys, and there are situations where this can be a wanted behavior. The following example will parse both <code>my_key</code> and <code>my_key =</code> in the INI file as <code>true</code>:</p>
 <div class="fragment"><div class="line"><span class="comment">/*  `dispatch-&gt;format.implicit_is_not_empty` is `false` here!  */</span></div>
 <div class="line"><span class="keywordtype">bool</span> my_stored_value;</div>
 <div class="line"><span class="keywordflow">if</span> (<a class="code" href="confini_8h.html#a5773ae8cbe4ce15737dcece84b362fa0">ini_string_match_si</a>(<span class="stringliteral">&quot;my_key&quot;</span>, dispatch-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>, dispatch-&gt;<a class="code" href="structIniDispatch.html#adfda221d4a9effcb4f3ee6a99c5f2de2">format</a>)) {</div>
 <div class="line">  my_stored_value = (bool) <a class="code" href="confini_8h.html#adf7805f5e47fcf9771da62e30f73786b">ini_get_bool</a>(disp-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a>, 1);</div>
 <div class="line">}</div>
-</div><!-- fragment --><h1>CODE CONSIDERATIONS</h1>
-<h2>RETURN VALUES</h2>
+</div><!-- fragment --><h1><a class="anchor" id="code-considerations"></a>
+Code considerations</h1>
+<h2><a class="anchor" id="return-values"></a>
+Return values</h2>
 <p>The functions <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code>, <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code>, <code><a class="el" href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b" title="Parse and tokenize a buffer containing an INI file, then dispatch its content to a custom callback.">strip_ini_cache()</a></code>, <code><a class="el" href="confini_8h.html#a414c3b92adf45dbb966df1606b71ccdf" title="Call a custom function for each member of a stringified INI array, without modifying the content of t...">ini_array_foreach()</a></code> and <code><a class="el" href="confini_8h.html#a04acd6a01a6a78810e7aab8e02923218" title="Split a stringified INI array into NUL-separated members and call a custom function for each member.">ini_array_split()</a></code> require some listeners defined by the user. Such listeners must return an <code>int</code> value. When this is non-zero the caller function is interrupted, its loop stopped, and a non-zero value is returned by the caller as well.</p>
 <p>The functions <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code>, <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code> and <code><a class="el" href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b" title="Parse and tokenize a buffer containing an INI file, then dispatch its content to a custom callback.">strip_ini_cache()</a></code> return a non-zero value also if the INI file, for any reason, has not been completely parsed (see <code>enum</code> <a class="el" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29" title="Error codes.">ConfiniInterruptNo</a>). Therefore, in order to be able to distinguish between internal errors and user-generated interruptions the mask <a class="el" href="confini_8h.html#a0b9dcb5c0711475ea78b065b0322bde1" title="Error mask (flags not present in user-generated interruptions)">CONFINI_ERROR</a> can be used.</p>
 <p>For instance, in the following example the <code>f_foreach()</code> listener returns a non-zero value if a key named <code>password</code> with a value that equals <code>Hello world</code> is found. Hence, by using the mask <a class="el" href="confini_8h.html#a0b9dcb5c0711475ea78b065b0322bde1" title="Error mask (flags not present in user-generated interruptions)">CONFINI_ERROR</a>, the code below distinguishes a non-zero value generated by the listener from a non-zero value due to a parsing error.</p>
@@ -840,7 +928,7 @@ $(function() {
 <div class="line">  <span class="comment">/*  Check if parsing has been interrupted by `passfinder()`  */</span></div>
 <div class="line">  retval  ==  <a class="code" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a133a335ff201d93015a27bd581e6b399">CONFINI_FEINTR</a> ?</div>
 <div class="line">                printf(</div>
-<div class="line">                  <span class="stringliteral">&quot;We found it! It&#39;s the INI element number #%zu!\n&quot;</span>,</div>
+<div class="line">                  <span class="stringliteral">&quot;We found it! It&#39;s the INI node number %zu!\n&quot;</span>,</div>
 <div class="line">                  membid</div>
 <div class="line">                )</div>
 <div class="line">              :</div>
@@ -849,7 +937,8 @@ $(function() {
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
 <div class="line"> </div>
 <div class="line">}</div>
-</div><!-- fragment --><h2>THE FORMATTING FUNCTIONS</h2>
+</div><!-- fragment --><h2><a class="anchor" id="the-formatting-functions"></a>
+The formatting functions</h2>
 <p>The functions <code><a class="el" href="confini_8h.html#ac55f3fab95f697ac5058533df100fc11" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_unquote()</a></code>, <code><a class="el" href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_string_parse()</a></code>, <code><a class="el" href="confini_8h.html#aa0721fcae5f04e5a9edd485dc1ddd2fa" title="Compress the distribution of the data in a stringified INI array by removing all the white spaces tha...">ini_array_collapse()</a></code>, <code><a class="el" href="confini_8h.html#a75809c0e952d9f9e14333e085ba6b910" title="Replace the first delimiter found (together with the spaces that surround it) with \0">ini_array_break()</a></code>, <code><a class="el" href="confini_8h.html#a2b34dc032fc37dda829dadf80bf34d26" title="Replace the first delimiter found (together with the spaces that surround it) with \0,...">ini_array_release()</a></code> and <code><a class="el" href="confini_8h.html#a04acd6a01a6a78810e7aab8e02923218" title="Split a stringified INI array into NUL-separated members and call a custom function for each member.">ini_array_split()</a></code> change the content of the given strings. It is important to point out that the edit is always performed within the lengths of the strings given.</p>
 <p>The behavior of these functions depends on the format used. In particular, using <code><a class="el" href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_string_parse()</a></code> as a model one obtains the following scheme:</p>
 <ol type="1">
@@ -870,8 +959,9 @@ $(function() {
  ⇒ Behavior of <code><a class="el" href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_string_parse()</a></code>: Spaces at the beginning and at the end of the string will be removed, then the new length of the string will be returned.</li>
 </ol>
 <p>A function-like macro named <a class="el" href="confini_8h.html#ae74cb0104512ee3dfe2865abe689e3f5" title="Check whether a format does not support escape sequences.">INIFORMAT_HAS_NO_ESC()</a> is available in order to check whether a format supports escape sequences or not.</p>
-<h2>COMMON MISTAKES</h2>
-<p>The native formatting functions <code><a class="el" href="confini_8h.html#a75809c0e952d9f9e14333e085ba6b910" title="Replace the first delimiter found (together with the spaces that surround it) with \0">ini_array_break()</a></code>, <code><a class="el" href="confini_8h.html#aa0721fcae5f04e5a9edd485dc1ddd2fa" title="Compress the distribution of the data in a stringified INI array by removing all the white spaces tha...">ini_array_collapse()</a></code>, <code><a class="el" href="confini_8h.html#a2b34dc032fc37dda829dadf80bf34d26" title="Replace the first delimiter found (together with the spaces that surround it) with \0,...">ini_array_release()</a></code>, <code><a class="el" href="confini_8h.html#a04acd6a01a6a78810e7aab8e02923218" title="Split a stringified INI array into NUL-separated members and call a custom function for each member.">ini_array_split()</a></code>, <code><a class="el" href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_string_parse()</a></code> and <code><a class="el" href="confini_8h.html#ac55f3fab95f697ac5058533df100fc11" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_unquote()</a></code> have a special safeguard against attempting to edit the global variable <a class="el" href="confini_8c.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL)">INI_GLOBAL_IMPLICIT_VALUE</a>. But if you use your own functions for editing the dispatches received, you must always make sure that <code>dispatch-&gt;value != INI_GLOBAL_IMPLICIT_VALUE</code> in formats where <code><a class="el" href="structIniFormat.html#ae5722efd535f1d27c624a927eea622c3">IniFormat::implicit_is_not_empty</a></code> has been set to <code>true</code> &ndash; otherwise a “Segmentation fault (core dumped)” error can be generated.</p>
+<h2><a class="anchor" id="common-mistakes"></a>
+Common mistakes</h2>
+<p>The native formatting functions <code><a class="el" href="confini_8h.html#a75809c0e952d9f9e14333e085ba6b910" title="Replace the first delimiter found (together with the spaces that surround it) with \0">ini_array_break()</a></code>, <code><a class="el" href="confini_8h.html#aa0721fcae5f04e5a9edd485dc1ddd2fa" title="Compress the distribution of the data in a stringified INI array by removing all the white spaces tha...">ini_array_collapse()</a></code>, <code><a class="el" href="confini_8h.html#a2b34dc032fc37dda829dadf80bf34d26" title="Replace the first delimiter found (together with the spaces that surround it) with \0,...">ini_array_release()</a></code>, <code><a class="el" href="confini_8h.html#a04acd6a01a6a78810e7aab8e02923218" title="Split a stringified INI array into NUL-separated members and call a custom function for each member.">ini_array_split()</a></code>, <code><a class="el" href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_string_parse()</a></code> and <code><a class="el" href="confini_8h.html#ac55f3fab95f697ac5058533df100fc11" title="Unescape \&#39;, \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...">ini_unquote()</a></code> have a special safeguard against attempting to edit the global variable <a class="el" href="confini_8c.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL)">INI_GLOBAL_IMPLICIT_VALUE</a>. But if you use your own functions for editing the dispatches received, you must always make sure that <code>dispatch-&gt;value != INI_GLOBAL_IMPLICIT_VALUE</code> in formats where <code><a class="el" href="structIniFormat.html#ae5722efd535f1d27c624a927eea622c3">IniFormat::implicit_is_not_empty</a></code> is set to <code>true</code> &ndash; otherwise a “Segmentation fault (core dumped)” error can be generated.</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div>
 <div class="line"> </div>
@@ -939,34 +1029,58 @@ $(function() {
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
 <div class="line"> </div>
 <div class="line">}</div>
-</div><!-- fragment --><h2>STORING THE DISPATCHED DATA</h2>
+</div><!-- fragment --><h2><a class="anchor" id="storing-the-dispatched-data"></a>
+Storing the dispatched data</h2>
 <p>In order to be as flexible as possible, <b>libconfini</b> does not store the dispatched data, nor indicizes them. This gives the developer the power to deal with them in many different ways.</p>
-<p>For small INI files a normal <code>if</code>/<code>else</code> chain, using <code><a class="el" href="confini_8h.html#a76a050b341e311cc9bbb79b399691e12" title="Compare two INI arrays and check whether they match.">ini_array_match()</a></code> for comparing section paths and <code><a class="el" href="confini_8h.html#a5773ae8cbe4ce15737dcece84b362fa0" title="Compare a simple string and an INI string and and check whether they match.">ini_string_match_si()</a></code>/<code><a class="el" href="confini_8h.html#a731857502fa7f8e31c4a024335a6d5d6" title="Compare two INI strings and check whether they match.">ini_string_match_ii()</a></code> for comparing key names, usually represents the most practical way to obtain the information required from an INI file.</p>
+<p>For small INI files a normal if/else chain, using <code><a class="el" href="confini_8h.html#a76a050b341e311cc9bbb79b399691e12" title="Compare two INI arrays and check whether they match.">ini_array_match()</a></code> for comparing section paths and <code><a class="el" href="confini_8h.html#a5773ae8cbe4ce15737dcece84b362fa0" title="Compare a simple string and an INI string and and check whether they match.">ini_string_match_si()</a></code>/<code><a class="el" href="confini_8h.html#a731857502fa7f8e31c4a024335a6d5d6" title="Compare two INI strings and check whether they match.">ini_string_match_ii()</a></code> for comparing key names, usually represents the most practical way to obtain the information required from an INI file.</p>
 <p>Sometimes however, especially in case of sizeable INI files, the most efficient solution would be to store the parsed data in a hash table before trying to access it.</p>
 <p>Some INI parsers are released with a hash table API included by default. This is often an unpractical solution, since fantastic free software libraries that focus solely on hash tables already exist, and providing a further API for managing a hash function together with an INI parser only complicates the code, makes it harder to maintain, and does not give the user the real freedom to choose what suits best to each single case.</p>
 <p>When a user needs it, the data parsed by <b>libconfini</b> can still be stored in a third-party hash table while it is being dispatched. By doing so the resulting performance will equal that of an INI parser with a hash table included by default, since the only job of <b>libconfini</b> is that of scrolling the content of an INI file linearly from the beginning to the end &ndash; and there are not more efficient ways to parse and indicize the content of a serialized tree.</p>
 <p>If you are interested in combining <b>libconfini</b> with a hash table, I have left a general example of how to use <b>GLib</b>'s <code>GHashTable</code> together with <b>libconfini</b> under <code>examples/miscellanea/glib_hash_table.c</code>. By keeping this example as a model other solutions can be easily explored as well.</p>
-<h2>SIZE OF THE DISPATCHED DATA</h2>
-<p>Within an INI file it is granted that if one sums together all the <code>(disp-&gt;d_len + 1)</code> and all the <code>(disp-&gt;v_len &gt; 0 ? disp-&gt;v_len + 1 : 0)</code> received, the result will be always less-than or equal-to <code>(stats-&gt;bytes + 1)</code> &ndash; where <code>+ 1</code> represents the NUL terminators and <code>disp</code> and <code>stats</code> are respectively the <code><a class="el" href="structIniDispatch.html" title="Dispatch of a single INI node.">IniDispatch</a></code> and <code><a class="el" href="structIniStatistics.html" title="Global statistics about an INI file.">IniStatistics</a></code> structures passed as arguments to the callback functions. <b>If one adds to this also all the <code>disp-&gt;at_len</code> properties, or if the <code>disp-&gt;v_len</code> properties of implicit keys are non-zero, the sum may exceed it.</b> This might be relevant or irrelevant depending on your code.</p>
+<h2><a class="anchor" id="size-of-the-dispatched-data"></a>
+Size of the dispatched data</h2>
+<p>Writing</p>
+<div class="fragment"><div class="line"><span class="keywordtype">char</span> * buf  =   malloc(stats-&gt;bytes + stats-&gt;members + (</div>
+<div class="line">                  stats-&gt;format.implicit_is_not_empty ?</div>
+<div class="line">                    <a class="code" href="confini_8h.html#acecf086ca074b27365e877f056af2192">INI_GLOBAL_IMPLICIT_V_LEN</a> * stats-&gt;members</div>
+<div class="line">                  :</div>
+<div class="line">                    0</div>
+<div class="line">                ) + 1);</div>
+</div><!-- fragment --><p>will always produce the smallest buffer large enough to store all the <code><a class="el" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">IniDispatch::data</a></code> and <code><a class="el" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></code> received, including their <code>NUL</code> terminators and any possible implicit value.</p>
+<p>This buffer will not be capable enough to store also the <code><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></code> strings received (about which no information is available at early stages). However, thanks to the syntax of INI files, where a key is always appended to the section previously dispatched, it will be always possible to store the information about the structure of the tree by using numbers as references to the parents instead of copying verbatim the <code><a class="el" href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></code> strings. This will also result in a more efficient code.</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">struct </span>size_check {</div>
-<div class="line">  <span class="keywordtype">size_t</span> bytes, buff_lengths;</div>
-<div class="line">};</div>
+<div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> my_stats_listener (</div>
+<div class="line">  <a class="code" href="structIniStatistics.html">IniStatistics</a> * stats,</div>
+<div class="line">  <span class="keywordtype">void</span> * v_destptr</div>
+<div class="line">) {</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> ini_init (<a class="code" href="structIniStatistics.html">IniStatistics</a> * stats, <span class="keywordtype">void</span> * v_check_struct) {</div>
+<div class="line"><span class="preprocessor">  #define destptr ((char **) v_destptr)</span></div>
 <div class="line"> </div>
-<div class="line">  ((<span class="keyword">struct </span>size_check *) v_check_struct)-&gt;bytes = stats-&gt;<a class="code" href="structIniStatistics.html#ab5911ee36bf6c20d6e9107c769945ffd">bytes</a>;</div>
-<div class="line">  ((<span class="keyword">struct </span>size_check *) v_check_struct)-&gt;buff_lengths = 0;</div>
+<div class="line">  *destptr  =   malloc(stats-&gt;<a class="code" href="structIniStatistics.html#ab5911ee36bf6c20d6e9107c769945ffd">bytes</a> + stats-&gt;<a class="code" href="structIniStatistics.html#ab4af1f388bd4109a9a9b1bc449146ec7">members</a> + (</div>
+<div class="line">                  stats-&gt;<a class="code" href="structIniStatistics.html#a1432aac124e3bc81c6845b42c16ef732">format</a>.<a class="code" href="structIniFormat.html#ae5722efd535f1d27c624a927eea622c3">implicit_is_not_empty</a> ?</div>
+<div class="line">                    <a class="code" href="confini_8h.html#acecf086ca074b27365e877f056af2192">INI_GLOBAL_IMPLICIT_V_LEN</a> * stats-&gt;<a class="code" href="structIniStatistics.html#ab4af1f388bd4109a9a9b1bc449146ec7">members</a></div>
+<div class="line">                  :</div>
+<div class="line">                    0</div>
+<div class="line">                ) + 1);</div>
+<div class="line"> </div>
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">  #undef destptr</span></div>
 <div class="line"> </div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> ini_listener (<a class="code" href="structIniDispatch.html">IniDispatch</a> * disp, <span class="keywordtype">void</span> * v_check) {</div>
 <div class="line"> </div>
-<div class="line">  ((<span class="keyword">struct </span>size_check *) v_check)-&gt;buff_lengths += disp-&gt;<a class="code" href="structIniDispatch.html#a34937218fa772fa66ceaa38923437791">d_len</a> + 1 +</div>
-<div class="line">    (disp-&gt;<a class="code" href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">v_len</a> ? disp-&gt;<a class="code" href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">v_len</a> + 1 : 0);</div>
+<div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> my_ini_listener (</div>
+<div class="line">  <a class="code" href="structIniDispatch.html">IniDispatch</a> * <span class="keyword">this</span>,</div>
+<div class="line">  <span class="keywordtype">void</span> * v_my_capable_buffer</div>
+<div class="line">) {</div>
+<div class="line"> </div>
+<div class="line">  <span class="comment">/*  Store the dispatched data in `my_capable_buffer`  */</span></div>
+<div class="line">  <span class="keywordtype">char</span> ** my_capable_buffer = (<span class="keywordtype">char</span> **) v_my_capable_buffer;</div>
+<div class="line">  <span class="comment">/*  ...  */</span></div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
 <div class="line"> </div>
@@ -974,14 +1088,16 @@ $(function() {
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main () {</div>
 <div class="line"> </div>
-<div class="line">  <span class="keyword">struct </span>size_check check;</div>
+<div class="line">  <span class="comment">/*  In real life we would need a more complex `struct` here...  */</span></div>
+<div class="line">  <span class="keywordtype">char</span> * my_copied_data;</div>
 <div class="line"> </div>
+<div class="line">  <span class="comment">/*  Load the INI file  */</span></div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17">load_ini_path</a>(</div>
-<div class="line">    <span class="stringliteral">&quot;example.conf&quot;</span>,</div>
+<div class="line">    <span class="stringliteral">&quot;test.conf&quot;</span>,</div>
 <div class="line">    <a class="code" href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a>,</div>
-<div class="line">    ini_init,</div>
-<div class="line">    ini_listener,</div>
-<div class="line">    &amp;check</div>
+<div class="line">    my_stats_listener,</div>
+<div class="line">    my_ini_listener,</div>
+<div class="line">    &amp;my_copied_data</div>
 <div class="line">  )) {</div>
 <div class="line"> </div>
 <div class="line">    fprintf(stderr, <span class="stringliteral">&quot;Sorry, something went wrong :-(\n&quot;</span>);</div>
@@ -989,73 +1105,64 @@ $(function() {
 <div class="line"> </div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  printf(</div>
-<div class="line"> </div>
-<div class="line">    <span class="stringliteral">&quot;The file is %zu bytes large.\n\n&quot;</span></div>
-<div class="line"> </div>
-<div class="line">    <span class="stringliteral">&quot;The sum of the lengths of all `disp-&gt;data` &quot;</span></div>
-<div class="line">    <span class="stringliteral">&quot;plus the lengths of all non-empty\n&quot;</span></div>
-<div class="line">    <span class="stringliteral">&quot;`disp-&gt;value`s is %zu.\n&quot;</span>,</div>
-<div class="line"> </div>
-<div class="line">    check.bytes, check.buff_lengths</div>
-<div class="line"> </div>
-<div class="line">  );</div>
-<div class="line"> </div>
-<div class="line">  <span class="comment">/*  `INI_GLOBAL_IMPLICIT_V_LEN` is 0 and not even used, so this</span></div>
-<div class="line"><span class="comment">     cannot happen:  */</span></div>
-<div class="line"> </div>
-<div class="line">  <span class="keywordflow">if</span> (check.buff_lengths &gt; check.bytes) {</div>
-<div class="line"> </div>
-<div class="line">    fprintf(stderr, <span class="stringliteral">&quot;The end is near!&quot;</span>);</div>
-<div class="line">    <span class="keywordflow">return</span> 1;</div>
-<div class="line"> </div>
-<div class="line">  }</div>
-<div class="line"> </div>
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
 <div class="line"> </div>
 <div class="line">}</div>
-</div><!-- fragment --><h2>OTHER GLOBAL SETTINGS</h2>
-<p>Besides the two global variables <a class="el" href="confini_8c.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL)">INI_GLOBAL_IMPLICIT_VALUE</a> and <a class="el" href="confini_8c.html#acecf086ca074b27365e877f056af2192" title="Length of the value assigned to implicit keys (default value: 0)">INI_GLOBAL_IMPLICIT_V_LEN</a>, a third variable named <a class="el" href="confini_8c.html#a44d7de5e7bb75d40d31832a82b66891d" title="If set to true, key and section names in case-insensitive INI formats will be dispatched lowercase,...">INI_GLOBAL_LOWERCASE_MODE</a> tells <b>libconfini</b> whether to dispatch in lower case all key names and section paths of case-insensitive INI files.</p>
-<p>As with the other global variables, you can declare the variable <a class="el" href="confini_8c.html#a44d7de5e7bb75d40d31832a82b66891d" title="If set to true, key and section names in case-insensitive INI formats will be dispatched lowercase,...">INI_GLOBAL_LOWERCASE_MODE</a> at the beginning of your code:</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div>
+</div><!-- fragment --><h2><a class="anchor" id="other-global-settings"></a>
+Other global settings</h2>
+<p>In the past, besides the two global variables <a class="el" href="confini_8c.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL)">INI_GLOBAL_IMPLICIT_VALUE</a> and <a class="el" href="confini_8c.html#acecf086ca074b27365e877f056af2192" title="Length of the value assigned to implicit keys (default value: 0)">INI_GLOBAL_IMPLICIT_V_LEN</a>, a third variable named <a class="el" href="confini_8c.html#a44d7de5e7bb75d40d31832a82b66891d" title="If set to true, key and section names in case-insensitive INI formats will be dispatched lowercase,...">INI_GLOBAL_LOWERCASE_MODE</a> would tell <b>libconfini</b> whether to dispatch in lower case all key names and section paths of case-insensitive INI files. This variable rarely needed to be set to <code>true</code>, since string comparisons made by libconfini are always either case-sensitive or case-insensitive depending on the format given.</p>
+<p>This “dispatch in lowercase” functionality itself was a relic from a time when <b>libconfini</b> did not yet possess any string comparison functions. However, as this is no longer the case and there are now four functions for that, starting from version 1.15.0 both the <a class="el" href="confini_8c.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL)">INI_GLOBAL_IMPLICIT_VALUE</a> variable and the <code><a class="el" href="confini_8h.html#a2d22fde4b4093871bcc498c2bddc7fbe" title="Set the value of the global variable INI_GLOBAL_LOWERCASE_MODE.">ini_global_set_lowercase_mode()</a></code> function have been marked as deprecated (see the <a class="el" href="deprecated.html">list of deprecated functions and variables</a>). If needed, to convert to lowercase key names and section paths in case-insensitive INI files it is possible to use the following simple snippet, which maps exactly what <b>libconfini</b> would do:</p>
+<div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="confini_8c.html#ad6e6972b13052e995b3ceb2fb4996ede">string_tolower</a> (<span class="keywordtype">char</span> * <span class="keyword">const</span> str) {</div>
+<div class="line">  <span class="keywordflow">for</span> (<span class="keyword">register</span> <span class="keywordtype">char</span> * ptr = str; *ptr; ptr++) {</div>
+<div class="line">    *ptr = *ptr &gt; 0x40 &amp;&amp; *ptr &lt; 0x5b ? *ptr | 0x60 : *ptr;</div>
+<div class="line">  }</div>
+<div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">bool</span> <a class="code" href="confini_8h.html#a44d7de5e7bb75d40d31832a82b66891d">INI_GLOBAL_LOWERCASE_MODE</a> = <span class="keyword">false</span>;</div>
-</div><!-- fragment --><p>or assign a value to it at the beginning of your <code>main()</code> function:</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> my_callback (<a class="code" href="structIniDispatch.html">IniDispatch</a> * dispatch, <span class="keywordtype">void</span> * v_null) {</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">int</span> main () {</div>
+<div class="line">  <span class="keywordflow">if</span> (!dispatch-&gt;<a class="code" href="structIniDispatch.html#adfda221d4a9effcb4f3ee6a99c5f2de2">format</a>.<a class="code" href="structIniFormat.html#a50f562eda0d26ed7e0d3c57afeb46d2d">case_sensitive</a>) {</div>
+<div class="line">    <span class="keywordflow">switch</span> (dispatch-&gt;<a class="code" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a>) {</div>
+<div class="line">      <span class="keywordflow">case</span> <a class="code" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba97333d01dfff8f9a9c690fc559751b45">INI_KEY</a>:</div>
+<div class="line">      <span class="keywordflow">case</span> <a class="code" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba9b68a1fa247c1b1ae3fc2ce615359c7b">INI_DISABLED_KEY</a>:</div>
+<div class="line">      <span class="keywordflow">case</span> <a class="code" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba596f391d896636da6f004a7d010edb50">INI_SECTION</a>:</div>
+<div class="line">      <span class="keywordflow">case</span> <a class="code" href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba38e952e2092e426a29e6618698772bff">INI_DISABLED_SECTION</a>:</div>
+<div class="line">        <a class="code" href="confini_8c.html#ad6e6972b13052e995b3ceb2fb4996ede">string_tolower</a>(dispatch-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>);</div>
+<div class="line">    }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="confini_8h.html#a44d7de5e7bb75d40d31832a82b66891d">INI_GLOBAL_LOWERCASE_MODE</a> = <span class="keyword">true</span>;</div>
+<div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <span class="comment">/* ... */</span></div>
+<div class="line">  <span class="comment">/*  DO SOMETHING...  */</span></div>
+<div class="line"> </div>
+<div class="line"> <span class="keywordflow">return</span> 0;</div>
 <div class="line"> </div>
 <div class="line">}</div>
-</div><!-- fragment --><p>Alternatively, the value of this variable can be assigned by using its setter function <code><a class="el" href="confini_8h.html#a2d22fde4b4093871bcc498c2bddc7fbe" title="Set the value of the global variable INI_GLOBAL_LOWERCASE_MODE.">ini_global_set_lowercase_mode()</a></code>.</p>
-<p>When the variable <a class="el" href="confini_8c.html#a44d7de5e7bb75d40d31832a82b66891d" title="If set to true, key and section names in case-insensitive INI formats will be dispatched lowercase,...">INI_GLOBAL_LOWERCASE_MODE</a> is set to <code>true</code>, <b>libconfini</b> always dispatches in lower case <em>all</em> ASCII letters of key and section names in case-insensitive formats &ndash; <em>even when these are enclosed within quotes</em> &ndash; but does <b>not</b> dispatch in lower case UTF-8 code points out of the ASCII range (for instance, <code>Ā</code> will not be rendered as <code>ā</code>, but will be rendered verbatim). <em>In general it is a good practice to use UTF-8 within values, but to use ASCII only within key and section names, at least in case-insensitive INI files</em> (see below). As for the dispatched values instead, their case is always preserved.</p>
-<p>Normally <a class="el" href="confini_8c.html#a44d7de5e7bb75d40d31832a82b66891d" title="If set to true, key and section names in case-insensitive INI formats will be dispatched lowercase,...">INI_GLOBAL_LOWERCASE_MODE</a> does not need to be set to <code>true</code>, since string comparisons made by libconfini are always either case-sensitive or case-insensitive depending on the format given.</p>
-<h2>THE UNICODE PROBLEM</h2>
+</div><!-- fragment --><h2><a class="anchor" id="the-unicode-problem"></a>
+The unicode problem</h2>
 <p>Comparing an ASCII upper case letter to an ASCII lower case letter is an invariant process. But comparing two Unicode letter cases is a process that depends on the locale of the machine. Consider for example the lower case letter <code>i</code>: in most European languages its upper case is <code>I</code>, while this is not the case in Turkish, where the upper case of <code>i</code> is <code>İ</code> (and the lower case of <code>I</code> is <code>ı</code>). Therefore for a person living in Italy or France, <code>i</code> and <code>I</code> will represent the same letter, while for a person living in Turkey they will not.</p>
 <p>Key and section names of an INI file however cannot depend on the locale of the machine, since they must be reliably searched for independently of where a machine is located. Imagine for example a key named “INI” and imagine that Unicode case folding were performed on key names during string comparisons. If you lived in Europe you could look up for such key using its lower case “ini”, while if you lived in Turkey you would have to use the lower case “ını” to find it. So the only solution in this context is to consider Unicode characters out of the ASCII range always as case-sensitive. For this reason, <b>libconfini</b> (and probably any senseful INI parser) will never perform case folding of Unicode characters out of the ASCII range within key and section names.</p>
 <p>It must be said however that most Unicode characters do not possess a lower and upper case, and most characters outside of the ASCII range could theoretically appear without problems in key and section names also in case-insensitive INI files (think of the character <code>§</code> for example). And, as for case-sensitive INI files, no Unicode character would ever represent a problem. Nonetheless, it is still generally more acceptable to use ASCII only within key and section names &ndash; and possibly, if needed, non-ASCII Unicode characters within values and comments.</p>
 <p>That said, <b>libconfini</b> deals perfectly fine with UTF-8 (but is always case-sensitive outside of the ASCII range), so use the latter as you feel appropriate.</p>
-<h2>THREAD SAFETY</h2>
+<h2><a class="anchor" id="thread-safety"></a>
+Thread safety</h2>
 <p>Depending on the format of the INI file, <b>libconfini</b> may use up to three global variables (<a class="el" href="confini_8c.html#a243b229193f154746a9fbfbdb02689bf" title="Value to be assigned to implicit keys (default value: NULL)">INI_GLOBAL_IMPLICIT_VALUE</a>, <a class="el" href="confini_8c.html#acecf086ca074b27365e877f056af2192" title="Length of the value assigned to implicit keys (default value: 0)">INI_GLOBAL_IMPLICIT_V_LEN</a> and <a class="el" href="confini_8c.html#a44d7de5e7bb75d40d31832a82b66891d" title="If set to true, key and section names in case-insensitive INI formats will be dispatched lowercase,...">INI_GLOBAL_LOWERCASE_MODE</a>). In order to be thread-safe these three variables (if needed) must be defined only once (either directly, or by using their setter functions <code><a class="el" href="confini_8h.html#a3a6eb3b79a88304864341075240ee412" title="Set the value to be to be assigned to implicit keys.">ini_global_set_implicit_value()</a></code> and <code><a class="el" href="confini_8h.html#a2d22fde4b4093871bcc498c2bddc7fbe" title="Set the value of the global variable INI_GLOBAL_LOWERCASE_MODE.">ini_global_set_lowercase_mode()</a></code>), or otherwise a mutex logic must be introduced.</p>
 <p>Apart from the three variables above, each parsing allocates and frees its own memory and every function is fully reentrant, therefore the library can be considered thread-safe.</p>
-<h2>ERROR EXCEPTIONS</h2>
-<p>The philosophy of <b>libconfini</b> is to parse as much as possible without generating error exceptions. No parsing errors are returned once an INI file has been correctly allocated into the stack, with the exception of the <em>out-of-range</em> error <a class="el" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a82e26058d2b7bb2203fe321d0320d98a">CONFINI_EOOR</a> (see <code>enum</code> <a class="el" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29" title="Error codes.">ConfiniInterruptNo</a>), whose meaning is that the dispatches are for unknown reasons more than expected &ndash; this error is possibly generated by the presence of bugs in the library's code and should <b>never</b> be returned (please <a href="https://github.com/madmurphy/libconfini/issues">contact me</a> if this happens).</p>
-<p>When an INI node is wrongly written in respect to the format given, it is dispatched verbatim as an <a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461baffa9e27deb46c0e436bc75329cc5f7a6">INI_UNKNOWN</a> node &ndash; see <code>enum</code> <a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461b" title="INI node types.">IniNodeType</a>. Empty lines, or lines containing only spaces and empty quotes (if the latter are supported) will be skipped.</p>
+<h2><a class="anchor" id="error-exceptions"></a>
+Error exceptions</h2>
+<p>The philosophy of <b>libconfini</b> is to parse as much as possible without generating error exceptions. No parsing errors are returned once an INI file has been correctly allocated into the heap, with the exception of the <em>out-of-range</em> error <a class="el" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a82e26058d2b7bb2203fe321d0320d98a">CONFINI_EOOR</a> (see <code>enum</code> <a class="el" href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29" title="Error codes.">ConfiniInterruptNo</a>), whose meaning is that the dispatches are for unknown reasons more than expected &ndash; this error is possibly generated by the presence of bugs in the library's code and should <b>never</b> be returned (please <a href="https://github.com/madmurphy/libconfini/issues">contact me</a> if this happens).</p>
+<p>When an INI node is wrongly written in respect to the format given, it is dispatched verbatim as an <a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461baffa9e27deb46c0e436bc75329cc5f7a6">INI_UNKNOWN</a> node &ndash; see <code>enum</code> <a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461b" title="INI node types and possible values of IniDispatch::type.">IniNodeType</a>. Empty lines, or lines containing only spaces and empty quotes (if the latter are supported) will be skipped.</p>
 <p>In order to avoid error exceptions, strings containing an unterminated quote will be always treated as if they had a virtual quote as their last + 1 character. For example,</p>
 <div class="fragment"><div class="line">foo = &quot;bar</div>
 </div><!-- fragment --><p>will always determine the same behavior as if it were</p>
 <div class="fragment"><div class="line">foo = &quot;bar&quot;</div>
-</div><!-- fragment --><p>Any format containing the following three settings will never produce <a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461baffa9e27deb46c0e436bc75329cc5f7a6">INI_UNKNOWN</a> nodes, even if instead of an INI file we tried to parse a JPEG image (or anything else):</p>
+</div><!-- fragment --><p>Any format containing the following three settings will never produce <a class="el" href="confini_8h.html#a4e394db479f56eaa830ade09c907461baffa9e27deb46c0e436bc75329cc5f7a6">INI_UNKNOWN</a> nodes, even if instead of an INI file we tried to parse a .jpeg image (or anything else):</p>
 <div class="fragment"><div class="line"><a class="code" href="structIniFormat.html">IniFormat</a> my_format = {</div>
 <div class="line">  .<a class="code" href="structIniFormat.html#a6d9981301f5a16d73e2c38cb80f7f962">delimiter_symbol</a> = <a class="code" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd">INI_ANY_SPACE</a>,</div>
 <div class="line">  .section_paths = <a class="code" href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134a950b824b44a557cb26647b9f2f922d1c">INI_NO_SECTIONS</a>,</div>
 <div class="line">  .no_spaces_in_names = <span class="keyword">false</span>,</div>
 <div class="line">  ...</div>
 <div class="line">};</div>
-</div><!-- fragment --><h2>PERFORMANCE</h2>
+</div><!-- fragment --><h2><a class="anchor" id="performance"></a>
+Performance</h2>
 <p>The algorithms used by <b>libconfini</b> stand in a delicate equilibrium between flexibility, speed and code readability, with flexibility as primary target. Performance can vary with the format used to parse an INI file, but in most cases is not a concern.</p>
 <p>One can measure the performance of the library by doing something like:</p>
 <div class="fragment"><div class="line"><span class="comment">/*  dev/tests/performance/performance.c  */</span></div>
@@ -1115,11 +1222,13 @@ $(function() {
 <div class="fragment"><div class="line">54692353 bytes parsed in 2.221189 seconds.</div>
 <div class="line">Number of bytes parsed per second: 24623007.317252</div>
 </div><!-- fragment --><p><em><b>Addendum:</b> Unfortunately that old computer broke, so now I can perform tests only on a newer hardware, where <b>libconfini</b> seems to parse four times as fast. If you are interested in testing yourself the performance of this library on a particular hardware I have left a performance test under <code>dev/tests/performance</code>.</em></p>
-<h1>INI SYNTAX CONSIDERATIONS</h1>
-<h2>COMMENT OR DISABLED ENTRY?</h2>
+<h1><a class="anchor" id="ini-syntax-considerations"></a>
+INI syntax considerations</h1>
+<h2><a class="anchor" id="comment-or-disabled-entry"></a>
+Comment or disabled entry?</h2>
 <p>I can hardly imagine a reason to be interested in disabled entries if not for writing a GUI editor for INI files. However, if this is the case and you are not using <b>libconfini</b> like normal people do, you might wonder how to ensure that disabled entries and comments be always parsed without ambiguity.</p>
 <p>In most of the cases <b>libconfini</b> is smart enough to distinguish a disabled entry from a comment. However some INI files can be tricky and might require some workarounds. For instance, imagine to have the following INI file:</p>
-<div class="fragment"><div class="line"># INI key/value delimiter: `=`</div>
+<div class="fragment"><div class="line"># INI KEY/VALUE DELIMITER: `=`</div>
 <div class="line"> </div>
 <div class="line">[some_section]</div>
 <div class="line"> </div>
@@ -1127,17 +1236,20 @@ $(function() {
 <div class="line"> </div>
 <div class="line">;foo = bar</div>
 <div class="line"> </div>
-<div class="line">##now=Sunday April 3rd, 2016</div>
+<div class="line">##now=Sunday April 3rd, 2016 {#now-sunday-april-3rd}</div>
 </div><!-- fragment --><p>And imagine that for unknown reasons the author of the INI file wanted only <code>;foo = bar</code> to be considered as a disabled entry, and the first and last line as normal comments.</p>
 <p>If we tried to parse it according to the format used below</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;<a class="code" href="confini_8h.html">confini.h</a>&gt;</span></div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> ini_listener (<a class="code" href="structIniDispatch.html">IniDispatch</a> * disp, <span class="keywordtype">void</span> * v_null) {</div>
+<div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> ini_listener (<a class="code" href="structIniDispatch.html">IniDispatch</a> * dispatch, <span class="keywordtype">void</span> * v_null) {</div>
 <div class="line"> </div>
 <div class="line">  printf(</div>
-<div class="line">    <span class="stringliteral">&quot;#%zu - TYPE: %u, DATA: &#39;%s&#39;, VALUE: &#39;%s&#39;\n&quot;</span>,</div>
-<div class="line">    disp-&gt;<a class="code" href="structIniDispatch.html#a795864cff55f67498aa22722c17fc6d2">dispatch_id</a>, disp-&gt;<a class="code" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a>, disp-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>, disp-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a></div>
+<div class="line">    <span class="stringliteral">&quot;#%zu - Type: %u; Data: \&amp;quot;%s\&amp;quot;; Value: \&amp;quot;%s\&amp;quot;\n&quot;</span>,</div>
+<div class="line">    dispatch-&gt;<a class="code" href="structIniDispatch.html#a795864cff55f67498aa22722c17fc6d2">dispatch_id</a>,</div>
+<div class="line">    dispatch-&gt;<a class="code" href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">type</a>,</div>
+<div class="line">    dispatch-&gt;<a class="code" href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">data</a>,</div>
+<div class="line">    dispatch-&gt;<a class="code" href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">value</a></div>
 <div class="line">  );</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
@@ -1146,28 +1258,29 @@ $(function() {
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main () {</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="structIniFormat.html">IniFormat</a> my_format = {</div>
-<div class="line">    .<a class="code" href="structIniFormat.html#a6d9981301f5a16d73e2c38cb80f7f962">delimiter_symbol</a> = <a class="code" href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f">INI_EQUALS</a>,</div>
-<div class="line">    .case_sensitive = <span class="keyword">false</span>,</div>
-<div class="line">    .semicolon_marker = <a class="code" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcda37cb73b9bfc8bc6cc9d887108b4168bd">INI_IGNORE</a>,</div>
-<div class="line">    .hash_marker = <a class="code" href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcdac4783966b430aac97b22bb59c522faa7">INI_IS_NOT_A_MARKER</a>,</div>
-<div class="line">    .multiline_nodes = <a class="code" href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa287fd13b8c6d991694f9e5fb2c3a334a">INI_NO_MULTILINE</a>,</div>
-<div class="line">    .section_paths = <a class="code" href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134a1126b82b479382f2d3dada130c08962f">INI_ABSOLUTE_ONLY</a>,</div>
-<div class="line">    .no_single_quotes = <span class="keyword">false</span>,</div>
-<div class="line">    .no_double_quotes = <span class="keyword">false</span>,</div>
-<div class="line">    .no_spaces_in_names = <span class="keyword">false</span>,</div>
-<div class="line">    .implicit_is_not_empty = <span class="keyword">true</span>,</div>
-<div class="line">    .do_not_collapse_values = <span class="keyword">false</span>,</div>
-<div class="line">    .preserve_empty_quotes = <span class="keyword">false</span>,</div>
-<div class="line">    .disabled_after_space = <span class="keyword">true</span>,</div>
-<div class="line">    .disabled_can_be_implicit = <span class="keyword">true</span></div>
-<div class="line">  };</div>
+<div class="line"><span class="preprocessor">  #define MY_FORMAT \</span></div>
+<div class="line"><span class="preprocessor">    ((IniFormat) { \</span></div>
+<div class="line"><span class="preprocessor">      .delimiter_symbol = INI_EQUALS, \</span></div>
+<div class="line"><span class="preprocessor">      .case_sensitive = false, \</span></div>
+<div class="line"><span class="preprocessor">      .semicolon_marker = INI_IGNORE, \</span></div>
+<div class="line"><span class="preprocessor">      .hash_marker = INI_IS_NOT_A_MARKER, \</span></div>
+<div class="line"><span class="preprocessor">      .multiline_nodes = INI_NO_MULTILINE, \</span></div>
+<div class="line"><span class="preprocessor">      .section_paths = INI_ABSOLUTE_ONLY, \</span></div>
+<div class="line"><span class="preprocessor">      .no_single_quotes = false, \</span></div>
+<div class="line"><span class="preprocessor">      .no_double_quotes = false, \</span></div>
+<div class="line"><span class="preprocessor">      .no_spaces_in_names = false, \</span></div>
+<div class="line"><span class="preprocessor">      .implicit_is_not_empty = true, \</span></div>
+<div class="line"><span class="preprocessor">      .do_not_collapse_values = false, \</span></div>
+<div class="line"><span class="preprocessor">      .preserve_empty_quotes = false, \</span></div>
+<div class="line"><span class="preprocessor">      .disabled_after_space = true, \</span></div>
+<div class="line"><span class="preprocessor">      .disabled_can_be_implicit = true \</span></div>
+<div class="line"><span class="preprocessor">    })</span></div>
 <div class="line"> </div>
-<div class="line">  printf(<span class="stringliteral">&quot;:: Content of &#39;ambiguous.conf&#39; ::\n\n&quot;</span>);</div>
+<div class="line">  printf(<span class="stringliteral">&quot;:: Content of \&amp;quot;ambiguous.conf\&amp;quot; ::\n\n&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17">load_ini_path</a>(</div>
-<div class="line">    <span class="stringliteral">&quot;examples/ini_files/ambiguous.conf&quot;</span>,</div>
-<div class="line">    my_format,</div>
+<div class="line">    <span class="stringliteral">&quot;../ini_files/ambiguous.conf&quot;</span>,</div>
+<div class="line">    MY_FORMAT,</div>
 <div class="line">    NULL,</div>
 <div class="line">    ini_listener,</div>
 <div class="line">    NULL</div>
@@ -1182,17 +1295,16 @@ $(function() {
 <div class="line"> </div>
 <div class="line">}</div>
 </div><!-- fragment --><p>we would obtain the following result:</p>
-<div class="fragment"><div class="line">:: Content of <span class="stringliteral">&#39;ambiguous.conf&#39;</span> ::</div>
+<div class="fragment"><div class="line">:: Content of <span class="stringliteral">&quot;ambiguous.conf&quot;</span> ::</div>
 <div class="line"> </div>
-<div class="line"><span class="preprocessor">#0 - TYPE: 6, DATA: &#39;INI key/value delimiter: `&#39;, VALUE: &#39;`&#39;</span></div>
-<div class="line"><span class="preprocessor">#1 - TYPE: 3, DATA: &#39;some_section&#39;, VALUE: &#39;&#39;</span></div>
-<div class="line"><span class="preprocessor">#2 - TYPE: 2, DATA: &#39;hello&#39;, VALUE: &#39;world&#39;</span></div>
-<div class="line"><span class="preprocessor">#3 - TYPE: 6, DATA: &#39;foo&#39;, VALUE: &#39;bar&#39;</span></div>
-<div class="line"><span class="preprocessor">#4 - TYPE: 4, DATA: &#39;now=Sunday April 3rd, 2016&#39;, VALUE: &#39;&#39;</span></div>
+<div class="line"><span class="preprocessor">#0 - Type: 2; Data: &quot;# INI KEY/VALUE DELIMITER: `&quot;; Value: &quot;`&quot;</span></div>
+<div class="line"><span class="preprocessor">#1 - Type: 3; Data: &quot;some_section&quot;; Value: &quot;&quot;</span></div>
+<div class="line"><span class="preprocessor">#2 - Type: 2; Data: &quot;hello&quot;; Value: &quot;world&quot;</span></div>
+<div class="line"><span class="preprocessor">#3 - Type: 2; Data: &quot;##now&quot;; Value: &quot;Sunday April 3rd, 2016&quot;</span></div>
 </div><!-- fragment --><p>As you can see, all comments but <code>now=Sunday April 3rd, 2016</code> would be parsed as disabled entries &ndash; which is not what the author intended. Therefore, to ensure that such INI file be parsed properly, you can follow two possible approaches.</p>
 <p><b>1. Intervene on the INI file.</b> The reason why <code>now=Sunday April 3rd, 2016</code> has been properly parsed as a comment &ndash; despite it really looks like a disabled entry &ndash; is because it has been nested within a comment block opened by more than one leading comment marker (in this case the two ##). As a general rule, <em><b>libconfini</b> never parses a comment beginning with more than one leading marker as a disabled entry</em>, therefore this is the surest way to ensure that proper comments are always considered as such.</p>
 <p>Hence, by adding one more number sign to the first comment</p>
-<div class="fragment"><div class="line">## INI key/value delimiter: `=`</div>
+<div class="fragment"><div class="line">## INI KEY/VALUE DELIMITER: `=`</div>
 <div class="line"> </div>
 <div class="line">[some_section]</div>
 <div class="line"> </div>
@@ -1200,15 +1312,15 @@ $(function() {
 <div class="line"> </div>
 <div class="line">;foo = bar</div>
 <div class="line"> </div>
-<div class="line">##now=Sunday April 3rd, 2016</div>
+<div class="line">##now=Sunday April 3rd, 2016 {#now-sunday-april-3rd}</div>
 </div><!-- fragment --><p>we obtain the wanted result:</p>
-<div class="fragment"><div class="line">:: Content of <span class="stringliteral">&#39;ambiguous.conf&#39;</span> ::</div>
+<div class="fragment"><div class="line">:: Content of <span class="stringliteral">&quot;ambiguous.conf&quot;</span> ::</div>
 <div class="line"> </div>
-<div class="line"><span class="preprocessor">#0 - TYPE: 4, DATA: &#39; INI key/value delimiter: `=`&#39;, VALUE: &#39;&#39;</span></div>
-<div class="line"><span class="preprocessor">#1 - TYPE: 3, DATA: &#39;some_section&#39;, VALUE: &#39;&#39;</span></div>
-<div class="line"><span class="preprocessor">#2 - TYPE: 2, DATA: &#39;hello&#39;, VALUE: &#39;world&#39;</span></div>
-<div class="line"><span class="preprocessor">#3 - TYPE: 6, DATA: &#39;foo&#39;, VALUE: &#39;bar&#39;</span></div>
-<div class="line"><span class="preprocessor">#4 - TYPE: 4, DATA: &#39;now=Sunday April 3rd, 2016&#39;, VALUE: &#39;&#39;</span></div>
+<div class="line"><span class="preprocessor">#0 - Type: 4; Data: &quot; INI KEY/VALUE DELIMITER: `=`&quot;; Value: &quot;&quot;</span></div>
+<div class="line"><span class="preprocessor">#1 - Type: 3; Data: &quot;some_section&quot;; Value: &quot;&quot;</span></div>
+<div class="line"><span class="preprocessor">#2 - Type: 2; Data: &quot;hello&quot;; Value: &quot;world&quot;</span></div>
+<div class="line"><span class="preprocessor">#3 - Type: 6; Data: &quot;foo&quot;; Value: &quot;bar&quot;</span></div>
+<div class="line"><span class="preprocessor">#4 - Type: 4; Data: &quot;now=Sunday April 3rd, 2016&quot;; Value: &quot;&quot;</span></div>
 </div><!-- fragment --><p><b>2. Intervene on the format.</b> There are cases where the INI file is automatically generated by machines (comments included), or distributed as such, and human intervention would be required on each machine-generated realease of the INI file. In these cases &ndash; and if we are sure about the expected content of the INI file &ndash; we can restrict the format chosen in order to parse comments and disabled entries properly. In particular, the following fields of the <code><a class="el" href="structIniFormat.html" title="24-bit bitfield representing the format of an INI file (INI dialect)">IniFormat</a></code> bitfield can have an impact on the disambiguation between comments and disabled entries.</p>
 <p>Reliable general patterns:</p>
 <ul>
@@ -1223,69 +1335,72 @@ $(function() {
 <p>As a general rule, <b>libconfini</b> will always try to parse as a disabled entry whatever comment is allowed (by the format) to contain one. Only if this attempt fails, the block will be dispatched as a normal comment. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
-<div class="ttc" id="aconfini_8h_html_a4b01f84229fe403d5b061378ebe86134a950b824b44a557cb26647b9f2f922d1c"><div class="ttname"><a href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134a950b824b44a557cb26647b9f2f922d1c">INI_NO_SECTIONS</a></div><div class="ttdeci">@ INI_NO_SECTIONS</div><div class="ttdef"><b>Definition:</b> confini.h:458</div></div>
-<div class="ttc" id="aconfini_8h_html_ac670c2fdf19ae6eee3de83dd183ae55fa32940b5375486473634a3e06043b1789"><div class="ttname"><a href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa32940b5375486473634a3e06043b1789">INI_MULTILINE_EVERYWHERE</a></div><div class="ttdeci">@ INI_MULTILINE_EVERYWHERE</div><div class="ttdef"><b>Definition:</b> confini.h:468</div></div>
-<div class="ttc" id="astructIniDispatch_html_adfda221d4a9effcb4f3ee6a99c5f2de2"><div class="ttname"><a href="structIniDispatch.html#adfda221d4a9effcb4f3ee6a99c5f2de2">IniDispatch::format</a></div><div class="ttdeci">const IniFormat format</div><div class="ttdef"><b>Definition:</b> confini.h:112</div></div>
-<div class="ttc" id="aconfini_8h_html_a8dfc7ebbb087a23d4076c1d688572b1c"><div class="ttname"><a href="confini_8h.html#a8dfc7ebbb087a23d4076c1d688572b1c">IniFormatNum</a></div><div class="ttdeci">uint32_t IniFormatNum</div><div class="ttdoc">The unique ID of an INI format (24-bit maximum)</div><div class="ttdef"><b>Definition:</b> confini.h:127</div></div>
-<div class="ttc" id="astructIniDispatch_html_a67b4c4b61e3c801cbfbcca95073ce864"><div class="ttname"><a href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">IniDispatch::v_len</a></div><div class="ttdeci">size_t v_len</div><div class="ttdef"><b>Definition:</b> confini.h:118</div></div>
-<div class="ttc" id="astructIniDispatch_html_a3821b15b23e587eca172763dd4acd954"><div class="ttname"><a href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">IniDispatch::data</a></div><div class="ttdeci">char * data</div><div class="ttdef"><b>Definition:</b> confini.h:114</div></div>
-<div class="ttc" id="astructIniFormat_html"><div class="ttname"><a href="structIniFormat.html">IniFormat</a></div><div class="ttdoc">24-bit bitfield representing the format of an INI file (INI dialect)</div><div class="ttdef"><b>Definition:</b> confini.h:95</div></div>
-<div class="ttc" id="aconfini_8h_html_ac55f3fab95f697ac5058533df100fc11"><div class="ttname"><a href="confini_8h.html#ac55f3fab95f697ac5058533df100fc11">ini_unquote</a></div><div class="ttdeci">size_t ini_unquote(char *const ini_string, const IniFormat format)</div><div class="ttdoc">Unescape \', \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...</div><div class="ttdef"><b>Definition:</b> confini.c:3667</div></div>
-<div class="ttc" id="astructIniFormat_html_a8a4a1d116d66bad0c61d9876bf9f87ee"><div class="ttname"><a href="structIniFormat.html#a8a4a1d116d66bad0c61d9876bf9f87ee">IniFormat::multiline_nodes</a></div><div class="ttdeci">unsigned char multiline_nodes</div><div class="ttdef"><b>Definition:</b> confini.h:95</div></div>
-<div class="ttc" id="aconfini_8h_html_a731857502fa7f8e31c4a024335a6d5d6"><div class="ttname"><a href="confini_8h.html#a731857502fa7f8e31c4a024335a6d5d6">ini_string_match_ii</a></div><div class="ttdeci">bool ini_string_match_ii(const char *const ini_string_a, const char *const ini_string_b, const IniFormat format)</div><div class="ttdoc">Compare two INI strings and check whether they match.</div><div class="ttdef"><b>Definition:</b> confini.c:3238</div></div>
-<div class="ttc" id="aconfini_8h_html_a4b01f84229fe403d5b061378ebe86134a369aca51c7228abeae22d232a7fbe1f9"><div class="ttname"><a href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134a369aca51c7228abeae22d232a7fbe1f9">INI_ABSOLUTE_AND_RELATIVE</a></div><div class="ttdeci">@ INI_ABSOLUTE_AND_RELATIVE</div><div class="ttdef"><b>Definition:</b> confini.h:449</div></div>
-<div class="ttc" id="aconfini_8h_html_ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd"><div class="ttname"><a href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd">INI_ANY_SPACE</a></div><div class="ttdeci">@ INI_ANY_SPACE</div><div class="ttdef"><b>Definition:</b> confini.h:418</div></div>
-<div class="ttc" id="aconfini_8h_html_af663493e17740c707d3b6a13ddde5b2e"><div class="ttname"><a href="confini_8h.html#af663493e17740c707d3b6a13ddde5b2e">ini_fton</a></div><div class="ttdeci">IniFormatNum ini_fton(const IniFormat format)</div><div class="ttdoc">Calculate the IniFormatNum of an IniFormat.</div><div class="ttdef"><b>Definition:</b> confini.c:4868</div></div>
-<div class="ttc" id="astructIniStatistics_html"><div class="ttname"><a href="structIniStatistics.html">IniStatistics</a></div><div class="ttdoc">Global statistics about an INI file.</div><div class="ttdef"><b>Definition:</b> confini.h:101</div></div>
-<div class="ttc" id="aconfini_8h_html_a4b42cb63e48154fb799599eccd25ce29a133a335ff201d93015a27bd581e6b399"><div class="ttname"><a href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a133a335ff201d93015a27bd581e6b399">CONFINI_FEINTR</a></div><div class="ttdeci">@ CONFINI_FEINTR</div><div class="ttdef"><b>Definition:</b> confini.h:378</div></div>
-<div class="ttc" id="astructIniFormat_html_a3168fd8d019de9a2f648a1805718b310"><div class="ttname"><a href="structIniFormat.html#a3168fd8d019de9a2f648a1805718b310">IniFormat::section_paths</a></div><div class="ttdeci">unsigned char section_paths</div><div class="ttdef"><b>Definition:</b> confini.h:95</div></div>
-<div class="ttc" id="aconfini_8h_html_a4b42cb63e48154fb799599eccd25ce29a0e8e1cee80bc4b7839838764f5d661f5"><div class="ttname"><a href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a0e8e1cee80bc4b7839838764f5d661f5">CONFINI_ENOMEM</a></div><div class="ttdeci">@ CONFINI_ENOMEM</div><div class="ttdef"><b>Definition:</b> confini.h:381</div></div>
-<div class="ttc" id="aconfini_8h_html_a4b01f84229fe403d5b061378ebe86134a1126b82b479382f2d3dada130c08962f"><div class="ttname"><a href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134a1126b82b479382f2d3dada130c08962f">INI_ABSOLUTE_ONLY</a></div><div class="ttdeci">@ INI_ABSOLUTE_ONLY</div><div class="ttdef"><b>Definition:</b> confini.h:452</div></div>
-<div class="ttc" id="aconfini_8h_html_a7d5042d3044dfb5a34a6bfc5af3a882d"><div class="ttname"><a href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d">load_ini_file</a></div><div class="ttdeci">int load_ini_file(FILE *const ini_file, const IniFormat format, const IniStatsHandler f_init, const IniDispHandler f_foreach, void *const user_data)</div><div class="ttdoc">Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.</div><div class="ttdef"><b>Definition:</b> confini.c:2811</div></div>
-<div class="ttc" id="astructIniFormat_html_aab0c2bf1e89593bbbfc9ac5fc5f6f552"><div class="ttname"><a href="structIniFormat.html#aab0c2bf1e89593bbbfc9ac5fc5f6f552">IniFormat::semicolon_marker</a></div><div class="ttdeci">unsigned char semicolon_marker</div><div class="ttdef"><b>Definition:</b> confini.h:95</div></div>
-<div class="ttc" id="astructIniFormat_html_aa6e8b4274f3da1468a1806398b504d64"><div class="ttname"><a href="structIniFormat.html#aa6e8b4274f3da1468a1806398b504d64">IniFormat::no_double_quotes</a></div><div class="ttdeci">unsigned char no_double_quotes</div><div class="ttdef"><b>Definition:</b> confini.h:95</div></div>
-<div class="ttc" id="astructIniDispatch_html"><div class="ttname"><a href="structIniDispatch.html">IniDispatch</a></div><div class="ttdoc">Dispatch of a single INI node.</div><div class="ttdef"><b>Definition:</b> confini.h:111</div></div>
-<div class="ttc" id="aconfini_8h_html_a6f7ff029dfae5a0e3bb5bc08f887bdcda37cb73b9bfc8bc6cc9d887108b4168bd"><div class="ttname"><a href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcda37cb73b9bfc8bc6cc9d887108b4168bd">INI_IGNORE</a></div><div class="ttdeci">@ INI_IGNORE</div><div class="ttdef"><b>Definition:</b> confini.h:437</div></div>
-<div class="ttc" id="astructIniFormat_html_a4d9984334335612830eef223e0adc913"><div class="ttname"><a href="structIniFormat.html#a4d9984334335612830eef223e0adc913">IniFormat::hash_marker</a></div><div class="ttdeci">unsigned char hash_marker</div><div class="ttdef"><b>Definition:</b> confini.h:95</div></div>
-<div class="ttc" id="astructIniDispatch_html_a795864cff55f67498aa22722c17fc6d2"><div class="ttname"><a href="structIniDispatch.html#a795864cff55f67498aa22722c17fc6d2">IniDispatch::dispatch_id</a></div><div class="ttdeci">size_t dispatch_id</div><div class="ttdef"><b>Definition:</b> confini.h:120</div></div>
-<div class="ttc" id="aconfini_8h_html_acecf086ca074b27365e877f056af2192"><div class="ttname"><a href="confini_8h.html#acecf086ca074b27365e877f056af2192">INI_GLOBAL_IMPLICIT_V_LEN</a></div><div class="ttdeci">size_t INI_GLOBAL_IMPLICIT_V_LEN</div><div class="ttdoc">Length of the value assigned to implicit keys (default value: 0)</div><div class="ttdef"><b>Definition:</b> confini.c:5014</div></div>
-<div class="ttc" id="aconfini_8h_html_a25d648d387f6e8bc36e7965accfca63b"><div class="ttname"><a href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b">strip_ini_cache</a></div><div class="ttdeci">int strip_ini_cache(register char *const ini_source, const size_t ini_length, const IniFormat format, const IniStatsHandler f_init, const IniDispHandler f_foreach, void *const user_data)</div><div class="ttdoc">Parse and tokenize a buffer containing an INI file, then dispatch its content to a custom callback.</div><div class="ttdef"><b>Definition:</b> confini.c:2301</div></div>
-<div class="ttc" id="aconfini_8h_html_ab4e3d48f0eb0438ba0c84fc77e362aa3"><div class="ttname"><a href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3">ini_string_parse</a></div><div class="ttdeci">size_t ini_string_parse(char *const ini_string, const IniFormat format)</div><div class="ttdoc">Unescape \', \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...</div><div class="ttdef"><b>Definition:</b> confini.c:3805</div></div>
-<div class="ttc" id="astructIniDispatch_html_a8d7eb3387ff5ecb79900fae717234d16"><div class="ttname"><a href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></div><div class="ttdeci">char * value</div><div class="ttdef"><b>Definition:</b> confini.h:115</div></div>
-<div class="ttc" id="aconfini_8h_html_a6f7ff029dfae5a0e3bb5bc08f887bdcda468cf45c03530c48597e4ed6383e74c5"><div class="ttname"><a href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcda468cf45c03530c48597e4ed6383e74c5">INI_DISABLED_OR_COMMENT</a></div><div class="ttdeci">@ INI_DISABLED_OR_COMMENT</div><div class="ttdef"><b>Definition:</b> confini.h:434</div></div>
-<div class="ttc" id="aconfini_8h_html_a0b9dcb5c0711475ea78b065b0322bde1"><div class="ttname"><a href="confini_8h.html#a0b9dcb5c0711475ea78b065b0322bde1">CONFINI_ERROR</a></div><div class="ttdeci">#define CONFINI_ERROR</div><div class="ttdoc">Error mask (flags not present in user-generated interruptions)</div><div class="ttdef"><b>Definition:</b> confini.h:367</div></div>
-<div class="ttc" id="astructIniFormat_html_a50f562eda0d26ed7e0d3c57afeb46d2d"><div class="ttname"><a href="structIniFormat.html#a50f562eda0d26ed7e0d3c57afeb46d2d">IniFormat::case_sensitive</a></div><div class="ttdeci">unsigned char case_sensitive</div><div class="ttdef"><b>Definition:</b> confini.h:95</div></div>
-<div class="ttc" id="aconfini_8h_html_a76a050b341e311cc9bbb79b399691e12"><div class="ttname"><a href="confini_8h.html#a76a050b341e311cc9bbb79b399691e12">ini_array_match</a></div><div class="ttdeci">bool ini_array_match(const char *const ini_string_a, const char *const ini_string_b, const char delimiter, const IniFormat format)</div><div class="ttdoc">Compare two INI arrays and check whether they match.</div><div class="ttdef"><b>Definition:</b> confini.c:3432</div></div>
-<div class="ttc" id="astructIniFormat_html_a491e94bda3f8545471a86f0845c92474"><div class="ttname"><a href="structIniFormat.html#a491e94bda3f8545471a86f0845c92474">IniFormat::no_spaces_in_names</a></div><div class="ttdeci">unsigned char no_spaces_in_names</div><div class="ttdef"><b>Definition:</b> confini.h:95</div></div>
-<div class="ttc" id="aconfini_8h_html_a5773ae8cbe4ce15737dcece84b362fa0"><div class="ttname"><a href="confini_8h.html#a5773ae8cbe4ce15737dcece84b362fa0">ini_string_match_si</a></div><div class="ttdeci">bool ini_string_match_si(const char *const simple_string, const char *const ini_string, const IniFormat format)</div><div class="ttdoc">Compare a simple string and an INI string and and check whether they match.</div><div class="ttdef"><b>Definition:</b> confini.c:3070</div></div>
-<div class="ttc" id="astructIniFormat_html_ae5722efd535f1d27c624a927eea622c3"><div class="ttname"><a href="structIniFormat.html#ae5722efd535f1d27c624a927eea622c3">IniFormat::implicit_is_not_empty</a></div><div class="ttdeci">unsigned char implicit_is_not_empty</div><div class="ttdef"><b>Definition:</b> confini.h:95</div></div>
-<div class="ttc" id="astructIniDispatch_html_ae3aca4d49e430c9180b4f80b3f0624d9"><div class="ttname"><a href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></div><div class="ttdeci">const char * append_to</div><div class="ttdef"><b>Definition:</b> confini.h:116</div></div>
+<div class="ttc" id="aconfini_8h_html_a4b01f84229fe403d5b061378ebe86134a950b824b44a557cb26647b9f2f922d1c"><div class="ttname"><a href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134a950b824b44a557cb26647b9f2f922d1c">INI_NO_SECTIONS</a></div><div class="ttdeci">@ INI_NO_SECTIONS</div><div class="ttdef"><b>Definition:</b> confini.h:492</div></div>
+<div class="ttc" id="aconfini_8h_html_ac670c2fdf19ae6eee3de83dd183ae55fa32940b5375486473634a3e06043b1789"><div class="ttname"><a href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa32940b5375486473634a3e06043b1789">INI_MULTILINE_EVERYWHERE</a></div><div class="ttdeci">@ INI_MULTILINE_EVERYWHERE</div><div class="ttdef"><b>Definition:</b> confini.h:502</div></div>
+<div class="ttc" id="aconfini_8h_html_a4e394db479f56eaa830ade09c907461ba38e952e2092e426a29e6618698772bff"><div class="ttname"><a href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba38e952e2092e426a29e6618698772bff">INI_DISABLED_SECTION</a></div><div class="ttdeci">@ INI_DISABLED_SECTION</div><div class="ttdef"><b>Definition:</b> confini.h:442</div></div>
+<div class="ttc" id="astructIniDispatch_html_adfda221d4a9effcb4f3ee6a99c5f2de2"><div class="ttname"><a href="structIniDispatch.html#adfda221d4a9effcb4f3ee6a99c5f2de2">IniDispatch::format</a></div><div class="ttdeci">const IniFormat format</div><div class="ttdef"><b>Definition:</b> confini.h:133</div></div>
+<div class="ttc" id="aconfini_8h_html_a8dfc7ebbb087a23d4076c1d688572b1c"><div class="ttname"><a href="confini_8h.html#a8dfc7ebbb087a23d4076c1d688572b1c">IniFormatNum</a></div><div class="ttdeci">uint32_t IniFormatNum</div><div class="ttdoc">The unique ID of an INI format (24-bit maximum)</div><div class="ttdef"><b>Definition:</b> confini.h:148</div></div>
+<div class="ttc" id="astructIniDispatch_html_a67b4c4b61e3c801cbfbcca95073ce864"><div class="ttname"><a href="structIniDispatch.html#a67b4c4b61e3c801cbfbcca95073ce864">IniDispatch::v_len</a></div><div class="ttdeci">size_t v_len</div><div class="ttdef"><b>Definition:</b> confini.h:139</div></div>
+<div class="ttc" id="astructIniDispatch_html_a3821b15b23e587eca172763dd4acd954"><div class="ttname"><a href="structIniDispatch.html#a3821b15b23e587eca172763dd4acd954">IniDispatch::data</a></div><div class="ttdeci">char * data</div><div class="ttdef"><b>Definition:</b> confini.h:135</div></div>
+<div class="ttc" id="astructIniFormat_html"><div class="ttname"><a href="structIniFormat.html">IniFormat</a></div><div class="ttdoc">24-bit bitfield representing the format of an INI file (INI dialect)</div><div class="ttdef"><b>Definition:</b> confini.h:116</div></div>
+<div class="ttc" id="aconfini_8h_html_ac55f3fab95f697ac5058533df100fc11"><div class="ttname"><a href="confini_8h.html#ac55f3fab95f697ac5058533df100fc11">ini_unquote</a></div><div class="ttdeci">size_t ini_unquote(char *const ini_string, const IniFormat format)</div><div class="ttdoc">Unescape \', \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...</div><div class="ttdef"><b>Definition:</b> confini.c:3705</div></div>
+<div class="ttc" id="astructIniFormat_html_a8a4a1d116d66bad0c61d9876bf9f87ee"><div class="ttname"><a href="structIniFormat.html#a8a4a1d116d66bad0c61d9876bf9f87ee">IniFormat::multiline_nodes</a></div><div class="ttdeci">unsigned char multiline_nodes</div><div class="ttdef"><b>Definition:</b> confini.h:116</div></div>
+<div class="ttc" id="aconfini_8h_html_a731857502fa7f8e31c4a024335a6d5d6"><div class="ttname"><a href="confini_8h.html#a731857502fa7f8e31c4a024335a6d5d6">ini_string_match_ii</a></div><div class="ttdeci">bool ini_string_match_ii(const char *const ini_string_a, const char *const ini_string_b, const IniFormat format)</div><div class="ttdoc">Compare two INI strings and check whether they match.</div><div class="ttdef"><b>Definition:</b> confini.c:3276</div></div>
+<div class="ttc" id="aconfini_8h_html_a4b01f84229fe403d5b061378ebe86134a369aca51c7228abeae22d232a7fbe1f9"><div class="ttname"><a href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134a369aca51c7228abeae22d232a7fbe1f9">INI_ABSOLUTE_AND_RELATIVE</a></div><div class="ttdeci">@ INI_ABSOLUTE_AND_RELATIVE</div><div class="ttdef"><b>Definition:</b> confini.h:483</div></div>
+<div class="ttc" id="aconfini_8h_html_ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd"><div class="ttname"><a href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8aa8d5a000ce9320e5dec88721095133cd">INI_ANY_SPACE</a></div><div class="ttdeci">@ INI_ANY_SPACE</div><div class="ttdef"><b>Definition:</b> confini.h:452</div></div>
+<div class="ttc" id="aconfini_8h_html_af663493e17740c707d3b6a13ddde5b2e"><div class="ttname"><a href="confini_8h.html#af663493e17740c707d3b6a13ddde5b2e">ini_fton</a></div><div class="ttdeci">IniFormatNum ini_fton(const IniFormat format)</div><div class="ttdoc">Calculate the IniFormatNum of an IniFormat.</div><div class="ttdef"><b>Definition:</b> confini.c:4915</div></div>
+<div class="ttc" id="astructIniStatistics_html"><div class="ttname"><a href="structIniStatistics.html">IniStatistics</a></div><div class="ttdoc">Global statistics about an INI file.</div><div class="ttdef"><b>Definition:</b> confini.h:122</div></div>
+<div class="ttc" id="aconfini_8h_html_a4b42cb63e48154fb799599eccd25ce29a133a335ff201d93015a27bd581e6b399"><div class="ttname"><a href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a133a335ff201d93015a27bd581e6b399">CONFINI_FEINTR</a></div><div class="ttdeci">@ CONFINI_FEINTR</div><div class="ttdef"><b>Definition:</b> confini.h:404</div></div>
+<div class="ttc" id="astructIniFormat_html_a3168fd8d019de9a2f648a1805718b310"><div class="ttname"><a href="structIniFormat.html#a3168fd8d019de9a2f648a1805718b310">IniFormat::section_paths</a></div><div class="ttdeci">unsigned char section_paths</div><div class="ttdef"><b>Definition:</b> confini.h:116</div></div>
+<div class="ttc" id="aconfini_8h_html_a4b42cb63e48154fb799599eccd25ce29a0e8e1cee80bc4b7839838764f5d661f5"><div class="ttname"><a href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a0e8e1cee80bc4b7839838764f5d661f5">CONFINI_ENOMEM</a></div><div class="ttdeci">@ CONFINI_ENOMEM</div><div class="ttdef"><b>Definition:</b> confini.h:407</div></div>
+<div class="ttc" id="aconfini_8h_html_a4b01f84229fe403d5b061378ebe86134a1126b82b479382f2d3dada130c08962f"><div class="ttname"><a href="confini_8h.html#a4b01f84229fe403d5b061378ebe86134a1126b82b479382f2d3dada130c08962f">INI_ABSOLUTE_ONLY</a></div><div class="ttdeci">@ INI_ABSOLUTE_ONLY</div><div class="ttdef"><b>Definition:</b> confini.h:486</div></div>
+<div class="ttc" id="aconfini_8h_html_a7d5042d3044dfb5a34a6bfc5af3a882d"><div class="ttname"><a href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d">load_ini_file</a></div><div class="ttdeci">int load_ini_file(FILE *const ini_file, const IniFormat format, const IniStatsHandler f_init, const IniDispHandler f_foreach, void *const user_data)</div><div class="ttdoc">Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.</div><div class="ttdef"><b>Definition:</b> confini.c:2849</div></div>
+<div class="ttc" id="aconfini_8h_html_a22185e778bfd2a35407a4915dc56e02e"><div class="ttname"><a href="confini_8h.html#a22185e778bfd2a35407a4915dc56e02e">INI_IS_IMPLICIT_SUBSTR</a></div><div class="ttdeci">#define INI_IS_IMPLICIT_SUBSTR(CHAR_PTR)</div><div class="ttdoc">Check whether a given char * data type points to the global variable INI_GLOBAL_IMPLICIT_VALUE or to ...</div><div class="ttdef"><b>Definition:</b> confini.h:103</div></div>
+<div class="ttc" id="astructIniFormat_html_aab0c2bf1e89593bbbfc9ac5fc5f6f552"><div class="ttname"><a href="structIniFormat.html#aab0c2bf1e89593bbbfc9ac5fc5f6f552">IniFormat::semicolon_marker</a></div><div class="ttdeci">unsigned char semicolon_marker</div><div class="ttdef"><b>Definition:</b> confini.h:116</div></div>
+<div class="ttc" id="astructIniFormat_html_aa6e8b4274f3da1468a1806398b504d64"><div class="ttname"><a href="structIniFormat.html#aa6e8b4274f3da1468a1806398b504d64">IniFormat::no_double_quotes</a></div><div class="ttdeci">unsigned char no_double_quotes</div><div class="ttdef"><b>Definition:</b> confini.h:116</div></div>
+<div class="ttc" id="astructIniDispatch_html"><div class="ttname"><a href="structIniDispatch.html">IniDispatch</a></div><div class="ttdoc">Dispatch of a single INI node.</div><div class="ttdef"><b>Definition:</b> confini.h:132</div></div>
+<div class="ttc" id="astructIniStatistics_html_ab4af1f388bd4109a9a9b1bc449146ec7"><div class="ttname"><a href="structIniStatistics.html#ab4af1f388bd4109a9a9b1bc449146ec7">IniStatistics::members</a></div><div class="ttdeci">const size_t members</div><div class="ttdef"><b>Definition:</b> confini.h:125</div></div>
+<div class="ttc" id="astructIniFormat_html_a4d9984334335612830eef223e0adc913"><div class="ttname"><a href="structIniFormat.html#a4d9984334335612830eef223e0adc913">IniFormat::hash_marker</a></div><div class="ttdeci">unsigned char hash_marker</div><div class="ttdef"><b>Definition:</b> confini.h:116</div></div>
+<div class="ttc" id="aconfini_8h_html_a4e394db479f56eaa830ade09c907461ba596f391d896636da6f004a7d010edb50"><div class="ttname"><a href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba596f391d896636da6f004a7d010edb50">INI_SECTION</a></div><div class="ttdeci">@ INI_SECTION</div><div class="ttdef"><b>Definition:</b> confini.h:438</div></div>
+<div class="ttc" id="astructIniDispatch_html_a795864cff55f67498aa22722c17fc6d2"><div class="ttname"><a href="structIniDispatch.html#a795864cff55f67498aa22722c17fc6d2">IniDispatch::dispatch_id</a></div><div class="ttdeci">size_t dispatch_id</div><div class="ttdef"><b>Definition:</b> confini.h:141</div></div>
+<div class="ttc" id="aconfini_8h_html_acecf086ca074b27365e877f056af2192"><div class="ttname"><a href="confini_8h.html#acecf086ca074b27365e877f056af2192">INI_GLOBAL_IMPLICIT_V_LEN</a></div><div class="ttdeci">size_t INI_GLOBAL_IMPLICIT_V_LEN</div><div class="ttdoc">Length of the value assigned to implicit keys (default value: 0)</div><div class="ttdef"><b>Definition:</b> confini.c:5071</div></div>
+<div class="ttc" id="aconfini_8h_html_a25d648d387f6e8bc36e7965accfca63b"><div class="ttname"><a href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b">strip_ini_cache</a></div><div class="ttdeci">int strip_ini_cache(register char *const ini_source, const size_t ini_length, const IniFormat format, const IniStatsHandler f_init, const IniDispHandler f_foreach, void *const user_data)</div><div class="ttdoc">Parse and tokenize a buffer containing an INI file, then dispatch its content to a custom callback.</div><div class="ttdef"><b>Definition:</b> confini.c:2326</div></div>
+<div class="ttc" id="aconfini_8h_html_ab4e3d48f0eb0438ba0c84fc77e362aa3"><div class="ttname"><a href="confini_8h.html#ab4e3d48f0eb0438ba0c84fc77e362aa3">ini_string_parse</a></div><div class="ttdeci">size_t ini_string_parse(char *const ini_string, const IniFormat format)</div><div class="ttdoc">Unescape \', \&quot;, and \\ and remove all unescaped quotes (when single/double quotes are considered met...</div><div class="ttdef"><b>Definition:</b> confini.c:3843</div></div>
+<div class="ttc" id="astructIniStatistics_html_a1432aac124e3bc81c6845b42c16ef732"><div class="ttname"><a href="structIniStatistics.html#a1432aac124e3bc81c6845b42c16ef732">IniStatistics::format</a></div><div class="ttdeci">const IniFormat format</div><div class="ttdef"><b>Definition:</b> confini.h:123</div></div>
+<div class="ttc" id="astructIniDispatch_html_a8d7eb3387ff5ecb79900fae717234d16"><div class="ttname"><a href="structIniDispatch.html#a8d7eb3387ff5ecb79900fae717234d16">IniDispatch::value</a></div><div class="ttdeci">char * value</div><div class="ttdef"><b>Definition:</b> confini.h:136</div></div>
+<div class="ttc" id="aconfini_8c_html_ad6e6972b13052e995b3ceb2fb4996ede"><div class="ttname"><a href="confini_8c.html#ad6e6972b13052e995b3ceb2fb4996ede">string_tolower</a></div><div class="ttdeci">static void string_tolower(char *const str)</div><div class="ttdoc">Convert an ASCII string to lower case.</div><div class="ttdef"><b>Definition:</b> confini.c:723</div></div>
+<div class="ttc" id="aconfini_8h_html_a6f7ff029dfae5a0e3bb5bc08f887bdcda468cf45c03530c48597e4ed6383e74c5"><div class="ttname"><a href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcda468cf45c03530c48597e4ed6383e74c5">INI_DISABLED_OR_COMMENT</a></div><div class="ttdeci">@ INI_DISABLED_OR_COMMENT</div><div class="ttdef"><b>Definition:</b> confini.h:468</div></div>
+<div class="ttc" id="aconfini_8h_html_a0b9dcb5c0711475ea78b065b0322bde1"><div class="ttname"><a href="confini_8h.html#a0b9dcb5c0711475ea78b065b0322bde1">CONFINI_ERROR</a></div><div class="ttdeci">#define CONFINI_ERROR</div><div class="ttdoc">Error mask (flags not present in user-generated interruptions)</div><div class="ttdef"><b>Definition:</b> confini.h:393</div></div>
+<div class="ttc" id="astructIniFormat_html_a50f562eda0d26ed7e0d3c57afeb46d2d"><div class="ttname"><a href="structIniFormat.html#a50f562eda0d26ed7e0d3c57afeb46d2d">IniFormat::case_sensitive</a></div><div class="ttdeci">unsigned char case_sensitive</div><div class="ttdef"><b>Definition:</b> confini.h:116</div></div>
+<div class="ttc" id="aconfini_8h_html_a76a050b341e311cc9bbb79b399691e12"><div class="ttname"><a href="confini_8h.html#a76a050b341e311cc9bbb79b399691e12">ini_array_match</a></div><div class="ttdeci">bool ini_array_match(const char *const ini_string_a, const char *const ini_string_b, const char delimiter, const IniFormat format)</div><div class="ttdoc">Compare two INI arrays and check whether they match.</div><div class="ttdef"><b>Definition:</b> confini.c:3470</div></div>
+<div class="ttc" id="astructIniFormat_html_a491e94bda3f8545471a86f0845c92474"><div class="ttname"><a href="structIniFormat.html#a491e94bda3f8545471a86f0845c92474">IniFormat::no_spaces_in_names</a></div><div class="ttdeci">unsigned char no_spaces_in_names</div><div class="ttdef"><b>Definition:</b> confini.h:116</div></div>
+<div class="ttc" id="aconfini_8h_html_a5773ae8cbe4ce15737dcece84b362fa0"><div class="ttname"><a href="confini_8h.html#a5773ae8cbe4ce15737dcece84b362fa0">ini_string_match_si</a></div><div class="ttdeci">bool ini_string_match_si(const char *const simple_string, const char *const ini_string, const IniFormat format)</div><div class="ttdoc">Compare a simple string and an INI string and and check whether they match.</div><div class="ttdef"><b>Definition:</b> confini.c:3108</div></div>
+<div class="ttc" id="astructIniFormat_html_ae5722efd535f1d27c624a927eea622c3"><div class="ttname"><a href="structIniFormat.html#ae5722efd535f1d27c624a927eea622c3">IniFormat::implicit_is_not_empty</a></div><div class="ttdeci">unsigned char implicit_is_not_empty</div><div class="ttdef"><b>Definition:</b> confini.h:116</div></div>
+<div class="ttc" id="astructIniDispatch_html_ae3aca4d49e430c9180b4f80b3f0624d9"><div class="ttname"><a href="structIniDispatch.html#ae3aca4d49e430c9180b4f80b3f0624d9">IniDispatch::append_to</a></div><div class="ttdeci">const char * append_to</div><div class="ttdef"><b>Definition:</b> confini.h:137</div></div>
 <div class="ttc" id="aconfini_8h_html"><div class="ttname"><a href="confini_8h.html">confini.h</a></div><div class="ttdoc">libconfini header</div></div>
-<div class="ttc" id="aconfini_8h_html_a6f7ff029dfae5a0e3bb5bc08f887bdcdac4783966b430aac97b22bb59c522faa7"><div class="ttname"><a href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcdac4783966b430aac97b22bb59c522faa7">INI_IS_NOT_A_MARKER</a></div><div class="ttdeci">@ INI_IS_NOT_A_MARKER</div><div class="ttdef"><b>Definition:</b> confini.h:440</div></div>
-<div class="ttc" id="astructIniFormat_html_a6ad00ea76bbe5ed109f4192f89859656"><div class="ttname"><a href="structIniFormat.html#a6ad00ea76bbe5ed109f4192f89859656">IniFormat::disabled_after_space</a></div><div class="ttdeci">unsigned char disabled_after_space</div><div class="ttdef"><b>Definition:</b> confini.h:95</div></div>
-<div class="ttc" id="aconfini_8h_html_ac670c2fdf19ae6eee3de83dd183ae55fa287fd13b8c6d991694f9e5fb2c3a334a"><div class="ttname"><a href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa287fd13b8c6d991694f9e5fb2c3a334a">INI_NO_MULTILINE</a></div><div class="ttdeci">@ INI_NO_MULTILINE</div><div class="ttdef"><b>Definition:</b> confini.h:477</div></div>
-<div class="ttc" id="astructIniFormat_html_ad224b6997bbb99d4715fba8a8bea4cd7"><div class="ttname"><a href="structIniFormat.html#ad224b6997bbb99d4715fba8a8bea4cd7">IniFormat::preserve_empty_quotes</a></div><div class="ttdeci">unsigned char preserve_empty_quotes</div><div class="ttdef"><b>Definition:</b> confini.h:95</div></div>
-<div class="ttc" id="aconfini_8h_html_a0eff1cb87db5b73071e87f8cc9c4b445"><div class="ttname"><a href="confini_8h.html#a0eff1cb87db5b73071e87f8cc9c4b445">IniDispHandler</a></div><div class="ttdeci">int(* IniDispHandler)(IniDispatch *dispatch, void *user_data)</div><div class="ttdoc">Callback function for handling an IniDispatch structure.</div><div class="ttdef"><b>Definition:</b> confini.h:142</div></div>
-<div class="ttc" id="aconfini_8h_html_a6f7ff029dfae5a0e3bb5bc08f887bdcdab8a602bb219c0f0ce8ac35fb9225fc3d"><div class="ttname"><a href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcdab8a602bb219c0f0ce8ac35fb9225fc3d">INI_ONLY_COMMENT</a></div><div class="ttdeci">@ INI_ONLY_COMMENT</div><div class="ttdef"><b>Definition:</b> confini.h:436</div></div>
-<div class="ttc" id="astructIniFormat_html_ab5937aaf72b0ce5b62aece8d23ad7b82"><div class="ttname"><a href="structIniFormat.html#ab5937aaf72b0ce5b62aece8d23ad7b82">IniFormat::disabled_can_be_implicit</a></div><div class="ttdeci">unsigned char disabled_can_be_implicit</div><div class="ttdef"><b>Definition:</b> confini.h:95</div></div>
-<div class="ttc" id="aconfini_8h_html_a724e3c7be7055b35bccb080f748868b5"><div class="ttname"><a href="confini_8h.html#a724e3c7be7055b35bccb080f748868b5">INI_UNIXLIKE_FORMAT</a></div><div class="ttdeci">static const IniFormat INI_UNIXLIKE_FORMAT</div><div class="ttdoc">A model format for Unix-like .conf files (where space characters are delimiters between keys and valu...</div><div class="ttdef"><b>Definition:</b> confini.h:493</div></div>
-<div class="ttc" id="aconfini_8h_html_a44d7de5e7bb75d40d31832a82b66891d"><div class="ttname"><a href="confini_8h.html#a44d7de5e7bb75d40d31832a82b66891d">INI_GLOBAL_LOWERCASE_MODE</a></div><div class="ttdeci">bool INI_GLOBAL_LOWERCASE_MODE</div><div class="ttdoc">If set to true, key and section names in case-insensitive INI formats will be dispatched lowercase,...</div><div class="ttdef"><b>Definition:</b> confini.c:5010</div></div>
-<div class="ttc" id="astructIniFormat_html_a6d9981301f5a16d73e2c38cb80f7f962"><div class="ttname"><a href="structIniFormat.html#a6d9981301f5a16d73e2c38cb80f7f962">IniFormat::delimiter_symbol</a></div><div class="ttdeci">unsigned char delimiter_symbol</div><div class="ttdef"><b>Definition:</b> confini.h:95</div></div>
-<div class="ttc" id="aconfini_8h_html_a4e394db479f56eaa830ade09c907461ba97333d01dfff8f9a9c690fc559751b45"><div class="ttname"><a href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba97333d01dfff8f9a9c690fc559751b45">INI_KEY</a></div><div class="ttdeci">@ INI_KEY</div><div class="ttdef"><b>Definition:</b> confini.h:402</div></div>
-<div class="ttc" id="aconfini_8h_html_a777f4548185711a000e3d9feea8d9017"><div class="ttname"><a href="confini_8h.html#a777f4548185711a000e3d9feea8d9017">ini_ntof</a></div><div class="ttdeci">IniFormat ini_ntof(const IniFormatNum format_id)</div><div class="ttdoc">Construct a new IniFormat according to an IniFormatNum.</div><div class="ttdef"><b>Definition:</b> confini.c:4889</div></div>
-<div class="ttc" id="astructIniStatistics_html_ab5911ee36bf6c20d6e9107c769945ffd"><div class="ttname"><a href="structIniStatistics.html#ab5911ee36bf6c20d6e9107c769945ffd">IniStatistics::bytes</a></div><div class="ttdeci">const size_t bytes</div><div class="ttdef"><b>Definition:</b> confini.h:103</div></div>
-<div class="ttc" id="astructIniDispatch_html_a7f6ebc6713aae413c4157ce68008a8a8"><div class="ttname"><a href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">IniDispatch::type</a></div><div class="ttdeci">uint8_t type</div><div class="ttdef"><b>Definition:</b> confini.h:113</div></div>
-<div class="ttc" id="aconfini_8h_html_a4e394db479f56eaa830ade09c907461ba9b68a1fa247c1b1ae3fc2ce615359c7b"><div class="ttname"><a href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba9b68a1fa247c1b1ae3fc2ce615359c7b">INI_DISABLED_KEY</a></div><div class="ttdeci">@ INI_DISABLED_KEY</div><div class="ttdef"><b>Definition:</b> confini.h:407</div></div>
-<div class="ttc" id="aconfini_8h_html_a243b229193f154746a9fbfbdb02689bf"><div class="ttname"><a href="confini_8h.html#a243b229193f154746a9fbfbdb02689bf">INI_GLOBAL_IMPLICIT_VALUE</a></div><div class="ttdeci">char * INI_GLOBAL_IMPLICIT_VALUE</div><div class="ttdoc">Value to be assigned to implicit keys (default value: NULL)</div><div class="ttdef"><b>Definition:</b> confini.c:5012</div></div>
-<div class="ttc" id="aconfini_8h_html_ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f"><div class="ttname"><a href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f">INI_EQUALS</a></div><div class="ttdeci">@ INI_EQUALS</div><div class="ttdef"><b>Definition:</b> confini.h:421</div></div>
-<div class="ttc" id="astructIniDispatch_html_a34937218fa772fa66ceaa38923437791"><div class="ttname"><a href="structIniDispatch.html#a34937218fa772fa66ceaa38923437791">IniDispatch::d_len</a></div><div class="ttdeci">size_t d_len</div><div class="ttdef"><b>Definition:</b> confini.h:117</div></div>
-<div class="ttc" id="aconfini_8h_html_a54be108d26619db3066ce1c000dc8a17"><div class="ttname"><a href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17">load_ini_path</a></div><div class="ttdeci">int load_ini_path(const char *const path, const IniFormat format, const IniStatsHandler f_init, const IniDispHandler f_foreach, void *const user_data)</div><div class="ttdoc">Parse an INI file and dispatch its content to a custom callback using a path as argument.</div><div class="ttdef"><b>Definition:</b> confini.c:2895</div></div>
-<div class="ttc" id="astructIniFormat_html_a2fe0e57e8a802f828bc12a6462438e38"><div class="ttname"><a href="structIniFormat.html#a2fe0e57e8a802f828bc12a6462438e38">IniFormat::no_single_quotes</a></div><div class="ttdeci">unsigned char no_single_quotes</div><div class="ttdef"><b>Definition:</b> confini.h:95</div></div>
-<div class="ttc" id="aconfini_8h_html_a3a6eb3b79a88304864341075240ee412"><div class="ttname"><a href="confini_8h.html#a3a6eb3b79a88304864341075240ee412">ini_global_set_implicit_value</a></div><div class="ttdeci">void ini_global_set_implicit_value(char *const implicit_value, const size_t implicit_v_len)</div><div class="ttdoc">Set the value to be to be assigned to implicit keys.</div><div class="ttdef"><b>Definition:</b> confini.c:4852</div></div>
-<div class="ttc" id="aconfini_8h_html_adf7805f5e47fcf9771da62e30f73786b"><div class="ttname"><a href="confini_8h.html#adf7805f5e47fcf9771da62e30f73786b">ini_get_bool</a></div><div class="ttdeci">int ini_get_bool(const char *const ini_string, const int when_fail)</div><div class="ttdoc">Check whether a string matches one of the booleans listed in the private constant INI_BOOLEANS (case-...</div><div class="ttdef"><b>Definition:</b> confini.c:4934</div></div>
-<div class="ttc" id="aconfini_8h_html_aafa50d590c715f37b74fa5938a35a56f"><div class="ttname"><a href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a></div><div class="ttdeci">static const IniFormat INI_DEFAULT_FORMAT</div><div class="ttdoc">A model format for standard INI files.</div><div class="ttdef"><b>Definition:</b> confini.h:485</div></div>
-<div class="ttc" id="aconfini_8h_html_a3330e1083693c66b63b18c0d8883f9a8"><div class="ttname"><a href="confini_8h.html#a3330e1083693c66b63b18c0d8883f9a8">IniStatsHandler</a></div><div class="ttdeci">int(* IniStatsHandler)(IniStatistics *statistics, void *user_data)</div><div class="ttdoc">Callback function for handling an IniStatistics structure.</div><div class="ttdef"><b>Definition:</b> confini.h:133</div></div>
-<div class="ttc" id="astructIniFormat_html_af411935de86436fb9555ee57ba04960e"><div class="ttname"><a href="structIniFormat.html#af411935de86436fb9555ee57ba04960e">IniFormat::do_not_collapse_values</a></div><div class="ttdeci">unsigned char do_not_collapse_values</div><div class="ttdef"><b>Definition:</b> confini.h:95</div></div>
+<div class="ttc" id="aconfini_8h_html_a6f7ff029dfae5a0e3bb5bc08f887bdcdac4783966b430aac97b22bb59c522faa7"><div class="ttname"><a href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcdac4783966b430aac97b22bb59c522faa7">INI_IS_NOT_A_MARKER</a></div><div class="ttdeci">@ INI_IS_NOT_A_MARKER</div><div class="ttdef"><b>Definition:</b> confini.h:474</div></div>
+<div class="ttc" id="astructIniFormat_html_a6ad00ea76bbe5ed109f4192f89859656"><div class="ttname"><a href="structIniFormat.html#a6ad00ea76bbe5ed109f4192f89859656">IniFormat::disabled_after_space</a></div><div class="ttdeci">unsigned char disabled_after_space</div><div class="ttdef"><b>Definition:</b> confini.h:116</div></div>
+<div class="ttc" id="aconfini_8h_html_ac670c2fdf19ae6eee3de83dd183ae55fa287fd13b8c6d991694f9e5fb2c3a334a"><div class="ttname"><a href="confini_8h.html#ac670c2fdf19ae6eee3de83dd183ae55fa287fd13b8c6d991694f9e5fb2c3a334a">INI_NO_MULTILINE</a></div><div class="ttdeci">@ INI_NO_MULTILINE</div><div class="ttdef"><b>Definition:</b> confini.h:511</div></div>
+<div class="ttc" id="astructIniFormat_html_ad224b6997bbb99d4715fba8a8bea4cd7"><div class="ttname"><a href="structIniFormat.html#ad224b6997bbb99d4715fba8a8bea4cd7">IniFormat::preserve_empty_quotes</a></div><div class="ttdeci">unsigned char preserve_empty_quotes</div><div class="ttdef"><b>Definition:</b> confini.h:116</div></div>
+<div class="ttc" id="aconfini_8h_html_a0eff1cb87db5b73071e87f8cc9c4b445"><div class="ttname"><a href="confini_8h.html#a0eff1cb87db5b73071e87f8cc9c4b445">IniDispHandler</a></div><div class="ttdeci">int(* IniDispHandler)(IniDispatch *dispatch, void *user_data)</div><div class="ttdoc">Callback function for handling an IniDispatch structure.</div><div class="ttdef"><b>Definition:</b> confini.h:163</div></div>
+<div class="ttc" id="aconfini_8h_html_a6f7ff029dfae5a0e3bb5bc08f887bdcdab8a602bb219c0f0ce8ac35fb9225fc3d"><div class="ttname"><a href="confini_8h.html#a6f7ff029dfae5a0e3bb5bc08f887bdcdab8a602bb219c0f0ce8ac35fb9225fc3d">INI_ONLY_COMMENT</a></div><div class="ttdeci">@ INI_ONLY_COMMENT</div><div class="ttdef"><b>Definition:</b> confini.h:470</div></div>
+<div class="ttc" id="astructIniFormat_html_ab5937aaf72b0ce5b62aece8d23ad7b82"><div class="ttname"><a href="structIniFormat.html#ab5937aaf72b0ce5b62aece8d23ad7b82">IniFormat::disabled_can_be_implicit</a></div><div class="ttdeci">unsigned char disabled_can_be_implicit</div><div class="ttdef"><b>Definition:</b> confini.h:116</div></div>
+<div class="ttc" id="aconfini_8h_html_a724e3c7be7055b35bccb080f748868b5"><div class="ttname"><a href="confini_8h.html#a724e3c7be7055b35bccb080f748868b5">INI_UNIXLIKE_FORMAT</a></div><div class="ttdeci">static const IniFormat INI_UNIXLIKE_FORMAT</div><div class="ttdoc">A model format for Unix-like .conf files (where space characters are delimiters between keys and valu...</div><div class="ttdef"><b>Definition:</b> confini.h:527</div></div>
+<div class="ttc" id="astructIniFormat_html_a6d9981301f5a16d73e2c38cb80f7f962"><div class="ttname"><a href="structIniFormat.html#a6d9981301f5a16d73e2c38cb80f7f962">IniFormat::delimiter_symbol</a></div><div class="ttdeci">unsigned char delimiter_symbol</div><div class="ttdef"><b>Definition:</b> confini.h:116</div></div>
+<div class="ttc" id="aconfini_8h_html_a4e394db479f56eaa830ade09c907461ba97333d01dfff8f9a9c690fc559751b45"><div class="ttname"><a href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba97333d01dfff8f9a9c690fc559751b45">INI_KEY</a></div><div class="ttdeci">@ INI_KEY</div><div class="ttdef"><b>Definition:</b> confini.h:437</div></div>
+<div class="ttc" id="aconfini_8h_html_a777f4548185711a000e3d9feea8d9017"><div class="ttname"><a href="confini_8h.html#a777f4548185711a000e3d9feea8d9017">ini_ntof</a></div><div class="ttdeci">IniFormat ini_ntof(const IniFormatNum format_id)</div><div class="ttdoc">Construct a new IniFormat according to an IniFormatNum.</div><div class="ttdef"><b>Definition:</b> confini.c:4936</div></div>
+<div class="ttc" id="astructIniStatistics_html_ab5911ee36bf6c20d6e9107c769945ffd"><div class="ttname"><a href="structIniStatistics.html#ab5911ee36bf6c20d6e9107c769945ffd">IniStatistics::bytes</a></div><div class="ttdeci">const size_t bytes</div><div class="ttdef"><b>Definition:</b> confini.h:124</div></div>
+<div class="ttc" id="astructIniDispatch_html_a7f6ebc6713aae413c4157ce68008a8a8"><div class="ttname"><a href="structIniDispatch.html#a7f6ebc6713aae413c4157ce68008a8a8">IniDispatch::type</a></div><div class="ttdeci">uint8_t type</div><div class="ttdef"><b>Definition:</b> confini.h:134</div></div>
+<div class="ttc" id="aconfini_8h_html_a4e394db479f56eaa830ade09c907461ba9b68a1fa247c1b1ae3fc2ce615359c7b"><div class="ttname"><a href="confini_8h.html#a4e394db479f56eaa830ade09c907461ba9b68a1fa247c1b1ae3fc2ce615359c7b">INI_DISABLED_KEY</a></div><div class="ttdeci">@ INI_DISABLED_KEY</div><div class="ttdef"><b>Definition:</b> confini.h:441</div></div>
+<div class="ttc" id="aconfini_8h_html_a243b229193f154746a9fbfbdb02689bf"><div class="ttname"><a href="confini_8h.html#a243b229193f154746a9fbfbdb02689bf">INI_GLOBAL_IMPLICIT_VALUE</a></div><div class="ttdeci">char * INI_GLOBAL_IMPLICIT_VALUE</div><div class="ttdoc">Value to be assigned to implicit keys (default value: NULL)</div><div class="ttdef"><b>Definition:</b> confini.c:5069</div></div>
+<div class="ttc" id="aconfini_8h_html_ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f"><div class="ttname"><a href="confini_8h.html#ad342637c37d95454c9392a8cc73bced8a4f659344801c97d2fe59fd49bea2351f">INI_EQUALS</a></div><div class="ttdeci">@ INI_EQUALS</div><div class="ttdef"><b>Definition:</b> confini.h:455</div></div>
+<div class="ttc" id="aconfini_8h_html_a54be108d26619db3066ce1c000dc8a17"><div class="ttname"><a href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17">load_ini_path</a></div><div class="ttdeci">int load_ini_path(const char *const path, const IniFormat format, const IniStatsHandler f_init, const IniDispHandler f_foreach, void *const user_data)</div><div class="ttdoc">Parse an INI file and dispatch its content to a custom callback using a path as argument.</div><div class="ttdef"><b>Definition:</b> confini.c:2933</div></div>
+<div class="ttc" id="astructIniFormat_html_a2fe0e57e8a802f828bc12a6462438e38"><div class="ttname"><a href="structIniFormat.html#a2fe0e57e8a802f828bc12a6462438e38">IniFormat::no_single_quotes</a></div><div class="ttdeci">unsigned char no_single_quotes</div><div class="ttdef"><b>Definition:</b> confini.h:116</div></div>
+<div class="ttc" id="aconfini_8h_html_a3a6eb3b79a88304864341075240ee412"><div class="ttname"><a href="confini_8h.html#a3a6eb3b79a88304864341075240ee412">ini_global_set_implicit_value</a></div><div class="ttdeci">void ini_global_set_implicit_value(char *const implicit_value, const size_t implicit_v_len)</div><div class="ttdoc">Set the value to be to be assigned to implicit keys.</div><div class="ttdef"><b>Definition:</b> confini.c:4899</div></div>
+<div class="ttc" id="aconfini_8h_html_adf7805f5e47fcf9771da62e30f73786b"><div class="ttname"><a href="confini_8h.html#adf7805f5e47fcf9771da62e30f73786b">ini_get_bool</a></div><div class="ttdeci">int ini_get_bool(const char *const ini_string, const int when_fail)</div><div class="ttdoc">Check whether a string matches one of the booleans listed in the private constant INI_BOOLEANS (case-...</div><div class="ttdef"><b>Definition:</b> confini.c:4981</div></div>
+<div class="ttc" id="aconfini_8h_html_aafa50d590c715f37b74fa5938a35a56f"><div class="ttname"><a href="confini_8h.html#aafa50d590c715f37b74fa5938a35a56f">INI_DEFAULT_FORMAT</a></div><div class="ttdeci">static const IniFormat INI_DEFAULT_FORMAT</div><div class="ttdoc">A model format for standard INI files.</div><div class="ttdef"><b>Definition:</b> confini.h:519</div></div>
+<div class="ttc" id="aconfini_8h_html_a3330e1083693c66b63b18c0d8883f9a8"><div class="ttname"><a href="confini_8h.html#a3330e1083693c66b63b18c0d8883f9a8">IniStatsHandler</a></div><div class="ttdeci">int(* IniStatsHandler)(IniStatistics *statistics, void *user_data)</div><div class="ttdoc">Callback function for handling an IniStatistics structure.</div><div class="ttdef"><b>Definition:</b> confini.h:154</div></div>
+<div class="ttc" id="astructIniFormat_html_af411935de86436fb9555ee57ba04960e"><div class="ttname"><a href="structIniFormat.html#af411935de86436fb9555ee57ba04960e">IniFormat::do_not_collapse_values</a></div><div class="ttdeci">unsigned char do_not_collapse_values</div><div class="ttdef"><b>Definition:</b> confini.h:116</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="http://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.20

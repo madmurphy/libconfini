@@ -128,8 +128,8 @@ People who have visited: ronnie, lilly82, robrob
 Last update: 12.03.2017
 ````````````````````````````````````````````````
 
-For more details, please read the [Library Functions Manual][2]
-(`man libconfini` -- a standalone HTML version is available [here][3]) and the
+For more details, please read the [Library Functions Manual][2] (`man
+libconfini`) -- a standalone HTML version is available [here][3] -- and the
 manual of the header file (`man confini.h`). The code is available on
 [GitHub][4] under [madmurphy/libconfini][5]).
 
@@ -165,7 +165,7 @@ by running the `bootstrap` script. By default, `bootstrap` will also run the
 
 If you are using **Microsoft Windows**, a batch script for compiling
 **libconfini** with [MinGW][7] without Bash is available (`mgwmake.bat`). If
-you are interested in using Autotools for compiling **libconfini** under
+you are interested in using GNU Make for compiling **libconfini** under
 Microsoft Windows, you can integrate MinGW with [MSYS][8], or you can directly
 use [MSYS2][9] and [its official port][10] of the library. Alternatively, [an
 unofficial port][11] of **libconfini** for [Cygwin][12] is available.
@@ -199,7 +199,7 @@ for details.
   [10]: https://packages.msys2.org/base/mingw-w64-libconfini
   [11]: https://github.com/fd00/yacp/tree/master/libconfini
   [12]: https://www.cygwin.com/
-  [13]: https://github.com/madmurphy/libconfini/blob/master/INSTALL
+  [13]: https://madmurphy.github.io/libconfini/html/install.html
   [14]: https://danyspin97.org/
   [15]: https://github.com/DanySpin97/libconfini-d
   [16]: https://github.com/madmurphy/libconfini/blob/master/COPYING

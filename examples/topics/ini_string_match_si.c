@@ -44,7 +44,7 @@ int main () {
   /*  Check if parsing has been interrupted by `passfinder()`  */
   retval  ==  CONFINI_FEINTR ?
                 printf(
-                  "We found it! It's the INI node number #%zu!\n",
+                  "We found it! It's the INI node number %zu!\n",
                   membid
                 )
               :

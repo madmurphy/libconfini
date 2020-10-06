@@ -48,9 +48,9 @@ int main () {
   printf(
 
     "The previous dispatches come from the following buffer:\n\n"
-    "-----------------[original INI buffer]-----------------\n"
+    "-------------[original INI buffer]-------------\n"
     "%s"
-    "-------------------------------------------------------\n\n",
+    "-----------------------------------------------\n\n",
 
     original_ini_buffer
 
@@ -61,7 +61,7 @@ int main () {
     "like this:\n"
   );
 
-  printf("\n-------------------[disposed buffer]-------------------\n");
+  printf("\n---------------[disposed buffer]---------------\n");
 
   for (size_t idx = 0; idx <= ini_length; idx++) {
 
@@ -69,12 +69,12 @@ int main () {
 
   }
 
-  printf("\n-------------------------------------------------------\n\n");
+  printf("\n-----------------------------------------------\n\n");
 
   printf(
     "The dots in the example above represent NUL characters. Remember "
-    "that\n`strip_ini_cache()` does not free the buffer passed, you will "
-    "have to do that\nby yourself.\n"
+    "that\n`strip_ini_cache()` does not free the buffer passed, you "
+    "will have to do that\nby yourself.\n"
   );
 
   free(ini_cache);

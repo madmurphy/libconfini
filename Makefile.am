@@ -16,7 +16,6 @@ SUBDIRS = \
 	src
 
 EXTRA_DIST = \
-	ChangeLog.md \
 	MANUAL.md \
 	README.md \
 	autostuff \
@@ -47,8 +46,22 @@ dist_doc_DATA += \
 	README \
 	docs/manual.html
 
+
+if WANT_MAN
+
 notrans_man3_MANS = \
 	$(MAN3PAGES)
+
+endif WANT_MAN
+
+
+if WANT_HTML
+
+_am_installalso_ += \
+	install-html;
+
+endif WANT_HTML
+
 
 endif WANT_DOC
 
@@ -58,6 +71,10 @@ if WANT_EXAMPLES
 examplesdir = $(docdir)/examples
 dist_examples_SCRIPTS = \
 	examples/run-example.sh
+
+examplescppdir = $(examplesdir)/cplusplus
+dist_examplescpp_DATA = \
+	examples/cplusplus/generic.cpp
 
 examplesinifilesdir = $(examplesdir)/ini_files
 dist_examplesinifiles_DATA = \
@@ -77,7 +94,6 @@ dist_examplesinifiles_DATA = \
 examplesmiscdir = $(examplesdir)/miscellanea
 dist_examplesmisc_DATA = \
 	examples/miscellanea/colon_as_delimiter.c \
-	examples/miscellanea/cplusplus.cpp \
 	examples/miscellanea/disambiguate.c \
 	examples/miscellanea/dispatch_everything.c \
 	examples/miscellanea/glib_hash_table.c \
@@ -125,14 +141,6 @@ endif HAVE_TRANSFORMATIONS
 endif WANT_EXAMPLES
 
 
-if WANT_HTML
-
-_am_installalso_ += \
-	install-html;
-
-endif WANT_HTML
-
-
 endif WANT_DEVEL
 
 
@@ -158,6 +166,7 @@ MOSTLYCLEANFILES = \
 	$(SANDBOX).tgz $(SANDBOX).txz $(SANDBOX).zip
 
 CLEANFILES = \
+	dev/tests/null-byte_injection/null-byte_injected.conf \
 	dev/tests/performance/big_file.ini \
 	dev/tests/performance/speedtest
 
@@ -238,10 +247,10 @@ GITFLAGS = \
 # Supplementary targets for GNU Automake
 
 install-html-local: $(srcdir)/docs/html $(srcdir)/docs/index.html
-	(cd '$(srcdir)/docs' && $(FIND) -L 'html' -type d -exec $(MKDIR_P) \
+	@(cd '$(srcdir)/docs' && $(FIND) -L 'html' -type d -exec $(MKDIR_P) \
 	'$(DESTDIR)$(htmldir)/{}' \; && $(FIND) -L 'html' -type f -exec \
 	$(INSTALL_DATA) {} '$(DESTDIR)$(htmldir)/{}' \;) && mv \
-	'$(DESTDIR)$(htmldir)/html' '$(DESTDIR)$(htmldir)/htmldoc';
+	'$(DESTDIR)$(htmldir)/html' '$(DESTDIR)$(htmldir)/refbook';
 
 install-data-local: $(_am_installalso_)
 
@@ -252,7 +261,7 @@ uninstall-local:
 	-rm -rf '$(DESTDIR)$(htmldir)' '$(DESTDIR)$(docdir)';
 
 installcheck-local:
-	$(MAKE) -C 'tests' clean && $(MAKE) \
+	@$(MAKE) -C 'tests' clean && $(MAKE) \
 	AM_CPPFLAGS='$(INSTALLCHECKS_CPPENV) -I$(DESTDIR)$(includedir)' \
 	autotest_LDADD='-L$(DESTDIR)$(libdir) -l@PROJECT_LOCALNAME@' check;
 
@@ -292,7 +301,7 @@ install-headers uninstall-headers:
 # Check that `$(libdir)` and `$(includedir)` work correctly
 .PHONY: finishcheck
 finishcheck:
-	$(MAKE) -C 'tests' clean && $(MAKE) \
+	@$(MAKE) -C 'tests' clean && $(MAKE) \
 	AM_CPPFLAGS='$(INSTALLCHECKS_CPPENV)' \
 	autotest_LDADD='-l@PROJECT_LOCALNAME@' check;
 
@@ -312,21 +321,21 @@ alldone: $(INSTALLFLAVOR)
 # Make the source directory depend on Autotools and a `bootstrap` script
 .PHONY: bootstrap-clean
 bootstrap-clean: maintainer-clean
-	-rm -rf $(_bootstrapclean_dirs_) && rm -f $(_bootstrapclean_files_) \
-	&& (cd '$(srcdir)' && rm -rf $(_bootstrapclean_dirs_) && \
+	-rm -rf $(_bootstrapclean_dirs_); rm -f $(_bootstrapclean_files_); \
+	(cd '$(srcdir)' && rm -rf $(_bootstrapclean_dirs_); \
 	rm -f $(_bootstrapclean_files_));
 
 # Call `make bootstrap-clean`, then remove all the archives created
 .PHONY: oblivion-clean
 oblivion-clean: bootstrap-clean
-	rm -rf $(_oblivionclean_dirs_) && rm -f $(_oblivionclean_files_);
+	rm -rf $(_oblivionclean_dirs_); rm -f $(_oblivionclean_files_);
 
 # Merge the files created by `./configure --enable-extended-config=sandbox` and
 # update the source code
 .PHONY: mergenew
 mergenew:
 	@@mergenew_recipe@
-	@$(MAKE) official-sources;
+	@$(MAKE) all-official-sources;
 
 # Uninstall what `make install` has created, then clean the source directory
 .PHONY: clobber
@@ -342,35 +351,38 @@ help:
 # User's rule for forcing non-phony targets to be built, as in  `make
 # EXPIRE='libconfini-git.tar.gz libconfini-snapshot.tar.gz'
 # libconfini-git.tar.gz libconfini-snapshot.tar.gz` or (equivalently) `make
-# EXPIRE='libconfini-git.tar.gz libconfini-snapshot.tar.gz' expired`
-.PHONY: $(EXPIRE) expired
-expired: $(EXPIRE)
+# EXPIRE='libconfini-git.tar.gz libconfini-snapshot.tar.gz' refresh`
+.PHONY: $(EXPIRE) refresh
+refresh: $(EXPIRE)
 
 
 ###############################################################################
 ##    R E C I P E S   P A R T   I I:   H A C K I N G S
 ###############################################################################
 
-STATICSRC =
+OFFICIALSRC =
 
-DYNAMICSRC = \
-	baremetal-csources
+BAREMETALSRC = \
+	baremetal-source-code
 
 
 if AUTHOR_MODE
 
-STATICSRC += \
-	official-csources
+OFFICIALSRC += \
+	official-source-code
 
  # (Re-)create the official source files
- .PHONY: official-csources
- official-csources:
+ .PHONY: official-source-code
+ official-source-code:
 	$(MAKE) -C 'src' 'confini.h' 'confini.c';
+
+
+if !WANT_BAREMETAL
 
 
 if HAVE_DLLTOOL
 
-STATICSRC += \
+OFFICIALSRC += \
 	official-symbols
 
  # (Re-)create the official exported symbols
@@ -381,26 +393,55 @@ STATICSRC += \
 endif HAVE_DLLTOOL
 
 
+endif !WANT_BAREMETAL
+
+
+ # (Re-)create the distributed source files (use `./configure
+ # --enable-author-mode` for this)
+ .PHONY: all-official-sources
+ all-official-sources: $(OFFICIALSRC)
+
+
 endif AUTHOR_MODE
 
 
 # Create the "bare metal" version of the source files (launch `./configure
 # --wihout-io-api` to use it)
-.PHONY: baremetal-csources
-baremetal-csources:
+.PHONY: baremetal-source-code
+baremetal-source-code:
 	$(MAKE) -C 'src' 'confini-baremetal.h' 'confini-baremetal.c';
 
-# (Re-)create the distributed source files (use `./configure
-# --enable-author-mode` for this)
-.PHONY: official-sources
-official-sources: $(STATICSRC)
+
+if WANT_BAREMETAL
+
+
+if HAVE_DLLTOOL
+
+BAREMETALSRC += \
+	baremetal-symbols
+
+ # Create the baremetal exported symbols
+ .PHONY: baremetal-symbols
+ baremetal-symbols:
+	$(MAKE) -C 'src' '@PACKAGE_TARNAME@-baremetal.def';
+
+endif HAVE_DLLTOOL
+
+
+endif WANT_BAREMETAL
+
+
+# Create the "bare metal" version of the source files (launch `./configure
+# --wihout-io-api` to use it)
+.PHONY: all-baremetal-sources
+all-baremetal-sources: $(BAREMETALSRC)
 
 # (Re-)create all source files
 .PHONY: all-sources
-all-sources: $(STATICSRC) $(DYNAMICSRC)
+all-sources: $(OFFICIALSRC) $(BAREMETALSRC)
 
 
-if REVISE_BAREMETAL
+if REVISE_LIBC
 
 CLEANFILES += \
 	no-dist/hackings/baremetal/c-standard-library.h
@@ -446,12 +487,13 @@ CLEANFILES += \
  .PHONY: approve-revision
  approve-revision:
 	@$(MAKE) APPROVE='revision' \
-	'no-dist/hackings/baremetal/c-standard-library.h' baremetal-csources;
+	'no-dist/hackings/baremetal/c-standard-library.h' \
+	baremetal-source-code;
 
  .PHONY: reject-revision
  reject-revision: $(rvdir)/$(nonportfile)
 
-endif REVISE_BAREMETAL
+endif REVISE_LIBC
 
 
 ###############################################################################
@@ -549,8 +591,8 @@ sandbox-source-release: sandbox-dist
 
 .PHONY: sandbox-authors-copy
 sandbox-authors-copy: sandbox-source-release
-	@(cd '$(SANDBOX)' && rm -rf $(_bootstrapclean_dirs_) && \
-	rm -f $(_bootstrapclean_files_));
+	@(cd '$(SANDBOX)' && (rm -rf $(_bootstrapclean_dirs_); \
+	rm -f $(_bootstrapclean_files_)));
 
 .PHONY: sandbox-snapshot
 sandbox-snapshot:
@@ -560,7 +602,8 @@ sandbox-snapshot:
 	$(MKDIR_P) '$(SANDBOX)' && $(FIND) -L '$(srcdir)' -maxdepth 1 ! -name \
 	'.' ! -name '$(SANDBOX)' $$({ for _COIN in $(SNAPIGNORE); do echo "! \
 	-name $${_COIN}"; done; }) -exec cp -at '$(SANDBOX)' {} \; && $(MAKE) \
-	-C '$(SANDBOX)' BAKPATH='@PACKAGE_TARNAME@-snapshot' oblivion-clean;
+	-C '$(SANDBOX)' BAKPATH='@PACKAGE_TARNAME@-snapshot' \
+	SANDBOX='volatile' oblivion-clean;
 
 .PHONY: sandbox-git-clone
 sandbox-git-clone: sandbox-erase
@@ -576,23 +619,23 @@ $(SANDBOX):
 
 # Defaults to `make volatile.tar`
 $(SANDBOX).tar: $(SANDBOX)
-	rm -rf '$@' && (cd '$(SANDBOX)' && $(AMTAR) -cf '../$(@F)' *);
+	@rm -rf '$@' && (cd '$(SANDBOX)' && $(AMTAR) -cf '../$(@F)' *);
 
 # Defaults to `make volatile.tar.gz` and `make volatile.tgz`
 $(SANDBOX).tar.gz $(SANDBOX).tgz: $(SANDBOX)
-	rm -rf '$@' && (cd '$(SANDBOX)' && $(AMTAR) -czf '../$(@F)' *);
+	@rm -rf '$@' && (cd '$(SANDBOX)' && $(AMTAR) -czf '../$(@F)' *);
 
 # Defaults to `make volatile.tar.xz` and `make volatile.txz`
 $(SANDBOX).tar.xz $(SANDBOX).txz: $(SANDBOX)
-	rm -rf '$@' && (cd '$(SANDBOX)' && $(AMTAR) -cJf '../$(@F)' *);
+	@rm -rf '$@' && (cd '$(SANDBOX)' && $(AMTAR) -cJf '../$(@F)' *);
 
 # Defaults to `make volatile.zip`
 $(SANDBOX).zip: $(SANDBOX)
-	rm -rf '$@' && (cd '$(SANDBOX)' && zip -rqy '../$(@F)' *);
+	@rm -rf '$@' && (cd '$(SANDBOX)' && zip -rqy '../$(@F)' *);
 
 # Defaults to `make volatile.lst` (optionally supports a `LISTPREFIX` variable)
 $(SANDBOX).lst: $(SANDBOX)
-	rm -rf '$@' && (cd '$(SANDBOX)' && $(FIND) -L . -type f -printf \
+	@rm -rf '$@' && (cd '$(SANDBOX)' && $(FIND) -L . -type f -printf \
 	'$(LISTPREFIX)%P\n' > '../$(@F)');
 
 

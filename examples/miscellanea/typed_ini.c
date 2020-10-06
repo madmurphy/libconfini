@@ -34,7 +34,7 @@ struct ini_store {
   char * my_section_my_string;
   signed int my_section_my_number;
   bool my_section_my_boolean;
-  bool my_section_my_implicit_boolean;
+  bool my_section_my_implicit_bool;
   char ** my_section_my_array;
   size_t my_section_my_arr_len;
 };
@@ -44,51 +44,54 @@ static int my_init (IniStatistics * statistics, void * v_store) {
     .my_section_my_string = NULL,
     .my_section_my_number = -1,
     .my_section_my_boolean = false,
-    .my_section_my_implicit_boolean = false,
+    .my_section_my_implicit_bool = false,
     .my_section_my_array = NULL,
     .my_section_my_arr_len = 0
   };
   return 0;
 }
 
-static int my_handler (IniDispatch * disp, void * v_store) {
+static int my_handler (IniDispatch * dsp, void * v_store) {
   #define store ((struct ini_store *) v_store)
-  if (disp->type == INI_KEY && ini_string_match_si("my_section", disp->append_to, disp->format)) {
-    if (ini_string_match_si("my_string", disp->data, disp->format)) {
-      disp->v_len = ini_string_parse(disp->value, disp->format);
+  #define THEYMATCH(SSTR, ISTR) \
+    ini_string_match_si(SSTR, ISTR, dsp->format)
+  if (dsp->type == INI_KEY && THEYMATCH("my_section", dsp->append_to)) {
+    if (THEYMATCH("my_string", dsp->data)) {
+      dsp->v_len = ini_string_parse(dsp->value, dsp->format);
       /*  Free previous duplicate key (if any)  */
       if (store->my_section_my_string) {
         free(store->my_section_my_string);
       }
       /*  Allocate the new string  */
-      store->my_section_my_string = strndup(disp->value, disp->v_len);
+      store->my_section_my_string = strndup(dsp->value, dsp->v_len);
       if (!store->my_section_my_string) {
         return 1;
       }
-    } else if (ini_string_match_si("my_number", disp->data, disp->format)) {
-      store->my_section_my_number = ini_get_int(disp->value);
-    } else if (ini_string_match_si("my_boolean", disp->data, disp->format)) {
-      store->my_section_my_boolean = ini_get_bool(disp->value, 0);
-    } else if (ini_string_match_si("my_implicit_boolean", disp->data, disp->format)) {
-      store->my_section_my_implicit_boolean = ini_get_bool(disp->value, 1);
-    } else if (ini_string_match_si("my_array", disp->data, disp->format)) {
+    } else if (THEYMATCH("my_number", dsp->data)) {
+      store->my_section_my_number = ini_get_int(dsp->value);
+    } else if (THEYMATCH("my_boolean", dsp->data)) {
+      store->my_section_my_boolean = ini_get_bool(dsp->value, 0);
+    } else if (THEYMATCH("my_implicit_boolean", dsp->data)) {
+      store->my_section_my_implicit_bool = ini_get_bool(dsp->value, 1);
+    } else if (THEYMATCH("my_array", dsp->data)) {
       /*  Save memory (not strictly needed)  */
-      disp->v_len = ini_array_collapse(
-        disp->value,
+      dsp->v_len = ini_array_collapse(
+        dsp->value,
         MY_ARRAY_DELIMITER,
-        disp->format
+        dsp->format
       );
       /*  Free previous duplicate key (if any)  */
       if (store->my_section_my_array) {
         free(store->my_section_my_array);
       }
-      /*  Allocate a new array of strings (see examples/utilities/make_strarray.h)  */
+      /*  Allocate a new array of strings  */
+      /*  Function in examples/utilities/make_strarray.h  */
       store->my_section_my_array = make_strarray(
         &store->my_section_my_arr_len,
-        disp->value,
-        disp->v_len,
+        dsp->value,
+        dsp->v_len,
         MY_ARRAY_DELIMITER,
-        disp->format
+        dsp->format
       );
       if (!store->my_section_my_array) {
         return 1;
@@ -96,6 +99,7 @@ static int my_handler (IniDispatch * disp, void * v_store) {
     }
   }
   return 0;
+  #undef THEYMATCH
   #undef store
 }
 
@@ -109,7 +113,7 @@ static void print_stored_data (const struct ini_store * const store) {
     store->my_section_my_string,
     store->my_section_my_number,
     store->my_section_my_boolean ? "True (`1`)" : "False (`0`)",
-    store->my_section_my_implicit_boolean ? "True (`1`)" : "False (`0`)",
+    store->my_section_my_implicit_bool ? "True (`1`)" : "False (`0`)",
     store->my_section_my_arr_len,
     store->my_section_my_arr_len ? store->my_section_my_array[0] : ""
   );

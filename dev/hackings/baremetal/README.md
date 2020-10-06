@@ -1,5 +1,5 @@
-Compiling without the C Standard Library {#baremetal}
-=====================================================
+Compiling without I/O {#baremetal}
+==================================
 
 Almost everything in **libconfini** is implemented from scratch, with the only
 notable exception of the I/O functions `load_ini_file()` and `load_ini_path()`,
@@ -34,26 +34,26 @@ library at all could be present in the system. Hence it runs a series of tests
 and creates an inventory of what is present and what is not, in order to amend
 the source code accordingly -- to ignore all the tests and assume that
 literally nothing from the C Standard Library is supported use
-`--with-io-api=nolibc`. The amendments are necessary (instead of just relying
-on the C preprocessor) because it is required to change the public header, not
-just the compiled code.
+`--without-libc`. The amendments are necessary (instead of just relying on the
+C preprocessor) because it is required to change the public header, not just
+the compiled code.
 
 Only a very small amount of code in **libconfini** depends on the C Standard
 Library besides the I/O functions, so it is relatively easy to produce a “bare
 metal” fork with or without the latter. The `dev/hackings/baremetal`
 subdirectory contains all the necessary amendments. These are automatically
-applied when launching `make all` or `make baremetal-csources` after having
+applied when launching `make all` or `make baremetal-source-code` after having
 launched `./configure --without-io-api` (the original source code will be
 preserved).
 
-The files `pp-utils.c` and `number-parsers.c` constitute a re-implementation of
-the functions `ini_get_int()`, `ini_get_lint()`, `ini_get_llint()`,
+The files `pp-utils.c` and `str2num.c` constitute a re-implementation of the
+functions `ini_get_int()`, `ini_get_lint()`, `ini_get_llint()`,
 `ini_get_float()` and `ini_get_double()`, which in the original code are
 implemented as pointers to standard functions (see below). These two files
 amend `src/confini.c`.
 
-The file `number-parsers.h`, which amends `src/confini.h` (i.e. the public
-header), exports the function headers of what `number-parsers.c` implements.
+The file `str2num.h`, which amends `src/confini.h` (i.e. the public header),
+exports the function headers of what `str2num.c` implements.
 
 The file `confini-header.c` contains only a nominal workaround-amendment to
 `src/confini.c` (for facilitating the build system) that does not change the
@@ -69,9 +69,9 @@ Here follows the summary of what is required by `./configure --without-io-api`:
 
 1. `dev/hackings/baremetal/confini-header.c` (pasted to the private module
    `src/confini.c`)
-2. `dev/hackings/baremetal/number-parsers.c` (pasted to the private module
+2. `dev/hackings/baremetal/str2num.c` (pasted to the private module
    `src/confini.c`)
-3. `dev/hackings/baremetal/number-parsers.h` (pasted to the public header
+3. `dev/hackings/baremetal/str2num.h` (pasted to the public header
    `src/confini.h`)
 4. `dev/hackings/baremetal/pp-utils.c` (pasted to the private module
    `src/confini.c`)
@@ -390,8 +390,8 @@ double ini_get_double (const char * const ini_string) {
 `````````````````````````````````````````````````````````````````````````````
 
 
-[1]: http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoi
-[2]: http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atol
-[3]: http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoll
-[4]: http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atof
+  [1]: http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoi
+  [2]: http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atol
+  [3]: http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoll
+  [4]: http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atof
 

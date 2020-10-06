@@ -7,7 +7,7 @@
 	@brief		libconfini functions
 	@author		Stefano Gioffr&eacute;
 	@copyright	GNU General Public License, version 3 or any later version
-	@version	1.14.2
+	@version	1.15.0
 	@date		2016-2020
 	@see		https://madmurphy.github.io/libconfini
 
@@ -190,7 +190,7 @@
 	@property	IniStatistics::bytes
 					The size of the parsed file in bytes
 	@property	IniStatistics::members
-					The size (nodes) of the parsed file in number of members -- this
+					The size of the parsed file in number of members (nodes) -- this
 					number always equals the number of dispatches that will be
 					produced by #load_ini_file(), #load_ini_path() or
 					#strip_ini_cache()
@@ -221,6 +221,28 @@
 					The length of the string #IniDispatch::append_to
 	@property	IniDispatch::dispatch_id
 					The dispatch number (the first dispatch is number zero)
+
+
+
+	@def		INI_DISABLED_FLAG
+
+	Example #1:
+
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+	if (dispatch->type & INI_DISABLED_FLAG) {
+		printf("This is not a real INI node...\n");
+	}
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	Example #2:
+
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+	if ((dispatch->type | INI_DISABLED_FLAG) == INI_DISABLED_KEY) {
+		printf("Hey! This is either an INI_KEY or an INI_DISABLED_KEY!\n");
+	}
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	See also #IniNodeType.
 
 
 **/
@@ -319,6 +341,19 @@
 
 
 
+		/*  DEPRECATED FUNCTIONS AND VARIABLES  */
+
+
+#ifdef ini_global_set_lowercase_mode
+#undef ini_global_set_lowercase_mode
+#endif
+
+#ifdef INI_GLOBAL_LOWERCASE_MODE
+#undef INI_GLOBAL_LOWERCASE_MODE
+#endif
+
+
+
 		/*  ALIASES  */
 
 
@@ -369,7 +404,7 @@
 
 /*
 
-	Checks whether a character can be escaped within a given format
+	Check whether a character can be escaped within a given format
 
 */
 #define _LIBCONFINI_IS_ESC_CHAR_(CHR, FMT) ( \
@@ -384,7 +419,7 @@
 
 /*
 
-	Checks whether a character represents any marker within a given format
+	Check whether a character represents any marker within a given format
 
 */
 #define _LIBCONFINI_IS_ANY_MARKER_(CHR, FMT) ( \
@@ -397,7 +432,7 @@
 
 /*
 
-	Checks whether a character represents any marker except `INI_IGNORE` within a
+	Check whether a character represents any marker except `INI_IGNORE` within a
 	given format
 
 */
@@ -411,7 +446,7 @@
 
 /*
 
-	Checks whether a character represents a marker of type `INI_DISABLED_OR_COMMENT`
+	Check whether a character represents a marker of type `INI_DISABLED_OR_COMMENT`
 	within a given format
 
 */
@@ -425,7 +460,7 @@
 
 /*
 
-	Checks whether a character represents a marker of type `INI_IGNORE` within a
+	Check whether a character represents a marker of type `INI_IGNORE` within a
 	given format
 
 */
@@ -435,16 +470,6 @@
 		: \
 			CHR == _LIBCONFINI_SEMICOLON_ && FMT.semicolon_marker == INI_IGNORE \
 	)
-
-
-/*
-
-	Checks whether a pointer is within the range
-	`INI_GLOBAL_IMPLICIT_VALUE >= PTR <= INI_GLOBAL_IMPLICIT_VALUE + INI_GLOBAL_IMPLICIT_V_LEN`
-
-*/
-#define _LIBCONFINI_IMPLICIT_RANGE_(PTR) \
-	(PTR >= INI_GLOBAL_IMPLICIT_VALUE && PTR <= INI_GLOBAL_IMPLICIT_VALUE + INI_GLOBAL_IMPLICIT_V_LEN)
 
 
 /*
@@ -2323,8 +2348,8 @@ int strip_ini_cache (
 	#define __ISNT_ESCAPED__ tmp_bool
 	#define __LSHIFT__ tmp_fast_size_t_1
 	#define __EOL_N__ tmp_fast_size_t_2
-	#define __N_MEMBERS__ tmp_size_t_1
-	#define __NODE_AT__ tmp_size_t_2
+	#define __NODE_AT__ tmp_size_t_1
+	#define __N_MEMBERS__ tmp_size_t_2
 
 	/*  UTF-8 BOM  */
 	__LSHIFT__	=	*((unsigned char *) ini_source) == 0xEF &&
@@ -2416,8 +2441,8 @@ int strip_ini_cache (
 
 	}
 
-	#undef __NODE_AT__
 	#undef __N_MEMBERS__
+	#undef __NODE_AT__
 	#undef __EOL_N__
 	#undef __LSHIFT__
 	#undef __ISNT_ESCAPED__
@@ -2434,13 +2459,13 @@ int strip_ini_cache (
 
 	}
 
-	#define __ITER__ tmp_fast_size_t_1
-	#define __NODE_AT__ tmp_fast_size_t_2
+	#define __NODE_AT__ tmp_fast_size_t_1
+	#define __CURR_PARENT_LEN__ tmp_fast_size_t_2
+	#define __SUBPARENT_LEN__ tmp_size_t_1
+	#define __REAL_PARENT_LEN__ tmp_size_t_2
 	#define __PARENT_IS_DISABLED__ tmp_bool
-	#define __REAL_PARENT_LEN__ tmp_size_t_1
-	#define __CURR_PARENT_LEN__ tmp_size_t_2
 
-	__REAL_PARENT_LEN__ = 0, __CURR_PARENT_LEN__ = 0;
+	__REAL_PARENT_LEN__ = 0, __CURR_PARENT_LEN__ = 0, __SUBPARENT_LEN__  = 0;
 
 	char
 		* curr_parent_str = ini_source + real_length,
@@ -2478,12 +2503,18 @@ int strip_ini_cache (
 		dsp.data = ini_source + __NODE_AT__;
 		dsp.d_len = idx - __NODE_AT__;
 
+		/*  We won't need `__NODE_AT__` for a while, so let's recycle it...  */
+		#undef __NODE_AT__
+		#define __ITER__ tmp_fast_size_t_1
+
 		/*  Set `dsp.value` to an empty string  */
 		dsp.value = ini_source + idx;
+		dsp.v_len = 0;
 
 		if (
 			_LIBCONFINI_IS_DIS_MARKER_(*dsp.data, format) && (
-				format.disabled_after_space || !is_some_space(dsp.data[1], _LIBCONFINI_NO_EOL_)
+				format.disabled_after_space ||
+				!is_some_space(dsp.data[1], _LIBCONFINI_NO_EOL_)
 			)
 		) {
 
@@ -2510,7 +2541,7 @@ int strip_ini_cache (
 
 			}
 
-			dsp.type |= 4;
+			dsp.type |= INI_DISABLED_FLAG;
 
 		} else {
 
@@ -2562,22 +2593,23 @@ int strip_ini_cache (
 
 		}
 
-		if (__CURR_PARENT_LEN__ && *subparent_str) {
+		if (__CURR_PARENT_LEN__ && __SUBPARENT_LEN__) {
 
 			__ITER__ = 0;
 
 			do {
 
-				curr_parent_str[__ITER__ + __CURR_PARENT_LEN__] = subparent_str[__ITER__];
+				curr_parent_str[__CURR_PARENT_LEN__ + __ITER__] = subparent_str[__ITER__];
 
-			} while (subparent_str[__ITER__++]);
+			} while (__ITER__++ < __SUBPARENT_LEN__);
 
-			__CURR_PARENT_LEN__ += __ITER__ - 1;
+			__CURR_PARENT_LEN__ += __SUBPARENT_LEN__;
 			subparent_str = curr_parent_str + __CURR_PARENT_LEN__;
+			__SUBPARENT_LEN__ = 0;
 
 		}
 
-		if (__PARENT_IS_DISABLED__ && !(dsp.type & 4)) {
+		if (__PARENT_IS_DISABLED__ && !(dsp.type & INI_DISABLED_FLAG)) {
 
 			real_parent_str[__REAL_PARENT_LEN__] = '\0';
 			__CURR_PARENT_LEN__ = __REAL_PARENT_LEN__;
@@ -2601,7 +2633,7 @@ int strip_ini_cache (
 
 		} else if (format.multiline_nodes != INI_NO_MULTILINE) {
 
-			dsp.d_len = unescape_cr_lf(dsp.data, dsp.d_len, dsp.type & 4, format);
+			dsp.d_len = unescape_cr_lf(dsp.data, dsp.d_len, dsp.type & INI_DISABLED_FLAG, format);
 
 		}
 
@@ -2646,6 +2678,7 @@ int strip_ini_cache (
 					curr_parent_str = dsp.data;
 					__CURR_PARENT_LEN__ = dsp.d_len;
 					subparent_str = ini_source + idx;
+					__SUBPARENT_LEN__ = 0;
 					dsp.append_to = subparent_str;
 					dsp.at_len = 0;
 
@@ -2661,6 +2694,7 @@ int strip_ini_cache (
 					curr_parent_str = ++dsp.data;
 					__CURR_PARENT_LEN__ = --dsp.d_len;
 					subparent_str = ini_source + idx;
+					__SUBPARENT_LEN__ = 0;
 					dsp.append_to = subparent_str;
 					dsp.at_len = 0;
 
@@ -2674,6 +2708,7 @@ int strip_ini_cache (
 					*/
 
 					subparent_str = dsp.data;
+					__SUBPARENT_LEN__ = dsp.d_len;
 
 				}
 
@@ -2746,16 +2781,19 @@ int strip_ini_cache (
 
 		}
 
+		/*  Restore `__NODE_AT__` on **exactly** the same variable as before  */
+		#undef __ITER__
+		#define __NODE_AT__ tmp_fast_size_t_1
 		dsp.dispatch_id++;
 		__NODE_AT__ = idx + 1;
 
 	}
 
-	#undef __CURR_PARENT_LEN__
-	#undef __REAL_PARENT_LEN__
 	#undef __PARENT_IS_DISABLED__
+	#undef __REAL_PARENT_LEN__
+	#undef __SUBPARENT_LEN__
+	#undef __CURR_PARENT_LEN__
 	#undef __NODE_AT__
-	#undef __ITER__
 
 	return CONFINI_SUCCESS;
 
@@ -3250,7 +3288,7 @@ bool ini_string_match_ii (
 
 	/*
 
-	Masks `abcd_pair[0]` and  `abcd_pair[1]` (7 bits used):
+	Masks `abcd_pair[0]` and `abcd_pair[1]` (7 bits used):
 
 		FLAG_1		Single quotes are not metacharacters (const)
 		FLAG_2		Double quotes are not metacharacters (const)
@@ -3460,7 +3498,7 @@ bool ini_array_match (
 
 	/*
 
-	Masks `abcd_pair[0]` and  `abcd_pair[1]` (8 bits used):
+	Masks `abcd_pair[0]` and `abcd_pair[1]` (8 bits used):
 
 		FLAG_1		Single quotes are not metacharacters (const)
 		FLAG_2		Double quotes are not metacharacters (const)
@@ -3666,7 +3704,7 @@ bool ini_array_match (
 **/
 size_t ini_unquote (char * const ini_string, const IniFormat format) {
 
-	if (_LIBCONFINI_IMPLICIT_RANGE_(ini_string)) {
+	if (INI_IS_IMPLICIT_SUBSTR(ini_string)) {
 
 		return INI_GLOBAL_IMPLICIT_V_LEN + INI_GLOBAL_IMPLICIT_VALUE - ini_string;
 
@@ -3804,7 +3842,7 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 **/
 size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
-	if (_LIBCONFINI_IMPLICIT_RANGE_(ini_string)) {
+	if (INI_IS_IMPLICIT_SUBSTR(ini_string)) {
 
 		return INI_GLOBAL_IMPLICIT_V_LEN + INI_GLOBAL_IMPLICIT_VALUE - ini_string;
 
@@ -4226,7 +4264,7 @@ int ini_array_foreach (
 
 	@brief			Shift the location pointed by @p ini_strptr to the next member
 					of the INI array (without modifying the content of the buffer),
-					or to `NULL` if the INI array has no more members  -- useful for
+					or to `NULL` if the INI array has no more members -- useful for
 					read-only (`const`) stringified arrays
 	@param			ini_strptr		The memory location of the stringified array --
 									it cannot be `NULL`, but it can point to `NULL`
@@ -4343,7 +4381,7 @@ size_t ini_array_shift (const char ** const ini_strptr, const char delimiter, co
 **/
 size_t ini_array_collapse (char * const ini_string, const char delimiter, const IniFormat format) {
 
-	if (_LIBCONFINI_IMPLICIT_RANGE_(ini_string)) {
+	if (INI_IS_IMPLICIT_SUBSTR(ini_string)) {
 
 		return INI_GLOBAL_IMPLICIT_V_LEN + INI_GLOBAL_IMPLICIT_VALUE - ini_string;
 
@@ -4549,7 +4587,7 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 **/
 char * ini_array_break (char * const ini_string, const char delimiter, const IniFormat format) {
 
-	if (ini_string && !_LIBCONFINI_IMPLICIT_RANGE_(ini_string)) {
+	if (ini_string && !INI_IS_IMPLICIT_SUBSTR(ini_string)) {
 
 		char * remnant;
 
@@ -4626,11 +4664,19 @@ char * ini_array_break (char * const ini_string, const char delimiter, const Ini
 	@include topics/ini_array_release.c
 
 **/
-char * ini_array_release (char ** const ini_strptr, const char delimiter, const IniFormat format) {
+char * ini_array_release (
+	char ** const ini_strptr,
+	const char delimiter,
+	const IniFormat format
+) {
 
 	char * const token = *ini_strptr;
 
-	if (token && !_LIBCONFINI_IMPLICIT_RANGE_(token) && !_LIBCONFINI_IS_ESC_CHAR_(delimiter, format)) {
+	if (
+		token &&
+		!INI_IS_IMPLICIT_SUBSTR(token) &&
+		!_LIBCONFINI_IS_ESC_CHAR_(delimiter, format)
+	) {
 
 		*ini_strptr += get_metachar_pos(*ini_strptr, delimiter, format);
 
@@ -4706,7 +4752,7 @@ int ini_array_split (
 	void * const user_data
 ) {
 
-	if (!ini_string || _LIBCONFINI_IMPLICIT_RANGE_(ini_string)) {
+	if (!ini_string || INI_IS_IMPLICIT_SUBSTR(ini_string)) {
 
 		return CONFINI_EROADDR;
 
@@ -4805,11 +4851,12 @@ int ini_array_split (
 }
 
 
-									/** @utility{ini_global_set_lowercase_mode} **/
 /**
 
 	@brief			Set the value of the global variable
 					#INI_GLOBAL_LOWERCASE_MODE
+	@deprecated		Deprecated since version 1.15.0 (it will be removed in version
+					2.0.0)
 	@param			lowercase		The new value
 	@return			Nothing
 
@@ -5000,6 +5047,16 @@ double (* const ini_get_double) (const char * ini_string) = atof;
 #ifdef ini_get_float
 #undef ini_get_float
 #endif
+
+/**
+
+	@brief			Legacy support for parsing a `double` data type -- please _do
+					not use this function_: use `ini_get_double()` instead
+	@deprecated		Deprecated since version 1.12.0 (either it will be removed or
+					it will return a `float` data type in version 2.0.0)
+	@param			ini_string
+
+**/
 double (* const ini_get_float) (const char * ini_string) = atof;
 
 

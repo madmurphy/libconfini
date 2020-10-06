@@ -1,5 +1,5 @@
-INSTALL
-=======
+libconfini {#install}
+=====================
 
 
 Unix
@@ -35,9 +35,9 @@ running the `bootstrap` script. Use the `--noconfigure` parameter to prevent
 `bootstrap` from running automatically the `configure` script immediately after
 having generated it. To list different options use `./bootstrap --help`.
 
-If both the `configure` and `bootstrap` scripts are missing from your package
-you can initialize the build environment by launching the following commands
-from the source directory:
+If both the `configure` and `bootstrap` scripts are missing you can initialize
+the build environment by launching the following commands from the source
+directory:
 
     libtoolize
     aclocal
@@ -55,44 +55,81 @@ Or you can use a more modern approach and launch directly:
 Microsoft Windows
 -----------------
 
+
+### MinGW
+
 If you are using Microsoft Windows, a batch script for compiling **libconfini**
 under MinGW without GNU Make is available (`mgwmake.bat`). If you want instead
 to compile the library manually, you can run:
 
-	cd src
-	windres.exe -i winres.rc -o winres.o
-	gcc.exe -std=c99 -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined \
-		-Wl,-out-implib,libconfini.lib -o libconfini.dll winres.o confini.c
-	strip.exe libconfini.dll
+    cd src
+    windres.exe -i winres.rc -o winres.o
+    gcc.exe -std=c99 -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined \
+        -Wl,-out-implib,libconfini.lib -o libconfini.dll winres.o confini.c
+    strip.exe libconfini.dll
 
 If you want to generate also the `.def` file, use:
 
-	cd src
-	windres.exe -i winres.rc -o winres.o
-	gcc -c -o confini.o confini.c
-	dlltool.exe -z libconfini.def -D libconfini --export-all-symbols confini.o
-	gcc.exe -std=c99 -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined \
-		-Wl,-out-implib,libconfini.lib -o libconfini.dll confini.o winres.o
-	strip.exe libconfini.dll
+    cd src
+    windres.exe -i winres.rc -o winres.o
+    gcc -c -o confini.o confini.c
+    dlltool.exe -z libconfini.def -D libconfini --export-all-symbols confini.o
+    gcc.exe -std=c99 -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined \
+        -Wl,-out-implib,libconfini.lib -o libconfini.dll confini.o winres.o
+    strip.exe libconfini.dll
 
-If you want to build (and install) **libconfini** via Make/Autotools under
-Microsoft Windows several options are available, such as MinGW + MSYS, MSYS2,
-GnuWin32 and Cygwin (for which [an unofficial port][1] of **libconfini**
-exists).
+If you want to build (and install) **libconfini** via GNU Make under Microsoft
+Windows several options are available, such as MinGW + MSYS, MSYS2, GnuWin32
+and Cygwin (for which [an unofficial port][1] of **libconfini** exists).
+
+
+### Microsoft Visual Studio
 
 To compile the library with Microsoft Visual Studio use the following commands:
 
-	cd src
-	rc.exe winres.rc
-	cl.exe /c /O2 confini.c
-	link /DLL /DEF:libconfini.def /OUT:libconfini.dll winres.res confini.obj
+    cd src
+    rc.exe winres.rc
+    cl.exe /c /O2 confini.c
+    link /DLL /DEF:libconfini.def /OUT:libconfini.dll winres.res confini.obj
 
-To compile it as a static library with Microsoft Visual Studio use:
+To compile it as a static library use:
 
-	cd src
-	rc.exe winres.rc
-	cl.exe /c /O2 confini.c
-	lib.exe /OUT:libconfini.lib winres.res confini.obj
+    cd src
+    rc.exe winres.rc
+    cl.exe /c /O2 confini.c
+    lib.exe /OUT:libconfini.lib winres.res confini.obj
+
+In both cases, to test the library with a simple program named `my_test.c` you
+can launch:
+
+    cl.exe my_test.c /link libconfini.lib
+
+The library is written in standard C99; however MSVC uses a non-standard
+semantics to access the `.data` segment of a shared library. Accordingly, after
+having generated the DLL file, to access its global variables you will need to
+replace all occurrences of the `extern` keyword with the special
+`__declspec(dllimport)` keyword in the library's header included in your
+program. This can be easily done using the C Preprocessor:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+/*  my_test.c  */
+
+#pragma push_macro("extern")
+#undef extern
+#define extern __declspec(dllimport)
+#include <confini.h>
+#pragma pop_macro("extern")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The code above will work if you are using the library in a C program. But, as
+the macro will affect also the language-specific directive `extern "C"`, it
+will not work under C++. In this last case you will have to edit the header by
+hand and place the above macro inside `extern "C" { ... }`. This workaround is
+not required with more standard-compliant compilers, such as GCC, where the
+standard `extern` keyword is used to access a shared `.data` segment.
+
+
+### Precompiled DLL
 
 Often a compiled DLL [is available][2] among the assets of each release of this
 package on GitHub.
@@ -132,21 +169,24 @@ script:
 
 This will ensure **libconfini** X.Y.Z to be installed as **libconfiniX** X.Y.Z.
 
-By convention you will need to append the major version number to the name of
-the package only for major version numbers greater than one.
+There are different views concerning which package name should be the only
+unnumbered one. According to some conventions the major version number is
+appended to the package names of all major version greater than one, while
+according to other conventions the the major version number is appended to the
+package names of all versions that are older than the current version.
 
 If you want to install a modified version of **libconfini** without generating
 conflicts with an original version already present in the system, or you simply
-want to install **libconfini** under a different name, you can use Autoconf
-transforming rules. In particular, to prepend a prefix to the library name, use
-`./configure --program-prefix=[PREFIX]`; to append a suffix, use `./configure
---program-suffix=[SUFFIX]`; to perform a `sed` substitution, use `./configure
---program-transform-name='s/[OLDTEXT]/[NEWTEXT]/[g]'`. Note that the `lib`
-prefix at the beginning of the library name is always preserved (for instance,
-`./configure --program-transform-name='s/^.*$/hello/'` will rename the package
-to "libhello"). If you specify a prefix and/or a suffix together with a `sed`
-substitution, the latter will be performed after the former have been
-concatenated to the original name.
+want to install **libconfini** under a different name, you can use [Autoconf
+transforming rules][3]. In particular, to prepend a prefix to the library name,
+use `./configure --program-prefix=[PREFIX]`; to append a suffix, use
+`./configure --program-suffix=[SUFFIX]`; to perform a `sed` substitution, use
+`./configure --program-transform-name="s/[OLDTEXT]/[NEWTEXT]/[g]"`. Note that
+the `lib` prefix at the beginning of the library name is always preserved (for
+instance, `./configure --program-transform-name="s/^.*$/hello/"` will rename
+the package to "libhello"). If you specify a prefix and/or a suffix together
+with a `sed` substitution, the latter will be performed after the former have
+been concatenated to the original name.
 
 Do not use Autoconf transforming rules in place of the built-in `./configure
 --with-other-versions` for appending the major version number to the name of
@@ -171,12 +211,11 @@ Distributing the compiled package
 ---------------------------------
 
 Use `make binary-release` to create a binary package of **libconfini** for a
-particular platform.
-
-**Note:** If you only want to obtain the list of the files that are going to be
-installed on a particular platform, use `make manifest` instead.
+particular platform. If you want to obtain the list of the files that are going
+to be installed, use `make manifest`.
 
 
-[1]: https://github.com/fd00/yacp/tree/master/libconfini
-[2]: https://github.com/madmurphy/libconfini/releases
+  [1]: https://github.com/fd00/yacp/tree/master/libconfini
+  [2]: https://github.com/madmurphy/libconfini/releases
+  [3]: https://www.gnu.org/software/automake/manual/html_node/Renaming.html
 
