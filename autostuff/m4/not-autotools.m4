@@ -27,7 +27,7 @@ dnl  **************************************************************************
 dnl  n4_case_in(text, list1, if-found1[, ... listN, if-foundN], [if-not-found])
 dnl  **************************************************************************
 dnl
-dnl  Searches for the first occurence of `text` in each comma-separated list
+dnl  Searches for the first occurrence of `text` in each comma-separated list
 dnl  `listN`
 dnl
 dnl  From: not-autotools/m4/not-m4sugar.m4

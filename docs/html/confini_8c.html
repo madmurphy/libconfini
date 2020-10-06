@@ -119,10 +119,10 @@ Functions</h2></td></tr>
 <tr class="memdesc:ac2aa1c0316cc78e3f878e1ea644b48f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Soft left trim within an unparsed disabled entry (left trim of <code>/(?:(?:^|\\?[\n\r])[ \t\v\f]*(?:#(?:[ \t\v\f]|''|&quot;&quot;)*)?)+/</code>) &ndash; does not change the buffer.  <a href="confini_8c.html#ac2aa1c0316cc78e3f878e1ea644b48f8">More...</a><br /></td></tr>
 <tr class="separator:ac2aa1c0316cc78e3f878e1ea644b48f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab34de4f3cd8ff30c45ac7652457f695e"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#ab34de4f3cd8ff30c45ac7652457f695e">getn_metachar_pos</a> (const char *const str, const char chr, const size_t len, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
-<tr class="memdesc:ab34de4f3cd8ff30c45ac7652457f695e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the position of the first occurence out of quotes of a given character, stopping after a given number of charcters.  <a href="confini_8c.html#ab34de4f3cd8ff30c45ac7652457f695e">More...</a><br /></td></tr>
+<tr class="memdesc:ab34de4f3cd8ff30c45ac7652457f695e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the position of the first occurrence out of quotes of a given character, stopping after a given number of charcters.  <a href="confini_8c.html#ab34de4f3cd8ff30c45ac7652457f695e">More...</a><br /></td></tr>
 <tr class="separator:ab34de4f3cd8ff30c45ac7652457f695e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93c4d8e9287f6ce56f22ce90241b77f4"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#a93c4d8e9287f6ce56f22ce90241b77f4">get_metachar_pos</a> (const char *const str, const char chr, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
-<tr class="memdesc:a93c4d8e9287f6ce56f22ce90241b77f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the position of the first occurence out of quotes of a given character.  <a href="confini_8c.html#a93c4d8e9287f6ce56f22ce90241b77f4">More...</a><br /></td></tr>
+<tr class="memdesc:a93c4d8e9287f6ce56f22ce90241b77f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the position of the first occurrence out of quotes of a given character.  <a href="confini_8c.html#a93c4d8e9287f6ce56f22ce90241b77f4">More...</a><br /></td></tr>
 <tr class="separator:a93c4d8e9287f6ce56f22ce90241b77f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa139c7fd80a4a707683a45d16f527a60"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="confini_8c.html#aa139c7fd80a4a707683a45d16f527a60">unescape_cr_lf</a> (char *const srcstr, const size_t len, const unsigned char is_disabled, const <a class="el" href="structIniFormat.html">IniFormat</a> format)</td></tr>
 <tr class="memdesc:aa139c7fd80a4a707683a45d16f527a60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace <code>/\\(\n\r?|\r\n?)[\t \v\f]*[#;]/</code> or <code>/\\(\n\r?|\r\n?)/</code> with <code>"$1"</code>  <a href="confini_8c.html#aa139c7fd80a4a707683a45d16f527a60">More...</a><br /></td></tr>
@@ -545,7 +545,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the position of the first occurence out of quotes of a given character. </p>
+<p>Get the position of the first occurrence out of quotes of a given character. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">str</td><td>The string where to search </td></tr>
@@ -554,7 +554,7 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The offset of the first occurence of <code>chr</code> or the length of <code>str</code> if <code>chr</code> has not been not found </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The offset of the first occurrence of <code>chr</code> or the length of <code>str</code> if <code>chr</code> has not been not found </dd></dl>
 
 </div>
 </div>
@@ -664,7 +664,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the position of the first occurence out of quotes of a given character, stopping after a given number of charcters. </p>
+<p>Get the position of the first occurrence out of quotes of a given character, stopping after a given number of charcters. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">str</td><td>The string where to search </td></tr>
@@ -674,7 +674,7 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The offset of the first occurence of <code>chr</code>, or <code>len</code> if <code>chr</code> has not been not found </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The offset of the first occurrence of <code>chr</code>, or <code>len</code> if <code>chr</code> has not been not found </dd></dl>
 
 </div>
 </div>
