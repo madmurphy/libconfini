@@ -895,13 +895,13 @@ static inline size_t dqultrim_s (const char * const srcstr, const size_t offs, c
 
 /**
 
-	@brief			Get the position of the first occurence out of quotes of a
+	@brief			Get the position of the first occurrence out of quotes of a
 					given character, stopping after a given number of charcters
 	@param			str				The string where to search
 	@param			chr				The character to to search
 	@param			len				The maximum number of characters to read
 	@param			format			The format of the INI file
-	@return			The offset of the first occurence of @p chr, or @p len if
+	@return			The offset of the first occurrence of @p chr, or @p len if
 					@p chr has not been not found
 
 **/
@@ -942,12 +942,12 @@ static inline size_t getn_metachar_pos (const char * const str, const char chr, 
 
 /**
 
-	@brief			Get the position of the first occurence out of quotes of a
+	@brief			Get the position of the first occurrence out of quotes of a
 					given character
 	@param			str				The string where to search
 	@param			chr				The character to to search
 	@param			format			The format of the INI file
-	@return			The offset of the first occurence of @p chr or the length of
+	@return			The offset of the first occurrence of @p chr or the length of
 					@p str if @p chr has not been not found
 
 **/
