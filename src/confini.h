@@ -6,7 +6,7 @@
     @brief      libconfini header
     @author     Stefano Gioffr&eacute;
     @copyright  GNU General Public License, version 3 or any later version
-    @version    1.15.0
+    @version    1.16.0
     @date       2016-2020
     @see        https://madmurphy.github.io/libconfini
 
@@ -136,7 +136,7 @@ typedef struct IniStatistics {
 **/
 typedef struct IniDispatch {
     const IniFormat format;
-    uint8_t type;
+    uint_least8_t type;
     char * data;
     char * value;
     const char * append_to;
@@ -150,7 +150,7 @@ typedef struct IniDispatch {
 /**
     @brief  The unique ID of an INI format (24-bit maximum)
 **/
-typedef uint32_t IniFormatNum;
+typedef uint_least32_t IniFormatNum;
 
 
 /**
@@ -348,8 +348,15 @@ extern IniFormat ini_ntof (
 
 
 extern int ini_get_bool (
-    const char * const ini_string,
+    const char * const simple_string,
     const int when_fail
+);
+
+
+extern int ini_get_bool_i (
+    const char * const ini_string,
+    const int when_fail,
+    const IniFormat format
 );
 
 
@@ -378,8 +385,7 @@ extern double (* const ini_get_double) (
 
 
 /*
-    Legacy support, soon to be replaced with a `float` data type -- please **do
-    not use `ini_get_float()`!**
+    Legacy support -- please **do not use these functions**!
 */
 #define ini_get_float \
     _LIBCONFINI_WARNING_("function `ini_get_float()` is deprecated for parsing a `double` data type; use `ini_get_double()` instead") \
@@ -578,7 +584,6 @@ extern size_t INI_GLOBAL_IMPLICIT_V_LEN;
 
 
 #endif
-
 
 
 /*  EOF  */

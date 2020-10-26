@@ -21,7 +21,7 @@ static int empty_listener (IniDispatch * dispatch, void * v_data) {
 int main () {
 
   /*  Hackable clone of `INI_DEFAULT_FORMAT`  */
-  #define performance_format \
+  #define PERFORMANCE_FORMAT \
     ((IniFormat) { \
       .delimiter_symbol = INI_EQUALS, \
       .case_sensitive = false, \
@@ -35,6 +35,25 @@ int main () {
       .implicit_is_not_empty = false, \
       .do_not_collapse_values = false, \
       .preserve_empty_quotes = false, \
+      .disabled_after_space = false, \
+      .disabled_can_be_implicit = false \
+    })
+
+  /*  Not used here, but try it!  */
+  #define INI_FAST_FORMAT \
+    ((IniFormat) { \
+      .delimiter_symbol = INI_EQUALS, \
+      .case_sensitive = false, \
+      .semicolon_marker = INI_IGNORE, \
+      .hash_marker = INI_IGNORE, \
+      .section_paths = INI_ABSOLUTE_AND_RELATIVE, \
+      .multiline_nodes = INI_NO_MULTILINE, \
+      .no_single_quotes = false, \
+      .no_double_quotes = false, \
+      .no_spaces_in_names = false, \
+      .implicit_is_not_empty = false, \
+      .do_not_collapse_values = true, \
+      .preserve_empty_quotes = true, \
       .disabled_after_space = false, \
       .disabled_can_be_implicit = false \
     })
@@ -54,7 +73,7 @@ int main () {
   /*  Please create an INI file large enough  */
   if (load_ini_path(
     "big_file.ini",
-    performance_format,
+    PERFORMANCE_FORMAT,
     get_ini_size,
     empty_listener,
     &stats

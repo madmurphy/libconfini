@@ -74,6 +74,8 @@ dist_examples_SCRIPTS = \
 
 examplescppdir = $(examplesdir)/cplusplus
 dist_examplescpp_DATA = \
+	examples/cplusplus/map.cpp \
+	examples/cplusplus/map.hpp \
 	examples/cplusplus/generic.cpp
 
 examplesinifilesdir = $(examplesdir)/ini_files
@@ -121,6 +123,7 @@ dist_examplestopics_DATA = \
 exampleutilsdir = $(examplesdir)/utilities
 dist_exampleutils_DATA = \
 	examples/utilities/clone_ini_dispatch.h \
+	examples/utilities/ini_string_preparse.h \
 	examples/utilities/load_ini_buffer.h \
 	examples/utilities/make_strarray.h
 
@@ -285,7 +288,7 @@ dist-hook:
 # Install only the stripped binaries
 .PHONY: install-exec-strip
 install-exec-strip:
-	if test -z '$(STRIP)'; then $(MAKE) $(AM_MAKEFLAGS) \
+	@if test -z '$(STRIP)'; then $(MAKE) $(AM_MAKEFLAGS) \
 	INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
 	install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
 	install-exec; else $(MAKE) $(AM_MAKEFLAGS) \

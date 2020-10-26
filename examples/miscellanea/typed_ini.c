@@ -32,7 +32,7 @@ No errors will be generated if any of the data above are absent.
 /*  My stored data  */
 struct ini_store {
   char * my_section_my_string;
-  signed int my_section_my_number;
+  int my_section_my_number;
   bool my_section_my_boolean;
   bool my_section_my_implicit_bool;
   char ** my_section_my_array;
@@ -70,9 +70,17 @@ static int my_handler (IniDispatch * dsp, void * v_store) {
     } else if (THEYMATCH("my_number", dsp->data)) {
       store->my_section_my_number = ini_get_int(dsp->value);
     } else if (THEYMATCH("my_boolean", dsp->data)) {
-      store->my_section_my_boolean = ini_get_bool(dsp->value, 0);
+      store->my_section_my_boolean = ini_get_bool_i(
+        dsp->value,
+        0,
+        dsp->format
+      );
     } else if (THEYMATCH("my_implicit_boolean", dsp->data)) {
-      store->my_section_my_implicit_bool = ini_get_bool(dsp->value, 1);
+      store->my_section_my_implicit_bool = ini_get_bool_i(
+        dsp->value,
+        1,
+        dsp->format
+      );
     } else if (THEYMATCH("my_array", dsp->data)) {
       /*  Save memory (not strictly needed)  */
       dsp->v_len = ini_array_collapse(

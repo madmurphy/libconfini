@@ -75,8 +75,7 @@ int set_new_strarray (char *** const dest_arr, size_t * const dest_len, const In
 	memcpy(remnant, disp->value == INI_GLOBAL_IMPLICIT_VALUE && !INI_GLOBAL_IMPLICIT_VALUE ? "" : disp->value, disp->v_len + 1);
 	while ((token = ini_array_release(&remnant, delimiter, disp->format))) {
 		ini_string_parse(token, disp->format);
-		(*dest_arr)[idx] = token;
-		idx++;
+		(*dest_arr)[idx++] = token;
 	}
 	return 0;
 }
@@ -85,12 +84,11 @@ int set_new_strarray (char *** const dest_arr, size_t * const dest_len, const In
 int set_new_intarray (int ** const dest_arr, size_t * const dest_len, const IniDispatch * const disp, const char delimiter) {
 	*dest_len = ini_array_get_length(disp->value, delimiter, disp->format);
 	CLEAN_MALLOC(*dest_arr, *dest_len * sizeof(int), 1);
-	const char * left_behind, * shifted = disp->value;
+	const char * shifted = disp->value;
 	size_t idx = 0;
-	while ((left_behind = shifted)) {
+	while (shifted) {
+		(*dest_arr)[idx++] = ini_get_int(shifted);
 		ini_array_shift(&shifted, delimiter, disp->format);
-		(*dest_arr)[idx] = ini_get_int(left_behind);
-		idx++;
 	}
 	return 0;
 }
@@ -116,7 +114,7 @@ static int populate_config (IniDispatch * disp, void * v_confs) {
 			} else if (ini_string_match_si("connection_max", disp->data, disp->format)) {
 				confs->database.connection_max = ini_get_int(disp->value);
 			} else if (ini_string_match_si("enabled", disp->data, disp->format)) {
-				confs->database.enabled = (bool) ini_get_bool(disp->value, 1);
+				confs->database.enabled = (bool) ini_get_bool_i(disp->value, 1, disp->format);
 			}
 		} else if (ini_array_match("servers.alpha", disp->append_to, '.', disp->format)) {
 			if (ini_string_match_si("ip", disp->data, disp->format)) {

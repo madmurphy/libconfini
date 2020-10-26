@@ -20,10 +20,10 @@ attempt to read the value of the key `my_section.my_subsection.find_me`.
 
 /*
 
-In this implementation the dot is a metacharacter and is used as
-delimiter between path parts. Therefore all dots appearing in key names,
-or (within quotes) in section paths, will be replaced with the following
-character. You may change it with any other character (except the dot itself).
+In this implementation the dot is a metacharacter and is used as delimiter
+between path parts. Therefore all dots appearing in key names, or (within
+quotes) in section paths, will be replaced with the following character. You
+may change it with any other character (except the dot itself).
 
 */
 #define DOT_REPLACEMENT '-'
@@ -35,73 +35,73 @@ static inline void string_tolower (char * const str) {
 }
 
 /*  Add each dispatch to the hash table (callback function)  */
-static int populate_hash_table (IniDispatch * this, void * v_hash_table) {
+static int populate_hash_table (IniDispatch * disp, void * v_hash_table) {
   #define _MALLOC_CHECK_(PTR) \
     if (PTR == NULL) { fprintf(stderr, "malloc error\n"); return 1; }
-  if (this->type != INI_KEY) {
+  if (disp->type != INI_KEY) {
     return 0;
   }
   size_t idx;
-  char * ptr_a, * ptr_b, * ptr_c, * ptr_d;
-  this->d_len = ini_unquote(this->data, this->format);
+  char * newptr1, * newptr2, * oldptr1, * oldptr2;
+  disp->d_len = ini_unquote(disp->data, disp->format);
   /*  remove quoted dots from parent and allocate the first string  */
-  if (this->at_len) {
+  if (disp->at_len) {
     /*  has parent  */
-    ptr_a = ptr_b = (char *) malloc(this->at_len + 1);
-    _MALLOC_CHECK_(ptr_b)
-    *((const char **) &ptr_d) = this->append_to;
-    while ((ptr_c = ptr_d)) {
-      idx = ini_array_shift((const char **) &ptr_d, '.', this->format);
-      ptr_a[idx] = '\0';
-      do {
+    newptr1 = newptr2 = (char *) malloc(disp->at_len + 1);
+    _MALLOC_CHECK_(newptr2)
+    *((const char **) &oldptr2) = disp->append_to;
+    while ((oldptr1 = oldptr2)) {
+      idx = ini_array_shift((const char **) &oldptr2, '.', disp->format);
+      newptr1[idx] = '\0';
+      while (idx > 0) {
         --idx;
-        ptr_a[idx] = ptr_c[idx] == '.' ? DOT_REPLACEMENT : ptr_c[idx];
-      } while (idx > 0);
-      ptr_a += ini_unquote(ptr_a, this->format);
-      *ptr_a++ = '.';
+        newptr1[idx] = oldptr1[idx] == '.' ? DOT_REPLACEMENT : oldptr1[idx];
+      }
+      newptr1 += ini_unquote(newptr1, disp->format);
+      *newptr1++ = '.';
     }
-    idx = ptr_a - ptr_b;
-    ptr_a = (char *) malloc(idx + this->d_len + 1);
-    _MALLOC_CHECK_(ptr_a)
-    memcpy(ptr_a, ptr_b, idx);
-    free(ptr_b);
-    ptr_b = ptr_a + idx;
+    idx = newptr1 - newptr2;
+    newptr1 = (char *) malloc(idx + disp->d_len + 1);
+    _MALLOC_CHECK_(newptr1)
+    memcpy(newptr1, newptr2, idx);
+    free(newptr2);
+    newptr2 = newptr1 + idx;
   } else {
     /*  parent is root  */
-    ptr_a = ptr_b = (char *) malloc(this->d_len + 1);
-    _MALLOC_CHECK_(ptr_a)
+    newptr1 = newptr2 = (char *) malloc(disp->d_len + 1);
+    _MALLOC_CHECK_(newptr1)
   }
   /*  remove dots from key name  */
-  for (
-    idx = this->d_len + 2;
-      idx-- > 0;
-    ptr_b[idx] = this->data[idx] == '.' ? DOT_REPLACEMENT : this->data[idx]
-  );
+  idx = disp->d_len + 1;
+  do {
+    --idx;
+    newptr2[idx] = disp->data[idx] == '.' ? DOT_REPLACEMENT : disp->data[idx];
+  } while (idx > 0);
   /*
     we are using `g_hash_table_lookup()` to search for the indicized keys,
     therefore it is better to convert the string to lower case -- but you
     may disagree
   */
-  if (!this->format.case_sensitive) {
-    string_tolower(ptr_a);
+  if (!disp->format.case_sensitive) {
+    string_tolower(newptr1);
   }
   /*  check for duplicate keys  */
-  if (g_hash_table_lookup_extended((GHashTable *) v_hash_table, ptr_a, (gpointer) &ptr_b, NULL)) {
-    fprintf(stderr, "`%s` will be overwritten (duplicate key found)\n", ptr_a);
-    if (!g_hash_table_remove((GHashTable *) v_hash_table, ptr_b)) {
-      fprintf(stderr, "Unable to remove `%s` from the hash table\n", ptr_a);
+  if (g_hash_table_lookup_extended((GHashTable *) v_hash_table, newptr1, (gpointer) &newptr2, NULL)) {
+    fprintf(stderr, "`%s` will be overwritten (duplicate key found)\n", newptr1);
+    if (!g_hash_table_remove((GHashTable *) v_hash_table, newptr2)) {
+      fprintf(stderr, "Unable to remove `%s` from the hash table\n", newptr1);
     }
   }
   /*  allocate the second string  */
-  ptr_b = (char *) malloc(this->v_len + 1);
-  _MALLOC_CHECK_(ptr_b)
-  if (this->value) {
-    for (idx = this->v_len + 2; idx-- > 0; ptr_b[idx] = this->value[idx]);
+  newptr2 = (char *) malloc(disp->v_len + 1);
+  _MALLOC_CHECK_(newptr2)
+  if (disp->value) {
+    memcpy(newptr2, disp->value, disp->v_len + 1);
   } else {
-    *ptr_b = '\0';
+    *newptr2 = '\0';
   }
-  g_hash_table_insert((GHashTable *) v_hash_table, ptr_a, ptr_b);
-  printf("`%s` has been added to the hash table.\n", ptr_a);
+  g_hash_table_insert((GHashTable *) v_hash_table, newptr1, newptr2);
+  printf("`%s` has been added to the hash table.\n", newptr1);
   return 0;
   #undef _MALLOC_CHECK_
 }

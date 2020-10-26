@@ -20,8 +20,7 @@ _with_io_cppenv_ = \
 	"-DCONFINI_IO_FLAVOR=@na_io_api@"
 
 _baremetal_cppenv_ = \
-	"-DCONFINI_IO_FLAVOR=CONFINI_BAREMETAL" \
-	"-D_LIBCONFINI_COMPILE_HEADER_=\"confini-baremetal.h\""
+	"-DCONFINI_IO_FLAVOR=CONFINI_BAREMETAL"
 
 AM_CPPFLAGS = \
 	$(_common_cppenv_) \
@@ -237,11 +236,11 @@ MOSTLYCLEANFILES += \
 # Inference rules
 
 .a.def:
-	$(DLLTOOL) -z '$@' --export-all-symbols '$<' && sed -i '/^\s*\;/{d};' \
+	$(DLLTOOL) -z '$@' --export-all-symbols '$<' && $(SED) -i '/^\s*\;/{d};' \
 	'$@';
 
 .@OBJEXT@.def:
-	$(DLLTOOL) -z '$@' --export-all-symbols '$<' && sed -i '/^\s*\;/{d};' \
+	$(DLLTOOL) -z '$@' --export-all-symbols '$<' && $(SED) -i '/^\s*\;/{d};' \
 	'$@';
 
 .a.exp:
@@ -264,7 +263,8 @@ if AUTHOR_MODE
 # Accept `dev/marked-sources/confini-marked.c` without amendments
 $(srcdir)/confini.c: \
  $(top_srcdir)/dev/marked-sources/confini-marked.c \
- $(top_srcdir)/dev/hackings/all/confini-metadata.c
+ $(top_srcdir)/dev/hackings/all/confini-metadata.c \
+ $(top_srcdir)/dev/hackings/baremetal/confini-header.c
 	@@confini_c_recipe@
 
 # Accept `dev/marked-sources/confini-marked.h` without amendments
@@ -280,7 +280,7 @@ if !WANT_BAREMETAL
 if HAVE_DLLTOOL
 
 $(srcdir)/@PACKAGE_TARNAME@.def: $(srcdir)/confini.c $(srcdir)/confini.h
-	$(MAKE) LOCALSYMBOLS='$@' current-symbols;
+	@$(MAKE) LOCALSYMBOLS='$@' current-symbols;
 
 endif HAVE_DLLTOOL
 
@@ -310,7 +310,7 @@ if WANT_BAREMETAL
 if HAVE_DLLTOOL
 
 @PACKAGE_TARNAME@-baremetal.def: confini-baremetal.c confini-baremetal.h
-	$(MAKE) LOCALSYMBOLS='$@' current-symbols;
+	@$(MAKE) LOCALSYMBOLS='$@' current-symbols;
 
 endif HAVE_DLLTOOL
 
@@ -322,9 +322,8 @@ endif WANT_BAREMETAL
 built-sources/baremetal/confini.c: \
  $(top_srcdir)/dev/marked-sources/confini-marked.c \
  $(top_srcdir)/dev/hackings/all/confini-metadata.c \
- $(top_srcdir)/dev/hackings/baremetal/confini-header.c \
  $(top_srcdir)/dev/hackings/baremetal/str2num.c \
- $(top_srcdir)/dev/hackings/baremetal/pp-utils.c
+ $(top_srcdir)/dev/hackings/baremetal/confini-header.c
 	@@confini_baremetal_c_recipe@
 
 # Amend `dev/marked-sources/confini-marked.h`

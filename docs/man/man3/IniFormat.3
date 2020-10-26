@@ -1,4 +1,4 @@
-.TH "IniFormat" 3 "Tue Oct 6 2020" "libconfini" \" -*- nroff -*-
+.TH "IniFormat" 3 "Mon Oct 26 2020" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -85,7 +85,7 @@ If set to \fCfalse\fP, comments that do not contain a key-value delimiter will n
 .SS "IniFormat::do_not_collapse_values"
 If set to \fCtrue\fP, sequences of one or more spaces in values (\fC/\\s+/\fP) will be dispatched verbatim\&. 
 .SS "IniFormat::hash_marker"
-The rule of the hash character (use \fCenum\fP \fBIniCommentMarker\fP for this)\&. 
+The role of the hash character (use \fCenum\fP \fBIniCommentMarker\fP for this)\&. 
 .SS "IniFormat::implicit_is_not_empty"
 If set to \fCtrue\fP, implicit keys (see \fBLibrary Functions Manual\fP) will be always dispatched using the values provided by the global variables \fBINI_GLOBAL_IMPLICIT_VALUE\fP and \fBINI_GLOBAL_IMPLICIT_V_LEN\fP for the fields \fBIniDispatch::value\fP and to \fBIniDispatch::v_len\fP respectively; if set to \fCfalse\fP, implicit keys will be considered to be empty keys\&. 
 .SS "IniFormat::multiline_nodes"
@@ -95,13 +95,13 @@ If set to \fCtrue\fP, the double-quote character (\fC"\fP) will be considered as
 .SS "IniFormat::no_single_quotes"
 If set to \fCtrue\fP, the single-quote character (\fC'\fP) will be considered as a normal character\&. 
 .SS "IniFormat::no_spaces_in_names"
-If set to \fCtrue\fP, key and section names containing spaces (even within quotes) will be rendered as \fBINI_UNKNOWN\fP\&. Note that setting \fBIniFormat::delimiter_symbol\fP to \fBINI_ANY_SPACE\fP will not automatically set this option to \fCtrue\fP (spaces will still be allowed in section names)\&. 
+If set to \fCtrue\fP, key and section names containing spaces (even within quotes) will be dispatched as \fBINI_UNKNOWN\fP\&. Note that setting \fBIniFormat::delimiter_symbol\fP to \fBINI_ANY_SPACE\fP will not automatically set this option to \fCtrue\fP (spaces will still be allowed in section names)\&. 
 .SS "IniFormat::preserve_empty_quotes"
 If set to \fCtrue\fP, and if single/double quotes are metacharacters, ensures that, within values, empty strings enclosed between quotes (\fC''\fP or \fC''\fP) will not be collapsed together with the spaces that surround them\&. This option is useful for values containing space-delimited arrays, in order to preserve their empty members – as in, for instance: \fCcoordinates = '' ''\fP\&. Note that, in section and key names, empty strings enclosed between quotes are \fIalways\fP collapsed together with their surrounding spaces\&. 
 .SS "IniFormat::section_paths"
 Defines whether and how the format supports sections (use \fCenum\fP \fBIniSectionPaths\fP for this)\&. 
 .SS "IniFormat::semicolon_marker"
-The rule of the semicolon character (use \fCenum\fP \fBIniCommentMarker\fP for this)\&. 
+The role of the semicolon character (use \fCenum\fP \fBIniCommentMarker\fP for this)\&. 
 
 .SH "Author"
 .PP 

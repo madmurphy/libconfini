@@ -28,16 +28,16 @@ dnl  --enable-extended-config`.
 AC_INIT([lib]n4_mem([GL_PROJECT_NAME], [confini]),
 	m4_joinall([.],
 		n4_mem([GL_PROJECT_MAJVER], [1]),
-		n4_mem([GL_PROJECT_MINVER], [15]),
+		n4_mem([GL_PROJECT_MINVER], [16]),
 		n4_mem([GL_PROJECT_REVVER], [0])),
 	[madmurphy333@gmail.com],
 	[lib]GL_PROJECT_NAME,
 	[https://madmurphy.github.io/libconfini])
 
 NC_GLOBAL_LITERALS(
-	[INTERFACE_NUM],			[4],
-	[IMPLEMENTATION_NUM],		[1],
-	[INTERFACES_SUPPORTED],		[4],
+	[INTERFACE_NUM],			[5],
+	[IMPLEMENTATION_NUM],		[0],
+	[INTERFACES_SUPPORTED],		[5],
 	[PROJECT_DESCRIPTION],		[Yet another INI parser],
 	[LICENSE_STRING],			[GNU General Public License, version 3 or any
 								later version],
@@ -189,14 +189,6 @@ AC_CHECK_HEADERS([stddef.h stdint.h stdio.h stdlib.h])
 
 AC_TYPE_SIZE_T
 
-AC_TYPE_UINT8_T
-
-AC_TYPE_INT8_T
-
-AC_TYPE_UINT16_T
-
-AC_TYPE_UINT32_T
-
 AC_FUNC_MALLOC
 
 NC_CC_CHECK_POSIX
@@ -296,21 +288,9 @@ AC_SUBST([nonportfile], ['non-portable.h'])
 ###  are missing...
 AM_COND_IF([WANT_BAREMETAL], [
 	AS_IF([NS_TEST_AEQ([yes],
-	[${with_libc}], [${ac_cv_header_stdint_h}],
-	[${ac_cv_c_uint8_t}], [${ac_cv_c_int8_t}], [${ac_cv_c_uint16_t}],
-	[${ac_cv_c_uint32_t}])],
-		[AS_VAR_SET([na_tmp_allstdint], ['yes'])],
-	[NS_TEST_AEQ([yes],
-	[${with_libc}], [${ac_cv_header_stdint_h}]) \
-	&& NS_TEST_NAE([no],
-	[${ac_cv_c_uint8_t}], [${ac_cv_c_int8_t}], [${ac_cv_c_uint16_t}],
-	[${ac_cv_c_uint32_t}])],
-		[AS_VAR_SET([na_tmp_allstdint], ['some'])],
-		[AS_VAR_SET([na_tmp_allstdint], ['no'])])
-	AS_IF([NS_TEST_AEQ([yes],
 	[${with_libc}], [${ac_cv_header_stddef_h}],
 	[${ac_cv_header_stdbool_h}], [${ac_cv_header_stdint_h}],
-	[${ac_cv_type_size_t}], [${na_tmp_allstdint}])], [
+	[${ac_cv_type_size_t}])], [
 		AS_VAR_SET([na_revise_libc], ['no'])
 	], [
 		AS_VAR_SET([na_revise_libc], ['yes'])
@@ -353,11 +333,11 @@ AM_COND_IF([WANT_BAREMETAL], [
 				echo '@%:@define true 1'
 				echo '@%:@endif'
 			} >> 'no-dist/conf-results/stdmissing.h'])
-		AS_IF([test "x${na_tmp_allstdint}" != xno], [
+		AS_IF([NS_TEST_AEQ([yes],
+		[${with_libc}], [${ac_cv_header_stdint_h}])], [
 			echo '@%:@include <stdint.h>' >> \
 				'no-dist/conf-results/noioheaders.h'
-		])
-		AS_IF([test "x${na_tmp_allstdint}" != xyes], [
+		], [
 			NC_CC_CHECK_CHAR_BIT
 			AS_VAR_SET([na_tmp_ushort_bit],
 				["$(expr "${ac_cv_sizeof_ushort}" '*' "${ac_cv_char_bit}")"])
@@ -369,39 +349,41 @@ AM_COND_IF([WANT_BAREMETAL], [
 				# `unsigned char` is guaranteed to be at least 8-bit...
 				AS_IF([NS_TEST_NAE([yes],
 				[${with_libc}], [${ac_cv_c_uint8_t}])],
-					[echo 'typedef unsigned char uint8_t;'])
+					[echo 'typedef unsigned char uint_least8_t;'])
 				# `signed char` is guaranteed to be at least 8-bit...
 				AS_IF([NS_TEST_NAE([yes],
 				[${with_libc}], [${ac_cv_c_int8_t}])],
-					[echo 'typedef signed char int8_t;'])
+					[echo 'typedef signed char int_least8_t;'])
 				# `unsigned int` is guaranteed to be at least 16-bit...
 				AS_IF([NS_TEST_NAE([yes],
 				[${with_libc}], [${ac_cv_c_uint16_t}])],
 					[AS_IF([test "${ac_cv_char_bit}" -ge 16],
-						[echo 'typedef unsigned char uint16_t;'],
+						[echo 'typedef unsigned char uint_least16_t;'],
 					[test "${na_tmp_ushort_bit}" -ge 16],
-						[echo 'typedef unsigned short int uint16_t;'],
-						[echo 'typedef unsigned int uint16_t;'])])
+						[echo 'typedef unsigned short int uint_least16_t;'],
+						[echo 'typedef unsigned int uint_least16_t;'])])
 				# `unsigned long int` is guaranteed to be at least 32-bit...
 				AS_IF([NS_TEST_NAE([yes],
 				[${with_libc}], [${ac_cv_c_uint32_t}])],
 					[AS_IF([test "${ac_cv_char_bit}" -ge 32],
-						[echo 'typedef unsigned char uint32_t;'],
+						[echo 'typedef unsigned char uint_least32_t;'],
 					[test "${na_tmp_ushort_bit}" -ge 32],
-						[echo 'typedef unsigned short int uint32_t;'],
+						[echo 'typedef unsigned short int uint_least32_t;'],
 					[test "${na_tmp_uint_bit}" -ge 32],
-						[echo 'typedef unsigned int uint32_t;'],
-					[echo 'typedef unsigned long int uint32_t;'])])
+						[echo 'typedef unsigned int uint_least32_t;'],
+					[echo 'typedef unsigned long int uint_least32_t;'])])
 			} >> 'no-dist/conf-results/stdmissing.h'
 		])
 		NS_UNSET([na_tmp_ushort_bit], [na_tmp_uint_bit])
 		AS_IF([test -f 'no-dist/conf-results/noioheaders.h'],
 			[echo >> 'no-dist/conf-results/noioheaders.h'])
-		AS_IF([test -f "${rvdir}/${nonportfile}"],
-			[AS_VAR_SET([na_tmp_pending_rv], ['yes'])],
-			[cp 'no-dist/conf-results/stdmissing.h' "${rvdir}/${nonportfile}"])
+		AS_IF([test -f "${rvdir}/${nonportfile}"], [
+			touch "${rvdir}/${nonportfile}"
+			AS_VAR_SET([na_tmp_pending_rv], ['yes'])
+		], [
+			cp 'no-dist/conf-results/stdmissing.h' "${rvdir}/${nonportfile}"
+		])
 	])
-	AS_UNSET([na_tmp_allstdint])
 ], [
 	AS_VAR_SET([na_revise_libc], ['no'])
 ])
@@ -786,8 +768,10 @@ AC_SUBST([PROJECT_REVVER], [']GL_PROJECT_REVVER['])
 AC_SUBST([PROJECT_EFFVER], [']GL_PROJECT_MAJVER[.]GL_PROJECT_MINVER['])
 
 AC_SUBST([LIBRARY_BINVERSION],
-	m4_do(m4_eval(GL_INTERFACE_NUM[ - ]GL_INTERFACES_SUPPORTED),
-		[.]GL_INTERFACES_SUPPORTED[.]GL_IMPLEMENTATION_NUM))
+	m4_joinall([.],
+		m4_eval(GL_INTERFACE_NUM[ - ]GL_INTERFACES_SUPPORTED),
+		GL_INTERFACES_SUPPORTED,
+		GL_IMPLEMENTATION_NUM))
 
 
 ###  **************************************************************************
@@ -830,8 +814,6 @@ NC_SUBST_NOTMAKE([confini_baremetal_c_recipe],
 			[<top_srcdir>/dev/marked-sources/confini-marked.c],
 			[[CONFINI_C_METADATA],
 				[<top_srcdir>/dev/hackings/all/confini-metadata.c]],
-			[[PP_UTILS],
-				[<top_srcdir>/dev/hackings/baremetal/pp-utils.c]],
 			[[IO_FLAVORS],
 				[]],
 			[[STANDARD_HEADERS],
@@ -842,7 +824,7 @@ NC_SUBST_NOTMAKE([confini_baremetal_c_recipe],
 				[]],
 			[[IO_FUNCTIONS],
 				[]],
-			[[NUMBER_PARSERS],
+			[[LIBC_STR2NUM],
 				[<top_srcdir>/dev/hackings/baremetal/str2num.c]])))))))[
 			;'
 	]))
@@ -862,13 +844,14 @@ NC_SUBST_NOTMAKE([confini_baremetal_h_recipe],
 				[<top_builddir>/no-dist/hackings/baremetal/c-standard-library.h]],
 			[[IO_FUNCTIONS],
 				[]],
-			[[NUMBER_PARSERS],
+			[[LIBC_STR2NUM],
 				[<top_srcdir>/dev/hackings/baremetal/str2num.h]])))))))[
 		'"@S|@@{:@test "x${na_revise_libc}" != xyes || echo '@:}@ ||
 		@{:@echo >&2 && { echo '\''I am not ready to build `@S|@@{:@D@:}@` yet.
-		Please revise'\''; echo '\''the content of the `@S|@@{:@rvdir@:}@`
-		subdirectory, then launch `@S|@@{:@MAKE@:}@'\''; echo
-		'\''approve-revision` after you are done.'\''; echo; } >&2 && exit
+		Please revise the content of the `@S|@@{:@rvdir@:}@`'\''; echo
+		'\''subdirectory, then launch `@S|@@{:@MAKE@:}@ approve-revision` after
+		you are done. If you'\''; echo '\''happen to change your mind, launch
+		`@S|@@{:@MAKE@:}@ reject-revision` to go back.'\''; echo; } >&2 && exit
 		2@:}@'@:}@"';'
 	]))
 
@@ -896,18 +879,20 @@ AM_COND_IF([REVISE_LIBC],
 	], [test "x${with_libc}" = xyes], [
 		NC_MSG_WARNBOX([I could not access one or more C standard objects. I am
 		assuming that you are compiling for some exotic platform
-		(--without-io-api), so I have tried to guess a possible
+		(--without-io-api), therefore I have tried to guess a possible
 		re-implementation of the standard data types needed to build
 		]AC_PACKAGE_NAME[ for your machine. You will need to review the guessed
 		content in the `${rvdir}` subdirectory before launching `make all`.
-		Launch `make approve-revision` after you are done.])
+		Launch `make approve-revision` after you are done. If you happen to
+		change your mind, launch `make reject-revision` to go back.])
 	], [
 		NC_MSG_WARNBOX([The C Standard Library has been disabled
-		(--without-libc), so I have tried to guess a possible re-implementation
-		of the standard data types needed to build ]AC_PACKAGE_NAME[ for your
-		machine. You will need to review the guessed content in the `${rvdir}`
-		subdirectory before launching `make all`. Launch `make
-		approve-revision` after you are done.])
+		(--without-libc), therefore I have tried to guess a possible
+		re-implementation of the standard data types needed to build
+		]AC_PACKAGE_NAME[ for your machine. You will need to review the guessed
+		content in the `${rvdir}` subdirectory before launching `make all`.
+		Launch `make approve-revision` after you are done. If you happen to
+		change your mind, launch `make reject-revision` to go back.])
 	])])
 
 AS_UNSET([na_tmp_pending_rv])
@@ -917,7 +902,7 @@ AS_MKDIR_P(['help'])
 
 ###  Create a `help/make-targets.txt` file to be printed by `make help`
 { cat << 'END_HEREDOC'
-GNU make utility to maintain AC_PACKAGE_NAME AC_PACKAGE_VERSION
+GNU make utility to maintain AC_PACKAGE_STRING
 
 Commonly used targets:
 

@@ -49,9 +49,9 @@ static int my_ini_listener (IniDispatch * dispatch, void * user_data) {
     "\ndispatch_id: %zu\n"
     "format: {IniFormat}\n"
     "type: %u\n"
-    "data: |%s|\n"
-    "value: |%s|\n"
-    "append_to: |%s|\n"
+    "data: `%s`\n"
+    "value: `%s`\n"
+    "append_to: `%s`\n"
     "d_len: %zu\n"
     "v_len: %zu\n"
     "at_len: %zu\n",

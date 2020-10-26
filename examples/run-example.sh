@@ -134,7 +134,7 @@ while :; do
 			echo "------------------${_COL_DEFAULT_}"
 			echo
 			echo "  ${_COL_BBLUE_}->${_COL_DEFAULT_} Program exited with status "$([[ "${_EXIT_CODE_}" -eq 0 ]] && echo -n "${_COL_BGREEN_}" || echo -n "${_COL_BRED_}")"${_EXIT_CODE_}${_COL_DEFAULT_}."
-		} | less -XFKr
+		} | less -XFKEr
 		echo
 		rm -f "${_COMPILED_PRG_}"
 		read -n1 -s -p "${_COL_BGREEN_}==>${_COL_BWHITE_} Do you want to have a look at the source code? (y/N)${_COL_DEFAULT_} " _CHOICE_

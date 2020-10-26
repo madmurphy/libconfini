@@ -18,7 +18,7 @@
 	],
 	"bugs": {
 		"url": "@GIT_HTTP_SERVER@/@PUBLISHER_ID@/@PACKAGE_TARNAME@/issues",
-		"email" : "@PACKAGE_BUGREPORT@"
+		"email": "@PACKAGE_BUGREPORT@"
 	},
 	"man" : [
 		"docs/man/man3/@PROJECT_NAME@.h.3",

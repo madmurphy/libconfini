@@ -2,6 +2,15 @@ News
 ====
 
 
+## 1.16.0
+
+Changes:
+
+* Function `ini_get_bool_i()` has been created
+* New examples have been created (`examples/cplusplus/map.cpp`,
+  `examples/utilities/ini_string_preparse.h`)
+
+
 ## 1.15.0
 
 * Public function `ini_global_set_lowercase_mode()` and global variable

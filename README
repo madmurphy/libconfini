@@ -128,6 +128,10 @@ People who have visited: ronnie, lilly82, robrob
 Last update: 12.03.2017
 ````````````````````````````````````````````````
 
+If you are using C++, under `examples/cplusplus/map.cpp` you can find a snippet
+for storing an INI file into a class that relies on a `std::unordered_map`
+object.
+
 For more details, please read the [Library Functions Manual][2] (`man
 libconfini`) -- a standalone HTML version is available [here][3] -- and the
 manual of the header file (`man confini.h`). The code is available on

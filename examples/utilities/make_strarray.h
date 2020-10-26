@@ -10,7 +10,7 @@
   @param    dest_arrlen     The variable where the length of the array (in
                             number of members) will be saved (cannot be
                             `NULL`)
-  @param    str             The stringified array (it cannot be `NULL`)
+  @param    ini_string      The stringified array (it cannot be `NULL`)
   @param    len             The length of the stringified array in bytes
   @param    delimiter       The delimiter between the array members -- if zero
                             (see #INI_ANY_SPACE), any space is delimiter
@@ -27,10 +27,10 @@
 
   char ** my_array = make_strarray(
     &my_arrlen,
-    this->value,
-    this->v_len,
+    disp->value,
+    disp->v_len,
     INI_ANY_SPACE,
-    this->format
+    disp->format
   );
 
   if (my_arrlen && !my_array) {
@@ -48,13 +48,13 @@
 **/
 static char ** make_strarray (
   size_t * const dest_arrlen,
-  const char * const str,
+  const char * const ini_string,
   const size_t len,
   const char delimiter,
   const IniFormat format
 ) {
 
-  *dest_arrlen = ini_array_get_length(str, delimiter, format);
+  *dest_arrlen = ini_array_get_length(ini_string, delimiter, format);
 
   char ** const
     newarr  =   *dest_arrlen ?
@@ -67,7 +67,7 @@ static char ** make_strarray (
   }
 
   char * remnant = (char *) ((char **) newarr + *dest_arrlen);
-  memcpy(remnant, str, len + 1);
+  memcpy(remnant, ini_string, len + 1);
   for (size_t idx = 0; idx < *dest_arrlen; idx++) {
     newarr[idx] = ini_array_release(&remnant, delimiter, format);
     ini_string_parse(newarr[idx], format);

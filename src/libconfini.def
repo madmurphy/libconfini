@@ -12,19 +12,20 @@ EXPORTS
 	ini_array_split @ 11
 	ini_fton @ 12
 	ini_get_bool @ 13
-	ini_get_double @ 14 DATA
-	ini_get_float @ 15 DATA
-	ini_get_int @ 16 DATA
-	ini_get_lint @ 17 DATA
-	ini_get_llint @ 18 DATA
-	ini_global_set_implicit_value @ 19
-	ini_global_set_lowercase_mode @ 20
-	ini_ntof @ 21
-	ini_string_match_ii @ 22
-	ini_string_match_si @ 23
-	ini_string_match_ss @ 24
-	ini_string_parse @ 25
-	ini_unquote @ 26
-	load_ini_file @ 27
-	load_ini_path @ 28
-	strip_ini_cache @ 29
+	ini_get_bool_i @ 14
+	ini_get_double @ 15 DATA
+	ini_get_float @ 16 DATA
+	ini_get_int @ 17 DATA
+	ini_get_lint @ 18 DATA
+	ini_get_llint @ 19 DATA
+	ini_global_set_implicit_value @ 20
+	ini_global_set_lowercase_mode @ 21
+	ini_ntof @ 22
+	ini_string_match_ii @ 23
+	ini_string_match_si @ 24
+	ini_string_match_ss @ 25
+	ini_string_parse @ 26
+	ini_unquote @ 27
+	load_ini_file @ 28
+	load_ini_path @ 29
+	strip_ini_cache @ 30

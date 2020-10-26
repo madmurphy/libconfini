@@ -7,7 +7,7 @@
 	@brief		libconfini functions
 	@author		Stefano Gioffr&eacute;
 	@copyright	GNU General Public License, version 3 or any later version
-	@version	1.15.0
+	@version	1.16.0
 	@date		2016-2020
 	@see		https://madmurphy.github.io/libconfini
 
@@ -79,7 +79,8 @@
 					sequence of INI strings; it equals zero if @p ini_string is the
 					first or the only member of the sequence
 	@param		format
-					The format of the INI file from which @p ini_string has been extracted
+					The format of the INI file from which @p ini_string has been
+					extracted
 	@param		user_data
 					The custom argument previously passed to the caller function
 
@@ -130,10 +131,10 @@
 					If set to `true`, string comparisons will be always
 					case-sensitive.
 	@property	IniFormat::semicolon_marker
-					The rule of the semicolon character (use `enum`
+					The role of the semicolon character (use `enum`
 					#IniCommentMarker for this).
 	@property	IniFormat::hash_marker
-					The rule of the hash character (use `enum` #IniCommentMarker for
+					The role of the hash character (use `enum` #IniCommentMarker for
 					this).
 	@property	IniFormat::section_paths
 					Defines whether and how the format supports sections (use `enum`
@@ -143,7 +144,7 @@
 					`enum` #IniMultiline for this).
 	@property	IniFormat::no_spaces_in_names
 					If set to `true`, key and section names containing spaces (even
-					within quotes) will be rendered as #INI_UNKNOWN. Note that
+					within quotes) will be dispatched as #INI_UNKNOWN. Note that
 					setting #IniFormat::delimiter_symbol to #INI_ANY_SPACE will not
 					automatically set this option to `true` (spaces will still be
 					allowed in section names).
@@ -261,10 +262,15 @@
 
 
 /*  String concatenation facilities  */
-#define __PP_CAT__(STR1, STR2) STR1##STR2
-#define __PP_UCAT__(STR1, STR2) STR1##_##STR2
-#define __PP_EVALUCAT__(STR1, STR2) __PP_UCAT__(STR1, STR2)
+#define __PP_CAT__(STEM, ...) STEM ## __VA_ARGS__
+#define __PP_UCAT__(STEM, ...) STEM ## _ ## __VA_ARGS__
+#define __PP_EVALUCAT__(STEM, ...) __PP_UCAT__(STEM, __VA_ARGS__)
 
+/*  Conditionals  */
+#define __PP_IIF__(CONDITION, ...) \
+	__PP_EVALUCAT__(__PP_UCAT__(__COND, CONDITION), _)(__VA_ARGS__, , )
+#define __COND_0__(IF_TRUE, IF_FALSE, ...) IF_FALSE
+#define __COND_1__(IF_TRUE, ...) IF_TRUE
 
 
 		/*  PREPROCESSOR ENVIRONMENT  */
@@ -300,7 +306,7 @@
 		/*  AVAILABLE I/O FLAVORS  */
 
 
-/*  `-DCONFINI_IO_FLAVOR=CONFINI_STANDARD` (C99 Standard, default, REQUIRED)  */
+/*  `-DCONFINI_IO_FLAVOR=CONFINI_STANDARD` (C99 Standard, default)  */
 #define _LIBCONFINI_STANDARD_SEOF_FN_(FILEPTR) fseek(FILEPTR, 0, SEEK_END)
 #define _LIBCONFINI_STANDARD_FT_FN_(FILEPTR) ftell(FILEPTR)
 #define _LIBCONFINI_STANDARD_FT_T_ long signed int
@@ -360,7 +366,7 @@
 #define _LIBCONFINI_FALSE_ 0
 #define _LIBCONFINI_TRUE_ 1
 #define _LIBCONFINI_CHARBOOL_ unsigned char
-#define _LIBCONFINI_SIMPLE_SPACE_ ' '
+#define _LIBCONFINI_SIMPLE_SPACE_ '\x20'
 #define _LIBCONFINI_HT_ '\t'
 #define _LIBCONFINI_FF_ '\f'
 #define _LIBCONFINI_VT_ '\v'
@@ -383,23 +389,24 @@
 
 
 
-		/*  FUNCTIONAL MACROS AND CONSTANTS  */
-
-
 /*  The character that will replace sequences of one or more spaces (`/\s+/`)  */
 #define _LIBCONFINI_COLLAPSED_ _LIBCONFINI_SIMPLE_SPACE_
 
 
 /*
 
-	These may be any character in theory... But after the left-trim of each node
-	leading spaces work pretty well as metacharacters...
+	These may be any characters in theory... But after left-trimming each node
+	leading spaces work pretty well as markers...
 
 */
 /*  Internal marker of standard comments  */
 #define _LIBCONFINI_SC_INT_MARKER_ _LIBCONFINI_SIMPLE_SPACE_
 /*  Internal marker of inline comments  */
 #define _LIBCONFINI_IC_INT_MARKER_ _LIBCONFINI_HT_
+
+
+
+		/*  FUNCTIONAL MACROS AND CONSTANTS  */
 
 
 /*
@@ -426,7 +433,8 @@
 		CHR == _LIBCONFINI_HASH_ ? \
 			FMT.hash_marker != INI_IS_NOT_A_MARKER \
 		: \
-			CHR == _LIBCONFINI_SEMICOLON_ && FMT.semicolon_marker != INI_IS_NOT_A_MARKER \
+			CHR == _LIBCONFINI_SEMICOLON_ && \
+			FMT.semicolon_marker != INI_IS_NOT_A_MARKER \
 	)
 
 
@@ -438,9 +446,12 @@
 */
 #define _LIBCONFINI_IS_COM_MARKER_(CHR, FMT) ( \
 		CHR == _LIBCONFINI_HASH_ ? \
-			FMT.hash_marker != INI_IS_NOT_A_MARKER && FMT.hash_marker != INI_IGNORE \
+			FMT.hash_marker != INI_IS_NOT_A_MARKER && \
+			FMT.hash_marker != INI_IGNORE \
 		: \
-			CHR == _LIBCONFINI_SEMICOLON_ && FMT.semicolon_marker != INI_IS_NOT_A_MARKER && FMT.semicolon_marker != INI_IGNORE \
+			CHR == _LIBCONFINI_SEMICOLON_ && \
+			FMT.semicolon_marker != INI_IS_NOT_A_MARKER && \
+			FMT.semicolon_marker != INI_IGNORE \
 	)
 
 
@@ -454,7 +465,8 @@
 		CHR == _LIBCONFINI_HASH_ ? \
 			FMT.hash_marker == INI_DISABLED_OR_COMMENT \
 		: \
-			CHR == _LIBCONFINI_SEMICOLON_ && FMT.semicolon_marker == INI_DISABLED_OR_COMMENT \
+			CHR == _LIBCONFINI_SEMICOLON_ && \
+			FMT.semicolon_marker == INI_DISABLED_OR_COMMENT \
 	)
 
 
@@ -468,7 +480,8 @@
 		CHR == _LIBCONFINI_HASH_ ? \
 			FMT.hash_marker == INI_IGNORE \
 		: \
-			CHR == _LIBCONFINI_SEMICOLON_ && FMT.semicolon_marker == INI_IGNORE \
+			CHR == _LIBCONFINI_SEMICOLON_ && \
+			FMT.semicolon_marker == INI_IGNORE \
 	)
 
 
@@ -484,20 +497,7 @@
 
 /*
 
-	Possible depths of `_LIBCONFINI_SPACES_` (see function #is_some_space()).
-
-	Please, consider the following three constants as belonging together to a
-	virtual opaque `enum`.
-
-*/
-#define _LIBCONFINI_WITH_EOL_ -1
-#define _LIBCONFINI_NO_EOL_ 1
-#define _LIBCONFINI_JUST_S_T_ 3
-
-
-/*
-
-	Other constants related to `_LIBCONFINI_SPACES_`
+	Constants related to `_LIBCONFINI_SPACES_`
 
 */
 #define _LIBCONFINI_EOL_IDX_ 0
@@ -517,6 +517,19 @@ static const char _LIBCONFINI_SPACES_[_LIBCONFINI_SPALEN_] = {
 	_LIBCONFINI_HT_,
 	_LIBCONFINI_SIMPLE_SPACE_
 };
+
+
+/*
+
+	Possible depths of `_LIBCONFINI_SPACES_` (see function #is_some_space()).
+
+	Please, consider the following three constants as belonging together to a
+	virtual opaque `enum`.
+
+*/
+#define _LIBCONFINI_WITH_EOL_ -1
+#define _LIBCONFINI_NO_EOL_ 1
+#define _LIBCONFINI_JUST_S_T_ 3
 
 
 /**
@@ -539,6 +552,14 @@ static const char * const INI_BOOLEANS[][2] = {
 };
 
 
+/*
+
+	Other constants related to `INI_BOOLEANS`
+
+*/
+#define _LIBCONFINI_BOOLLEN_ (sizeof(INI_BOOLEANS) / sizeof(const char * const [2]))
+
+
 
 		/*  ABSTRACT UTILITIES  */
 
@@ -553,8 +574,8 @@ static const char * const INI_BOOLEANS[][2] = {
 	@return			A boolean: `true` if the character matches, `false` otherwise
 
 **/
-static inline _LIBCONFINI_CHARBOOL_ is_some_space (const char chr, const int8_t depth) {
-	register int8_t idx = depth;
+static inline _LIBCONFINI_CHARBOOL_ is_some_space (const char chr, const int_least8_t depth) {
+	register int_least8_t idx = depth;
 	while (++idx < _LIBCONFINI_SPALEN_ && chr != _LIBCONFINI_SPACES_[idx]);
 	return idx < _LIBCONFINI_SPALEN_;
 }
@@ -571,7 +592,7 @@ static inline _LIBCONFINI_CHARBOOL_ is_some_space (const char chr, const int8_t 
 	@return			The offset of the first non-space character
 
 **/
-static inline size_t ltrim_s (const char * const str, const size_t offs, const int8_t depth) {
+static inline size_t ltrim_s (const char * const str, const size_t offs, const int_least8_t depth) {
 	register size_t idx = offs;
 	while (is_some_space(str[idx++], depth));
 	return idx - 1;
@@ -589,7 +610,7 @@ static inline size_t ltrim_s (const char * const str, const size_t offs, const i
 	@return			The offset of the first non-space character
 
 **/
-static inline size_t ltrim_h (char * const str, const size_t offs, const int8_t depth) {
+static inline size_t ltrim_h (char * const str, const size_t offs, const int_least8_t depth) {
 	register size_t idx = offs;
 	while (is_some_space(str[idx], depth)) { str[idx++] = '\0'; }
 	return idx;
@@ -607,7 +628,7 @@ static inline size_t ltrim_h (char * const str, const size_t offs, const int8_t 
 	@return			The new length of the string
 
 **/
-static inline size_t ltrim_hh (char * const str, const size_t offs, const int8_t depth) {
+static inline size_t ltrim_hh (char * const str, const size_t offs, const int_least8_t depth) {
 	register size_t idx_d = offs, idx_s = offs;
 	while (is_some_space(str[idx_s++], depth));
 	if (--idx_s - idx_d) {
@@ -631,7 +652,7 @@ static inline size_t ltrim_hh (char * const str, const size_t offs, const int8_t
 	@return			The length of the string until the last non-space character
 
 **/
-static inline size_t rtrim_s (const char * const str, const size_t len, const int8_t depth) {
+static inline size_t rtrim_s (const char * const str, const size_t len, const int_least8_t depth) {
 	register size_t idx = len + 1;
 	while (--idx > 0 && is_some_space(str[idx - 1], depth));
 	return idx;
@@ -649,7 +670,7 @@ static inline size_t rtrim_s (const char * const str, const size_t len, const in
 	@return			The new length of the string
 
 **/
-static inline size_t rtrim_h (char * const str, const size_t len, const int8_t depth) {
+static inline size_t rtrim_h (char * const str, const size_t len, const int_least8_t depth) {
 	register size_t idx = len;
 	while (idx > 0 && is_some_space(str[idx - 1], depth)) { str[--idx] = '\0'; }
 	return idx;
@@ -658,7 +679,7 @@ static inline size_t rtrim_h (char * const str, const size_t len, const int8_t d
 
 /**
 
-	@brief			Unescaped soft right trim (right trim of `/(?:\s|\\[\n\r])+$/`)
+	@brief			Unparsed soft right trim (right trim of `/(?:\s|\\[\n\r])+$/`)
 					-- does not change the buffer
 	@param			str				The target string
 	@param			len				The length of the string
@@ -667,7 +688,7 @@ static inline size_t rtrim_h (char * const str, const size_t len, const int8_t d
 **/
 static inline size_t urtrim_s (const char * const str, const size_t len) {
 
-	register uint8_t abcd = 1;
+	register uint_least8_t abcd = 1;
 	register size_t idx = len;
 
 
@@ -742,7 +763,11 @@ static inline void string_tolower (char * const str) {
 	@return			The offset of the first non-trivial character
 
 **/
-static inline size_t qultrim_h (char * const srcstr, const size_t offs, const IniFormat format) {
+static inline size_t qultrim_h (
+	char * const srcstr,
+	const size_t offs,
+	const IniFormat format
+) {
 
 	/*
 
@@ -759,14 +784,19 @@ static inline size_t qultrim_h (char * const srcstr, const size_t offs, const In
 
 	*/
 
-	register uint8_t abcd = (format.no_double_quotes ? 130 : 128) | format.no_single_quotes;
+	register uint_least8_t
+		abcd = (format.no_double_quotes ? 130 : 128) | format.no_single_quotes;
+
 	size_t idx = offs;
 
 	do {
 
 		abcd	=	!(abcd & 28) && is_some_space(srcstr[idx], _LIBCONFINI_NO_EOL_) ?
 						(abcd & 207) | 64
-					: !(abcd & 12) && (srcstr[idx] == _LIBCONFINI_LF_ || srcstr[idx] == _LIBCONFINI_CR_) ?
+					: !(abcd & 12) && (
+							srcstr[idx] == _LIBCONFINI_LF_ ||
+							srcstr[idx] == _LIBCONFINI_CR_
+					) ?
 						(
 							abcd & 16 ?
 								(abcd & 239) | 96
@@ -826,7 +856,11 @@ static inline size_t qultrim_h (char * const srcstr, const size_t offs, const In
 	@return			The offset of the first non-trivial character
 
 **/
-static inline size_t dqultrim_s (const char * const srcstr, const size_t offs, const IniFormat format) {
+static inline size_t dqultrim_s (
+	const char * const srcstr,
+	const size_t offs,
+	const IniFormat format
+) {
 
 	/*
 
@@ -843,9 +877,9 @@ static inline size_t dqultrim_s (const char * const srcstr, const size_t offs, c
 	*/
 
 
-	register uint16_t abcd	=	format.no_single_quotes |
-								(format.no_double_quotes << 1) |
-								96;
+	register uint_least16_t abcd	=	format.no_single_quotes |
+										(format.no_double_quotes << 1) |
+										96;
 
 	register size_t idx = offs;
 
@@ -905,7 +939,12 @@ static inline size_t dqultrim_s (const char * const srcstr, const size_t offs, c
 					@p chr has not been not found
 
 **/
-static inline size_t getn_metachar_pos (const char * const str, const char chr, const size_t len, const IniFormat format) {
+static inline size_t getn_metachar_pos (
+	const char * const str,
+	const char chr,
+	const size_t len,
+	const IniFormat format
+) {
 
 	size_t idx = 0;
 
@@ -923,9 +962,17 @@ static inline size_t getn_metachar_pos (const char * const str, const char chr, 
 
 	for (
 
-		register uint8_t abcd = (format.no_double_quotes << 1) | format.no_single_quotes;
+		register uint_least8_t
+			abcd = (format.no_double_quotes << 1) | format.no_single_quotes;
 
-			idx < len && ((abcd & 12) || (chr ? str[idx] != chr : !is_some_space(str[idx], _LIBCONFINI_WITH_EOL_)));
+			idx < len && (
+				(abcd & 12) || (
+					chr ?
+						str[idx] != chr
+					:
+						!is_some_space(str[idx], _LIBCONFINI_WITH_EOL_)
+				)
+			);
 
 		abcd	=	str[idx] == _LIBCONFINI_BACKSLASH_ ? abcd ^ 16
 					: !(abcd & 22) && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abcd ^ 8
@@ -951,7 +998,11 @@ static inline size_t getn_metachar_pos (const char * const str, const char chr, 
 					@p str if @p chr has not been not found
 
 **/
-static inline size_t get_metachar_pos (const char * const str, const char chr, const IniFormat format) {
+static inline size_t get_metachar_pos (
+	const char * const str,
+	const char chr,
+	const IniFormat format
+) {
 
 	size_t idx = 0;
 
@@ -965,9 +1016,17 @@ static inline size_t get_metachar_pos (const char * const str, const char chr, c
 
 	for (
 
-		register uint8_t abcd = (format.no_double_quotes << 1) | format.no_single_quotes;
+		register uint_least8_t
+			abcd = (format.no_double_quotes << 1) | format.no_single_quotes;
 
-			str[idx] && ((abcd & 12) || (chr ? str[idx] != chr : !is_some_space(str[idx], _LIBCONFINI_NO_EOL_)));
+			str[idx] && (
+				(abcd & 12) || (
+					chr ?
+						str[idx] != chr
+					:
+						!is_some_space(str[idx], _LIBCONFINI_NO_EOL_)
+				)
+			);
 
 		abcd	=	str[idx] == _LIBCONFINI_BACKSLASH_ ? abcd ^ 16
 					: !(abcd & 22) && str[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ? abcd ^ 8
@@ -994,10 +1053,15 @@ static inline size_t get_metachar_pos (const char * const str, const char chr, c
 	@return			The new length of the string
 
 **/
-static size_t unescape_cr_lf (char * const srcstr, const size_t len, const _LIBCONFINI_CHARBOOL_ is_disabled, const IniFormat format) {
+static size_t unescape_cr_lf (
+	char * const srcstr,
+	const size_t len,
+	const _LIBCONFINI_CHARBOOL_ is_disabled,
+	const IniFormat format
+) {
 
 	register size_t idx_s = 0, idx_d = 0;
-	register uint8_t eol_i = _LIBCONFINI_EOL_IDX_;
+	register _LIBCONFINI_CHARBOOL_ eol_i = _LIBCONFINI_EOL_IDX_;
 	register _LIBCONFINI_CHARBOOL_ is_escaped = _LIBCONFINI_FALSE_;
 	size_t probe;
 
@@ -1005,7 +1069,8 @@ static size_t unescape_cr_lf (char * const srcstr, const size_t len, const _LIBC
 
 		if (
 			is_escaped && (
-				srcstr[idx_s] == _LIBCONFINI_SPACES_[eol_i] || srcstr[idx_s] == _LIBCONFINI_SPACES_[eol_i ^= 1]
+				srcstr[idx_s] == _LIBCONFINI_SPACES_[eol_i] ||
+				srcstr[idx_s] == _LIBCONFINI_SPACES_[eol_i ^= 1]
 			)
 		) {
 
@@ -1088,7 +1153,9 @@ static size_t sanitize_section_path (char * const secpath, const IniFormat forma
 
 	*/
 
-	register uint16_t abcd = (format.no_double_quotes ? 1826 : 1824) | format.no_single_quotes;
+	register uint_least16_t
+		abcd = (format.no_double_quotes ? 1826 : 1824) | format.no_single_quotes;
+
 	register size_t idx_s = 0, idx_d = 0;
 
 	for (; secpath[idx_s]; idx_s++) {
@@ -1206,9 +1273,10 @@ static size_t collapse_everything (char * const ini_string, const IniFormat form
 
 	register size_t idx_s = 0, idx_d = 0;
 
-	register uint16_t abcd	=	(is_some_space(*ini_string, _LIBCONFINI_WITH_EOL_) ? 128 : 160) |
-								(format.no_double_quotes << 1) |
-								format.no_single_quotes;
+	register uint_least16_t
+		abcd	=	(is_some_space(*ini_string, _LIBCONFINI_WITH_EOL_) ? 128 : 160) |
+					(format.no_double_quotes << 1) |
+					format.no_single_quotes;
 
 
 	for (; ini_string[idx_s]; idx_s++) {
@@ -1252,7 +1320,10 @@ static size_t collapse_everything (char * const ini_string, const IniFormat form
 
 		} else if (abcd & 128) {
 
-			ini_string[idx_d++] = abcd & 44 ? ini_string[idx_s] : _LIBCONFINI_COLLAPSED_;
+			ini_string[idx_d++]		=	abcd & 44 ?
+											ini_string[idx_s]
+										:
+											_LIBCONFINI_COLLAPSED_;
 
 		}
 
@@ -1303,7 +1374,9 @@ static size_t collapse_spaces (char * const ini_string, const IniFormat format) 
 
 	*/
 
-	register uint8_t abcd = (format.no_double_quotes ? 34 : 32) | format.no_single_quotes;
+	register uint_least8_t
+		abcd = (format.no_double_quotes ? 34 : 32) | format.no_single_quotes;
+
 	register size_t idx_s = 0;
 	size_t idx_d = 0;
 
@@ -1378,7 +1451,9 @@ static size_t collapse_empty_quotes (char * const str, const IniFormat format) {
 
 	*/
 
-	register uint8_t abcd = (format.no_double_quotes << 1) | format.no_single_quotes;
+	register uint_least8_t
+		abcd = (format.no_double_quotes << 1) | format.no_single_quotes;
+
 	register size_t lshift = ltrim_s(str, 0, _LIBCONFINI_WITH_EOL_), idx = lshift;
 
 	for (; str[idx]; idx++) {
@@ -1445,11 +1520,7 @@ static size_t uncomment (char * const srcstr, size_t len, const IniFormat format
 
 	if (format.multiline_nodes == INI_MULTILINE_EVERYWHERE) {
 
-		/*
-
-			The comment can be multi-line
-
-		*/
+		/*  The comment can be multi-line  */
 
 		/*
 
@@ -1466,7 +1537,7 @@ static size_t uncomment (char * const srcstr, size_t len, const IniFormat format
 
 		*/
 
-		for (register uint8_t abcd = 8; idx_s < len; idx_s++) {
+		for (register uint_least8_t abcd = 8; idx_s < len; idx_s++) {
 
 			abcd	=	srcstr[idx_s] == _LIBCONFINI_BACKSLASH_ ?
 							((abcd & 35) | 32) ^ 2
@@ -1494,13 +1565,14 @@ static size_t uncomment (char * const srcstr, size_t len, const IniFormat format
 
 	} else {
 
-		/*
+		/*  The comment cannot be multi-line  */
 
-			The comment cannot be multi-line
-
-		*/
-
-		for (; idx_s < len && _LIBCONFINI_IS_ANY_MARKER_(srcstr[idx_s], format); idx_s++);
+		for (
+			;
+				idx_s < len &&
+				_LIBCONFINI_IS_ANY_MARKER_(srcstr[idx_s], format);
+			idx_s++
+		);
 
 		if (!idx_s) {
 
@@ -1531,18 +1603,20 @@ static size_t uncomment (char * const srcstr, size_t len, const IniFormat format
 	@return			The node type (see header)
 
 **/
-static uint8_t get_type_as_active (
+static uint_least8_t get_type_as_active (
 	const char * const srcstr,
 	const size_t len,
 	const _LIBCONFINI_CHARBOOL_ allow_implicit,
 	const IniFormat format
 ) {
 
-	const _LIBCONFINI_CHARBOOL_ invalid_delimiter = _LIBCONFINI_IS_ESC_CHAR_(format.delimiter_symbol, format);
+	const _LIBCONFINI_CHARBOOL_
+		invalid_delimiter = _LIBCONFINI_IS_ESC_CHAR_(format.delimiter_symbol, format);
 
 	if (
 		!len || _LIBCONFINI_IS_ANY_MARKER_(*srcstr, format) || (
-			*((unsigned char *) srcstr) == format.delimiter_symbol && !invalid_delimiter
+			*((unsigned char *) srcstr) == format.delimiter_symbol &&
+			!invalid_delimiter
 		)
 	) {
 
@@ -1550,10 +1624,13 @@ static uint8_t get_type_as_active (
 
 	}
 
-	register uint16_t abcd;
+	register uint_least16_t abcd;
 	register size_t idx;
 
-	if (format.section_paths != INI_NO_SECTIONS && *srcstr == _LIBCONFINI_OPEN_SECTION_) {
+	if (
+		format.section_paths != INI_NO_SECTIONS &&
+		*srcstr == _LIBCONFINI_OPEN_SECTION_
+	) {
 
 		if (format.no_spaces_in_names) {
 
@@ -1651,7 +1728,14 @@ static uint8_t get_type_as_active (
 
 			}
 
-		} else if ((idx = getn_metachar_pos(srcstr, _LIBCONFINI_CLOSE_SECTION_, len, format) + 1) > len) {
+		} else if (
+			(idx = getn_metachar_pos(
+				srcstr,
+				_LIBCONFINI_CLOSE_SECTION_,
+				len,
+				format
+			) + 1) > len
+		) {
 
 			return INI_UNKNOWN;
 
@@ -1661,8 +1745,7 @@ static uint8_t get_type_as_active (
 
 			Scan for possible non-space characters following the CLOSE SECTION
 			character: if found the node cannot represent a section path (but it can
-			possibly represent a key). Empty quotes surrounded by spaces will be
-			tolerated.
+			possibly represent a key). Empty quotes will be tolerated.
 
 		*/
 
@@ -1681,13 +1764,7 @@ static uint8_t get_type_as_active (
 
 		abcd = 32 | (format.no_double_quotes << 1) | format.no_single_quotes;
 
-
-		/* \                                /\
-		\ */     nonspace_check:           /* \
-		 \/     ______________________     \ */
-
-
-		if (abcd) {
+		do {
 
 			if (idx >= len) {
 
@@ -1703,38 +1780,40 @@ static uint8_t get_type_as_active (
 				case _LIBCONFINI_SIMPLE_SPACE_:
 
 					abcd = abcd & 28 ? 0 : abcd & 47;
-					goto nonspace_check;
+					continue;
 
 				case _LIBCONFINI_LF_:
 				case _LIBCONFINI_CR_:
 
 					abcd = abcd & 12 ? 0 : abcd & 47;
-					goto nonspace_check;
+					continue;
 
 				case _LIBCONFINI_BACKSLASH_:
 
 					abcd = abcd & 28 ? 0 : abcd | 16;
-					goto nonspace_check;
+					continue;
 
 				case _LIBCONFINI_DOUBLE_QUOTES_:
 
 					abcd = abcd & 22 ? 0 : (abcd & 47) ^ 8;
-					goto nonspace_check;
+					continue;
 
 				case _LIBCONFINI_SINGLE_QUOTES_:
 
 					abcd = abcd & 25 ? 0 : (abcd & 47) ^ 4;
-					goto nonspace_check;
+					continue;
 
 			}
 
-		}
+			break;
+
+		} while (abcd);
 
 	}
 
 	/*
 
-		It can be just a key...
+		It can be just a key or `INI_UNKNOWN`...
 
 	*/
 
@@ -1757,7 +1836,12 @@ static uint8_t get_type_as_active (
 
 	if (abcd) {
 
-		idx = getn_metachar_pos(srcstr, (char) format.delimiter_symbol, len, format);
+		idx = getn_metachar_pos(
+			srcstr,
+			(char) format.delimiter_symbol,
+			len,
+			format
+		);
 
 		if ((abcd & 1) && idx == len) {
 
@@ -1816,16 +1900,17 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 	*/
 
-	register uint16_t	abcd	=	((format.disabled_after_space << 2) ^ 4) |
-									(format.no_double_quotes << 1) |
-									format.no_single_quotes | (
-										format.multiline_nodes == INI_MULTILINE_EVERYWHERE ?
-											8
-										: format.multiline_nodes == INI_BUT_COMMENTS ?
-											16
-										:
-											0
-									);
+	register uint_least16_t
+		abcd	=	((format.disabled_after_space << 2) ^ 4) |
+					(format.no_double_quotes << 1) |
+					format.no_single_quotes | (
+						format.multiline_nodes == INI_MULTILINE_EVERYWHERE ?
+							8
+						: format.multiline_nodes == INI_BUT_COMMENTS ?
+							16
+						:
+							0
+					);
 
 
 	register size_t idx;
@@ -1846,13 +1931,15 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 	unparsable_at = 0;
 
 	abcd	=	_LIBCONFINI_IS_DIS_MARKER_(srcstr[search_at], format) && (
-					!(abcd & 4) || !is_some_space(srcstr[search_at + 1], _LIBCONFINI_NO_EOL_)
+					!(abcd & 4) ||
+					!is_some_space(srcstr[search_at + 1], _LIBCONFINI_NO_EOL_)
 				) ?
 					(abcd & 31) | 2560
 				: _LIBCONFINI_IS_IGN_MARKER_(srcstr[search_at], format) ?
 					(abcd & 8 ? (abcd & 31) | 1024 : abcd & 31)
 				: (abcd & 8) && (
-					srcstr[search_at] == _LIBCONFINI_IC_INT_MARKER_ || _LIBCONFINI_IS_ANY_MARKER_(srcstr[search_at], format)
+					srcstr[search_at] == _LIBCONFINI_IC_INT_MARKER_ ||
+					_LIBCONFINI_IS_ANY_MARKER_(srcstr[search_at], format)
 				) ?
 					(abcd & 31) | 3072
 				:
@@ -1889,10 +1976,10 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 						segment, but the entry that preceded it had been checked and
 						did not seem to represent a valid disabled entry
 
-			NOTE:	For FLAG_1-FLAG_16 I will keep the values already assigned at
-					the beginning of the function; all other flags are already set
-					to zero. For the meaning of flags FLAG_1-FLAG_128 see the
-					beginning of the function.
+			NOTE:	As for FLAG_1-FLAG_16 I keep the values already assigned at the
+					beginning of the function; all other flags are already set to
+					zero. For the meaning of flags FLAG_1-FLAG_128 see the beginning
+					of the function.
 
 		*/
 
@@ -1960,12 +2047,16 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 				if (
 					abcd & 2048 ?
 						!(
-							_LIBCONFINI_IS_DIS_MARKER_(srcstr[idx], format) && (abcd & 24) && (
-								(~abcd & 516) || !is_some_space(srcstr[idx + 1], _LIBCONFINI_NO_EOL_)
+							_LIBCONFINI_IS_DIS_MARKER_(srcstr[idx], format) &&
+							(abcd & 24) && (
+								(~abcd & 516) ||
+								!is_some_space(srcstr[idx + 1], _LIBCONFINI_NO_EOL_)
 							)
 						) && !(
-							_LIBCONFINI_IS_COM_MARKER_(srcstr[idx], format) && (abcd & 8) && (
-								((abcd ^ 512) & 8704) || !get_type_as_active(
+							_LIBCONFINI_IS_COM_MARKER_(srcstr[idx], format) &&
+							(abcd & 8) && (
+								((abcd ^ 512) & 8704) ||
+								!get_type_as_active(
 									srcstr + focus_at,
 									idx - focus_at,
 									format.disabled_can_be_implicit,
@@ -2005,7 +2096,8 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 			default:
 
-				abcd	=	!(abcd & 1376) && (~abcd & 8200) && _LIBCONFINI_IS_ANY_MARKER_(srcstr[idx], format) ?
+				abcd	=	!(abcd & 1376) && (~abcd & 8200) &&
+							_LIBCONFINI_IS_ANY_MARKER_(srcstr[idx], format) ?
 								(abcd & 12159) | 256
 							: !(abcd & 162) && srcstr[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
 								((abcd & 16255) | 4352) ^ 64
@@ -2025,7 +2117,8 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 					/*
 
-						Inline comment has been found in a (supposedly) disabled entry.
+						Inline comment has been found in a (supposedly) disabled
+						entry.
 
 					*/
 
@@ -2105,7 +2198,7 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 			FLAG_512	This was neither a hash nor a semicolon character
 			FLAG_1024	This was not a space
 
-		NOTE:	For FLAG_1-FLAG_16 I will keep the values already assigned at the
+		NOTE:	As for FLAG_1-FLAG_16 I keep the values already assigned at the
 				beginning of the function; all other flags are already set to zero
 				(see previous usage of `abcd` within this function), with the only
 				exception of FLAG_2048, which I am going to overwrite immediately.
@@ -2332,7 +2425,9 @@ int strip_ini_cache (
 	void * const user_data
 ) {
 
-	const _LIBCONFINI_CHARBOOL_ valid_delimiter = !_LIBCONFINI_IS_ESC_CHAR_(format.delimiter_symbol, format);
+	const _LIBCONFINI_CHARBOOL_
+		valid_delimiter = !_LIBCONFINI_IS_ESC_CHAR_(format.delimiter_symbol, format);
+
 	_LIBCONFINI_CHARBOOL_ tmp_bool;
 	register size_t idx, tmp_fast_size_t_1, tmp_fast_size_t_2;
 	size_t tmp_size_t_1, tmp_size_t_2;
@@ -2348,7 +2443,7 @@ int strip_ini_cache (
 	#define __ISNT_ESCAPED__ tmp_bool
 	#define __LSHIFT__ tmp_fast_size_t_1
 	#define __EOL_N__ tmp_fast_size_t_2
-	#define __NODE_AT__ tmp_size_t_1
+	#define __NL_AT__ tmp_size_t_1
 	#define __N_MEMBERS__ tmp_size_t_2
 
 	/*  UTF-8 BOM  */
@@ -2357,13 +2452,12 @@ int strip_ini_cache (
 					*((unsigned char *) ini_source + 2) == 0xBF
 					? 3 : 0;
 
-
 	for (
 
 		__N_MEMBERS__ = 0,
 		__EOL_N__ = _LIBCONFINI_EOL_IDX_,
 		__ISNT_ESCAPED__ = _LIBCONFINI_TRUE_,
-		__NODE_AT__ = 0,
+		__NL_AT__ = 0,
 		idx = __LSHIFT__;
 
 			idx < ini_length;
@@ -2374,13 +2468,19 @@ int strip_ini_cache (
 
 		ini_source[idx - __LSHIFT__] = ini_source[idx];
 
-		if (ini_source[idx] == _LIBCONFINI_SPACES_[__EOL_N__] || ini_source[idx] == _LIBCONFINI_SPACES_[__EOL_N__ ^= 1]) {
+		if (
+			ini_source[idx] == _LIBCONFINI_SPACES_[__EOL_N__] ||
+			ini_source[idx] == _LIBCONFINI_SPACES_[__EOL_N__ ^= 1]
+		) {
 
 			if (format.multiline_nodes == INI_NO_MULTILINE || __ISNT_ESCAPED__) {
 
 				ini_source[idx - __LSHIFT__] = '\0';
-				__N_MEMBERS__ += further_cuts(ini_source + qultrim_h(ini_source, __NODE_AT__, format), format);
-				__NODE_AT__ = idx - __LSHIFT__ + 1;
+				__N_MEMBERS__ += further_cuts(
+					ini_source + qultrim_h(ini_source, __NL_AT__, format),
+					format
+				);
+				__NL_AT__ = idx - __LSHIFT__ + 1;
 
 			} else if (ini_source[idx + 1] == _LIBCONFINI_SPACES_[__EOL_N__ ^ 1]) {
 
@@ -2416,7 +2516,10 @@ int strip_ini_cache (
 
 	}
 
-	__N_MEMBERS__ += further_cuts(ini_source + qultrim_h(ini_source, __NODE_AT__, format), format);
+	__N_MEMBERS__ += further_cuts(
+		ini_source + qultrim_h(ini_source, __NL_AT__, format),
+		format
+	);
 
 	/*  Debug  */
 
@@ -2442,7 +2545,7 @@ int strip_ini_cache (
 	}
 
 	#undef __N_MEMBERS__
-	#undef __NODE_AT__
+	#undef __NL_AT__
 	#undef __EOL_N__
 	#undef __LSHIFT__
 	#undef __ISNT_ESCAPED__
@@ -2465,7 +2568,7 @@ int strip_ini_cache (
 	#define __REAL_PARENT_LEN__ tmp_size_t_2
 	#define __PARENT_IS_DISABLED__ tmp_bool
 
-	__REAL_PARENT_LEN__ = 0, __CURR_PARENT_LEN__ = 0, __SUBPARENT_LEN__  = 0;
+	__REAL_PARENT_LEN__ = __CURR_PARENT_LEN__ = __SUBPARENT_LEN__  = 0;
 
 	char
 		* curr_parent_str = ini_source + real_length,
@@ -2487,7 +2590,10 @@ int strip_ini_cache (
 
 		}
 
-		if (!ini_source[__NODE_AT__] || _LIBCONFINI_IS_IGN_MARKER_(ini_source[__NODE_AT__], format)) {
+		if (
+			!ini_source[__NODE_AT__] ||
+			_LIBCONFINI_IS_IGN_MARKER_(ini_source[__NODE_AT__], format)
+		) {
 
 			__NODE_AT__ = idx + 1;
 			continue;
@@ -2551,7 +2657,12 @@ int strip_ini_cache (
 
 					if (!_LIBCONFINI_IS_ANY_MARKER_(*dsp.data, format)) {
 
-						dsp.type = get_type_as_active(dsp.data, dsp.d_len, _LIBCONFINI_TRUE_, format);
+						dsp.type = get_type_as_active(
+							dsp.data,
+							dsp.d_len,
+							_LIBCONFINI_TRUE_,
+							format
+						);
 						break;
 
 					}
@@ -2599,7 +2710,8 @@ int strip_ini_cache (
 
 			do {
 
-				curr_parent_str[__CURR_PARENT_LEN__ + __ITER__] = subparent_str[__ITER__];
+				curr_parent_str[__CURR_PARENT_LEN__ + __ITER__] =
+					subparent_str[__ITER__];
 
 			} while (__ITER__++ < __SUBPARENT_LEN__);
 
@@ -2633,7 +2745,12 @@ int strip_ini_cache (
 
 		} else if (format.multiline_nodes != INI_NO_MULTILINE) {
 
-			dsp.d_len = unescape_cr_lf(dsp.data, dsp.d_len, dsp.type & INI_DISABLED_FLAG, format);
+			dsp.d_len = unescape_cr_lf(
+				dsp.data,
+				dsp.d_len,
+				dsp.type & INI_DISABLED_FLAG,
+				format
+			);
 
 		}
 
@@ -2653,7 +2770,13 @@ int strip_ini_cache (
 			case INI_DISABLED_SECTION:
 
 				*dsp.data++ = '\0';
-				__ITER__ = getn_metachar_pos(dsp.data, _LIBCONFINI_CLOSE_SECTION_, dsp.d_len, format);
+
+				__ITER__ = getn_metachar_pos(
+					dsp.data,
+					_LIBCONFINI_CLOSE_SECTION_,
+					dsp.d_len,
+					format
+				);
 
 				while (dsp.data[__ITER__]) {
 
@@ -2667,7 +2790,10 @@ int strip_ini_cache (
 									sanitize_section_path(dsp.data, format);
 
 
-				if (format.section_paths == INI_ONE_LEVEL_ONLY || *dsp.data != _LIBCONFINI_SUBSECTION_) {
+				if (
+					format.section_paths == INI_ONE_LEVEL_ONLY ||
+					*dsp.data != _LIBCONFINI_SUBSECTION_
+				) {
 
 					/*
 
@@ -2682,7 +2808,10 @@ int strip_ini_cache (
 					dsp.append_to = subparent_str;
 					dsp.at_len = 0;
 
-				} else if (format.section_paths == INI_ABSOLUTE_ONLY || !__CURR_PARENT_LEN__) {
+				} else if (
+					format.section_paths == INI_ABSOLUTE_ONLY ||
+					!__CURR_PARENT_LEN__
+				) {
 
 					/*
 
@@ -2724,16 +2853,23 @@ int strip_ini_cache (
 			case INI_DISABLED_KEY:
 
 				if (
-					valid_delimiter && (
-						__ITER__ = getn_metachar_pos(dsp.data, (char) dsp.format.delimiter_symbol, dsp.d_len, format)
-					) < dsp.d_len
+					valid_delimiter &&
+					(__ITER__ = getn_metachar_pos(
+						dsp.data,
+						(char) dsp.format.delimiter_symbol,
+						dsp.d_len,
+						format
+					)) < dsp.d_len
 				) {
 
 					dsp.data[__ITER__] = '\0';
 					dsp.value = dsp.data + __ITER__ + 1;
 
 
-					switch ((format.preserve_empty_quotes << 1) | format.do_not_collapse_values) {
+					switch (
+						(format.preserve_empty_quotes << 1) |
+						format.do_not_collapse_values
+					) {
 
 						case 0:	dsp.v_len = collapse_everything(dsp.value, format); break;
 
@@ -2744,7 +2880,11 @@ int strip_ini_cache (
 						case 4:
 
 							dsp.value += ltrim_h(dsp.value, 0, _LIBCONFINI_WITH_EOL_);
-							dsp.v_len = rtrim_h(dsp.value, dsp.d_len + dsp.data - dsp.value, _LIBCONFINI_WITH_EOL_);
+							dsp.v_len = rtrim_h(
+								dsp.value,
+								dsp.d_len + dsp.data - dsp.value,
+								_LIBCONFINI_WITH_EOL_
+							);
 							/*  No case break here (last case)  */
 
 					}
@@ -2856,7 +2996,10 @@ int load_ini_file (
 
 	_LIBCONFINI_OFF_T_ file_size;
 
-	if (_LIBCONFINI_SEEK_EOF_(ini_file) || (file_size = _LIBCONFINI_FTELL_(ini_file)) < 0) {
+	if (
+		_LIBCONFINI_SEEK_EOF_(ini_file) ||
+		(file_size = _LIBCONFINI_FTELL_(ini_file)) < 0
+	) {
 
 		return CONFINI_EBADF;
 
@@ -2885,7 +3028,14 @@ int load_ini_file (
 
 	}
 
-	const int return_value = strip_ini_cache(cache, (size_t) file_size, format, f_init, f_foreach, user_data);
+	const int return_value = strip_ini_cache(
+		cache,
+		(size_t) file_size,
+		format,
+		f_init,
+		f_foreach,
+		user_data
+	);
 
 	free(cache);
 	return return_value;
@@ -2948,7 +3098,10 @@ int load_ini_path (
 
 	_LIBCONFINI_OFF_T_ file_size;
 
-	if (_LIBCONFINI_SEEK_EOF_(ini_file) || (file_size = _LIBCONFINI_FTELL_(ini_file)) < 0) {
+	if (
+		_LIBCONFINI_SEEK_EOF_(ini_file) ||
+		(file_size = _LIBCONFINI_FTELL_(ini_file)) < 0
+	) {
 
 		return CONFINI_EBADF;
 
@@ -2980,7 +3133,14 @@ int load_ini_path (
 	/*  No checks here, as there is nothing we can do about it...  */
 	fclose(ini_file);
 
-	const int return_value = strip_ini_cache(cache, (size_t) file_size, format, f_init, f_foreach, user_data);
+	const int return_value = strip_ini_cache(
+		cache,
+		(size_t) file_size,
+		format,
+		f_init,
+		f_foreach,
+		user_data
+	);
 
 	free(cache);
 	return return_value;
@@ -3033,7 +3193,10 @@ bool ini_string_match_ss (
 
 	do {
 
-		if (_LIBCONFINI_CHR_CASEFOLD_(simple_string_a[idx]) != _LIBCONFINI_CHR_CASEFOLD_(simple_string_b[idx])) {
+		if (
+			_LIBCONFINI_CHR_CASEFOLD_(simple_string_a[idx]) !=
+			_LIBCONFINI_CHR_CASEFOLD_(simple_string_b[idx])
+		) {
 
 			return _LIBCONFINI_FALSE_;
 
@@ -3100,7 +3263,7 @@ bool ini_string_match_ss (
 	- `format.case_sensitive`
 	- `format.no_double_quotes`
 	- `format.no_single_quotes`
-	- `format.multiline_nodes`
+	- `format.multiline_nodes` (`INIFORMAT_HAS_NO_ESC()`)
 
 	@include topics/ini_string_match_si.c
 
@@ -3127,10 +3290,13 @@ bool ini_string_match_si (
 
 	*/
 
-	register uint8_t abcd	=	INIFORMAT_HAS_NO_ESC(format) ?
-									67
-								:
-									68 | (format.no_double_quotes << 1) | format.no_single_quotes;
+	register uint_least8_t
+		abcd	=	INIFORMAT_HAS_NO_ESC(format) ?
+						67
+					:
+						68 |
+						(format.no_double_quotes << 1) |
+						format.no_single_quotes;
 
 	register size_t idx_i = 0;
 	size_t idx_s = 0, nbacksl = 0;
@@ -3143,9 +3309,15 @@ bool ini_string_match_si (
 
 	if ((abcd & 4) && ini_string[idx_i] == _LIBCONFINI_BACKSLASH_) {
 
-		for (abcd &= 63, nbacksl++; ini_string[++idx_i] == _LIBCONFINI_BACKSLASH_; nbacksl++);
+		for (
+			abcd &= 63, nbacksl++;
+				ini_string[++idx_i] == _LIBCONFINI_BACKSLASH_;
+			nbacksl++
+		);
 
 	}
+
+	/*  Keep this algorithm identical to #ini_get_bool_i()  */
 
 	abcd	=	!(abcd & 10) && ini_string[idx_i] == _LIBCONFINI_DOUBLE_QUOTES_ ?
 					(
@@ -3171,7 +3343,7 @@ bool ini_string_match_si (
 
 	if (nbacksl) {
 
-		nbacksl = ((abcd & 32 ? nbacksl : nbacksl + 1) >> 1) + 1;
+		nbacksl = (abcd & 32 ? nbacksl + 2 : nbacksl + 3) >> 1;
 
 		while (--nbacksl) {
 
@@ -3185,7 +3357,11 @@ bool ini_string_match_si (
 
 	}
 
-	if ((abcd & 128) || ((abcd & 64) && !simple_string[idx_s])) {
+	if (
+		(abcd & 128) || (
+			(abcd & 64) && !simple_string[idx_s]
+		)
+	) {
 
 		idx_i++;
 		goto si_match;
@@ -3194,11 +3370,13 @@ bool ini_string_match_si (
 
 	if (
 		abcd & 64 ?
-			simple_string[idx_s] != _LIBCONFINI_COLLAPSED_ || !simple_string[idx_s + 1]
+			simple_string[idx_s] != _LIBCONFINI_COLLAPSED_ ||
+			!simple_string[idx_s + 1]
 		: format.case_sensitive ?
 			ini_string[idx_i] != simple_string[idx_s]
 		:
-			_LIBCONFINI_CHR_CASEFOLD_(ini_string[idx_i]) != _LIBCONFINI_CHR_CASEFOLD_(simple_string[idx_s])
+			_LIBCONFINI_CHR_CASEFOLD_(ini_string[idx_i]) !=
+			_LIBCONFINI_CHR_CASEFOLD_(simple_string[idx_s])
 	) {
 
 		return _LIBCONFINI_FALSE_;
@@ -3270,7 +3448,7 @@ bool ini_string_match_si (
 	- `format.case_sensitive`
 	- `format.no_double_quotes`
 	- `format.no_single_quotes`
-	- `format.multiline_nodes`
+	- `format.multiline_nodes` (`INIFORMAT_HAS_NO_ESC()`)
 
 **/
 bool ini_string_match_ii (
@@ -3280,9 +3458,9 @@ bool ini_string_match_ii (
 ) {
 
 	const _LIBCONFINI_CHARBOOL_ has_escape = !INIFORMAT_HAS_NO_ESC(format);
-	register uint8_t side = 1;
+	register _LIBCONFINI_CHARBOOL_ side = 1;
 	register _LIBCONFINI_CHARBOOL_ turn_allowed = _LIBCONFINI_TRUE_;
-	uint8_t abcd_pair[2];
+	uint_least8_t abcd_pair[2];
 	const char * chrptr_pair[2] = { ini_string_a, ini_string_b };
 	size_t nbacksl_pair[2];
 
@@ -3301,7 +3479,8 @@ bool ini_string_match_ii (
 
 	*/
 
-	abcd_pair[1] = *abcd_pair = 32 | (format.no_double_quotes << 1) | format.no_single_quotes;
+	abcd_pair[1] = abcd_pair[0] =
+		32 | (format.no_double_quotes << 1) | format.no_single_quotes;
 
 
 	/* \                                /\
@@ -3313,15 +3492,24 @@ bool ini_string_match_ii (
 
 	if (has_escape && *chrptr_pair[side] == _LIBCONFINI_BACKSLASH_) {
 
-		for (nbacksl_pair[side]++; *(++chrptr_pair[side]) == _LIBCONFINI_BACKSLASH_; nbacksl_pair[side]++);
+		for (
+			nbacksl_pair[side]++;
+				*(++chrptr_pair[side]) == _LIBCONFINI_BACKSLASH_;
+			nbacksl_pair[side]++
+		);
 
-		abcd_pair[side] = nbacksl_pair[side] & 1 ? (abcd_pair[side] & 31) | 16 : abcd_pair[side] & 15;
+		abcd_pair[side]		=	nbacksl_pair[side] & 1 ?
+									(abcd_pair[side] & 31) | 16
+								:
+									abcd_pair[side] & 15;
 
 		if (
 			(
-				(abcd_pair[side] & 9) || *chrptr_pair[side] != _LIBCONFINI_SINGLE_QUOTES_
+				(abcd_pair[side] & 9) ||
+				*chrptr_pair[side] != _LIBCONFINI_SINGLE_QUOTES_
 			) && (
-				(abcd_pair[side] & 6) || *chrptr_pair[side] != _LIBCONFINI_DOUBLE_QUOTES_
+				(abcd_pair[side] & 6) ||
+				*chrptr_pair[side] != _LIBCONFINI_DOUBLE_QUOTES_
 			)
 		) {
 
@@ -3331,11 +3519,14 @@ bool ini_string_match_ii (
 
 	} else {
 
-		abcd_pair[side]	=	!(abcd_pair[side] & 25) && *chrptr_pair[side] == _LIBCONFINI_SINGLE_QUOTES_ ?
+		abcd_pair[side]	=	!(abcd_pair[side] & 25) &&
+							*chrptr_pair[side] == _LIBCONFINI_SINGLE_QUOTES_ ?
 								((abcd_pair[side] & 111) | 64) ^ 4
-							: !(abcd_pair[side] & 22) && *chrptr_pair[side] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+							: !(abcd_pair[side] & 22) &&
+							*chrptr_pair[side] == _LIBCONFINI_DOUBLE_QUOTES_ ?
 								((abcd_pair[side] & 111) | 64) ^ 8
-							: !(abcd_pair[side] & 12) && is_some_space(*chrptr_pair[side], _LIBCONFINI_WITH_EOL_) ?
+							: !(abcd_pair[side] & 12) &&
+							is_some_space(*chrptr_pair[side], _LIBCONFINI_WITH_EOL_) ?
 								(abcd_pair[side] & 111) | 96
 							: *chrptr_pair[side] ?
 								abcd_pair[side] & 47
@@ -3361,9 +3552,9 @@ bool ini_string_match_ii (
 
 	turn_allowed = _LIBCONFINI_TRUE_;
 
-	if (*nbacksl_pair || nbacksl_pair[1]) {
+	if (nbacksl_pair[0] || nbacksl_pair[1]) {
 
-		if (*nbacksl_pair >> 1 != nbacksl_pair[1] >> 1) {
+		if (nbacksl_pair[0] >> 1 != nbacksl_pair[1] >> 1) {
 
 			return _LIBCONFINI_FALSE_;
 
@@ -3397,18 +3588,19 @@ bool ini_string_match_ii (
 
 	if (
 		format.case_sensitive ?
-			**chrptr_pair != *chrptr_pair[1]
+			*chrptr_pair[0] != *chrptr_pair[1]
 		:
-			_LIBCONFINI_CHR_CASEFOLD_(**chrptr_pair) != _LIBCONFINI_CHR_CASEFOLD_(*chrptr_pair[1])
+			_LIBCONFINI_CHR_CASEFOLD_(*chrptr_pair[0]) !=
+			_LIBCONFINI_CHR_CASEFOLD_(*chrptr_pair[1])
 	) {
 
 		return _LIBCONFINI_FALSE_;
 
 	}
 
-	if (**chrptr_pair) {
+	if (*chrptr_pair[0]) {
 
-		(*chrptr_pair)++;
+		chrptr_pair[0]++;
 
 	}
 
@@ -3418,9 +3610,9 @@ bool ini_string_match_ii (
 
 	}
 
-	if (**chrptr_pair || *chrptr_pair[1]) {
+	if (*chrptr_pair[0] || *chrptr_pair[1]) {
 
-		*abcd_pair &= 95;
+		abcd_pair[0] &= 95;
 		abcd_pair[1] &= 95;
 		side = 1;
 		goto ii_match;
@@ -3464,7 +3656,7 @@ bool ini_string_match_ii (
 	- `format.case_sensitive`
 	- `format.no_double_quotes`
 	- `format.no_single_quotes`
-	- `format.multiline_nodes`
+	- `format.multiline_nodes` (`INIFORMAT_HAS_NO_ESC()`)
 
 **/
 bool ini_array_match (
@@ -3476,20 +3668,16 @@ bool ini_array_match (
 
 	if (_LIBCONFINI_IS_ESC_CHAR_(delimiter, format)) {
 
-		/*
-
-			We have no delimiters (array has only one member)
-
-		*/
+		/*  We have no delimiters (array has only one member)  */
 
 		return ini_string_match_ii(ini_string_a, ini_string_b, format);
 
 	}
 
 	const _LIBCONFINI_CHARBOOL_ has_escape = !INIFORMAT_HAS_NO_ESC(format);
-	register uint8_t side = 1;
+	register _LIBCONFINI_CHARBOOL_ side = 1;
 	register _LIBCONFINI_CHARBOOL_ turn_allowed = _LIBCONFINI_TRUE_;
-	uint8_t abcd_pair[2];
+	uint_least8_t abcd_pair[2];
 	size_t nbacksl_pair[2];
 	const char * chrptr_pair[2] = {
 		ini_string_a + ltrim_s(ini_string_a, 0, _LIBCONFINI_WITH_EOL_),
@@ -3512,7 +3700,8 @@ bool ini_array_match (
 
 	*/
 
-	abcd_pair[1] = *abcd_pair = 32 | (format.no_double_quotes << 1) | format.no_single_quotes;
+	abcd_pair[1] = abcd_pair[0] =
+		32 | (format.no_double_quotes << 1) | format.no_single_quotes;
 
 
 	/* \                                /\
@@ -3524,15 +3713,24 @@ bool ini_array_match (
 
 	if (has_escape && *chrptr_pair[side] == _LIBCONFINI_BACKSLASH_) {
 
-		for (nbacksl_pair[side]++; *(++chrptr_pair[side]) == _LIBCONFINI_BACKSLASH_; nbacksl_pair[side]++);
+		for (
+			nbacksl_pair[side]++;
+				*(++chrptr_pair[side]) == _LIBCONFINI_BACKSLASH_;
+			nbacksl_pair[side]++
+		);
 
-		abcd_pair[side] = nbacksl_pair[side] & 1 ? (abcd_pair[side] & 31) | 16 : abcd_pair[side] & 15;
+		abcd_pair[side]		=	nbacksl_pair[side] & 1 ?
+									(abcd_pair[side] & 31) | 16
+								:
+									abcd_pair[side] & 15;
 
 		if (
 			(
-				(abcd_pair[side] & 9) || *chrptr_pair[side] != _LIBCONFINI_SINGLE_QUOTES_
+				(abcd_pair[side] & 9) ||
+				*chrptr_pair[side] != _LIBCONFINI_SINGLE_QUOTES_
 			) && (
-				(abcd_pair[side] & 6) || *chrptr_pair[side] != _LIBCONFINI_DOUBLE_QUOTES_
+				(abcd_pair[side] & 6) ||
+				*chrptr_pair[side] != _LIBCONFINI_DOUBLE_QUOTES_
 			)
 		) {
 
@@ -3542,25 +3740,27 @@ bool ini_array_match (
 
 	} else {
 
-		abcd_pair[side]	=	!(abcd_pair[side] & 12) && is_some_space(*chrptr_pair[side], _LIBCONFINI_WITH_EOL_) ?
-								(
-									delimiter || (abcd_pair[side] & 64) ?
-										(abcd_pair[side] & 239) | 160
-									:
-										(abcd_pair[side] & 111) | 96
-								)
-							: delimiter && !(abcd_pair[side] & 12) && *chrptr_pair[side] == delimiter ?
-								(abcd_pair[side] & 111) | 96
-							: !(abcd_pair[side] & 25) && *chrptr_pair[side] == _LIBCONFINI_SINGLE_QUOTES_ ?
-								((abcd_pair[side] & 175) | 128) ^ 4
-							: !(abcd_pair[side] & 22) && *chrptr_pair[side] == _LIBCONFINI_DOUBLE_QUOTES_ ?
-								((abcd_pair[side] & 175) | 128) ^ 8
-							: *chrptr_pair[side] ?
-								abcd_pair[side] & 47
-							: delimiter ?
-								abcd_pair[side] & 15
-							:
-								(abcd_pair[side] & 79) ^ 64;
+		abcd_pair[side] =
+			!(abcd_pair[side] & 12) &&
+			is_some_space(*chrptr_pair[side], _LIBCONFINI_WITH_EOL_) ?
+				(
+					delimiter || (abcd_pair[side] & 64) ?
+						(abcd_pair[side] & 239) | 160
+					:
+						(abcd_pair[side] & 111) | 96
+				)
+			: delimiter && !(abcd_pair[side] & 12) && *chrptr_pair[side] == delimiter ?
+				(abcd_pair[side] & 111) | 96
+			: !(abcd_pair[side] & 25) && *chrptr_pair[side] == _LIBCONFINI_SINGLE_QUOTES_ ?
+				((abcd_pair[side] & 175) | 128) ^ 4
+			: !(abcd_pair[side] & 22) && *chrptr_pair[side] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+				((abcd_pair[side] & 175) | 128) ^ 8
+			: *chrptr_pair[side] ?
+				abcd_pair[side] & 47
+			: delimiter ?
+				abcd_pair[side] & 15
+			:
+				(abcd_pair[side] & 79) ^ 64;
 
 
 		if (abcd_pair[side] & 128) {
@@ -3581,9 +3781,9 @@ bool ini_array_match (
 
 	turn_allowed = _LIBCONFINI_TRUE_;
 
-	if (*nbacksl_pair || nbacksl_pair[1]) {
+	if (nbacksl_pair[0] || nbacksl_pair[1]) {
 
-		if (*nbacksl_pair >> 1 != nbacksl_pair[1] >> 1) {
+		if (nbacksl_pair[0] >> 1 != nbacksl_pair[1] >> 1) {
 
 			return _LIBCONFINI_FALSE_;
 
@@ -3594,7 +3794,7 @@ bool ini_array_match (
 
 	}
 
-	if ((*abcd_pair ^ abcd_pair[1]) & 64) {
+	if ((abcd_pair[0] ^ abcd_pair[1]) & 64) {
 
 		return _LIBCONFINI_FALSE_;
 
@@ -3621,27 +3821,28 @@ bool ini_array_match (
 
 	}
 
-	if (~*abcd_pair & 64) {
+	if (~abcd_pair[0] & 64) {
 
 		if (
 			format.case_sensitive ?
-				**chrptr_pair != *chrptr_pair[1]
+				*chrptr_pair[0] != *chrptr_pair[1]
 			:
-				_LIBCONFINI_CHR_CASEFOLD_(**chrptr_pair) != _LIBCONFINI_CHR_CASEFOLD_(*chrptr_pair[1])
+				_LIBCONFINI_CHR_CASEFOLD_(*chrptr_pair[0]) !=
+				_LIBCONFINI_CHR_CASEFOLD_(*chrptr_pair[1])
 		) {
 
 			return _LIBCONFINI_FALSE_;
 
 		}
 
-		*abcd_pair &= 223;
+		abcd_pair[0] &= 223;
 		abcd_pair[1] &= 223;
 
 	}
 
-	if (**chrptr_pair) {
+	if (*chrptr_pair[0]) {
 
-		(*chrptr_pair)++;
+		chrptr_pair[0]++;
 
 	}
 
@@ -3651,7 +3852,7 @@ bool ini_array_match (
 
 	}
 
-	if (**chrptr_pair || *chrptr_pair[1]) {
+	if (*chrptr_pair[0] || *chrptr_pair[1]) {
 
 		side = 1;
 		goto delimited_match;
@@ -3697,7 +3898,7 @@ bool ini_array_match (
 
 	- `format.no_single_quotes`
 	- `format.no_double_quotes`
-	- `format.multiline_nodes`
+	- `format.multiline_nodes` (`INIFORMAT_HAS_NO_ESC()`)
 
 	@include topics/ini_string_parse.c
 
@@ -3744,7 +3945,16 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 
 	*/
 
-	for (register uint8_t abcd = (format.no_double_quotes << 1) | format.no_single_quotes; ini_string[idx]; idx++) {
+	for (
+
+		register uint_least8_t
+			abcd = (format.no_double_quotes << 1) | format.no_single_quotes;
+
+			ini_string[idx];
+
+		idx++
+
+	) {
 
 		abcd	=	!(abcd & 6) && ini_string[idx] == _LIBCONFINI_DOUBLE_QUOTES_ ?
 						(abcd & 47) | 32
@@ -3828,14 +4038,8 @@ size_t ini_unquote (char * const ini_string, const IniFormat format) {
 
 	- `format.no_single_quotes`
 	- `format.no_double_quotes`
-	- `format.multiline_nodes`
+	- `format.multiline_nodes` (`INIFORMAT_HAS_NO_ESC()`)
 	- `format.do_not_collapse_values`
-
-	@note	`format.multiline_nodes` is used only to figure out whether there are
-			escape sequences or not. For all other purposes new line characters will
-			be considered to be equal to any other space character, even if the
-			format is not multi-line -- new line characters should never appear in
-			non-multi-line formats.
 
 	@include topics/ini_string_parse.c
 
@@ -3864,9 +4068,10 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 	*/
 
-	register uint8_t abcd	=	(format.do_not_collapse_values ? 68 : 64) |
-								(format.no_double_quotes << 1) |
-								format.no_single_quotes;
+	register uint_least8_t
+		abcd	=	(format.do_not_collapse_values ? 68 : 64) |
+					(format.no_double_quotes << 1) |
+					format.no_single_quotes;
 
 	size_t idx, lshift;
 
@@ -3885,7 +4090,12 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 				for (idx = 0, lshift = 0; ini_string[idx]; idx++) {
 
-					abcd = !is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_) ? 3 : abcd & 64 ? 195 : 67;
+					abcd	=	!is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_) ?
+									3
+								: abcd & 64 ?
+									195
+								:
+									67;
 
 					if (abcd & 128) {
 
@@ -3893,7 +4103,10 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 					} else {
 
-						ini_string[idx - lshift] = abcd & 64 ? _LIBCONFINI_COLLAPSED_ : ini_string[idx];
+						ini_string[idx - lshift]	=	abcd & 64 ?
+															_LIBCONFINI_COLLAPSED_
+														:
+															ini_string[idx];
 
 					}
 
@@ -3918,12 +4131,16 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 				/*
 
-					There are no escape sequences and spaces don't need to be
+					There are no escape sequences and spaces do not need to be
 					collapsed, but left and right trim might still be necessary.
 
 				*/
 
-				return rtrim_h(ini_string, ltrim_hh(ini_string, 0, _LIBCONFINI_WITH_EOL_), _LIBCONFINI_WITH_EOL_);
+				return rtrim_h(
+					ini_string,
+					ltrim_hh(ini_string, 0, _LIBCONFINI_WITH_EOL_),
+					_LIBCONFINI_WITH_EOL_
+				);
 
 		}
 
@@ -3985,7 +4202,10 @@ size_t ini_string_parse (char * const ini_string, const IniFormat format) {
 
 		}
 
-		ini_string[idx - lshift] = abcd & 64 ? _LIBCONFINI_COLLAPSED_ : ini_string[idx];
+		ini_string[idx - lshift]	=	abcd & 64 ?
+											_LIBCONFINI_COLLAPSED_
+										:
+											ini_string[idx];
 
 	}
 
@@ -4046,11 +4266,7 @@ size_t ini_array_get_length (
 
 	if (_LIBCONFINI_IS_ESC_CHAR_(delimiter, format)) {
 
-		/*
-
-			We have no delimiters (array has only one member)
-
-		*/
+		/*  We have no delimiters (array has only one member)  */
 
 		return 1;
 
@@ -4071,9 +4287,10 @@ size_t ini_array_get_length (
 
 	*/
 
-	register uint8_t abcd	=	(delimiter ? 64 : 68) |
-								(format.no_double_quotes << 1) |
-								format.no_single_quotes;
+	register uint_least8_t
+		abcd	=	(delimiter ? 64 : 68) |
+					(format.no_double_quotes << 1) |
+					format.no_single_quotes;
 
 	size_t counter = 0;
 
@@ -4151,7 +4368,7 @@ size_t ini_array_get_length (
 
 	Possible return values are: #CONFINI_SUCCESS, #CONFINI_FEINTR.
 
-	@include topics/ini_array_foreach.c.
+	@include topics/ini_array_foreach.c
 
 **/
 int ini_array_foreach (
@@ -4188,26 +4405,27 @@ int ini_array_foreach (
 
 	if (_LIBCONFINI_IS_ESC_CHAR_(delimiter, format)) {
 
-		/*
-
-			We have no delimiters (array has only one member)
-
-		*/
+		/*  We have no delimiters (array has only one member)  */
 
 		idx = 0;
 
 		while (ini_string[idx++]);
 
-		return	f_foreach(ini_string, offs, rtrim_s(ini_string + offs, idx - offs - 1, _LIBCONFINI_WITH_EOL_), 0, format, user_data) ?
-					CONFINI_FEINTR
-				:
-					CONFINI_SUCCESS;
+		return f_foreach(
+			ini_string,
+			offs,
+			rtrim_s(ini_string + offs, idx - offs - 1, _LIBCONFINI_WITH_EOL_),
+			0,
+			format,
+			user_data
+		) ? CONFINI_FEINTR : CONFINI_SUCCESS;
 
 	}
 
-	register uint8_t abcd	=	(delimiter ? 4 : 0) |
-								(format.no_double_quotes << 1) |
-								format.no_single_quotes;
+	register uint_least8_t
+		abcd	=	(delimiter ? 4 : 0) |
+					(format.no_double_quotes << 1) |
+					format.no_single_quotes;
 
 	size_t memb_num = 0;
 
@@ -4215,7 +4433,12 @@ int ini_array_foreach (
 
 	do {
 
-		abcd	=	(delimiter ? ini_string[idx] == delimiter : is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_)) ?
+		abcd	=	(
+						delimiter ?
+							ini_string[idx] == delimiter
+						:
+							is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_)
+					) ?
 						abcd & 159
 					: ini_string[idx] == _LIBCONFINI_BACKSLASH_ ?
 						(abcd | 64) ^ 32
@@ -4246,13 +4469,20 @@ int ini_array_foreach (
 
 			}
 
-			offs = abcd & 128 ? idx + 1 : ltrim_s(ini_string, idx + 1, _LIBCONFINI_WITH_EOL_);
+			offs	=	abcd & 128 ?
+							idx + 1
+						:
+							ltrim_s(ini_string, idx + 1, _LIBCONFINI_WITH_EOL_);
 
 		}
 
 		idx = abcd & 216 ? idx + 1 : offs;
 
-	} while (!(abcd & 128) && ((abcd & 92) || ini_string[idx]));
+	} while (
+		!(abcd & 128) && (
+			(abcd & 92) || ini_string[idx]
+		)
+	);
 
 	return CONFINI_SUCCESS;
 
@@ -4285,7 +4515,11 @@ int ini_array_foreach (
 	@include topics/ini_array_shift.c
 
 **/
-size_t ini_array_shift (const char ** const ini_strptr, const char delimiter, const IniFormat format) {
+size_t ini_array_shift (
+	const char ** const ini_strptr,
+	const char delimiter,
+	const IniFormat format
+) {
 
 	size_t toklen = 0;
 
@@ -4379,7 +4613,11 @@ size_t ini_array_shift (const char ** const ini_strptr, const char delimiter, co
 			each member is parsed by #ini_string_parse().
 
 **/
-size_t ini_array_collapse (char * const ini_string, const char delimiter, const IniFormat format) {
+size_t ini_array_collapse (
+	char * const ini_string,
+	const char delimiter,
+	const IniFormat format
+) {
 
 	if (INI_IS_IMPLICIT_SUBSTR(ini_string)) {
 
@@ -4389,18 +4627,21 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 
 	if (_LIBCONFINI_IS_ESC_CHAR_(delimiter, format)) {
 
-		/*
+		/*  We have no delimiters (array has only one member)  */
 
-			We have no delimiters (array has only one member)
-
-		*/
-
-		switch ((format.preserve_empty_quotes << 1) | format.do_not_collapse_values) {
+		switch (
+			(format.preserve_empty_quotes << 1) |
+			format.do_not_collapse_values
+		) {
 
 			case 0: return collapse_everything(ini_string, format);
 			case 1: return collapse_empty_quotes(ini_string, format);
 			case 2: return collapse_spaces(ini_string, format);
-			case 3: return rtrim_h(ini_string, ltrim_hh(ini_string, 0, _LIBCONFINI_WITH_EOL_), _LIBCONFINI_WITH_EOL_);
+			case 3: return rtrim_h(
+						ini_string,
+						ltrim_hh(ini_string, 0, _LIBCONFINI_WITH_EOL_),
+						_LIBCONFINI_WITH_EOL_
+					);
 
 		}
 
@@ -4432,11 +4673,12 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 
 	size_t idx_s = 0, idx_d = 0, fallback = 0;
 
-	register uint16_t abcd		=	(delimiter ? 0 : 16) |
-									(format.preserve_empty_quotes << 3) |
-									(format.do_not_collapse_values << 2) |
-									(format.no_double_quotes << 1) |
-									format.no_single_quotes;
+	register uint_least16_t
+		abcd	=	(delimiter ? 0 : 16) |
+					(format.preserve_empty_quotes << 3) |
+					(format.do_not_collapse_values << 2) |
+					(format.no_double_quotes << 1) |
+					format.no_single_quotes;
 
 
 	for (; ini_string[idx_s]; idx_s++) {
@@ -4445,7 +4687,8 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 
 		abcd	=	!(abcd & 112) && ini_string[idx_s] == delimiter ?
 						(
-							(abcd & 536) && ((abcd & 1560) ^ 8) && ((abcd & 1560) ^ 1544) && ((abcd & 1304) ^ 1032) ?
+							(abcd & 536) && ((abcd & 1560) ^ 8) &&
+							((abcd & 1560) ^ 1544) && ((abcd & 1304) ^ 1032) ?
 								(abcd & 33407) | 33280
 							:
 								(abcd & 41599) | 41472
@@ -4456,11 +4699,14 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 								(abcd & 43391) | 40960
 							: !(~abcd & 1560) ?
 								(abcd & 41087) | 40960
-							: !((abcd & 536) ^ 528) || !((abcd & 1560) ^ 536) || !((abcd & 1560) ^ 1048) ?
+							: !((abcd & 536) ^ 528) || !((abcd & 1560) ^ 536) ||
+							!((abcd & 1560) ^ 1048) ?
 								(abcd & 32895) | 32768
-							: !(abcd & 540) || !((abcd & 1564) ^ 8) || !((abcd & 536) ^ 16) || !((abcd & 1560) ^ 24) ?
+							: !(abcd & 540) || !((abcd & 1564) ^ 8) ||
+							!((abcd & 536) ^ 16) || !((abcd & 1560) ^ 24) ?
 								abcd & 2431
-							: ((abcd & 540) ^ 4) && ((abcd & 796) ^ 12) && ((abcd & 1564) ^ 12) && ((abcd & 1308) ^ 1032) ?
+							: ((abcd & 540) ^ 4) && ((abcd & 796) ^ 12) &&
+							((abcd & 1564) ^ 12) && ((abcd & 1308) ^ 1032) ?
 								(abcd & 39295) | 36864
 							:
 								(abcd & 35199) | 32768
@@ -4497,12 +4743,14 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 						)
 					: ini_string[idx_s] == _LIBCONFINI_BACKSLASH_ ?
 						(
-							(abcd & 888) && ((abcd & 1144) ^ 1032) && ((abcd & 1144) ^ 1048) && ((abcd & 2936) ^ 8) ?
+							(abcd & 888) && ((abcd & 1144) ^ 1032) &&
+							((abcd & 1144) ^ 1048) && ((abcd & 2936) ^ 8) ?
 								((abcd & 33791) | 33536) ^ 128
 							:
 								((abcd & 41983) | 41728) ^ 128
 						)
-					: (abcd & 888) && ((abcd & 1144) ^ 1032) && ((abcd & 1144) ^ 1048) && ((abcd & 2936) ^ 8) ?
+					: (abcd & 888) && ((abcd & 1144) ^ 1032) &&
+					((abcd & 1144) ^ 1048) && ((abcd & 2936) ^ 8) ?
 						(abcd & 33663) | 33536
 					:
 						(abcd & 41855) | 41728;
@@ -4535,11 +4783,13 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 
 		idx_s	=	((abcd & 16) && !idx_d) || (!(~abcd & 1040) && idx_d < 4) ?
 						(idx_d = 0)
-					: !(abcd & 536) || !(~abcd & 1544) || !((abcd & 1560) ^ 8) || !((abcd & 1304) ^ 1032) ?
+					: !(abcd & 536) || !(~abcd & 1544) || !((abcd & 1560) ^ 8) ||
+					!((abcd & 1304) ^ 1032) ?
 						(idx_d = fallback)
 					: !((abcd & 1624) ^ 1104) || !((abcd & 1592) ^ 1072) ?
 						(idx_d -= 2)
-					: ((abcd & 1552) ^ 16) && ((abcd & 632) ^ 16) && ((abcd & 1624) ^ 1616) && ((abcd & 1592) ^ 1584) ?
+					: ((abcd & 1552) ^ 16) && ((abcd & 632) ^ 16) &&
+					((abcd & 1624) ^ 1616) && ((abcd & 1592) ^ 1584) ?
 						idx_d
 					:
 						--idx_d;
@@ -4585,7 +4835,11 @@ size_t ini_array_collapse (char * const ini_string, const char delimiter, const 
 	@include topics/ini_array_break.c
 
 **/
-char * ini_array_break (char * const ini_string, const char delimiter, const IniFormat format) {
+char * ini_array_break (
+	char * const ini_string,
+	const char delimiter,
+	const IniFormat format
+) {
 
 	if (ini_string && !INI_IS_IMPLICIT_SUBSTR(ini_string)) {
 
@@ -4593,11 +4847,7 @@ char * ini_array_break (char * const ini_string, const char delimiter, const Ini
 
 		if (_LIBCONFINI_IS_ESC_CHAR_(delimiter, format)) {
 
-			/*
-
-				We have no delimiters (array has only one member)
-
-			*/
+			/*  We have no delimiters (array has only one member)  */
 
 			remnant = ini_string;
 
@@ -4741,7 +4991,7 @@ char * ini_array_release (
 
 	Possible return values are: #CONFINI_SUCCESS, #CONFINI_EROADDR, #CONFINI_FEINTR.
 
-	@include topics/ini_array_split.c.
+	@include topics/ini_array_split.c
 
 **/
 int ini_array_split (
@@ -4778,26 +5028,26 @@ int ini_array_split (
 
 	if (_LIBCONFINI_IS_ESC_CHAR_(delimiter, format)) {
 
-		/*
-
-			We have no delimiters (array has only one member)
-
-		*/
+		/*  We have no delimiters (array has only one member)  */
 
 		idx = 0;
 
 		while (ini_string[idx++]);
 
-		return	f_foreach(ini_string + offs, rtrim_h(ini_string + offs, idx - offs - 1, _LIBCONFINI_WITH_EOL_), 0, format, user_data) ?
-					CONFINI_FEINTR
-				:
-					CONFINI_SUCCESS;
+		return f_foreach(
+			ini_string + offs,
+			rtrim_h(ini_string + offs, idx - offs - 1, _LIBCONFINI_WITH_EOL_),
+			0,
+			format,
+			user_data
+		) ? CONFINI_FEINTR : CONFINI_SUCCESS;
 
 	}
 
-	register uint8_t abcd	=	(delimiter ? 4 : 0) |
-								(format.no_double_quotes << 1) |
-								format.no_single_quotes;
+	register uint_least8_t
+		abcd	=	(delimiter ? 4 : 0) |
+					(format.no_double_quotes << 1) |
+					format.no_single_quotes;
 
 	size_t memb_num = 0;
 
@@ -4806,7 +5056,12 @@ int ini_array_split (
 
 	do {
 
-		abcd	=	(delimiter ? ini_string[idx] == delimiter : is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_)) ?
+		abcd	=	(
+						delimiter ?
+							ini_string[idx] == delimiter
+						:
+							is_some_space(ini_string[idx], _LIBCONFINI_WITH_EOL_)
+					) ?
 						abcd & 159
 					: ini_string[idx] == _LIBCONFINI_BACKSLASH_ ?
 						(abcd | 64) ^ 32
@@ -4838,13 +5093,20 @@ int ini_array_split (
 
 			}
 
-			offs = abcd & 128 ? idx + 1 : ltrim_h(ini_string, idx + 1, _LIBCONFINI_WITH_EOL_);
+			offs	=	abcd & 128 ?
+							idx + 1
+						:
+							ltrim_h(ini_string, idx + 1, _LIBCONFINI_WITH_EOL_);
 
 		}
 
 		idx = abcd & 216 ? idx + 1 : offs;
 
-	} while (!(abcd & 128) && ((abcd & 92) || ini_string[idx]));
+	} while (
+		!(abcd & 128) && (
+			(abcd & 92) || ini_string[idx]
+		)
+	);
 
 	return CONFINI_SUCCESS;
 
@@ -4896,7 +5158,10 @@ void ini_global_set_lowercase_mode (const bool lowercase) {
 	@include topics/ini_global_set_implicit_value.c
 
 **/
-void ini_global_set_implicit_value (char * const implicit_value, const size_t implicit_v_len) {
+void ini_global_set_implicit_value (
+	char * const implicit_value,
+	const size_t implicit_v_len
+) {
 
 	INI_GLOBAL_IMPLICIT_VALUE = implicit_value;
 	INI_GLOBAL_IMPLICIT_V_LEN = implicit_v_len;
@@ -4964,21 +5229,88 @@ IniFormat ini_ntof (const IniFormatNum format_num) {
 													/** @utility{ini_get_bool} **/
 /**
 
-	@brief			Check whether a string matches one of the booleans listed in the
-					private constant #INI_BOOLEANS (case-insensitive)
-	@param			ini_string			A string to check (it can be `NULL`)
-	@param			when_fail			A value that is returned if no matching
-										boolean is found
+	@brief			Check whether a simple string matches one of the booleans listed
+					in the private constant #INI_BOOLEANS (case-insensitive)
+	@param			simple_string	A string to check (it can be `NULL`)
+	@param			when_fail		A value that is returned if no matching boolean
+									is found
+	@return			The matching boolean (`0` or `1`) or @p when_fail if
+					@p simple_string does not contain a valid INI boolean
+
+	@include miscellanea/typed_ini.c
+
+**/
+int ini_get_bool (const char * const simple_string, const int when_fail) {
+
+	if (!simple_string) {
+
+		return when_fail;
+
+	}
+
+	register _LIBCONFINI_CHARBOOL_ bool_idx;
+	register size_t pair_idx, chr_idx;
+
+	for (pair_idx = 0; pair_idx < _LIBCONFINI_BOOLLEN_; pair_idx++) {
+
+		bool_idx = 0;
+
+		do {
+
+			chr_idx = 0;
+
+			while (
+				_LIBCONFINI_CHR_CASEFOLD_(simple_string[chr_idx]) ==
+				INI_BOOLEANS[pair_idx][bool_idx][chr_idx]
+			) {
+
+				if (!simple_string[chr_idx++]) {
+
+					return (int) bool_idx;
+
+				}
+
+			}
+
+			bool_idx ^= 1;
+
+		} while (bool_idx);
+
+	}
+
+	return when_fail;
+
+}
+
+
+													/** @utility{ini_get_bool_i} **/
+/**
+
+	@brief			Check whether an INI string matches one of the booleans listed
+					in the private constant #INI_BOOLEANS (case-insensitive)
+	@param			ini_string		A string to check (it can be `NULL`)
+	@param			when_fail		A value that is returned if no matching boolean
+									is found
+	@param			format			The format of the INI file
 	@return			The matching boolean (`0` or `1`) or @p when_fail if
 					@p ini_string does not contain a valid INI boolean
 
 	Usually @p ini_string comes from an #IniDispatch (but any other string may be
 	used as well).
 
+	The @p format argument is used for the following fields:
+
+	- `format.no_double_quotes`
+	- `format.no_single_quotes`
+
 	@include miscellanea/typed_ini.c
 
 **/
-int ini_get_bool (const char * const ini_string, const int when_fail) {
+int ini_get_bool_i (
+	const char * const ini_string,
+	const int when_fail,
+	const IniFormat format
+) {
 
 	if (!ini_string) {
 
@@ -4986,24 +5318,141 @@ int ini_get_bool (const char * const ini_string, const int when_fail) {
 
 	}
 
-	register uint8_t bool_idx;
-	register size_t pair_idx, chr_idx;
+	register size_t chr_idx_i;
 
-	for (pair_idx = 0; pair_idx < sizeof(INI_BOOLEANS) / sizeof(const char * const [2]); pair_idx++) {
+	/*
 
-		for (bool_idx = 0; bool_idx < 2; bool_idx++) {
+	Mask `abcd` (8 bits used):
 
-			chr_idx = 0;
+		FLAG_1		Single quotes are not metacharacters (const)
+		FLAG_2		Double quotes are not metacharacters (const)
+		FLAG_4		Format supports escape sequences (const)
+		FLAG_8		Unescaped single quotes are odd right now
+		FLAG_16		Unescaped double quotes are odd right now
+		FLAG_32		This is an escaped single/double quote in a format that supports
+					single/double quotes
+		FLAG_64		This is a space
+		FLAG_128	Skip this character
 
-			while (_LIBCONFINI_CHR_CASEFOLD_(ini_string[chr_idx]) == INI_BOOLEANS[pair_idx][bool_idx][chr_idx]) {
+	*/
 
-				if (!ini_string[chr_idx++]) {
+	register uint_least8_t
+		abcd	=	INIFORMAT_HAS_NO_ESC(format) ?
+						67
+					:
+						68 |
+						(format.no_double_quotes << 1) |
+						format.no_single_quotes;
 
-					return (int) bool_idx;
+	register _LIBCONFINI_CHARBOOL_ bool_idx;
+	size_t pair_idx, chr_idx_s, nbacksl;
+
+	for (pair_idx = 0; pair_idx < _LIBCONFINI_BOOLLEN_; pair_idx++) {
+
+		bool_idx = 0;
+
+
+		/* \                                /\
+		\ */     pair_match:               /* \
+		 \/     ______________________     \ */
+
+
+		abcd = (abcd & 7) | 64;
+		chr_idx_s = chr_idx_i = nbacksl = 0;
+
+		do {
+
+			if ((abcd & 4) && ini_string[chr_idx_i] == _LIBCONFINI_BACKSLASH_) {
+
+				for (
+					abcd &= 63, nbacksl++;
+						ini_string[++chr_idx_i] == _LIBCONFINI_BACKSLASH_;
+					nbacksl++
+				);
+
+			}
+
+			/*  Keep this algorithm identical to #ini_string_match_si()  */
+
+			abcd	=	!(abcd & 10) && ini_string[chr_idx_i] == _LIBCONFINI_DOUBLE_QUOTES_ ?
+							(
+								nbacksl & 1 ?
+									(abcd & 63) | 32
+								:
+									((abcd & 223) | 128) ^ 16
+							)
+						: !(abcd & 17) && ini_string[chr_idx_i] == _LIBCONFINI_SINGLE_QUOTES_ ?
+							(
+								nbacksl & 1 ?
+									(abcd & 63) | 32
+								:
+									((abcd & 223) | 128) ^ 8
+							)
+						: (abcd & 24) || !is_some_space(ini_string[chr_idx_i], _LIBCONFINI_WITH_EOL_) ?
+							abcd & 31
+						: abcd & 64 ?
+							(abcd & 223) | 128
+						:
+							(abcd & 95) | 64;
+
+
+			if (nbacksl) {
+
+				nbacksl = (abcd & 32 ? nbacksl + 2 : nbacksl + 3) >> 1;
+
+				while (--nbacksl) {
+
+					if (
+						INI_BOOLEANS[pair_idx][bool_idx][chr_idx_s++] !=
+						_LIBCONFINI_BACKSLASH_
+					) {
+
+						goto next_bool;
+
+					}
 
 				}
 
 			}
+
+			if (
+				(abcd & 128) || (
+					(abcd & 64) && !INI_BOOLEANS[pair_idx][bool_idx][chr_idx_s]
+				)
+			) {
+
+				continue;
+
+			}
+
+			if (
+				abcd & 64 ?
+					INI_BOOLEANS[pair_idx][bool_idx][chr_idx_s] != _LIBCONFINI_COLLAPSED_ ||
+					!INI_BOOLEANS[pair_idx][bool_idx][chr_idx_s + 1]
+				:
+					_LIBCONFINI_CHR_CASEFOLD_(ini_string[chr_idx_i]) !=
+					_LIBCONFINI_CHR_CASEFOLD_(INI_BOOLEANS[pair_idx][bool_idx][chr_idx_s])
+			) {
+
+				goto next_bool;
+
+			}
+
+			chr_idx_s++;
+
+		} while (ini_string[chr_idx_i++]);
+
+		return (int) bool_idx;
+
+
+		/* \                                /\
+		\ */     next_bool:                /* \
+		 \/     ______________________     \ */
+
+
+		if ((bool_idx ^= 1)) {
+
+			goto pair_match;
 
 		}
 
@@ -5052,8 +5501,8 @@ double (* const ini_get_double) (const char * ini_string) = atof;
 
 	@brief			Legacy support for parsing a `double` data type -- please _do
 					not use this function_: use `ini_get_double()` instead
-	@deprecated		Deprecated since version 1.12.0 (either it will be removed or
-					it will return a `float` data type in version 2.0.0)
+	@deprecated		Deprecated since version 1.12.0 (it will be removed in version
+					2.0.0) -- please use #ini_get_double() instead
 	@param			ini_string
 
 **/
@@ -5073,6 +5522,7 @@ size_t INI_GLOBAL_IMPLICIT_V_LEN = 0;
 
 
 /** @endfnlist **/
+
 
 /*  EOF  */
 

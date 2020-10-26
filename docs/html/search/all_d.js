@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['rationale_135',['Rationale',['../rationale.html',1,'']]],
-  ['rationale_2emd_136',['rationale.md',['../rationale_8md.html',1,'']]],
-  ['readme_137',['README',['../readme.html',1,'']]],
-  ['readme_2emd_138',['README.md',['../README_8md.html',1,'']]],
-  ['rtrim_5fh_139',['rtrim_h',['../confini_8c.html#a5064aeff2ed4d78319237aec6ce96094',1,'confini.c']]],
-  ['rtrim_5fs_140',['rtrim_s',['../confini_8c.html#a48366c6dc6437e73ed93d85f6e109d02',1,'confini.c']]]
+  ['rationale_136',['Rationale',['../rationale.html',1,'']]],
+  ['rationale_2emd_137',['rationale.md',['../rationale_8md.html',1,'']]],
+  ['readme_138',['README',['../readme.html',1,'']]],
+  ['readme_2emd_139',['README.md',['../README_8md.html',1,'']]],
+  ['rtrim_5fh_140',['rtrim_h',['../confini_8c.html#a4fd4ce066c199b7dab8849c3f5ab3344',1,'confini.c']]],
+  ['rtrim_5fs_141',['rtrim_s',['../confini_8c.html#a9f46f169f1e23941ed31f6d0247881f8',1,'confini.c']]]
 ];

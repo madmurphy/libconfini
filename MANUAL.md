@@ -260,13 +260,13 @@ comment as its only child. Inline comments cannot represent disabled entries.
 According to some formats disabled entries can be multi-line, using
 `/\\(?:\n\r?|\r\n?)[\t \v\f]*[;#]/` as multi-line escape sequence. For example:
 
-~~~~~~~~~~~~~~~~{.ini}
-#this = is\
- #a\
-    #multi-line\
-#disabled\
+~~~~~~~~~~~~~~~~~{.ini}
+#this = is \
+ #a \
+    #multi-line \
+#disabled \
   #entry
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 
 ### Escape sequences
@@ -302,14 +302,14 @@ value
 
 ## Getting started
 
-The API is contained in one single public header named `confini.h`.
+The API is contained in one single public header:
 
 ~~~~~~~~~~~~~~~~~~~~{.c}
 #include <confini.h>
 ~~~~~~~~~~~~~~~~~~~~
 
 When **libconfini** is used as a shared library, it might be wiser to include
-the _versioned header_ (with only the major version number appended to the file
+_the versioned header_ (with only the major version number appended to the file
 name), in order to ensure that the code will compile correctly even when
 different major versions of the library cohabit in the same machine. This can
 apply also to version 1.X.X:
@@ -607,7 +607,7 @@ is a univocal description of such format. It is implemented as a 24-bit
 bitfield. Its small size (3 bytes) allows it to be passed by value to the
 functions that require it.
 
-Since no functions require a pointer to an `IniFormat` data type as argument, a
+Since no function requires a pointer to an `IniFormat` data type as argument, a
 preprocessor macro can be a good place where to store a custom format:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
@@ -641,11 +641,11 @@ if (load_ini_path("example.conf", MY_FORMAT, NULL, my_cb, NULL)) {
 
 A default format named `#INI_DEFAULT_FORMAT` is available.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 IniFormat my_default_format;
 
 my_default_format = INI_DEFAULT_FORMAT;
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The code above corresponds to:
 
@@ -692,9 +692,9 @@ or, equivalently, in macro form:
 
 Starting from version 1.7.0 a format named `#INI_UNIXLIKE_FORMAT` is available.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-IniFormat my_format = INI_UNIXLIKE_FORMAT;
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+IniFormat my_unixlike_format = INI_UNIXLIKE_FORMAT;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This format is a clone of `#INI_DEFAULT_FORMAT` with the only exception of
 `IniFormat::delimiter_symbol`, whose value is set to `#INI_ANY_SPACE` instead
@@ -727,7 +727,7 @@ in the project's wiki. Feel free to contribute.
 Each format can be represented also as a univocal 24-bit unsigned integer. In
 order to convert an `IniFormat` to an unsigned integer and vice versa the
 functions `ini_fton()` and `ini_ntof()` are available. For simplicity, instead
-of using the `uint32_t` type, a size-agnostic custom type is used for this:
+of using a `uint_least32_t` type, a size-agnostic custom type is used for this:
 the `#IniFormatNum` data type.
 
 For instance, imagine we want to create a format as close as possible to the
@@ -943,7 +943,7 @@ Note that within INI strings empty quotes and spaces out of quotes are always
 collapsed during comparisons. Furthermore, remember that the multi-line escape
 sequence `/\\(?:\n\r?|\r\n?)/` is _not_ considered as such in INI strings,
 since this is the only escape sequence automatically unescaped by
-**libconfini** _before_ each dispatch.
+**libconfini** before each dispatch.
 
 
 ## Editing the dispatched data
@@ -987,9 +987,9 @@ before being copied or analyzed they can be edited, **with some precautions**_:
    still end at the right moment (hopefully), but if you set it instead to a
    value equal or higher than the `IniStatistics::members` previously received
    the loop will immediately stop and a `#CONFINI_EOOR` will be thrown (see
-   `enum` `#ConfiniInterruptNo`). You can think of it as a dirty way of writing
-   `return !0` at the end of your listener. Unless you really know what you are
-   doing, do not edit `IniDispatch::dispatch_id`.
+   `enum` `#ConfiniInterruptNo`). You can think of this as a dirty way of
+   writing `return !0` at the end of your listener. Unless you really know what
+   you are doing, do not edit `IniDispatch::dispatch_id`.
 
 Typical peaceful edits are the ones obtained by calling the functions
 `ini_array_collapse()` and `ini_string_parse()` directly on the buffer
@@ -1056,6 +1056,8 @@ Once your listener starts to receive the parsed data you may want to format and
 better parse the `value` part of key-value elements. The following functions
 might be useful for this purpose:
 
+* `ini_get_bool()`
+* `ini_get_bool_i()`
 * `ini_string_parse()`
 * `ini_array_get_length()`
 * `ini_array_foreach()`
@@ -1064,7 +1066,6 @@ might be useful for this purpose:
 * `ini_array_release()`
 * `ini_array_shift()`
 * `ini_array_split()`
-* `ini_get_bool()`
 
 Together with the functions listed above the following links are available, in
 case you don't have `#include <stdlib.h>` in your source:
@@ -1222,39 +1223,19 @@ int main () {
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To check whether a particular substring belongs to
-`#INI_GLOBAL_IMPLICIT_VALUE`, the `INI_IS_IMPLICIT_SUBSTR()` macro can be used:
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-if (dispatch->v_len > 0) {
-
-  /*  Let us create a substring of `dispatch->value`...  */
-  char * my_substring = dispatch->value + 1;
-
-  printf("%s\n", my_substring);
-
-  if (INI_IS_IMPLICIT_SUBSTR(my_substring)) {
-
-    printf("\n\tYou tricky one! This was an implicit value too!\n");
-
-  }
-
-return 0;
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 Implicit keys can be parsed as booleans also without setting
 `IniFormat::implicit_is_not_empty` to `true`. By doing so there will be no
 distinction between empty and implicit keys, and there are situations where
 this can be a wanted behavior. The following example will parse both `my_key`
 and `my_key =` in the INI file as `true`:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-/*  `dispatch->format.implicit_is_not_empty` is `false` here!  */
-bool my_stored_value;
-if (ini_string_match_si("my_key", dispatch->data, dispatch->format)) {
-  my_stored_value = (bool) ini_get_bool(disp->value, 1);
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+/*  `dsp->format.implicit_is_not_empty` is `false` here!  */
+bool my_boolean;
+if (ini_string_match_si("my_key", dsp->data, dsp->format)) {
+  my_boolean = (bool) ini_get_bool_i(dsp->value, 1, dsp->format);
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ## Code considerations
@@ -1383,6 +1364,35 @@ using `ini_string_parse()` as a model one obtains the following scheme:
 A function-like macro named `#INIFORMAT_HAS_NO_ESC()` is available in order to
 check whether a format supports escape sequences or not.
 
+It is possible to extend the list of supported escape sequences by parsing
+additional ones before invoking `ini_string_parse()`. Under
+`examples/utilities/ini_string_preparse.h` there is a little helper function
+that adds support to the following sequences: `"\a"`, `"\b"`, `"\f"`, `"\n"`,
+`"\r"`, `"\t"`, `"\v"` and `"\e"`. It must be used right before `ini_unquote()`
+or `ini_string_parse()`, since it relies on the latter for unescaping double
+backslashes:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+#include <confini.h>
+#include "examples/utilities/ini_string_preparse.h"
+
+static int my_callback (IniDispatch * disp, void * user_data) {
+
+  if (disp->type == INI_KEY) {
+
+    /*  Add support for \a, \b, \f, \n, \r, \t, \v and \e  */
+    ini_string_preparse(disp->value);
+    ini_string_parse(disp->value, disp->format);
+
+    /*  DO SOMETHING  */
+
+  }
+
+  return 0;
+
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 ### Common mistakes
 
@@ -1465,6 +1475,26 @@ int main () {
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+To check whether a particular substring belongs to
+`#INI_GLOBAL_IMPLICIT_VALUE`, the `INI_IS_IMPLICIT_SUBSTR()` macro can be used:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+if (dispatch->v_len > 0) {
+
+  /*  Let us create a substring of `dispatch->value`...  */
+  char * my_substring = dispatch->value + 1;
+
+  printf("%s\n", my_substring);
+
+  if (INI_IS_IMPLICIT_SUBSTR(my_substring)) {
+
+    printf("\n\tYou tricky one! This was an implicit value too!\n");
+
+  }
+
+return 0;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 ### Storing the dispatched data
 
@@ -1475,31 +1505,27 @@ with them in many different ways.
 For small INI files a normal if/else chain, using `ini_array_match()` for
 comparing section paths and `ini_string_match_si()`/`ini_string_match_ii()` for
 comparing key names, usually represents the most practical way to obtain the
-information required from an INI file.
-
-Sometimes however, especially in case of sizeable INI files, the most efficient
-solution would be to store the parsed data in a hash table before trying to
-access it.
+information required from an INI file. Sometimes however, especially in case of
+sizeable INI files, the most efficient solution would be to store the parsed
+data in a hash table before trying to access it.
 
 Some INI parsers are released with a hash table API included by default. This
 is often an unpractical solution, since fantastic free software libraries that
 focus solely on hash tables already exist, and providing a further API for
 managing a hash function together with an INI parser only complicates the code,
 makes it harder to maintain, and does not give the user the real freedom to
-choose what suits best to each single case.
+choose what suits best to each single case. Some programming languages have
+even hash tables in their standard libraries (see `std::map` in C++ for
+example).
 
-When a user needs it, the data parsed by **libconfini** can still be stored in
-a third-party hash table while it is being dispatched. By doing so the
-resulting performance will equal that of an INI parser with a hash table
-included by default, since the only job of **libconfini** is that of scrolling
-the content of an INI file linearly from the beginning to the end -- and there
-are not more efficient ways to parse and indicize the content of a serialized
-tree.
-
-If you are interested in combining **libconfini** with a hash table, I have
-left a general example of how to use **GLib**'s `GHashTable` together with
-**libconfini** under `examples/miscellanea/glib_hash_table.c`. By keeping this
-example as a model other solutions can be easily explored as well.
+When needed, the data parsed by **libconfini** can still be stored in a hash
+table while it is being dispatched. If you are interested in combining
+**libconfini** with a hash table, I have left a general example of how to use
+**GLib**'s `GHashTable` together with **libconfini** under
+`examples/miscellanea/glib_hash_table.c`. If you are using C++, you can find an
+example of how to construct a C++ class that relies on a `std::unordered_map`
+object under `examples/cplusplus/map.cpp`. By keeping these examples as models
+other solutions can be easily explored as well.
 
 
 ### Size of the dispatched data
@@ -1515,7 +1541,7 @@ char * buf  =   malloc(stats->bytes + stats->members + (
                 ) + 1);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-will always produce the smallest buffer large enough to store all the
+will always allocate the smallest buffer large enough to store all the
 `IniDispatch::data` and `IniDispatch::value` received, including their `NUL`
 terminators and any possible implicit value.
 
@@ -1804,20 +1830,18 @@ by setting `IniFormat::semicolon_marker` and `IniFormat::hash_marker` to
 by setting `IniFormat::multiline_nodes` to `#INI_NO_MULTILINE` -- will have a
 positive impact on the performance.
 
-On my old laptop **libconfini** seems to parse around 23 MiB per second using
-the model format `#INI_DEFAULT_FORMAT`. Whether this is enough for you or not,
-that depends on your needs.
+On my laptop **libconfini** seems to parse around 95 MiB per second using the
+model format `#INI_DEFAULT_FORMAT`. Whether this is enough for you or not, that
+depends on your needs.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-54692353 bytes parsed in 2.221189 seconds.
-Number of bytes parsed per second: 24623007.317252
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+53411840 bytes (1146880 nodes) parsed in 0.533315 seconds.
+Number of bytes parsed per second: 100150642.678342
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-_**Addendum:** Unfortunately that old computer broke, so now I can perform
-tests only on a newer hardware, where **libconfini** seems to parse four times
-as fast. If you are interested in testing yourself the performance of this
-library on a particular hardware I have left a performance test under
-`dev/tests/performance`._
+If you are interested in testing yourself the library's performance on a
+particular hardware you can find a performance test under
+`dev/tests/performance`.
 
 
 ## INI syntax considerations
@@ -1929,10 +1953,10 @@ approaches.
 **1. Intervene on the INI file.** The reason why `now=Sunday April 3rd, 2016`
 has been properly parsed as a comment -- despite it really looks like a
 disabled entry -- is because it has been nested within a comment block opened
-by more than one leading comment marker (in this case the two `##`). As a
-general rule, _**libconfini** never parses a comment beginning with more than
-one leading marker as a disabled entry_, therefore this is the surest way to
-ensure that proper comments are always considered as such.
+by more than one leading marker (in this case the two `##`). As a general rule,
+_**libconfini** never parses a comment beginning with more than one leading
+marker as a disabled entry_, therefore this is the surest way to ensure that
+proper comments are always considered as such.
 
 Hence, by adding one more number sign to the first comment
 

@@ -9,7 +9,7 @@
 
   @brief    Make a newly allocated hard copy of an `IniDispatch`
   @param    source          The `IniDispatch` to copy
-  @param    nonconst_at     A placeholder for a non-`const` version of the
+  @param    nonconst_parent A placeholder for a non-`const` version of the
                             cloned `IniDispatch::append_to` pointer (it can be
                             `NULL`)
   @return   A hard copy of the `IniDispatch` passed as argument
@@ -17,11 +17,11 @@
   Example:
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
-  char * nonconst_at;
+  char * nonconst_parent;
 
   IniDispatch * my_clone = clone_ini_dispatch(
     dispatch,
-    &nonconst_at
+    &nonconst_parent
   );
 
   if (!my_clone) {
@@ -29,9 +29,9 @@
     exit(1);
   }
 
-  printf("DATA: |%s|\n", my_clone->data);
-  printf("VALUE: |%s|\n", my_clone->value);
-  printf("PARENT: |%s|\n", nonconst_at);
+  printf("DATA: `%s`\n", my_clone->data);
+  printf("VALUE: `%s`\n", my_clone->value);
+  printf("PARENT: `%s`\n", nonconst_parent);
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   The address returned (and **only that**) must be freed afterwards.
@@ -39,7 +39,7 @@
 **/
 IniDispatch * clone_ini_dispatch (
   const IniDispatch * const source,
-  char ** const nonconst_at
+  char ** const nonconst_parent
 ) {
 
   IniDispatch * dest = malloc(sizeof(IniDispatch) + source->d_len + source->v_len + source->at_len + 3);
@@ -54,8 +54,8 @@ IniDispatch * clone_ini_dispatch (
     dest->value = dest->data ? memcpy(dest->data + dest->d_len + 1, source->value, source->v_len) : dest->data + dest->d_len + 1;
     dest->value[dest->v_len] = '\0';
 
-    if (nonconst_at) {
-      *nonconst_at = _append_to_;
+    if (nonconst_parent) {
+      *nonconst_parent = _append_to_;
     }
 
   }

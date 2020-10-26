@@ -16,7 +16,7 @@ Mask `abcd` (6 bits used):
 
 */
 #define _LIBCONFINI_STR2NUM_FNBODY_(HAS_RADIX_PT, DATA_TYPE, STR) \
-	register uint8_t abcd = 9; \
+	register uint_least8_t abcd = 9; \
 	register size_t idx = 0; \
 	register DATA_TYPE retval = 0; \
 	__PP_IIF__(HAS_RADIX_PT, \
