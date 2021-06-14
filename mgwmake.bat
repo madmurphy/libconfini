@@ -4,7 +4,7 @@ SETLOCAL
 REM Do not forget to add C:\MinGW\bin to your %Path% environment variable, or
 REM otherwise this script will not work!
 
-SET RCCOMPILER=windres.exe
+SET RCOMPILER=windres.exe
 SET CCOMPILER=gcc.exe
 SET STRIPCMD=strip.exe
 SET CFLAGS=-std=c99 -pedantic -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined -Wl,-out-implib,libconfini.lib
@@ -20,20 +20,20 @@ IF %ERRORLEVEL% NEQ 0 (
 	EXIT /B 1
 )
 
-WHERE %RCCOMPILER% >nul 2>nul
-SET /A __WINDRESERR__=%ERRORLEVEL%
+WHERE %RCOMPILER% >nul 2>nul
+SET /A __RCERR__=%ERRORLEVEL%
 SET __TMP_RSO__=winres.o
 
-IF %__WINDRESERR__% NEQ 0 (
-	@ECHO Program %RCCOMPILER% has not been found. Proceeding without resource file.
+IF %__RCERR__% NEQ 0 (
+	@ECHO Program %RCOMPILER% has not been found. Proceeding without resource file.
 	GOTO COMPILE_DLL
 )
 
 @ECHO Loading resource file...
-%RCCOMPILER% -i %RCFILE% -o %__TMP_RSO__%
-SET /A __WINDRESERR__=%ERRORLEVEL%
+%RCOMPILER% -i %RCFILE% -o %__TMP_RSO__%
+SET /A __RCERR__=%ERRORLEVEL%
 
-IF %__WINDRESERR__% NEQ 0 (
+IF %__RCERR__% NEQ 0 (
 	@ECHO An error occured. Proceeding without resource file.
 )
 
@@ -41,18 +41,18 @@ IF %__WINDRESERR__% NEQ 0 (
 
 @ECHO Compiling %DLLOUTPUT%...
 
-IF %__WINDRESERR__% EQU 0 (
+IF %__RCERR__% EQU 0 (
 	%CCOMPILER% %CFLAGS% -o %DLLOUTPUT% %SRCFILES% %__TMP_RSO__%
 ) ELSE (
 	%CCOMPILER% %CFLAGS% -o %DLLOUTPUT% %SRCFILES%
 )
 
-SET /A __GCCERR__=%ERRORLEVEL%
+SET /A __CCERR__=%ERRORLEVEL%
 
-IF %__WINDRESERR__% EQU 0 DEL %__TMP_RSO__%
+IF %__RCERR__% EQU 0 DEL %__TMP_RSO__%
 
-IF %__GCCERR__% NEQ 0 (
-	EXIT /B %__GCCERR__%
+IF %__CCERR__% NEQ 0 (
+	EXIT /B %__CCERR__%
 )
 
 WHERE %STRIPCMD% >nul 2>nul
@@ -75,4 +75,3 @@ IF %__STRIPPROGERR__% EQU 0 (
 EXIT /B %__STRIPPROGERR__%
 
 ENDLOCAL
-

@@ -23,6 +23,7 @@ EXTRA_DIST = \
 	dev \
 	docs \
 	mgwmake.bat \
+	msvcmake.bat \
 	package.json \
 	.editorconfig
 
@@ -171,7 +172,8 @@ MOSTLYCLEANFILES = \
 CLEANFILES = \
 	dev/tests/null-byte_injection/null-byte_injected.conf \
 	dev/tests/performance/big_file.ini \
-	dev/tests/performance/speedtest
+	dev/tests/performance/speedtest \
+	configure~
 
 # Shell expansion is supported here
 _bootstrapclean_dirs_ = \
@@ -185,6 +187,7 @@ _bootstrapclean_files_ = \
 	'aclocal.m4' \
 	'config'.* \
 	'configure' \
+	'configure~' \
 	'libtool' \
 	'ltmain.sh' \
 	`$(FIND) -L . -type f -name 'Makefile.in'`

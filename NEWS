@@ -2,9 +2,13 @@ News
 ====
 
 
-## 1.16.0
+## 1.16.1
 
-Changes:
+* A batch script for compiling **libconfini** under **Microsoft Windows** with
+  **MSVC** has been created (`msvcmake.bat`)
+
+
+## 1.16.0
 
 * Function `ini_get_bool_i()` has been created
 * New examples have been created (`examples/cplusplus/map.cpp`,

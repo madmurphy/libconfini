@@ -52,7 +52,7 @@ if test "${CLEANONLY}" -ne 0; then
 	echo 'Cleaning package...'
 	test -f 'Makefile' && make maintainer-clean
 	rm -Rf autom4te.cache m4 build-aux no-dist `find . -type d -name .deps`
-	rm -f aclocal.m4 compile config.* configure depcomp install-sh libtool ltmain.sh missing `find . -name Makefile.in`
+	rm -f aclocal.m4 compile config.* configure configure~ depcomp install-sh libtool ltmain.sh missing `find . -name Makefile.in`
 	echo 'Done'
 	exit 0
 fi

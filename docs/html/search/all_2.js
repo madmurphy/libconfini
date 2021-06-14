@@ -1,10 +1,10 @@
 var searchData=
 [
-  ['compiling_20without_20i_2fo_4',['Compiling without I/O',['../baremetal.html',1,'']]],
-  ['case_5fsensitive_5',['case_sensitive',['../structIniFormat.html#a50f562eda0d26ed7e0d3c57afeb46d2d',1,'IniFormat']]],
-  ['collapse_5fempty_5fquotes_6',['collapse_empty_quotes',['../confini_8c.html#a6dfd90309965c426ac9b072d79a08601',1,'confini.c']]],
-  ['collapse_5feverything_7',['collapse_everything',['../confini_8c.html#a0ab1c9f49e30ee6f637c213a27738d21',1,'confini.c']]],
-  ['collapse_5fspaces_8',['collapse_spaces',['../confini_8c.html#a6ace46ed55f0c50e6314cb4610c536ab',1,'confini.c']]],
+  ['case_5fsensitive_4',['case_sensitive',['../structIniFormat.html#a50f562eda0d26ed7e0d3c57afeb46d2d',1,'IniFormat']]],
+  ['collapse_5fempty_5fquotes_5',['collapse_empty_quotes',['../confini_8c.html#a6dfd90309965c426ac9b072d79a08601',1,'confini.c']]],
+  ['collapse_5feverything_6',['collapse_everything',['../confini_8c.html#a0ab1c9f49e30ee6f637c213a27738d21',1,'confini.c']]],
+  ['collapse_5fspaces_7',['collapse_spaces',['../confini_8c.html#a6ace46ed55f0c50e6314cb4610c536ab',1,'confini.c']]],
+  ['compiling_20without_20i_2fo_8',['Compiling without I/O',['../baremetal.html',1,'']]],
   ['confini_2ec_9',['confini.c',['../confini_8c.html',1,'']]],
   ['confini_2eh_10',['confini.h',['../confini_8h.html',1,'']]],
   ['confini_5febadf_11',['CONFINI_EBADF',['../confini_8h.html#a4b42cb63e48154fb799599eccd25ce29abea4607cf9d97028cd782ceb2885b2d9',1,'confini.h']]],

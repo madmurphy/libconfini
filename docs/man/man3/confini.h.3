@@ -1,4 +1,4 @@
-.TH "confini.h" 3 "Mon Oct 26 2020" "libconfini" \" -*- nroff -*-
+.TH "confini.h" 3 "Mon Jun 14 2021" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -234,11 +234,11 @@ confini.h \- libconfini header
 .br
 .RI "Legacy support for parsing a \fCdouble\fP data type – please \fIdo not use this function\fP: use \fC\fBini_get_double()\fP\fP instead\&. "
 .ti -1c
-.RI "static const \fBIniFormat\fP \fBINI_DEFAULT_FORMAT\fP = { \fBINI_EQUALS\fP, false, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_ABSOLUTE_AND_RELATIVE\fP, \fBINI_MULTILINE_EVERYWHERE\fP, false, false, false, false, false, false, false, false }"
+.RI "static const \fBIniFormat\fP \fBINI_DEFAULT_FORMAT\fP = { \fBINI_EQUALS\fP , false , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_ABSOLUTE_AND_RELATIVE\fP , \fBINI_MULTILINE_EVERYWHERE\fP , false , false , false , false , false , false , false , false , }"
 .br
 .RI "A model format for standard INI files\&. "
 .ti -1c
-.RI "static const \fBIniFormat\fP \fBINI_UNIXLIKE_FORMAT\fP = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }"
+.RI "static const \fBIniFormat\fP \fBINI_UNIXLIKE_FORMAT\fP = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, }"
 .br
 .RI "A model format for Unix-like \&.conf files (where space characters are delimiters between keys and values) "
 .ti -1c
@@ -272,12 +272,12 @@ GNU General Public License, version 3 or any later version
 .PP
 \fBVersion\fP
 .RS 4
-1\&.16\&.0 
+1\&.16\&.1 
 .RE
 .PP
 \fBDate\fP
 .RS 4
-2016-2020 
+2016-2021 
 .RE
 .PP
 \fBSee also\fP
@@ -2217,7 +2217,7 @@ Zero for success, otherwise an error code (see \fCenum\fP \fBConfiniInterruptNo\
 This function is absent if the \fC--without-io-api\fP option was passed to the \fCconfigure\fP script when the library was compiled
 .RE
 .PP
-The \fCini_file\fP parameter must be a \fCFILE\fP handle with read privileges\&. On some platforms, such as Microsoft Windows, it might be needed to add the binary specifier to the mode string (\fC'b'\fP) in order to prevent discrepancies between the physical size of the file and its computed size:
+The \fCini_file\fP parameter must be a \fCFILE\fP handle with read privileges\&. On some platforms, such as Microsoft Windows, it might be necessary to add the binary specifier to the mode string (\fC'b'\fP) in order to prevent discrepancies between the physical size of the file and its computed size:
 .PP
 .PP
 .nf
@@ -2504,15 +2504,15 @@ int main () {
  
 .SH "Variable Documentation"
 .PP 
-.SS "const \fBIniFormat\fP INI_DEFAULT_FORMAT = { \fBINI_EQUALS\fP, false, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_ABSOLUTE_AND_RELATIVE\fP, \fBINI_MULTILINE_EVERYWHERE\fP, false, false, false, false, false, false, false, false }\fC [static]\fP"
+.SS "const \fBIniFormat\fP INI_DEFAULT_FORMAT = { \fBINI_EQUALS\fP , false , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_ABSOLUTE_AND_RELATIVE\fP , \fBINI_MULTILINE_EVERYWHERE\fP , false , false , false , false , false , false , false , false , }\fC [static]\fP"
 
 .PP
 A model format for standard INI files\&. 
-.SS "ini_get_double\fC [extern]\fP"
+.SS "ini_get_double (const char * ini_string)\fC [extern]\fP"
 
 .PP
 Pointer to \fC\fCatof()\fP\fP 
-.SS "double(* const ini_get_float) (const char *ini_string)\fC [extern]\fP"
+.SS "double(* const ini_get_float) (const char *ini_string) (const char * ini_string)\fC [extern]\fP"
 
 .PP
 Legacy support for parsing a \fCdouble\fP data type – please \fIdo not use this function\fP: use \fC\fBini_get_double()\fP\fP instead\&. 
@@ -2528,15 +2528,15 @@ Deprecated since version 1\&.12\&.0 (it will be removed in version 2\&.0\&.0) �
 .RE
 .PP
 
-.SS "ini_get_int\fC [extern]\fP"
+.SS "ini_get_int (const char * ini_string)\fC [extern]\fP"
 
 .PP
 Pointer to \fC\fCatoi()\fP\fP 
-.SS "ini_get_lint\fC [extern]\fP"
+.SS "ini_get_lint (const char * ini_string)\fC [extern]\fP"
 
 .PP
 Pointer to \fC\fCatol()\fP\fP 
-.SS "ini_get_llint\fC [extern]\fP"
+.SS "ini_get_llint (const char * ini_string)\fC [extern]\fP"
 
 .PP
 Pointer to \fC\fCatoll()\fP\fP 
@@ -2559,7 +2559,7 @@ Deprecated since version 1\&.15\&.0 (it will be removed in version 2\&.0\&.0)
 .RE
 .PP
 
-.SS "const \fBIniFormat\fP INI_UNIXLIKE_FORMAT = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }\fC [static]\fP"
+.SS "const \fBIniFormat\fP INI_UNIXLIKE_FORMAT = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, }\fC [static]\fP"
 
 .PP
 A model format for Unix-like \&.conf files (where space characters are delimiters between keys and values) 

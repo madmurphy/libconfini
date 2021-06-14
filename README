@@ -24,8 +24,8 @@ format ever invented (thanks to their informal status, INI files are indeed
 more fluid, expressive and human-friendly than formats explicitly designed with
 the same purpose, such as YAML and TOML). The library's main goal is to be
 uncommonly powerful in the most tedious and error-prone task when parsing a
-text file in C: string handling. Thanks to this the programmer is left free
-to organize the content parsed as (s)he pleases, assisted by a rich set of
+text file in C: string handling. Thanks to this the programmer is left free to
+organize the content parsed as (s)he pleases, assisted by a rich set of
 fine-tuning tools.
 
 

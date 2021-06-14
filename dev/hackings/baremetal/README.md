@@ -12,7 +12,7 @@ In the past, the build environment of **libconfini** did not offer shortcuts
 for facing this kind of situations -- although, thanks to the modularity of the
 source code, it was still relatively simple to get rid of every tie with the C
 Standard Library and compile **libconfini** as “bare metal”, with
-`strip_ini_cache()` as the only parsing function (since this relies only on a
+`strip_ini_cache()` as the only parsing function (as this relies only on a
 buffer for its input), i.e. without `load_ini_file()` and `load_ini_path()`,
 and possibly even without any header at all.
 
@@ -46,11 +46,10 @@ applied when launching `make all` or `make baremetal-source-code` after having
 launched `./configure --without-io-api` (the original source code will be
 preserved).
 
-The files `pp-utils.c` and `str2num.c` constitute a re-implementation of the
-functions `ini_get_int()`, `ini_get_lint()`, `ini_get_llint()`,
-`ini_get_float()` and `ini_get_double()`, which in the original code are
-implemented as pointers to standard functions (see below). These two files
-amend `src/confini.c`.
+The file `str2num.c` constitutes a re-implementation of the functions
+`ini_get_int()`, `ini_get_lint()`, `ini_get_llint()`, `ini_get_float()` and
+`ini_get_double()`, which in the original code are implemented as pointers to
+standard functions (see below). This file amends `src/confini.c`.
 
 The file `str2num.h`, which amends `src/confini.h` (i.e. the public header),
 exports the function headers of what `str2num.c` implements.
@@ -73,9 +72,7 @@ Here follows the summary of what is required by `./configure --without-io-api`:
    `src/confini.c`)
 3. `dev/hackings/baremetal/str2num.h` (pasted to the public header
    `src/confini.h`)
-4. `dev/hackings/baremetal/pp-utils.c` (pasted to the private module
-   `src/confini.c`)
-5. `no-dist/hackings/baremetal/c-standard-library.h` (pasted to the public
+4. `no-dist/hackings/baremetal/c-standard-library.h` (pasted to the public
    header `src/confini.h` after having been automaticaly generated either by
    the `configure` script, as an exact copy of
    `dev/hackings/baremetal/c-standard-library.h`, or by `make
@@ -306,10 +303,6 @@ variations.
   under the terms of the GPL license version 3 or any later version. See
   COPYING for details. 
 */
-
-#define __PP_IIF__(CONDITION, ...) __PP_EVALUCAT__(__PP_UCAT__(__COND, CONDITION), _)(__VA_ARGS__, , )
-#define __COND_0__(IF_TRUE, IF_FALSE, ...) IF_FALSE
-#define __COND_1__(IF_TRUE, ...) IF_TRUE
 
 #define _LIBCONFINI_RADIX_POINT_ '.'
 #define __INTEGER_DATA_TYPE__ 0

@@ -16,7 +16,7 @@ using namespace std;
 
 
 static inline void chrarr_tolower (char * const str) {
-    for (register char * chrptr = str; *chrptr; chrptr++) {
+    for (char * chrptr = str; *chrptr; chrptr++) {
         *chrptr = *chrptr > 0x40 && *chrptr < 0x5b ? *chrptr | 0x60 : *chrptr;
     }
 }
@@ -26,7 +26,7 @@ static inline void chrarr_tolower (char * const str) {
 In this implementation the dot is a metacharacter and is used as delimiter
 between path parts. Therefore all dots appearing in key names, or (within
 quotes) in section paths, will be replaced with the following character. You
-may change it with any other character (except the dot itself).
+may replace it with any other character (except the dot itself).
 
 */
 #define DOT_REPLACEMENT '-'
@@ -71,21 +71,21 @@ string IniMap::getSource (const string key) {
 
 /*  Get a value as `bool`  */
 bool IniMap::getBool (const string key, bool * const is_bool) {
-    unsigned int intbool = static_cast<unsigned int>(ini_get_bool_i(this->getSource(key).c_str(), 2, this->_format_));
+    unsigned int uintbool = static_cast<unsigned int>(ini_get_bool_i(this->getSource(key).c_str(), 2, this->_format_));
     if (is_bool) {
-        *is_bool = !(intbool & 2);
+        *is_bool = !(uintbool & 2);
     }
-    return static_cast<bool>(intbool & 1);
+    return static_cast<bool>(uintbool & 1);
 }
 
 
 /*  Like `IniMap::getBool`, but defaults to `true`  */
 bool IniMap::isntFalse (const string key, bool * const is_bool) {
-    unsigned int intbool = static_cast<unsigned int>(ini_get_bool_i(this->getSource(key).c_str(), 3, this->_format_));
+    unsigned int uintbool = static_cast<unsigned int>(ini_get_bool_i(this->getSource(key).c_str(), 3, this->_format_));
     if (is_bool) {
-        *is_bool = !(intbool & 2);
+        *is_bool = !(uintbool & 2);
     }
-    return static_cast<bool>(intbool & 1);
+    return static_cast<bool>(uintbool & 1);
 }
 
 
@@ -122,6 +122,7 @@ char * const * IniMap::getStringArray (
     char ** const newarr = reinterpret_cast<char **>(
         (void *) operator new(*dest_arrlen * sizeof(char *) + srcstr.length() + 1)
     );
+
     char * remnant = reinterpret_cast<char *>((char **) newarr + *dest_arrlen);
     memcpy(remnant, srcstr.c_str(), srcstr.length() + 1);
 

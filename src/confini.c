@@ -7,8 +7,8 @@
 	@brief		libconfini functions
 	@author		Stefano Gioffr&eacute;
 	@copyright	GNU General Public License, version 3 or any later version
-	@version	1.16.0
-	@date		2016-2020
+	@version	1.16.1
+	@date		2016-2021
 	@see		https://madmurphy.github.io/libconfini
 
 **/
@@ -2865,7 +2865,6 @@ int strip_ini_cache (
 					dsp.data[__ITER__] = '\0';
 					dsp.value = dsp.data + __ITER__ + 1;
 
-
 					switch (
 						(format.preserve_empty_quotes << 1) |
 						format.do_not_collapse_values
@@ -2921,10 +2920,11 @@ int strip_ini_cache (
 
 		}
 
+		dsp.dispatch_id++;
+
 		/*  Restore `__NODE_AT__` on **exactly** the same variable as before  */
 		#undef __ITER__
 		#define __NODE_AT__ tmp_fast_size_t_1
-		dsp.dispatch_id++;
 		__NODE_AT__ = idx + 1;
 
 	}
@@ -2960,7 +2960,7 @@ int strip_ini_cache (
 			the `configure` script when the library was compiled
 
 	The @p ini_file parameter must be a `FILE` handle with read privileges. On some
-	platforms, such as Microsoft Windows, it might be needed to add the binary
+	platforms, such as Microsoft Windows, it might be necessary to add the binary
 	specifier to the mode string (`"b"`) in order to prevent discrepancies between
 	the physical size of the file and its computed size:
 

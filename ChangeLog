@@ -2,13 +2,24 @@ Change Log
 ==========
 
 
+## 1.16.1 (2021-06-14)
+
+Changes:
+
+* A batch script for compiling **libconfini** under **Microsoft Windows** with
+  **MSVC** has been created (`msvcmake.bat`)
+* Documentation
+* Examples
+* Package maintenance
+
+
 ## 1.16.0 (2020-10-26)
 
 Changes:
 
 * Function `ini_get_bool_i()` has been created
 * Code review (private function `get_type_as_active()`; types `int8_t`,
-  `uint8_t`, `uint16_t` and `uint32_t` have been changed to to `int_least8_t`,
+  `uint8_t`, `uint16_t` and `uint32_t` have been changed to `int_least8_t`,
   `uint_least8_t`, `uint_least16_t` and `uint_least32_t` everywhere)
 * Documentation
 * New examples have been created (`examples/cplusplus/map.cpp`,
