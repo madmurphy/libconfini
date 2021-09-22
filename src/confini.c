@@ -444,7 +444,7 @@
 	given format
 
 */
-#define _LIBCONFINI_IS_COM_MARKER_(CHR, FMT) ( \
+#define _LIBCONFINI_IS_N_I_MARKER_(CHR, FMT) ( \
 		CHR == _LIBCONFINI_HASH_ ? \
 			FMT.hash_marker != INI_IS_NOT_A_MARKER && \
 			FMT.hash_marker != INI_IGNORE \
@@ -467,6 +467,21 @@
 		: \
 			CHR == _LIBCONFINI_SEMICOLON_ && \
 			FMT.semicolon_marker == INI_DISABLED_OR_COMMENT \
+	)
+
+
+/*
+
+	Check whether a character represents a marker of type `INI_ONLY_COMMENT` within
+	a given format
+
+*/
+#define _LIBCONFINI_IS_COM_MARKER_(CHR, FMT) ( \
+		CHR == _LIBCONFINI_HASH_ ? \
+			FMT.hash_marker == INI_ONLY_COMMENT \
+		: \
+			CHR == _LIBCONFINI_SEMICOLON_ && \
+			FMT.semicolon_marker == INI_ONLY_COMMENT \
 	)
 
 
@@ -2045,25 +2060,65 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 				idx = ltrim_s(srcstr, idx + 1, _LIBCONFINI_WITH_EOL_);
 
 				if (
-					abcd & 2048 ?
-						!(
-							_LIBCONFINI_IS_DIS_MARKER_(srcstr[idx], format) &&
-							(abcd & 24) && (
-								(~abcd & 516) ||
-								!is_some_space(srcstr[idx + 1], _LIBCONFINI_NO_EOL_)
+					idx <= focus_at && (abcd & 2048) && (
+						(
+							_LIBCONFINI_IS_DIS_MARKER_(srcstr[idx], format) && !(
+								(abcd & 24) && (
+									(~abcd & 516) ||
+									!is_some_space(srcstr[idx + 1], _LIBCONFINI_NO_EOL_)
+								)
 							)
-						) && !(
-							_LIBCONFINI_IS_COM_MARKER_(srcstr[idx], format) &&
-							(abcd & 8) && (
-								((abcd ^ 512) & 8704) ||
-								!get_type_as_active(
+						) ||
+						_LIBCONFINI_IS_COM_MARKER_(srcstr[idx], format)
+					)
+				) {
+
+					/*
+
+						See issue #16
+
+						This entry is composed of one or more empty lines
+						followed by a simple a comment. The whole block will be
+						marked as a comment.
+
+					*/
+
+					srcstr[search_at] = _LIBCONFINI_SC_INT_MARKER_;
+
+					if (abcd & 8) {
+
+						abcd = (abcd & 15871) | 8192;
+						goto inactive_cut;
+
+					}
+
+					unparsable_at = search_at + 1;
+					break;
+
+				}
+
+				if (
+					abcd & 512 ?
+						!(abcd & 24) || (
+							(
+								!_LIBCONFINI_IS_DIS_MARKER_(srcstr[idx], format) || (
+									(abcd & 4) &&
+									is_some_space(srcstr[idx + 1], _LIBCONFINI_NO_EOL_)
+								)
+							) && (
+								idx > focus_at /*  see issue #16  */ &&
+								get_type_as_active(
 									srcstr + focus_at,
 									idx - focus_at,
 									format.disabled_can_be_implicit,
 									format
 								)
 							)
-						)
+						) ||
+						!_LIBCONFINI_IS_ANY_MARKER_(srcstr[idx], format)
+					: abcd & 2048 ?
+						!(abcd & 8) ||
+						!_LIBCONFINI_IS_N_I_MARKER_(srcstr[idx], format)
 					:
 						!_LIBCONFINI_IS_IGN_MARKER_(srcstr[idx], format)
 				) {
@@ -2117,7 +2172,7 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 					/*
 
-						Inline comment has been found in a (supposedly) disabled
+						An inline comment has been found in a (supposedly) disabled
 						entry.
 
 					*/
@@ -2142,6 +2197,7 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 						if (abcd & 8) {
 
+							abcd &= 15871;
 							goto inactive_cut;
 
 						}
@@ -2150,11 +2206,11 @@ static size_t further_cuts (char * const srcstr, const IniFormat format) {
 
 					} else {
 
-						abcd |= 8192;
 						srcstr[search_at] = _LIBCONFINI_SC_INT_MARKER_;
 
 						if (abcd & 8) {
 
+							abcd = (abcd & 15871) | 8192;
 							goto inactive_cut;
 
 						}
