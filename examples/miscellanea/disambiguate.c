@@ -8,10 +8,13 @@ See: Manual > Ini Syntax Considerations
 #include <stdio.h>
 #include <confini.h>
 
-static int ini_listener (IniDispatch * dispatch, void * v_null) {
+static int ini_listener (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   printf(
-    "#%zu - Type: %u; Data: \"%s\"; Value: \"%s\"\n",
+    "Node #%zu - Type: %u; Data: \"%s\"; Value: \"%s\"\n",
     dispatch->dispatch_id,
     dispatch->type,
     dispatch->data,
@@ -44,13 +47,15 @@ int main () {
 
   printf(":: Content of \"ambiguous.conf\" ::\n\n");
 
-  if (load_ini_path(
-    "../ini_files/ambiguous.conf",
-    MY_FORMAT,
-    NULL,
-    ini_listener,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "../ini_files/ambiguous.conf",
+      MY_FORMAT,
+      NULL,
+      ini_listener,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;

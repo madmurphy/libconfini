@@ -44,8 +44,7 @@ lib_LTLIBRARIES = \
 	lib@PROJECT_LOCALNAME@.la
 
 lib@PROJECT_LOCALNAME@_la_LDFLAGS = \
-	-version-info \
-	$(LTVERSIONINFO)
+	-version-info $(LTVERSIONINFO)
 
 lib@PROJECT_LOCALNAME@_la_LIBADD =
 

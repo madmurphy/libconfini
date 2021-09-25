@@ -88,7 +88,7 @@ autoreconf -i
 ./configure
 </pre><h1>Microsoft Windows </h1>
 <h2>MinGW</h2>
-<p>If you are using Microsoft Windows, a batch script for compiling <b>libconfini</b> under MinGW without GNU Make is available (<code>mgwmake.bat</code>). If you want instead to compile the library manually, you can run: </p><pre class="fragment">cd src
+<p>If you are using Microsoft Windows, a batch script for compiling <b>libconfini</b> with MinGW without GNU Make is available (<code>mgwmake.bat</code>). If you want instead to compile the library manually, you can run: </p><pre class="fragment">cd src
 windres.exe -i winres.rc -o winres.o
 gcc.exe -std=c99 -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined \
     -Wl,-out-implib,libconfini.lib -o libconfini.dll winres.o confini.c
@@ -100,7 +100,7 @@ dlltool.exe -z libconfini.def -D libconfini --export-all-symbols confini.o
 gcc.exe -std=c99 -g -O3 -Wall -shared -static-libgcc -Wl,--no-undefined \
     -Wl,-out-implib,libconfini.lib -o libconfini.dll confini.o winres.o
 strip.exe libconfini.dll
-</pre><p> If you want to build (and install) <b>libconfini</b> via GNU Make under Microsoft Windows several options are available, such as MinGW + MSYS, MSYS2, GnuWin32 and Cygwin (for which <a href="https://github.com/fd00/yacp/tree/master/libconfini">an unofficial port</a> of <b>libconfini</b> exists).</p>
+</pre><p> If you want to build (and install) <b>libconfini</b> via GNU Make under Microsoft Windows several options are available, such as MinGW + MSYS, MSYS2 (which ships <a href="https://packages.msys2.org/base/mingw-w64-libconfini">an official port</a> of the library, Cygwin (for which <a href="https://github.com/fd00/yacp/tree/master/libconfini">an unofficial port</a> of <b>libconfini</b> exists) and GnuWin32.</p>
 <h2>Microsoft Visual Studio</h2>
 <p>To compile the library with Microsoft Visual Studio use the following commands: </p><pre class="fragment">cd src
 rc.exe winres.rc
@@ -125,7 +125,7 @@ lib.exe /OUT:libconfini.lib winres.res confini.obj
 <p>Often a compiled DLL <a href="https://github.com/madmurphy/libconfini/releases">is available</a> among the assets of each release of this package on GitHub.</p>
 <h1>Bare metal </h1>
 <p>The library has almost everything implemented from scratch, with the only notable exception of the I/O functions <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code> and <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code>, which rely on C standard libraries. On some platforms, however, only a rather exotic I/O API is available, while for some other platforms the C Standard Library is simply too heavy or just not implementable.</p>
-<p>In these situations it will be needed to get rid of every tie with the C Standard Library and compile <b>libconfini</b> as "bare metal". The <code>configure</code> script has a <code>--without-io-api</code> option that allows to create a special fork of the original library able to function in any environment. For information about how to proceed, please see <code>dev/hackings/baremetal/README.md</code>.</p>
+<p>In these situations it will be needed to get rid of every tie with the C Standard Library and compile <b>libconfini</b> as "bare metal". The <code>configure</code> script has two options for creating special forks of the original library able to function in any environment, <code>--without-io-api</code> and <code>--without-libc</code>. For information about how to proceed, please see <code>dev/hackings/baremetal/README.md</code>.</p>
 <h1>Complex installations </h1>
 <p>This package has been designed to be able to coexist with other major releases of itself. However, when two versions share the same major number but have different minor or revision numbers, only the most recent package must be installed.</p>
 <p>For two or more different major releases to be able to coexist, the major number of each version must be appended to the package name it refers to, with the possible exception of only one package (usually version 1.X.X). This can be done easily by passing the <code>--with-other-versions</code> option to the <code>configure</code> script: </p><pre class="fragment">./configure --with-other-versions
@@ -135,7 +135,7 @@ lib.exe /OUT:libconfini.lib winres.res confini.obj
 <p>Do not use Autoconf transforming rules in place of the built-in <code>./configure --with-other-versions</code> for appending the major version number to the name of the package. If you do so, the header file will be installed as <code>confiniX.h</code>, instead of the more standard <code>confini-X.h</code>.</p>
 <p>For any issue, drop a message at <a href="https://github.com/madmurphy/libconfini/issues">https://github.com/madmurphy/libconfini/issues</a>.</p>
 <h1>Distributing the source code </h1>
-<p>If you aim to re-distribute the source code of <b>libconfini</b> you should first make sure that the <code>configure</code> script is present, for granting the possibility to compile the package without having Autotools installed. If the <code>configure</code> script is present and you have already launched it, use <code>make distclean</code> to reset the configuration that this has created, or use <code>make source-release</code> to build a fresh archive that ignores the current configuration.</p>
+<p>If you aim to re-distribute the source code of <b>libconfini</b> you must first make sure that the <code>configure</code> script is present, for granting the possibility to compile the package without having Autotools installed. If the <code>configure</code> script is present and you have already launched it, use <code>make distclean</code> to reset the configuration that this has created, or use <code>make source-release</code> to build a fresh archive that ignores the current configuration.</p>
 <h1>Distributing the compiled package </h1>
 <p>Use <code>make binary-release</code> to create a binary package of <b>libconfini</b> for a particular platform. If you want to obtain the list of the files that are going to be installed, use <code>make manifest</code>. </p>
 </div></div><!-- contents -->

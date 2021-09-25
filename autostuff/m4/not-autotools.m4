@@ -33,15 +33,16 @@ dnl
 dnl  From: not-autotools/m4/not-m4sugar.m4
 dnl
 m4_define([n4_case_in],
-	[m4_cond([m4_eval([$# < 2])], [1],
-			[],
-		[m4_argn([1], $2)], [$1],
+	[m4_if([$#], [0], [], [$#], [1], [], [$#], [2], [],
+		[m4_if(m4_argn([1], $2), [$1],
 			[$3],
-		[m4_eval(m4_count($2)[ > 1])], [1],
-			[n4_case_in([$1], m4_dquote(m4_shift($2)), m4_shift2($@))],
-		[m4_eval([$# > 4])], [1],
-			[n4_case_in([$1], m4_shift3($@))],
-			[$4])])
+			[m4_if(m4_count($2), [1],
+				[m4_if([$#], [3], [], [$#], [4],
+					[$4],
+					[n4_case_in([$1], m4_shift3($@))])],
+				[n4_case_in([$1],
+					m4_dquote(m4_shift($2)),
+					m4_shift2($@))])])])])
 
 
 dnl  n4_mem([macro-name1[, macro-name2[, ... macro-nameN]]], value)
@@ -304,97 +305,106 @@ dnl  From: not-autotools/m4/not-extended-config.m4
 dnl
 AC_DEFUN_ONCE([NC_CONFIG_SHADOW_DIR], [
 
-	AC_REQUIRE([AC_PROG_LN_S])
-	m4_define([NC_SHADOW_DIR], [$1])
-	m4_define([NC_CONFNEW_SUBDIR], [confnew])
-	m4_define([NC_THREATENED_LIST], [])
-	AC_SUBST([confnewdir], [']NC_CONFNEW_SUBDIR['])
+AC_REQUIRE([AC_PROG_LN_S])
+m4_define([NC_SHADOW_DIR], [$1])
+m4_define([NC_CONFNEW_SUBDIR], [confnew])
+m4_define([NC_THREATENED_LIST], [])
+AC_SUBST([confnewdir], [']NC_CONFNEW_SUBDIR['])
 
-	AC_ARG_ENABLE([extended-config],
-		[AS_HELP_STRING([--enable-extended-config@<:@=MODE@:>@],
-			[extend the configure process to files that normally do not need
-			to be re-configured, as their final content depends on upstream
-			changes only and not on the state of this machine; possible values
-			for MODE are: omitted or "yes" or "merge" for updating these files
-			immediately, "sandbox" for safely putting their updated version
-			into the `]m4_quote(NC_CONFNEW_SUBDIR)[` directory without modifying
-			the package tree, or "no" for doing nothing @<:@default=no@:>@])],
-			[AS_IF([test "x${enableval}" = x -o "x${enableval}" = xyes],
-					[AS_VAR_SET([enable_extended_config], ['merge'])],
-				[test "x${enableval}" != xsandbox -a "x${enableval}" != xmerge], [
-					AS_VAR_SET([enable_extended_config], ['no'])
-					AC_MSG_WARN([unrecognized option: --enable-extended-config='${enableval}'])
-				])],
-			[AS_VAR_SET([enable_extended_config], ['no'])])
+AC_ARG_ENABLE([extended-config],
+	[AS_HELP_STRING([--enable-extended-config@<:@=MODE@:>@],
+		[extend the configure process to files that normally do not need
+		to be re-configured, as their final content depends on upstream
+		changes only and not on the state of this machine; possible values
+		for MODE are: omitted or "yes" or "merge" for updating these files
+		immediately, "sandbox" for safely putting their updated version
+		into the `]m4_quote(NC_CONFNEW_SUBDIR)[` directory without modifying
+		the package tree, or "no" for doing nothing @<:@default=no@:>@])],
+		[AS_IF([test "x${enableval}" = x -o "x${enableval}" = xyes],
+				[AS_VAR_SET([enable_extended_config], ['merge'])],
+			[test "x${enableval}" != xsandbox -a "x${enableval}" != xmerge], [
+				AS_VAR_SET([enable_extended_config], ['no'])
+				AC_MSG_WARN([unrecognized option: --enable-extended-config='${enableval}'])
+			])],
+		[AS_VAR_SET([enable_extended_config], ['no'])])
 
-	AM_CONDITIONAL([HAVE_EXTENDED_CONFIG], [test "x${enable_extended_config}" != xno])
-	AM_CONDITIONAL([HAVE_UPDATES], [test "x${enable_extended_config}" = xsandbox])
+AM_CONDITIONAL([HAVE_EXTENDED_CONFIG], [test "x${enable_extended_config}" != xno])
+AM_CONDITIONAL([HAVE_UPDATES], [test "x${enable_extended_config}" = xsandbox])
 
-	AM_COND_IF([HAVE_EXTENDED_CONFIG], [
-		AS_MKDIR_P(["]m4_quote(NC_CONFNEW_SUBDIR)["])
-		AC_CONFIG_COMMANDS([extended-config], [
-			AS_IF([test "x${extconfmode}" = xmerge], [
-				AS_VAR_SET([abs_srcdir], ["$(cd "${srcdir}" && pwd)"])
-				echo "${threatlist}" | while read -r _FILE_; do
-					mv "NC_CONFNEW_SUBDIR/${_FILE_}" "${srcdir}/${_FILE_}" && \
-					(cd "$(dirname "NC_CONFNEW_SUBDIR/${_FILE_}")" && \
-					${LN_S} "${abs_srcdir}/${_FILE_}" "$(basename "NC_CONFNEW_SUBDIR/${_FILE_}")")
-				done
-				AC_MSG_NOTICE([extended configuration has been merged with the package tree.])
-				AS_UNSET([abs_srcdir])
-			], [
-				AC_MSG_NOTICE([extended configuration has been saved in ./NC_CONFNEW_SUBDIR.])
-			])
-			AS_UNSET([threatlist])
-			AS_UNSET([extconfmode])
+AM_COND_IF([HAVE_EXTENDED_CONFIG], [
+	AS_MKDIR_P(["]m4_quote(NC_CONFNEW_SUBDIR)["])
+	AC_CONFIG_COMMANDS([extended-config], [
+		AS_IF([test "x${extconfmode}" = xmerge], [
+			AS_VAR_SET([abs_srcdir], ["$(cd "${srcdir}" && pwd)"])
+			echo "${threatlist}" | while read -r _FILE_; do
+				mv "NC_CONFNEW_SUBDIR/${_FILE_}" "${srcdir}/${_FILE_}" && \
+				(cd "$(dirname "NC_CONFNEW_SUBDIR/${_FILE_}")" && \
+				${LN_S} "${abs_srcdir}/${_FILE_}" "$(basename "NC_CONFNEW_SUBDIR/${_FILE_}")")
+			done
+			AC_MSG_NOTICE([extended configuration has been merged with the package tree.])
+			AS_UNSET([abs_srcdir])
 		], [
-			AS_VAR_SET([extconfmode], ['${enable_extended_config}'])
-			AS_VAR_SET([threatlist], ['${nc_threatlist}'])
+			AC_MSG_NOTICE([extended configuration has been saved in ./NC_CONFNEW_SUBDIR.])
 		])
+		AS_UNSET([threatlist])
+		AS_UNSET([extconfmode])
+	], [
+		AS_VAR_SET([extconfmode], ['${enable_extended_config}'])
+		AS_VAR_SET([threatlist], ['${nc_threatlist}'])
 	])
+])
 
-	dnl  NC_THREATEN_FILES(file1[, file2[, file3[, ... fileN]]])
-	dnl  **********************************************************************
-	AC_DEFUN([NC_THREATEN_FILES], [
-		AM_COND_IF([HAVE_EXTENDED_CONFIG], [
-			AC_CONFIG_FILES(m4_foreach([_F_ITER_], m4_dquote(]m4_dquote(m4_map_args_sep([m4_normalize(], [)], [,], ][$][@][))[),
-				[m4_ifnblank(m4_quote(_F_ITER_),
-					[n4_case_in(m4_quote(_F_ITER_), m4_quote(NC_THREATENED_LIST),
-						[n4_case_in(m4_quote(_F_ITER_), m4_quote(NC_SHADOW_REDEF), [],
-							[m4_define([NC_SHADOW_REDEF],
-								m4_ifset([NC_SHADOW_REDEF],
-									[m4_dquote(NC_SHADOW_REDEF,[ ]_F_ITER_)],
-									[m4_dquote(_F_ITER_)]))])],
-						[m4_define([NC_THREATENED_LIST],
-							m4_ifset([NC_THREATENED_LIST],
-									[m4_dquote(NC_THREATENED_LIST, _F_ITER_)],
-									[m4_dquote(_F_ITER_)]))
-						m4_quote(NC_CONFNEW_SUBDIR[/]_F_ITER_[:]NC_SHADOW_DIR[/]_F_ITER_[.in])])])]))
-		])
-		AS_VAR_SET([nc_threatlist], ["]m4_join(m4_newline(), NC_THREATENED_LIST)["])
-		m4_ifdef([NC_SHADOW_REDEF],
-			[m4_warn([syntax], [redefined threatened files ]m4_quote(NC_SHADOW_REDEF)[ - skip])])
+dnl  NC_THREATEN_FILES(file1[, file2[, file3[, ... fileN]]])
+dnl  **********************************************************************
+AC_DEFUN([NC_THREATEN_FILES], [
+	AM_COND_IF([HAVE_EXTENDED_CONFIG], [
+		AC_CONFIG_FILES(m4_foreach([_F_ITER_], m4_dquote(]m4_dquote(m4_map_args_sep([m4_normalize(], [)], [,], ][$][@][))[),
+			[m4_ifnblank(m4_quote(_F_ITER_),
+				[n4_case_in(m4_quote(_F_ITER_), m4_quote(NC_THREATENED_LIST),
+					[n4_case_in(m4_quote(_F_ITER_), m4_quote(NC_SHADOW_REDEF), [],
+						[m4_define([NC_SHADOW_REDEF],
+							m4_ifset([NC_SHADOW_REDEF],
+								[m4_dquote(NC_SHADOW_REDEF,[ ]_F_ITER_)],
+								[m4_dquote(_F_ITER_)]))])],
+					[m4_define([NC_THREATENED_LIST],
+						m4_ifset([NC_THREATENED_LIST],
+								[m4_dquote(NC_THREATENED_LIST, _F_ITER_)],
+								[m4_dquote(_F_ITER_)]))
+					m4_quote(NC_CONFNEW_SUBDIR[/]_F_ITER_[:]NC_SHADOW_DIR[/]_F_ITER_[.in])])])]))
 	])
+	AS_VAR_SET([nc_threatlist], ["]m4_join(m4_newline(), NC_THREATENED_LIST)["])
+	m4_ifdef([NC_SHADOW_REDEF],
+		[m4_warn([syntax], [redefined threatened files ]m4_quote(NC_SHADOW_REDEF)[ - skip])])
+])
 
-	dnl  NC_THREATEN_BLINDLY
-	dnl  **********************************************************************
-	AC_DEFUN_ONCE([NC_THREATEN_BLINDLY],
-		[NC_THREATEN_FILES(m4_shift(m4_bpatsubst(m4_quote(m4_esyscmd([find ']m4_quote(NC_SHADOW_DIR)[' -type f -name '*.in' -printf ", [[%P{/@/}]]"])), [\.in{/@/}], [])))])
+dnl  NC_THREATEN_BLINDLY()
+dnl  **********************************************************************
+AC_DEFUN_ONCE([NC_THREATEN_BLINDLY],
+	[NC_THREATEN_FILES(m4_shift(m4_bpatsubst(m4_quote(m4_esyscmd([find ']m4_quote(NC_SHADOW_DIR)[' -type f -name '*.in' -printf ", [[%P{/@/}]]"])), [\.in{/@/}], [])))])
 
-	dnl  NC_SHADOW_AFTER_OUTPUT[(if-merge-cmds[, if-sandbox-cmds])]
-	dnl  **********************************************************************
-	AC_DEFUN_ONCE([NC_SHADOW_AFTER_OUTPUT],
-		[m4_ifset([NC_THREATENED_LIST],
-			[m4_ifnblank(m4_quote(]m4_dquote(][$][1][$][2][)[),
-				[AM_COND_IF([HAVE_UPDATES],
-					m4_ifblank(m4_quote(]m4_dquote(]m4_dquote(][$][2][)[)[),
-						[[:]],
-						[[m4_expand(m4_argn([2],
-							]m4_dquote(]m4_dquote(]m4_dquote(]m4_dquote(][$][@][)[)[)[)[))]])[]m4_ifnblank(m4_quote(]m4_dquote(]m4_dquote(][$][1][)[)[), [,
-							[AM_COND_IF([HAVE_EXTENDED_CONFIG],
-								[m4_expand(m4_argn([1],
-									]m4_dquote(]m4_dquote(]m4_dquote(]m4_dquote(]m4_dquote(][$][@][)[)[)[)[)[))])]]))])],
-			[m4_warn([syntax], [NC_CONFIG_SHADOW_DIR has been invoked but no files have been threatened.])])])
+dnl  NC_SHADOW_AFTER_OUTPUT[(if-merge-cmds[, if-sandbox-cmds])]
+dnl  **********************************************************************
+dnl
+dnl  Example:
+dnl
+dnl     NC_SHADOW_AFTER_OUTPUT([
+dnl        AC_MSG_NOTICE([updating the source code with `${ac_make} all-official-sources`...])
+dnl        "${ac_make}" all-official-sources
+dnl     ])
+dnl
+dnl  **********************************************************************
+AC_DEFUN_ONCE([NC_SHADOW_AFTER_OUTPUT],
+	[m4_ifset([NC_THREATENED_LIST],
+		[m4_ifnblank(m4_quote(]m4_dquote(][$][1][$][2][)[),
+			[AM_COND_IF([HAVE_UPDATES],
+				m4_ifblank(m4_quote(]m4_dquote(]m4_dquote(][$][2][)[)[),
+					[[:]],
+					[[m4_expand(m4_argn([2],
+						]m4_dquote(]m4_dquote(]m4_dquote(]m4_dquote(][$][@][)[)[)[)[))]])[]m4_ifnblank(m4_quote(]m4_dquote(]m4_dquote(][$][1][)[)[), [,
+						[AM_COND_IF([HAVE_EXTENDED_CONFIG],
+							[m4_expand(m4_argn([1],
+								]m4_dquote(]m4_dquote(]m4_dquote(]m4_dquote(]m4_dquote(][$][@][)[)[)[)[)[))])]]))])],
+		[m4_warn([syntax], [NC_CONFIG_SHADOW_DIR has been invoked but no files have been threatened.])])])
 
 ])
 

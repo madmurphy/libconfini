@@ -9,7 +9,7 @@
   @return   The new length of the string
 
   Supported escape sequences are "\a", "\b", "\f", "\n", "\r",
-  "\t", "\v", "\e". Double backslashes are not unescaped here.
+  "\t", "\v", "\e". Double backslashes are **not** unescaped here.
 
   Example usage:
 

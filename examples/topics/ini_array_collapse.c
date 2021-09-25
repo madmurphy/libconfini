@@ -6,11 +6,11 @@
 #include <confini.h>
 
 static int populate_strarray (
-  char * part,
-  size_t part_len,
-  size_t idx,
-  IniFormat format,
-  void * v_array
+  char * const part,
+  const size_t part_len,
+  const size_t idx,
+  const IniFormat format,
+  void * const v_array
 ) {
 
   ini_string_parse(part, format);
@@ -20,13 +20,18 @@ static int populate_strarray (
 
 }
 
-static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
+static int my_ini_listener (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
-  if (ini_string_match_si(
-    "my_array",
-    dispatch->data,
-    dispatch->format
-  )) {
+  if (
+    ini_string_match_si(
+      "my_array",
+      dispatch->data,
+      dispatch->format
+    )
+  ) {
 
     #define DELIMITER ','
 
@@ -35,17 +40,17 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 
     /*  Save memory with `ini_array_collapse()`  */
     dispatch->v_len = ini_array_collapse(
-                        dispatch->value,
-                        DELIMITER,
-                        dispatch->format
-                      );
+      dispatch->value,
+      DELIMITER,
+      dispatch->format
+    );
 
     /*  Allocate a new array of strings with `malloc()`  */
     my_array_length = ini_array_get_length(
-                        dispatch->value,
-                        DELIMITER,
-                        dispatch->format
-                      );
+      dispatch->value,
+      DELIMITER,
+      dispatch->format
+    );
 
     my_array = (char **) malloc(my_array_length * sizeof(char *) +
                  dispatch->v_len + 1);
@@ -85,13 +90,15 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-  if (load_ini_path(
-    "../ini_files/typed_ini.conf",
-    INI_DEFAULT_FORMAT,
-    NULL,
-    my_ini_listener,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "../ini_files/typed_ini.conf",
+      INI_DEFAULT_FORMAT,
+      NULL,
+      my_ini_listener,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;

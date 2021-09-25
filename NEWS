@@ -2,6 +2,11 @@ News
 ====
 
 
+## 1.16.2
+
+* Issue [#16](https://github.com/madmurphy/libconfini/issues/16) has been fixed
+
+
 ## 1.16.1
 
 * A batch script for compiling **libconfini** under **Microsoft Windows** with

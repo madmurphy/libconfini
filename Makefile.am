@@ -172,8 +172,7 @@ MOSTLYCLEANFILES = \
 CLEANFILES = \
 	dev/tests/null-byte_injection/null-byte_injected.conf \
 	dev/tests/performance/big_file.ini \
-	dev/tests/performance/speedtest \
-	configure~
+	dev/tests/performance/speedtest
 
 # Shell expansion is supported here
 _bootstrapclean_dirs_ = \

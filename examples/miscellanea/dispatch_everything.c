@@ -19,7 +19,10 @@ struct my_struct {
 
 };
 
-static int print_ini_stats (IniStatistics * stats, void * user_data) {
+static int print_ini_stats (
+  IniStatistics * const stats,
+  void * const user_data
+) {
 
   struct my_struct * my_other = (struct my_struct *) user_data;
 
@@ -42,7 +45,10 @@ static int print_ini_stats (IniStatistics * stats, void * user_data) {
 
 }
 
-static int my_ini_listener (IniDispatch * dispatch, void * user_data) {
+static int my_ini_listener (
+  IniDispatch * const dispatch,
+  void * const user_data
+) {
 
   printf(
 
@@ -60,7 +66,7 @@ static int my_ini_listener (IniDispatch * dispatch, void * user_data) {
     dispatch->type,
     dispatch->data,
     dispatch->value,
-    *dispatch->append_to ? dispatch->append_to : "{root}",
+    *dispatch->append_to ? dispatch->append_to : "{top level}",
     dispatch->d_len,
     dispatch->v_len,
     dispatch->at_len
@@ -101,13 +107,15 @@ int main () {
   my_format.disabled_can_be_implicit = true;
 
   /*  Load the INI file  */
-  if (load_ini_path(
-    my_other.my_ini_file,
-    my_format,
-    print_ini_stats,
-    my_ini_listener,
-    &my_other
-  )) {
+  if (
+    load_ini_path(
+      my_other.my_ini_file,
+      my_format,
+      print_ini_stats,
+      my_ini_listener,
+      &my_other
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;

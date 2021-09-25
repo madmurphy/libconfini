@@ -2,6 +2,16 @@ Change Log
 ==========
 
 
+## 1.16.2 (2021-09-25)
+
+Changes:
+
+* Issue [#16](https://github.com/madmurphy/libconfini/issues/16) has been fixed
+* Code readability
+* Documentation
+* Examples
+
+
 ## 1.16.1 (2021-06-14)
 
 Changes:
@@ -151,8 +161,8 @@ Changes:
   source-image` and † `make authors-suitcase` targets, renamed † `make
   install-manifest` target to `make manifest`, created `make portable-builds`
   and `make oblivion-clean` targets, improved `install-data-hook` and all the
-  helper targets; `src/Makefile.am`: moved the `CFLAGS` automatically guessed by
-  `AC_PROG_CC_C99` to `AM_CFLAGS`)
+  helper targets; `src/Makefile.am`: moved the `CFLAGS` automatically guessed
+  by `AC_PROG_CC_C99` to `AM_CFLAGS`)
 * Added call to `strip.exe` to the `mgwmake.bat` script
 
 

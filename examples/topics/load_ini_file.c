@@ -3,7 +3,10 @@
 #include <stdio.h>
 #include <confini.h>
 
-static int my_callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   printf(
     "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
@@ -16,6 +19,7 @@ static int my_callback (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
+  /*  Use always `"rb"` with `load_ini_file()`!  */
   FILE * const ini_file = fopen("../ini_files/delivery.conf", "rb");
 
   if (ini_file == NULL) {
@@ -25,13 +29,15 @@ int main () {
 
   }
 
-  if (load_ini_file(
-    ini_file,
-    INI_DEFAULT_FORMAT,
-    NULL,
-    my_callback,
-    NULL
-  )) {
+  if (
+    load_ini_file(
+      ini_file,
+      INI_DEFAULT_FORMAT,
+      NULL,
+      my_callback,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;

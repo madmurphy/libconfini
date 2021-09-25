@@ -4,11 +4,11 @@
 #include <confini.h>
 
 static int my_array_memb_handler (
-  char * arr_member,
-  size_t memb_length,
-  size_t memb_num,
-  IniFormat format,
-  void * foreach_other
+  char * const arr_member,
+  const size_t memb_length,
+  const size_t memb_num,
+  const IniFormat format,
+  void * const foreach_other
 ) {
 
   printf("\"%s\"\n", arr_member);

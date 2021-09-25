@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv='content-type' content='text/html;charset=utf8'>
   <meta name='generator' content='Ronn-NG/v0.9.1 (http://github.com/apjanke/ronn-ng/tree/0.9.1)'>
-  <title>libconfini</title>
+  <title>libconfini(3)</title>
   <style type='text/css' media='all'>
   /* style: man */
   body#manpage {margin:0}
@@ -65,6 +65,7 @@
     <a href="#THE-INISTATISTICS-AND-INIDISPATCH-STRUCTURES">THE IniStatistics and IniDispatch structures</a>
     <a href="#RENDERING">RENDERING</a>
     <a href="#STRING-COMPARISONS">STRING COMPARISONS</a>
+    <a href="#ARRAYS">ARRAYS</a>
     <a href="#EDITING-THE-DISPATCHED-DATA">EDITING THE DISPATCHED DATA</a>
     <a href="#IMPLICIT-KEYS">IMPLICIT KEYS</a>
     <a href="#CODE-CONSIDERATIONS">CODE CONSIDERATIONS</a>
@@ -124,12 +125,12 @@ email = mario.rossi@example.com
 
 <h2 id="SUPPORTED-SYNTAXES">SUPPORTED SYNTAXES</h2>
 
-<p>During the years several interpretations of INI files have appeared. In some
-implementations the colon character (<code>:</code>) has been adopted as delimiter between
-keys and values instead of the classic equals sign (a typical example under
+<p>During the years several interpretations of INI files appeared. In some
+implementations the colon character (<code>:</code>) was adopted as delimiter between keys
+and values instead of the classic equals sign (a typical example under
 GNU/Linux is <code>/etc/nsswitch.conf</code>); in other implementations, under the
 influence of Unix standard configuration files, a sequence of one or more
-spaces (<code>/[ \t\v\f]+/</code> or <code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code>) has been used
+spaces (<code>/[ \t\v\f]+/</code> or <code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code>) was adopted
 instead (see for example <code>/etc/host.conf</code>).</p>
 
 <p>Equals sign used as delimiter between keys and values:</p>
@@ -156,12 +157,12 @@ home	Champ de Mars, 5 Avenue Anatole
 city	Paris
 </code></pre>
 
-<p><strong>libconfini</strong> has been born as a general INI parser for <strong>GNU</strong>, so the
-support of most part of INI dialects has been implemented within it.</p>
+<p><strong>libconfini</strong> was born as a general INI parser for <strong>GNU</strong>, so the support of
+most part of INI dialects has been implemented within it.</p>
 
-<p>Especially in <strong>Microsoft Windows</strong> a more radical syntax variation has been
-implemented: the use of semicolon, instead of new lines, as delimiter between
-nodes, as in the following example:</p>
+<p>Especially in <strong>Microsoft Windows</strong> a more radical syntax variation found its
+way into INI files: the use of semicolon, instead of new lines, as delimiter
+between nodes, as in the following example:</p>
 
 <pre><code class="language-{.ini}"># delivery.conf
 
@@ -457,7 +458,10 @@ INI file has been completely dispatched, non-zero otherwise.</p>
 #include &lt;stdio.h&gt;
 #include &lt;confini.h&gt;
 
-static int my_callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   printf(
     "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
@@ -470,6 +474,7 @@ static int my_callback (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
+  /*  Use always `"rb"` with `load_ini_file()`!  */
   FILE * const ini_file = fopen("../ini_files/delivery.conf", "rb");
 
   if (ini_file == NULL) {
@@ -479,13 +484,15 @@ int main () {
 
   }
 
-  if (load_ini_file(
-    ini_file,
-    INI_DEFAULT_FORMAT,
-    NULL,
-    my_callback,
-    NULL
-  )) {
+  if (
+    load_ini_file(
+      ini_file,
+      INI_DEFAULT_FORMAT,
+      NULL,
+      my_callback,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;
@@ -506,7 +513,10 @@ int main () {
 #include &lt;stdio.h&gt;
 #include &lt;confini.h&gt;
 
-static int my_callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   printf(
     "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
@@ -519,13 +529,15 @@ static int my_callback (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-  if (load_ini_path(
-    "../ini_files/delivery.conf",
-    INI_DEFAULT_FORMAT,
-    NULL,
-    my_callback,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "../ini_files/delivery.conf",
+      INI_DEFAULT_FORMAT,
+      NULL,
+      my_callback,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;
@@ -610,6 +622,23 @@ following function:</p>
 #include &lt;string.h&gt;
 #include &lt;confini.h&gt;
 
+/**
+
+  @brief    Parse a `const` string containing an INI file
+  @param    ini_buffer      The buffer containing the INI file to
+                            parse
+  @param    ini_length      The length of @p ini_buffer
+  @param    format          The format of the INI file
+  @param    f_init          The function that will be invoked before
+                            the first dispatch, or `NULL`
+
+  @param    f_foreach       The function that will be invoked for
+                            each dispatch, or `NULL`
+  @param    user_data       A custom argument, or `NULL`
+  @return   Zero for success, otherwise an error code (see `enum`
+            #ConfiniInterruptNo)
+
+**/
 int load_ini_buffer (
   const char * const ini_buffer,
   const size_t ini_length,
@@ -998,25 +1027,70 @@ sequence <code>/\\(?:\n\r?|\r\n?)/</code> is <em>not</em> considered as such in 
 since this is the only escape sequence automatically unescaped by
 <strong>libconfini</strong> before each dispatch.</p>
 
+<h2 id="ARRAYS">ARRAYS</h2>
+
+<p>It is possible with <strong>libconfini</strong> to parse INI strings as arrays. In order to
+avoid that any particular character be treated as a metacharacter throughout an
+entire configuration file, INI arrays do not have a fixed delimiter symbol
+specified in the INI format.</p>
+
+<p>Abstractly speaking, this means that array delimiters are not part of the INI
+syntax, but of the INI semantics instead. Concretely speaking, it means that
+developers have to provide a delimiter as soon as they decide to parse an INI
+string as an array.</p>
+
+<p>Out in the wild, the most widespread INI array delimiter is probably the space
+sequence (<code>INI_ANY_SPACE</code> &ndash; i.e. <code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code> or
+<code>/[ \t\v\f]+/</code>, depending on whether the format is multi-line or not). Another
+widespread delimiter is the comma (<code>','</code> or <code>INI_COMMA</code>). Besides these two,
+occasionally other characters can be found as array delimiters (<code>':'</code>, <code>'|'</code>,
+<code>';'</code>, ...).</p>
+
+<p>For iterating through an INI array using a delimiter <strong>libconfini</strong> provides
+the following tools:</p>
+
+<ul>
+  <li><code>ini_array_get_length()</code></li>
+  <li><code>ini_array_foreach()</code></li>
+  <li><code>ini_array_collapse()</code></li>
+  <li><code>ini_array_break()</code></li>
+  <li><code>ini_array_release()</code></li>
+  <li><code>ini_array_shift()</code></li>
+  <li><code>ini_array_split()</code></li>
+</ul>
+
+<p>None of the functions above actually ever allocates any array, as
+<strong>libconfini</strong> does not know what kind of data type an array should be composed
+of &ndash; the developer might be looking for an array of strings, or an array of
+integers, or anything else. These tools only provide safe mechanisms to iterate
+through, or tokenize, the members of INI arrays according to the format and the
+delimiter given &ndash; making sure for example that when the delimiter symbol is
+found nested within quotes it is treated as a normal character &ndash; but
+allocating memory is something that must be done manually.</p>
+
+<p>An example function that parses INI strings as newly allocated arrays of C
+strings is available under <code>examples/utilities/make_strarray.h</code>. If your
+program requires other data types (such as integers, booleans, etc.) you may
+adapt that example to your needs.</p>
+
 <h2 id="EDITING-THE-DISPATCHED-DATA">EDITING THE DISPATCHED DATA</h2>
 
-<p>The strings dispatched, as already said, must not be freed. <em>Nevertheless,
-before being copied or analyzed they can be edited, <strong>with some precautions</strong></em>:</p>
+<p>The strings dispatched, as already said, must not be freed. Nevertheless,
+<em>before being copied or analyzed they can be edited, <strong>with some precautions</strong></em>:</p>
 
 <ol>
   <li>Be sure that your edit remains within the buffer lengths given (see
 <code>IniDispatch::d_len</code> and <code>IniDispatch::v_len</code>).</li>
-  <li>If you want to edit the content of <code>IniDispatch::data</code> and this contains a
-section path, the <code>IniDispatch::append_to</code> properties of its children will
-either share this buffer or will concatenate it to another buffer. Hence, if
-you edit its content &ndash; and depending on how you edit it &ndash; you might no
-more be able to rely on the <code>IniDispatch::append_to</code> properties of this
-node's children. You would not make any damage, the loop will continue just
-fine: so if you think you are never going to use the property
-<code>IniDispatch::append_to</code>, just do it; alternatively, use <code>strndup()</code>. If
-instead <code>IniDispatch::data</code> contains a key name or a comment, it is granted
-that no other dispatch will share this buffer, so feel free to edit it
-before it gets lost.</li>
+  <li>Do not edit the <code>IniDispatch::data</code> field of a section: the
+<code>IniDispatch::append_to</code> properties of its children will either share this
+buffer or will concatenate it to another buffer. Thus, if you edit its
+content &ndash; and depending on how you edit it &ndash; you might be no more able to
+rely on the <code>IniDispatch::append_to</code> properties of this node's children. You
+would not make any damage, the loop will continue just fine: so if you think
+you are never going to use the property <code>IniDispatch::append_to</code>, just do
+it; alternatively, use <code>strndup()</code>. If instead <code>IniDispatch::data</code> contains
+a key name or a comment, it is granted that no other dispatch will share
+this buffer, so feel free to edit it before it gets lost.</li>
   <li>Regarding <code>IniDispatch::value</code>, if it does not represent an implicit value
 (see <strong>&sect; Implicit keys</strong>) or if <code>IniFormat::implicit_is_not_empty</code> is set to
 <code>false</code>, this buffer is never shared between dispatches, so feel free to
@@ -1054,7 +1128,10 @@ you are doing, do not edit <code>IniDispatch::dispatch_id</code>.</li>
 #include &lt;stdio.h&gt;
 #include &lt;confini.h&gt;
 
-static int ini_listener (IniDispatch * dispatch, void * v_null) {
+static int ini_listener (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   if (
     dispatch-&gt;type == INI_KEY || dispatch-&gt;type == INI_DISABLED_KEY
@@ -1078,13 +1155,15 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-  if (load_ini_path(
-    "../ini_files/self_explaining.conf",
-    INI_DEFAULT_FORMAT,
-    NULL,
-    ini_listener,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "../ini_files/self_explaining.conf",
+      INI_DEFAULT_FORMAT,
+      NULL,
+      ini_listener,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;
@@ -1227,7 +1306,10 @@ its <code>value</code> property with the global variable <code>INI_GLOBAL_IMPLIC
 #include &lt;stdio.h&gt;
 #include &lt;confini.h&gt;
 
-static int ini_listener (IniDispatch * dispatch, void * v_null) {
+static int ini_listener (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   if (dispatch-&gt;value == INI_GLOBAL_IMPLICIT_VALUE) {
 
@@ -1266,13 +1348,15 @@ int main () {
   my_format.implicit_is_not_empty = true;
   my_format.disabled_can_be_implicit = true;
 
-  if (load_ini_path(
-    "../ini_files/unix-like.conf",
-    my_format,
-    NULL,
-    ini_listener,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "../ini_files/unix-like.conf",
+      my_format,
+      NULL,
+      ini_listener,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;
@@ -1322,7 +1406,10 @@ due to a parsing error.</p>
 #include &lt;stdio.h&gt;
 #include &lt;confini.h&gt;
 
-static int passfinder (IniDispatch * disp, void * v_membid) {
+static int passfinder (
+  IniDispatch * const disp,
+  void * const v_membid
+) {
 
   /*  Search for `password = "hello world"` in the INI file  */
   if (
@@ -1550,7 +1637,7 @@ return 0;
 <h3 id="STORING-THE-DISPATCHED-DATA">STORING THE DISPATCHED DATA</h3>
 
 <p>In order to be as flexible as possible, <strong>libconfini</strong> does not store the
-dispatched data, nor indicizes them. This gives the developer the power to deal
+dispatched data, nor indicizes them. This gives developers the power to deal
 with them in many different ways.</p>
 
 <p>For small INI files a normal if/else chain, using <code>ini_array_match()</code> for
@@ -1732,14 +1819,13 @@ of the ASCII range always as case-sensitive. For this reason, <strong>libconfini
 (and probably any senseful INI parser) will never perform case folding of
 Unicode characters out of the ASCII range within key and section names.</p>
 
-<p>It must be said however that most Unicode characters do not possess a lower and
-upper case, and most characters outside of the ASCII range could theoretically
-appear without problems in key and section names also in case-insensitive INI
-files (think of the character <code>&sect;</code> for example). And, as for case-sensitive INI
-files, no Unicode character would ever represent a problem. Nonetheless, it is
-still generally more acceptable to use ASCII only within key and section names
- &ndash; and possibly, if needed, non-ASCII Unicode characters within values and
-comments.</p>
+<p>It must be said that most Unicode characters do not possess a lower and upper
+case, and most characters outside of the ASCII range could theoretically appear
+without problems in key and section names also in case-insensitive INI files
+(think of the character <code>&sect;</code> for example). And, as for case-sensitive INI files,
+no Unicode character would ever represent a problem. Nonetheless, it is
+generally more acceptable to use ASCII only within key and section names &ndash; and
+possibly, if needed, non-ASCII Unicode characters within values and comments.</p>
 
 <p>That said, <strong>libconfini</strong> deals perfectly fine with UTF-8 (but is always
 case-sensitive outside of the ASCII range), so use the latter as you feel
@@ -1781,7 +1867,7 @@ character. For example,</p>
 <pre><code class="language-{.ini}">foo = "bar
 </code></pre>
 
-<p>will always determine the same behavior as if it were</p>
+<p>will always determine the same behavior as if it had been</p>
 
 <pre><code class="language-{.ini}">foo = "bar"
 </code></pre>
@@ -1861,7 +1947,7 @@ int main () {
 }
 </code></pre>
 
-<p>By changing the format of the INI file on the code above one may obtain
+<p>By changing the format of the INI file on the code above one might obtain
 different results. In particular, switching disabled entry recognition off &ndash; 
 by setting <code>IniFormat::semicolon_marker</code> and <code>IniFormat::hash_marker</code> to
 <code>INI_ONLY_COMMENT</code> or <code>INI_IGNORE</code> &ndash; and making the format non-multi-line &ndash; 
@@ -1916,7 +2002,7 @@ as normal comments.</p>
 static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
   printf(
-    "#%zu - Type: %u; Data: \"%s\"; Value: \"%s\"\n",
+    "Node #%zu - Type: %u; Data: \"%s\"; Value: \"%s\"\n",
     dispatch-&gt;dispatch_id,
     dispatch-&gt;type,
     dispatch-&gt;data,
@@ -1933,8 +2019,8 @@ int main () {
     ((IniFormat) { \
       .delimiter_symbol = INI_EQUALS, \
       .case_sensitive = false, \
-      .semicolon_marker = INI_IGNORE, \
-      .hash_marker = INI_IS_NOT_A_MARKER, \
+      .semicolon_marker = INI_DISABLED_OR_COMMENT, \
+      .hash_marker = INI_DISABLED_OR_COMMENT, \
       .multiline_nodes = INI_NO_MULTILINE, \
       .section_paths = INI_ABSOLUTE_ONLY, \
       .no_single_quotes = false, \
@@ -1971,10 +2057,11 @@ int main () {
 
 <pre><code>:: Content of "ambiguous.conf" ::
 
-#0 - Type: 2; Data: "# INI KEY/VALUE DELIMITER: `"; Value: "`"
-#1 - Type: 3; Data: "some_section"; Value: ""
-#2 - Type: 2; Data: "hello"; Value: "world"
-#3 - Type: 2; Data: "##now"; Value: "Sunday April 3rd, 2016"
+Node #0 - Type: 6; Data: "INI KEY/VALUE DELIMITER: `"; Value: "`"
+Node #1 - Type: 3; Data: "some_section"; Value: ""
+Node #2 - Type: 2; Data: "hello"; Value: "world"
+Node #3 - Type: 6; Data: "foo"; Value: "bar"
+Node #4 - Type: 4; Data: "now=Sunday April 3rd, 2016"; Value: ""
 </code></pre>
 
 <p>As you can see, all comments but <code>now=Sunday April 3rd, 2016</code> would be parsed
@@ -2007,11 +2094,11 @@ hello = world
 
 <pre><code>:: Content of "ambiguous.conf" ::
 
-#0 - Type: 4; Data: " INI KEY/VALUE DELIMITER: `=`"; Value: ""
-#1 - Type: 3; Data: "some_section"; Value: ""
-#2 - Type: 2; Data: "hello"; Value: "world"
-#3 - Type: 6; Data: "foo"; Value: "bar"
-#4 - Type: 4; Data: "now=Sunday April 3rd, 2016"; Value: ""
+Node #0 - Type: 4; Data: " INI KEY/VALUE DELIMITER: `=`"; Value: ""
+Node #1 - Type: 3; Data: "some_section"; Value: ""
+Node #2 - Type: 2; Data: "hello"; Value: "world"
+Node #3 - Type: 6; Data: "foo"; Value: "bar"
+Node #4 - Type: 4; Data: "now=Sunday April 3rd, 2016"; Value: ""
 </code></pre>
 
 <p><strong>2. Intervene on the format.</strong> There are cases where the INI file is
@@ -2066,7 +2153,7 @@ attempt fails, the block will be dispatched as a normal comment.</p>
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'>Stefano Gioffr&eacute;</li>
-    <li class='tc'>June 2021</li>
+    <li class='tc'>September 2021</li>
     <li class='tr'>libconfini(3)</li>
   </ol>
 

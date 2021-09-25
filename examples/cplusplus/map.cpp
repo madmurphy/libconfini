@@ -234,7 +234,12 @@ int IniMap::_push_dispatch_ (IniDispatch * const disp, void * const v_dictionary
 int main () {
 
     IniMap myINIFile;
+
+    /*  Parse the INI file  */
+
     myINIFile.mapPath("../ini_files/typed_ini.conf");
+
+    /*  Print its typed content  */
 
     cout << "my_section.my_string -> " << myINIFile.getString("my_section.my_string") << "\n";
     cout << "my_section.my_number -> " << ini_get_int(myINIFile.getString("my_section.my_number").c_str()) << "\n";

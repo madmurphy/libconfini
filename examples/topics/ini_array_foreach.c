@@ -4,12 +4,12 @@
 #include <confini.h>
 
 static int my_array_fragm_handler (
-  const char * ini_array,
-  size_t fragm_offset,
-  size_t fragm_length,
-  size_t fragm_num,
-  IniFormat format,
-  void * user_data
+  const char * const ini_array,
+  const size_t fragm_offset,
+  const size_t fragm_length,
+  const size_t fragm_num,
+  const IniFormat format,
+  void * const user_data
 ) {
 
   printf("\"%.*s\"\n", (unsigned int) fragm_length, ini_array + fragm_offset);

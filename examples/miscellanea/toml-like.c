@@ -12,7 +12,7 @@
 #include <confini.h>
 
 #define CLEAN_MALLOC(DEST, SIZE, RETVAL) \
-	if (DEST) { free(DEST); } \
+	free(DEST); \
 	DEST = malloc(SIZE); \
 	if (!DEST) { \
 		fprintf(stderr, "malloc() failed\n"); \
@@ -24,7 +24,7 @@ struct Server_T {
 	char * dc;	
 };
 
-/*  This is the structure that maps our INI file  */
+/*  This is the structure that will map our INI file  */
 struct Configs_T {
 	char * title;
 	struct Owner_T {
@@ -59,7 +59,7 @@ struct Configs_T {
 };
 
 /*  If `dest_str` is non-`NULL` free it, then `strdup(disp->value)` into it  */
-int set_new_string (char ** dest_str, IniDispatch * const disp) {
+int set_new_string (char ** const dest_str, IniDispatch * const disp) {
 	disp->d_len = ini_string_parse(disp->value, disp->format);
 	CLEAN_MALLOC(*dest_str, disp->d_len, 1);
 	memcpy(*dest_str, disp->value, disp->d_len + 1);
@@ -93,7 +93,7 @@ int set_new_intarray (int ** const dest_arr, size_t * const dest_len, const IniD
 	return 0;
 }
 
-static int populate_config (IniDispatch * disp, void * v_confs) {
+static int populate_config (IniDispatch * const disp, void * const v_confs) {
 	#define confs ((struct Configs_T *) v_confs)
 	if (disp->type == INI_KEY) {
 		if (disp->at_len == 0) {
@@ -213,19 +213,18 @@ int main () {
 	PRINT_CONF_ARRAY_WITHLABEL(clients.data_num, clients.data[1], "%d");
 	PRINT_CONF_ARRAY(clients.hosts, "%s");
 	/*  Free the allocated memory  */
-	#define FREE_NONNULL(PTR) if (PTR) { free(PTR); }
-	FREE_NONNULL(confs->title);
-	FREE_NONNULL(confs->owner.name);
-	FREE_NONNULL(confs->owner.dob);
-	FREE_NONNULL(confs->database.server);
-	FREE_NONNULL(confs->database.ports);
-	FREE_NONNULL(confs->servers.alpha.ip);
-	FREE_NONNULL(confs->servers.alpha.dc);
-	FREE_NONNULL(confs->servers.beta.ip);
-	FREE_NONNULL(confs->servers.beta.dc);
-	FREE_NONNULL(confs->clients.data_str);
-	FREE_NONNULL(confs->clients.data_num);
-	FREE_NONNULL(confs->clients.hosts);
+	free(confs->title);
+	free(confs->owner.name);
+	free(confs->owner.dob);
+	free(confs->database.server);
+	free(confs->database.ports);
+	free(confs->servers.alpha.ip);
+	free(confs->servers.alpha.dc);
+	free(confs->servers.beta.ip);
+	free(confs->servers.beta.dc);
+	free(confs->clients.data_str);
+	free(confs->clients.data_num);
+	free(confs->clients.hosts);
 	free(confs);
 	return 0;
 }

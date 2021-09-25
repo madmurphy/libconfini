@@ -6,15 +6,15 @@
     @brief      libconfini header
     @author     Stefano Gioffr&eacute;
     @copyright  GNU General Public License, version 3 or any later version
-    @version    1.16.1
+    @version    1.16.2
     @date       2016-2021
     @see        https://madmurphy.github.io/libconfini
 
 **/
 
 
-#ifndef _LIBCONFINI_HEADER_
-#define _LIBCONFINI_HEADER_
+#ifndef __CONFINI_H__
+#define __CONFINI_H__
 
 
 
@@ -98,7 +98,6 @@ extern "C" {
 #define INIFORMAT_HAS_NO_ESC(FORMAT) \
     (FORMAT.multiline_nodes == INI_NO_MULTILINE && \
     FORMAT.no_double_quotes && FORMAT.no_single_quotes)
-
 
 
 /**
@@ -575,7 +574,7 @@ extern size_t INI_GLOBAL_IMPLICIT_V_LEN;
 
 
 
-/*  END OF `_LIBCONFINI_HEADER_`  */
+/*  END OF `__CONFINI_H__`  */
 
 
 #ifdef __cplusplus

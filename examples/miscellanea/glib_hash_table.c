@@ -28,14 +28,19 @@ may change it with any other character (except the dot itself).
 */
 #define DOT_REPLACEMENT '-'
 
+
 static inline void string_tolower (char * const str) {
   for (register char * chrptr = str; *chrptr; chrptr++) {
     *chrptr = *chrptr > 0x40 && *chrptr < 0x5b ? *chrptr | 0x60 : *chrptr;
   }
 }
 
+
 /*  Add each dispatch to the hash table (callback function)  */
-static int populate_hash_table (IniDispatch * disp, void * v_hash_table) {
+static int populate_hash_table (
+  IniDispatch * const disp,
+  void * const v_hash_table
+) {
   #define _MALLOC_CHECK_(PTR) \
     if (PTR == NULL) { fprintf(stderr, "malloc error\n"); return 1; }
   if (disp->type != INI_KEY) {

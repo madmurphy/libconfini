@@ -3,7 +3,10 @@
 #include <stdio.h>
 #include <confini.h>
 
-static int passfinder (IniDispatch * disp, void * v_membid) {
+static int passfinder (
+  IniDispatch * const disp,
+  void * const v_membid
+) {
 
   /*  Search for `password = "hello world"` in the INI file  */
   if (

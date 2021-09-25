@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# prepare.sh
+# libconfini/dev/tests/performance/prepare.sh
 #
 
 _SCRIPTPATH="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"

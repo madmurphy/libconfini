@@ -35,7 +35,7 @@ struct ini_store {
   int my_section_my_number;
   bool my_section_my_boolean;
   bool my_section_my_implicit_bool;
-  char ** my_section_my_array;
+  char * const * my_section_my_array;
   size_t my_section_my_arr_len;
 };
 
@@ -51,7 +51,7 @@ static int my_init (IniStatistics * statistics, void * v_store) {
   return 0;
 }
 
-static int my_handler (IniDispatch * dsp, void * v_store) {
+static int my_handler (IniDispatch * const dsp, void * const v_store) {
   #define store ((struct ini_store *) v_store)
   #define THEYMATCH(SSTR, ISTR) \
     ini_string_match_si(SSTR, ISTR, dsp->format)
@@ -59,9 +59,7 @@ static int my_handler (IniDispatch * dsp, void * v_store) {
     if (THEYMATCH("my_string", dsp->data)) {
       dsp->v_len = ini_string_parse(dsp->value, dsp->format);
       /*  Free previous duplicate key (if any)  */
-      if (store->my_section_my_string) {
-        free(store->my_section_my_string);
-      }
+      free(store->my_section_my_string);
       /*  Allocate the new string  */
       store->my_section_my_string = strndup(dsp->value, dsp->v_len);
       if (!store->my_section_my_string) {
@@ -89,9 +87,7 @@ static int my_handler (IniDispatch * dsp, void * v_store) {
         dsp->format
       );
       /*  Free previous duplicate key (if any)  */
-      if (store->my_section_my_array) {
-        free(store->my_section_my_array);
-      }
+      free((void *) store->my_section_my_array);
       /*  Allocate a new array of strings  */
       /*  Function in examples/utilities/make_strarray.h  */
       store->my_section_my_array = make_strarray(
@@ -150,12 +146,9 @@ int main () {
     return 1;
   }
   print_stored_data(&my_store);
-  if (my_store.my_section_my_string) {
-    free(my_store.my_section_my_string);
-  }
-  if (my_store.my_section_my_arr_len) {
-    free(my_store.my_section_my_array);
-  }
+  free(my_store.my_section_my_string);
+  free((void *) my_store.my_section_my_array);
+
   return 0;
 }
 

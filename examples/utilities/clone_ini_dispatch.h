@@ -42,20 +42,41 @@ IniDispatch * clone_ini_dispatch (
   char ** const nonconst_parent
 ) {
 
-  IniDispatch * dest = malloc(sizeof(IniDispatch) + source->d_len + source->v_len + source->at_len + 3);
+  IniDispatch * dest = malloc(sizeof(IniDispatch) + source->d_len +
+    source->v_len + source->at_len + 3);
 
   if (dest) {
 
     char * _append_to_;
+
     memcpy(dest, source, sizeof(IniDispatch));
-    _append_to_ = memcpy((char *) dest + sizeof(IniDispatch), source->append_to, source->at_len + 1);
+
+    _append_to_ = memcpy(
+      (char *) dest + sizeof(IniDispatch),
+      source->append_to,
+      source->at_len + 1
+    );
+
     dest->append_to = _append_to_;
-    dest->data = memcpy(_append_to_ + dest->at_len + 1, source->data, source->d_len + 1);
-    dest->value = dest->data ? memcpy(dest->data + dest->d_len + 1, source->value, source->v_len) : dest->data + dest->d_len + 1;
+
+    dest->data = memcpy(
+      _append_to_ + dest->at_len + 1,
+      source->data,
+      source->d_len + 1
+    );
+
+    dest->value =
+      dest->data ?
+        memcpy(dest->data + dest->d_len + 1, source->value, source->v_len)
+      :
+        dest->data + dest->d_len + 1;
+
     dest->value[dest->v_len] = '\0';
 
     if (nonconst_parent) {
+
       *nonconst_parent = _append_to_;
+
     }
 
   }

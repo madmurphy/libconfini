@@ -27,7 +27,7 @@
 #endif
 #include TESTS_CONFINI_HEADER
 
-char ini_cache[] = "testkey=testvalue";
+static char ini_cache[] = "testkey=testvalue";
 
 static int test_callback (IniDispatch * dispatch, void * v_null) {
 

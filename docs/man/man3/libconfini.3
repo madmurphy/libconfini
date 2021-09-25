@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "LIBCONFINI" "3" "June 2021" "Stefano Gioffré" "Library Functions Manual"
+.TH "LIBCONFINI" "3" "September 2021" "Stefano Gioffré" "Library Functions Manual"
 .SH "NAME"
 \fBlibconfini\fR
 .SH "DESCRIPTION"
@@ -30,7 +30,7 @@ email = mario\.rossi@example\.com
 .fi
 .IP "" 0
 .SH "SUPPORTED SYNTAXES"
-During the years several interpretations of INI files have appeared\. In some implementations the colon character (\fB:\fR) has been adopted as delimiter between keys and values instead of the classic equals sign (a typical example under GNU/Linux is \fB/etc/nsswitch\.conf\fR); in other implementations, under the influence of Unix standard configuration files, a sequence of one or more spaces (\fB/[ \et\ev\ef]+/\fR or \fB/(?:\e\e(?:\en\er?|\er\en?)|[\et \ev\ef])+/\fR) has been used instead (see for example \fB/etc/host\.conf\fR)\.
+During the years several interpretations of INI files appeared\. In some implementations the colon character (\fB:\fR) was adopted as delimiter between keys and values instead of the classic equals sign (a typical example under GNU/Linux is \fB/etc/nsswitch\.conf\fR); in other implementations, under the influence of Unix standard configuration files, a sequence of one or more spaces (\fB/[ \et\ev\ef]+/\fR or \fB/(?:\e\e(?:\en\er?|\er\en?)|[\et \ev\ef])+/\fR) was adopted instead (see for example \fB/etc/host\.conf\fR)\.
 .P
 Equals sign used as delimiter between keys and values:
 .IP "" 4
@@ -62,9 +62,9 @@ city	Paris
 .fi
 .IP "" 0
 .P
-\fBlibconfini\fR has been born as a general INI parser for \fBGNU\fR, so the support of most part of INI dialects has been implemented within it\.
+\fBlibconfini\fR was born as a general INI parser for \fBGNU\fR, so the support of most part of INI dialects has been implemented within it\.
 .P
-Especially in \fBMicrosoft Windows\fR a more radical syntax variation has been implemented: the use of semicolon, instead of new lines, as delimiter between nodes, as in the following example:
+Especially in \fBMicrosoft Windows\fR a more radical syntax variation found its way into INI files: the use of semicolon, instead of new lines, as delimiter between nodes, as in the following example:
 .IP "" 4
 .nf
 # delivery\.conf
@@ -314,7 +314,10 @@ Both functions \fBload_ini_file()\fR and \fBload_ini_path()\fR will return zero 
 #include <stdio\.h>
 #include <confini\.h>
 
-static int my_callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   printf(
     "DATA: %s\enVALUE: %s\enNODE TYPE: %u\en\en",
@@ -327,6 +330,7 @@ static int my_callback (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
+  /*  Use always `"rb"` with `load_ini_file()`!  */
   FILE * const ini_file = fopen("\.\./ini_files/delivery\.conf", "rb");
 
   if (ini_file == NULL) {
@@ -336,13 +340,15 @@ int main () {
 
   }
 
-  if (load_ini_file(
-    ini_file,
-    INI_DEFAULT_FORMAT,
-    NULL,
-    my_callback,
-    NULL
-  )) {
+  if (
+    load_ini_file(
+      ini_file,
+      INI_DEFAULT_FORMAT,
+      NULL,
+      my_callback,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :\-(\en");
     return 1;
@@ -365,7 +371,10 @@ int main () {
 #include <stdio\.h>
 #include <confini\.h>
 
-static int my_callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   printf(
     "DATA: %s\enVALUE: %s\enNODE TYPE: %u\en\en",
@@ -378,13 +387,15 @@ static int my_callback (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-  if (load_ini_path(
-    "\.\./ini_files/delivery\.conf",
-    INI_DEFAULT_FORMAT,
-    NULL,
-    my_callback,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "\.\./ini_files/delivery\.conf",
+      INI_DEFAULT_FORMAT,
+      NULL,
+      my_callback,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :\-(\en");
     return 1;
@@ -434,6 +445,23 @@ If you want to automatize the process of making a copy of a read\-only buffer, s
 #include <string\.h>
 #include <confini\.h>
 
+/**
+
+  @brief    Parse a `const` string containing an INI file
+  @param    ini_buffer      The buffer containing the INI file to
+                            parse
+  @param    ini_length      The length of @p ini_buffer
+  @param    format          The format of the INI file
+  @param    f_init          The function that will be invoked before
+                            the first dispatch, or `NULL`
+
+  @param    f_foreach       The function that will be invoked for
+                            each dispatch, or `NULL`
+  @param    user_data       A custom argument, or `NULL`
+  @return   Zero for success, otherwise an error code (see `enum`
+            #ConfiniInterruptNo)
+
+**/
 int load_ini_buffer (
   const char * const ini_buffer,
   const size_t ini_length,
@@ -770,12 +798,39 @@ static int my_callback (IniDispatch * dsp, void * v_my_data) {
 The four functions \fBini_string_match_ss()\fR, \fBini_string_match_si()\fR, \fBini_string_match_ii()\fR, \fBini_array_match()\fR perform case\-sensitive or case\-insensitive comparisons depending on the format given\. UTF\-8 codepoints out of the ASCII range are always compared case\-sensitive\.
 .P
 Note that within INI strings empty quotes and spaces out of quotes are always collapsed during comparisons\. Furthermore, remember that the multi\-line escape sequence \fB/\e\e(?:\en\er?|\er\en?)/\fR is \fInot\fR considered as such in INI strings, since this is the only escape sequence automatically unescaped by \fBlibconfini\fR before each dispatch\.
+.SH "ARRAYS"
+It is possible with \fBlibconfini\fR to parse INI strings as arrays\. In order to avoid that any particular character be treated as a metacharacter throughout an entire configuration file, INI arrays do not have a fixed delimiter symbol specified in the INI format\.
+.P
+Abstractly speaking, this means that array delimiters are not part of the INI syntax, but of the INI semantics instead\. Concretely speaking, it means that developers have to provide a delimiter as soon as they decide to parse an INI string as an array\.
+.P
+Out in the wild, the most widespread INI array delimiter is probably the space sequence (\fBINI_ANY_SPACE\fR – i\.e\. \fB/(?:\e\e(?:\en\er?|\er\en?)|[\et \ev\ef])+/\fR or \fB/[ \et\ev\ef]+/\fR, depending on whether the format is multi\-line or not)\. Another widespread delimiter is the comma (\fB\',\'\fR or \fBINI_COMMA\fR)\. Besides these two, occasionally other characters can be found as array delimiters (\fB\':\'\fR, \fB\'|\'\fR, \fB\';\'\fR, \|\.\|\.\|\.)\.
+.P
+For iterating through an INI array using a delimiter \fBlibconfini\fR provides the following tools:
+.IP "\[ci]" 4
+\fBini_array_get_length()\fR
+.IP "\[ci]" 4
+\fBini_array_foreach()\fR
+.IP "\[ci]" 4
+\fBini_array_collapse()\fR
+.IP "\[ci]" 4
+\fBini_array_break()\fR
+.IP "\[ci]" 4
+\fBini_array_release()\fR
+.IP "\[ci]" 4
+\fBini_array_shift()\fR
+.IP "\[ci]" 4
+\fBini_array_split()\fR
+.IP "" 0
+.P
+None of the functions above actually ever allocates any array, as \fBlibconfini\fR does not know what kind of data type an array should be composed of – the developer might be looking for an array of strings, or an array of integers, or anything else\. These tools only provide safe mechanisms to iterate through, or tokenize, the members of INI arrays according to the format and the delimiter given – making sure for example that when the delimiter symbol is found nested within quotes it is treated as a normal character – but allocating memory is something that must be done manually\.
+.P
+An example function that parses INI strings as newly allocated arrays of C strings is available under \fBexamples/utilities/make_strarray\.h\fR\. If your program requires other data types (such as integers, booleans, etc\.) you may adapt that example to your needs\.
 .SH "EDITING THE DISPATCHED DATA"
-The strings dispatched, as already said, must not be freed\. \fINevertheless, before being copied or analyzed they can be edited, \fBwith some precautions\fR\fR:
+The strings dispatched, as already said, must not be freed\. Nevertheless, \fIbefore being copied or analyzed they can be edited, \fBwith some precautions\fR\fR:
 .IP "1." 4
 Be sure that your edit remains within the buffer lengths given (see \fBIniDispatch::d_len\fR and \fBIniDispatch::v_len\fR)\.
 .IP "2." 4
-If you want to edit the content of \fBIniDispatch::data\fR and this contains a section path, the \fBIniDispatch::append_to\fR properties of its children will either share this buffer or will concatenate it to another buffer\. Hence, if you edit its content – and depending on how you edit it – you might no more be able to rely on the \fBIniDispatch::append_to\fR properties of this node\'s children\. You would not make any damage, the loop will continue just fine: so if you think you are never going to use the property \fBIniDispatch::append_to\fR, just do it; alternatively, use \fBstrndup()\fR\. If instead \fBIniDispatch::data\fR contains a key name or a comment, it is granted that no other dispatch will share this buffer, so feel free to edit it before it gets lost\.
+Do not edit the \fBIniDispatch::data\fR field of a section: the \fBIniDispatch::append_to\fR properties of its children will either share this buffer or will concatenate it to another buffer\. Thus, if you edit its content – and depending on how you edit it – you might be no more able to rely on the \fBIniDispatch::append_to\fR properties of this node\'s children\. You would not make any damage, the loop will continue just fine: so if you think you are never going to use the property \fBIniDispatch::append_to\fR, just do it; alternatively, use \fBstrndup()\fR\. If instead \fBIniDispatch::data\fR contains a key name or a comment, it is granted that no other dispatch will share this buffer, so feel free to edit it before it gets lost\.
 .IP "3." 4
 Regarding \fBIniDispatch::value\fR, if it does not represent an implicit value (see \fB\(sc Implicit keys\fR) or if \fBIniFormat::implicit_is_not_empty\fR is set to \fBfalse\fR, this buffer is never shared between dispatches, so feel free to edit it\.
 .IP "4." 4
@@ -794,7 +849,10 @@ Typical peaceful edits are the ones obtained by calling the functions \fBini_arr
 #include <stdio\.h>
 #include <confini\.h>
 
-static int ini_listener (IniDispatch * dispatch, void * v_null) {
+static int ini_listener (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   if (
     dispatch\->type == INI_KEY || dispatch\->type == INI_DISABLED_KEY
@@ -818,13 +876,15 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-  if (load_ini_path(
-    "\.\./ini_files/self_explaining\.conf",
-    INI_DEFAULT_FORMAT,
-    NULL,
-    ini_listener,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "\.\./ini_files/self_explaining\.conf",
+      INI_DEFAULT_FORMAT,
+      NULL,
+      ini_listener,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :\-(\en");
     return 1;
@@ -933,7 +993,10 @@ After having set the value to be assigned to implicit key elements, and having e
 #include <stdio\.h>
 #include <confini\.h>
 
-static int ini_listener (IniDispatch * dispatch, void * v_null) {
+static int ini_listener (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   if (dispatch\->value == INI_GLOBAL_IMPLICIT_VALUE) {
 
@@ -972,13 +1035,15 @@ int main () {
   my_format\.implicit_is_not_empty = true;
   my_format\.disabled_can_be_implicit = true;
 
-  if (load_ini_path(
-    "\.\./ini_files/unix\-like\.conf",
-    my_format,
-    NULL,
-    ini_listener,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "\.\./ini_files/unix\-like\.conf",
+      my_format,
+      NULL,
+      ini_listener,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :\-(\en");
     return 1;
@@ -1013,7 +1078,10 @@ For instance, in the following example the \fBf_foreach()\fR listener returns a 
 #include <stdio\.h>
 #include <confini\.h>
 
-static int passfinder (IniDispatch * disp, void * v_membid) {
+static int passfinder (
+  IniDispatch * const disp,
+  void * const v_membid
+) {
 
   /*  Search for `password = "hello world"` in the INI file  */
   if (
@@ -1220,7 +1288,7 @@ return 0;
 .fi
 .IP "" 0
 .SS "STORING THE DISPATCHED DATA"
-In order to be as flexible as possible, \fBlibconfini\fR does not store the dispatched data, nor indicizes them\. This gives the developer the power to deal with them in many different ways\.
+In order to be as flexible as possible, \fBlibconfini\fR does not store the dispatched data, nor indicizes them\. This gives developers the power to deal with them in many different ways\.
 .P
 For small INI files a normal if/else chain, using \fBini_array_match()\fR for comparing section paths and \fBini_string_match_si()\fR/\fBini_string_match_ii()\fR for comparing key names, usually represents the most practical way to obtain the information required from an INI file\. Sometimes however, especially in case of sizeable INI files, the most efficient solution would be to store the parsed data in a hash table before trying to access it\.
 .P
@@ -1344,7 +1412,7 @@ Comparing an ASCII upper case letter to an ASCII lower case letter is an invaria
 .P
 Key and section names of an INI file however cannot depend on the locale of the machine, since they must be reliably searched for independently of where a machine is located\. Imagine for example a key named “INI\(rs and imagine that Unicode case folding were performed on key names during string comparisons\. If you lived in Europe you could look up for such key using its lower case “ini\(rs, while if you lived in Turkey you would have to use the lower case “ını\(rs to find it\. So the only solution in this context is to consider Unicode characters out of the ASCII range always as case\-sensitive\. For this reason, \fBlibconfini\fR (and probably any senseful INI parser) will never perform case folding of Unicode characters out of the ASCII range within key and section names\.
 .P
-It must be said however that most Unicode characters do not possess a lower and upper case, and most characters outside of the ASCII range could theoretically appear without problems in key and section names also in case\-insensitive INI files (think of the character \fB\(sc\fR for example)\. And, as for case\-sensitive INI files, no Unicode character would ever represent a problem\. Nonetheless, it is still generally more acceptable to use ASCII only within key and section names – and possibly, if needed, non\-ASCII Unicode characters within values and comments\.
+It must be said that most Unicode characters do not possess a lower and upper case, and most characters outside of the ASCII range could theoretically appear without problems in key and section names also in case\-insensitive INI files (think of the character \fB\(sc\fR for example)\. And, as for case\-sensitive INI files, no Unicode character would ever represent a problem\. Nonetheless, it is generally more acceptable to use ASCII only within key and section names – and possibly, if needed, non\-ASCII Unicode characters within values and comments\.
 .P
 That said, \fBlibconfini\fR deals perfectly fine with UTF\-8 (but is always case\-sensitive outside of the ASCII range), so use the latter as you feel appropriate\.
 .SS "THREAD SAFETY"
@@ -1363,7 +1431,7 @@ foo = "bar
 .fi
 .IP "" 0
 .P
-will always determine the same behavior as if it were
+will always determine the same behavior as if it had been
 .IP "" 4
 .nf
 foo = "bar"
@@ -1483,7 +1551,7 @@ If we tried to parse it according to the format used below
 static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
   printf(
-    "#%zu \- Type: %u; Data: \e"%s\e"; Value: \e"%s\e"\en",
+    "Node #%zu \- Type: %u; Data: \e"%s\e"; Value: \e"%s\e"\en",
     dispatch\->dispatch_id,
     dispatch\->type,
     dispatch\->data,
@@ -1500,8 +1568,8 @@ int main () {
     ((IniFormat) { \e
       \.delimiter_symbol = INI_EQUALS, \e
       \.case_sensitive = false, \e
-      \.semicolon_marker = INI_IGNORE, \e
-      \.hash_marker = INI_IS_NOT_A_MARKER, \e
+      \.semicolon_marker = INI_DISABLED_OR_COMMENT, \e
+      \.hash_marker = INI_DISABLED_OR_COMMENT, \e
       \.multiline_nodes = INI_NO_MULTILINE, \e
       \.section_paths = INI_ABSOLUTE_ONLY, \e
       \.no_single_quotes = false, \e
@@ -1540,10 +1608,11 @@ we would obtain the following result:
 .nf
 :: Content of "ambiguous\.conf" ::
 
-#0 \- Type: 2; Data: "# INI KEY/VALUE DELIMITER: `"; Value: "`"
-#1 \- Type: 3; Data: "some_section"; Value: ""
-#2 \- Type: 2; Data: "hello"; Value: "world"
-#3 \- Type: 2; Data: "##now"; Value: "Sunday April 3rd, 2016"
+Node #0 \- Type: 6; Data: "INI KEY/VALUE DELIMITER: `"; Value: "`"
+Node #1 \- Type: 3; Data: "some_section"; Value: ""
+Node #2 \- Type: 2; Data: "hello"; Value: "world"
+Node #3 \- Type: 6; Data: "foo"; Value: "bar"
+Node #4 \- Type: 4; Data: "now=Sunday April 3rd, 2016"; Value: ""
 .fi
 .IP "" 0
 .P
@@ -1571,11 +1640,11 @@ we obtain the wanted result:
 .nf
 :: Content of "ambiguous\.conf" ::
 
-#0 \- Type: 4; Data: " INI KEY/VALUE DELIMITER: `=`"; Value: ""
-#1 \- Type: 3; Data: "some_section"; Value: ""
-#2 \- Type: 2; Data: "hello"; Value: "world"
-#3 \- Type: 6; Data: "foo"; Value: "bar"
-#4 \- Type: 4; Data: "now=Sunday April 3rd, 2016"; Value: ""
+Node #0 \- Type: 4; Data: " INI KEY/VALUE DELIMITER: `=`"; Value: ""
+Node #1 \- Type: 3; Data: "some_section"; Value: ""
+Node #2 \- Type: 2; Data: "hello"; Value: "world"
+Node #3 \- Type: 6; Data: "foo"; Value: "bar"
+Node #4 \- Type: 4; Data: "now=Sunday April 3rd, 2016"; Value: ""
 .fi
 .IP "" 0
 .P

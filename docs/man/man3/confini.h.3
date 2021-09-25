@@ -1,4 +1,4 @@
-.TH "confini.h" 3 "Mon Jun 14 2021" "libconfini" \" -*- nroff -*-
+.TH "confini.h" 3 "Sat Sep 25 2021" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -234,11 +234,11 @@ confini.h \- libconfini header
 .br
 .RI "Legacy support for parsing a \fCdouble\fP data type â€“ please \fIdo not use this function\fP: use \fC\fBini_get_double()\fP\fP instead\&. "
 .ti -1c
-.RI "static const \fBIniFormat\fP \fBINI_DEFAULT_FORMAT\fP = { \fBINI_EQUALS\fP , false , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_ABSOLUTE_AND_RELATIVE\fP , \fBINI_MULTILINE_EVERYWHERE\fP , false , false , false , false , false , false , false , false , }"
+.RI "static const \fBIniFormat\fP \fBINI_DEFAULT_FORMAT\fP = { \fBINI_EQUALS\fP, false, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_ABSOLUTE_AND_RELATIVE\fP, \fBINI_MULTILINE_EVERYWHERE\fP, false, false, false, false, false, false, false, false }"
 .br
 .RI "A model format for standard INI files\&. "
 .ti -1c
-.RI "static const \fBIniFormat\fP \fBINI_UNIXLIKE_FORMAT\fP = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, }"
+.RI "static const \fBIniFormat\fP \fBINI_UNIXLIKE_FORMAT\fP = { \fBINI_ANY_SPACE\fP, false, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_ABSOLUTE_AND_RELATIVE\fP, \fBINI_MULTILINE_EVERYWHERE\fP, false, false, false, false, false, false, false, false }"
 .br
 .RI "A model format for Unix-like \&.conf files (where space characters are delimiters between keys and values) "
 .ti -1c
@@ -272,7 +272,7 @@ GNU General Public License, version 3 or any later version
 .PP
 \fBVersion\fP
 .RS 4
-1\&.16\&.1 
+1\&.16\&.2 
 .RE
 .PP
 \fBDate\fP
@@ -642,13 +642,18 @@ If \fCdelimiter\fP matches a metacharacter within the format given (\fC'\\\\'\fP
 #include <stdio\&.h>
 #include <confini\&.h>
 
-static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
+static int my_ini_listener (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
-  if (ini_string_match_si(
-    "my_array",
-    dispatch->data,
-    dispatch->format
-  )) {
+  if (
+    ini_string_match_si(
+      "my_array",
+      dispatch->data,
+      dispatch->format
+    )
+  ) {
 
     #define DELIMITER ','
 
@@ -672,13 +677,15 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-  if (load_ini_path(
-    "\&.\&./ini_files/typed_ini\&.conf",
-    INI_DEFAULT_FORMAT,
-    NULL,
-    my_ini_listener,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "\&.\&./ini_files/typed_ini\&.conf",
+      INI_DEFAULT_FORMAT,
+      NULL,
+      my_ini_listener,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
@@ -766,11 +773,11 @@ If \fCdelimiter\fP matches a metacharacter within the format given (\fC'\\\\'\fP
 #include <confini\&.h>
 
 static int populate_strarray (
-  char * part,
-  size_t part_len,
-  size_t idx,
-  IniFormat format,
-  void * v_array
+  char * const part,
+  const size_t part_len,
+  const size_t idx,
+  const IniFormat format,
+  void * const v_array
 ) {
 
   ini_string_parse(part, format);
@@ -780,13 +787,18 @@ static int populate_strarray (
 
 }
 
-static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
+static int my_ini_listener (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
-  if (ini_string_match_si(
-    "my_array",
-    dispatch->data,
-    dispatch->format
-  )) {
+  if (
+    ini_string_match_si(
+      "my_array",
+      dispatch->data,
+      dispatch->format
+    )
+  ) {
 
     #define DELIMITER ','
 
@@ -795,17 +807,17 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 
     /*  Save memory with `ini_array_collapse()`  */
     dispatch->v_len = ini_array_collapse(
-                        dispatch->value,
-                        DELIMITER,
-                        dispatch->format
-                      );
+      dispatch->value,
+      DELIMITER,
+      dispatch->format
+    );
 
     /*  Allocate a new array of strings with `malloc()`  */
     my_array_length = ini_array_get_length(
-                        dispatch->value,
-                        DELIMITER,
-                        dispatch->format
-                      );
+      dispatch->value,
+      DELIMITER,
+      dispatch->format
+    );
 
     my_array = (char **) malloc(my_array_length * sizeof(char *) +
                  dispatch->v_len + 1);
@@ -845,13 +857,15 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-  if (load_ini_path(
-    "\&.\&./ini_files/typed_ini\&.conf",
-    INI_DEFAULT_FORMAT,
-    NULL,
-    my_ini_listener,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "\&.\&./ini_files/typed_ini\&.conf",
+      INI_DEFAULT_FORMAT,
+      NULL,
+      my_ini_listener,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
@@ -913,12 +927,12 @@ Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_FEINTR\fP\&.
 #include <confini\&.h>
 
 static int my_array_fragm_handler (
-  const char * ini_array,
-  size_t fragm_offset,
-  size_t fragm_length,
-  size_t fragm_num,
-  IniFormat format,
-  void * user_data
+  const char * const ini_array,
+  const size_t fragm_offset,
+  const size_t fragm_length,
+  const size_t fragm_num,
+  const IniFormat format,
+  void * const user_data
 ) {
 
   printf("\"%\&.*s\"\\n", (unsigned int) fragm_length, ini_array + fragm_offset);
@@ -1049,13 +1063,18 @@ If \fCdelimiter\fP matches a metacharacter within the format given (\fC'\\\\'\fP
 #include <stdio\&.h>
 #include <confini\&.h>
 
-static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
+static int my_ini_listener (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
-  if (ini_string_match_si(
-    "my_array",
-    dispatch->data,
-    dispatch->format
-  )) {
+  if (
+    ini_string_match_si(
+      "my_array",
+      dispatch->data,
+      dispatch->format
+    )
+  ) {
 
     #define DELIMITER ','
 
@@ -1080,13 +1099,15 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-  if (load_ini_path(
-    "\&.\&./ini_files/typed_ini\&.conf",
-    INI_DEFAULT_FORMAT,
-    NULL,
-    my_ini_listener,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "\&.\&./ini_files/typed_ini\&.conf",
+      INI_DEFAULT_FORMAT,
+      NULL,
+      my_ini_listener,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
@@ -1133,13 +1154,18 @@ If \fCdelimiter\fP matches a metacharacter within the format given (\fC'\\\\'\fP
 #include <stdio\&.h>
 #include <confini\&.h>
 
-static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
+static int my_ini_listener (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
-  if (ini_string_match_si(
-    "my_array",
-    dispatch->data,
-    dispatch->format
-  )) {
+  if (
+    ini_string_match_si(
+      "my_array",
+      dispatch->data,
+      dispatch->format
+    )
+  ) {
 
     #define DELIMITER ','
 
@@ -1168,13 +1194,15 @@ static int my_ini_listener (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-  if (load_ini_path(
-    "\&.\&./ini_files/typed_ini\&.conf",
-    INI_DEFAULT_FORMAT,
-    NULL,
-    my_ini_listener,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "\&.\&./ini_files/typed_ini\&.conf",
+      INI_DEFAULT_FORMAT,
+      NULL,
+      my_ini_listener,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
@@ -1234,11 +1262,11 @@ Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_EROADDR\fP, \fBCON
 #include <confini\&.h>
 
 static int my_array_memb_handler (
-  char * arr_member,
-  size_t memb_length,
-  size_t memb_num,
-  IniFormat format,
-  void * foreach_other
+  char * const arr_member,
+  const size_t memb_length,
+  const size_t memb_num,
+  const IniFormat format,
+  void * const foreach_other
 ) {
 
   printf("\"%s\"\\n", arr_member);
@@ -1291,7 +1319,7 @@ Check whether a simple string matches one of the booleans listed in the private 
 .RS 4
 \fIsimple_string\fP A string to check (it can be \fCNULL\fP) 
 .br
-\fIwhen_fail\fP A value that is returned if no matching boolean is found 
+\fIwhen_fail\fP The value that is returned if no matching boolean is found 
 .RE
 .PP
 \fBReturns\fP
@@ -1338,7 +1366,7 @@ struct ini_store {
   int my_section_my_number;
   bool my_section_my_boolean;
   bool my_section_my_implicit_bool;
-  char ** my_section_my_array;
+  char * const * my_section_my_array;
   size_t my_section_my_arr_len;
 };
 
@@ -1354,7 +1382,7 @@ static int my_init (IniStatistics * statistics, void * v_store) {
   return 0;
 }
 
-static int my_handler (IniDispatch * dsp, void * v_store) {
+static int my_handler (IniDispatch * const dsp, void * const v_store) {
   #define store ((struct ini_store *) v_store)
   #define THEYMATCH(SSTR, ISTR) \e
     ini_string_match_si(SSTR, ISTR, dsp->format)
@@ -1362,9 +1390,7 @@ static int my_handler (IniDispatch * dsp, void * v_store) {
     if (THEYMATCH("my_string", dsp->data)) {
       dsp->v_len = ini_string_parse(dsp->value, dsp->format);
       /*  Free previous duplicate key (if any)  */
-      if (store->my_section_my_string) {
-        free(store->my_section_my_string);
-      }
+      free(store->my_section_my_string);
       /*  Allocate the new string  */
       store->my_section_my_string = strndup(dsp->value, dsp->v_len);
       if (!store->my_section_my_string) {
@@ -1392,9 +1418,7 @@ static int my_handler (IniDispatch * dsp, void * v_store) {
         dsp->format
       );
       /*  Free previous duplicate key (if any)  */
-      if (store->my_section_my_array) {
-        free(store->my_section_my_array);
-      }
+      free((void *) store->my_section_my_array);
       /*  Allocate a new array of strings  */
       /*  Function in examples/utilities/make_strarray\&.h  */
       store->my_section_my_array = make_strarray(
@@ -1453,12 +1477,9 @@ int main () {
     return 1;
   }
   print_stored_data(&my_store);
-  if (my_store\&.my_section_my_string) {
-    free(my_store\&.my_section_my_string);
-  }
-  if (my_store\&.my_section_my_arr_len) {
-    free(my_store\&.my_section_my_array);
-  }
+  free(my_store\&.my_section_my_string);
+  free((void *) my_store\&.my_section_my_array);
+
   return 0;
 }
 
@@ -1474,7 +1495,7 @@ Check whether an INI string matches one of the booleans listed in the private co
 .RS 4
 \fIini_string\fP A string to check (it can be \fCNULL\fP) 
 .br
-\fIwhen_fail\fP A value that is returned if no matching boolean is found 
+\fIwhen_fail\fP The value that is returned if no matching boolean is found 
 .br
 \fIformat\fP The format of the INI file 
 .RE
@@ -1533,7 +1554,7 @@ struct ini_store {
   int my_section_my_number;
   bool my_section_my_boolean;
   bool my_section_my_implicit_bool;
-  char ** my_section_my_array;
+  char * const * my_section_my_array;
   size_t my_section_my_arr_len;
 };
 
@@ -1549,7 +1570,7 @@ static int my_init (IniStatistics * statistics, void * v_store) {
   return 0;
 }
 
-static int my_handler (IniDispatch * dsp, void * v_store) {
+static int my_handler (IniDispatch * const dsp, void * const v_store) {
   #define store ((struct ini_store *) v_store)
   #define THEYMATCH(SSTR, ISTR) \e
     ini_string_match_si(SSTR, ISTR, dsp->format)
@@ -1557,9 +1578,7 @@ static int my_handler (IniDispatch * dsp, void * v_store) {
     if (THEYMATCH("my_string", dsp->data)) {
       dsp->v_len = ini_string_parse(dsp->value, dsp->format);
       /*  Free previous duplicate key (if any)  */
-      if (store->my_section_my_string) {
-        free(store->my_section_my_string);
-      }
+      free(store->my_section_my_string);
       /*  Allocate the new string  */
       store->my_section_my_string = strndup(dsp->value, dsp->v_len);
       if (!store->my_section_my_string) {
@@ -1587,9 +1606,7 @@ static int my_handler (IniDispatch * dsp, void * v_store) {
         dsp->format
       );
       /*  Free previous duplicate key (if any)  */
-      if (store->my_section_my_array) {
-        free(store->my_section_my_array);
-      }
+      free((void *) store->my_section_my_array);
       /*  Allocate a new array of strings  */
       /*  Function in examples/utilities/make_strarray\&.h  */
       store->my_section_my_array = make_strarray(
@@ -1648,12 +1665,9 @@ int main () {
     return 1;
   }
   print_stored_data(&my_store);
-  if (my_store\&.my_section_my_string) {
-    free(my_store\&.my_section_my_string);
-  }
-  if (my_store\&.my_section_my_arr_len) {
-    free(my_store\&.my_section_my_array);
-  }
+  free(my_store\&.my_section_my_string);
+  free((void *) my_store\&.my_section_my_array);
+
   return 0;
 }
 
@@ -1689,7 +1703,10 @@ This function changes the value of one or more global variables\&. In order to b
 #include <stdio\&.h>
 #include <confini\&.h>
 
-static int ini_listener (IniDispatch * dispatch, void * v_null) {
+static int ini_listener (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   if (dispatch->value == INI_GLOBAL_IMPLICIT_VALUE) {
 
@@ -1728,13 +1745,15 @@ int main () {
   my_format\&.implicit_is_not_empty = true;
   my_format\&.disabled_can_be_implicit = true;
 
-  if (load_ini_path(
-    "\&.\&./ini_files/unix-like\&.conf",
-    my_format,
-    NULL,
-    ini_listener,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "\&.\&./ini_files/unix-like\&.conf",
+      my_format,
+      NULL,
+      ini_listener,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
@@ -1932,7 +1951,10 @@ The \fCformat\fP argument is used for the following fields:
 #include <stdio\&.h>
 #include <confini\&.h>
 
-static int passfinder (IniDispatch * disp, void * v_membid) {
+static int passfinder (
+  IniDispatch * const disp,
+  void * const v_membid
+) {
 
   /*  Search for `password = "hello world"` in the INI file  */
   if (
@@ -2058,7 +2080,10 @@ The \fCformat\fP argument is used for the following fields:
 #include <stdio\&.h>
 #include <confini\&.h>
 
-static int ini_listener (IniDispatch * dispatch, void * v_null) {
+static int ini_listener (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   if (
     dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY
@@ -2082,13 +2107,15 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-  if (load_ini_path(
-    "\&.\&./ini_files/self_explaining\&.conf",
-    INI_DEFAULT_FORMAT,
-    NULL,
-    ini_listener,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "\&.\&./ini_files/self_explaining\&.conf",
+      INI_DEFAULT_FORMAT,
+      NULL,
+      ini_listener,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
@@ -2146,7 +2173,10 @@ The \fCformat\fP argument is used for the following fields:
 #include <stdio\&.h>
 #include <confini\&.h>
 
-static int ini_listener (IniDispatch * dispatch, void * v_null) {
+static int ini_listener (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   if (
     dispatch->type == INI_KEY || dispatch->type == INI_DISABLED_KEY
@@ -2170,13 +2200,15 @@ static int ini_listener (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-  if (load_ini_path(
-    "\&.\&./ini_files/self_explaining\&.conf",
-    INI_DEFAULT_FORMAT,
-    NULL,
-    ini_listener,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "\&.\&./ini_files/self_explaining\&.conf",
+      INI_DEFAULT_FORMAT,
+      NULL,
+      ini_listener,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
@@ -2243,7 +2275,10 @@ Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFI
 #include <stdio\&.h>
 #include <confini\&.h>
 
-static int my_callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   printf(
     "DATA: %s\\nVALUE: %s\\nNODE TYPE: %u\\n\\n",
@@ -2256,6 +2291,7 @@ static int my_callback (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
+  /*  Use always `"rb"` with `load_ini_file()`!  */
   FILE * const ini_file = fopen("\&.\&./ini_files/delivery\&.conf", "rb");
 
   if (ini_file == NULL) {
@@ -2265,13 +2301,15 @@ int main () {
 
   }
 
-  if (load_ini_file(
-    ini_file,
-    INI_DEFAULT_FORMAT,
-    NULL,
-    my_callback,
-    NULL
-  )) {
+  if (
+    load_ini_file(
+      ini_file,
+      INI_DEFAULT_FORMAT,
+      NULL,
+      my_callback,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
@@ -2333,7 +2371,10 @@ Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFI
 #include <stdio\&.h>
 #include <confini\&.h>
 
-static int my_callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   printf(
     "DATA: %s\\nVALUE: %s\\nNODE TYPE: %u\\n\\n",
@@ -2346,13 +2387,15 @@ static int my_callback (IniDispatch * dispatch, void * v_null) {
 
 int main () {
 
-  if (load_ini_path(
-    "\&.\&./ini_files/delivery\&.conf",
-    INI_DEFAULT_FORMAT,
-    NULL,
-    my_callback,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "\&.\&./ini_files/delivery\&.conf",
+      INI_DEFAULT_FORMAT,
+      NULL,
+      my_callback,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
@@ -2407,7 +2450,7 @@ The parsing algorithms used by \fBlibconfini\fP are able to parse any type of fi
 .PP
 \fBNote\fP
 .RS 4
-In order to be null-byte-injection-safe, before dispatching the parsed content this function will strip all \fCNUL\fP characters possibly present in the buffer (with the exception of the last one)\&.
+In order to be null-byte-injection-safe, before dispatching the parsed content this function strips all \fCNUL\fP characters possibly present in the buffer (with the exception of the last one)\&.
 .RE
 .PP
 Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFINI_FEINTR\fP, \fBCONFINI_EOOR\fP\&.
@@ -2421,7 +2464,10 @@ Possible return values are: \fBCONFINI_SUCCESS\fP, \fBCONFINI_IINTR\fP, \fBCONFI
 #include <string\&.h>
 #include <confini\&.h>
 
-static int my_callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   printf(
     "DATA: %s\\nVALUE: %s\\nNODE TYPE: %u\\n\\n",
@@ -2447,14 +2493,16 @@ int main () {
   size_t ini_length = strlen(original_ini_buffer);
   char * const ini_cache = strndup(original_ini_buffer, ini_length);
 
-  if (!ini_cache || strip_ini_cache(
-    ini_cache,
-    ini_length,
-    INI_DEFAULT_FORMAT,
-    NULL,
-    my_callback,
-    NULL
-  )) {
+  if (
+    !ini_cache || strip_ini_cache(
+      ini_cache,
+      ini_length,
+      INI_DEFAULT_FORMAT,
+      NULL,
+      my_callback,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\\n");
     return 1;
@@ -2504,7 +2552,7 @@ int main () {
  
 .SH "Variable Documentation"
 .PP 
-.SS "const \fBIniFormat\fP INI_DEFAULT_FORMAT = { \fBINI_EQUALS\fP , false , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_DISABLED_OR_COMMENT\fP , \fBINI_ABSOLUTE_AND_RELATIVE\fP , \fBINI_MULTILINE_EVERYWHERE\fP , false , false , false , false , false , false , false , false , }\fC [static]\fP"
+.SS "const \fBIniFormat\fP INI_DEFAULT_FORMAT = { \fBINI_EQUALS\fP, false, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_ABSOLUTE_AND_RELATIVE\fP, \fBINI_MULTILINE_EVERYWHERE\fP, false, false, false, false, false, false, false, false }\fC [static]\fP"
 
 .PP
 A model format for standard INI files\&. 
@@ -2524,7 +2572,7 @@ Deprecated since version 1\&.12\&.0 (it will be removed in version 2\&.0\&.0) â€
 .PP
 \fBParameters\fP
 .RS 4
-\fIini_string\fP 
+\fIini_string\fP The string to parse as a \fCdouble\fP 
 .RE
 .PP
 
@@ -2559,7 +2607,7 @@ Deprecated since version 1\&.15\&.0 (it will be removed in version 2\&.0\&.0)
 .RE
 .PP
 
-.SS "const \fBIniFormat\fP INI_UNIXLIKE_FORMAT = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, }\fC [static]\fP"
+.SS "const \fBIniFormat\fP INI_UNIXLIKE_FORMAT = { \fBINI_ANY_SPACE\fP, false, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_ABSOLUTE_AND_RELATIVE\fP, \fBINI_MULTILINE_EVERYWHERE\fP, false, false, false, false, false, false, false, false }\fC [static]\fP"
 
 .PP
 A model format for Unix-like \&.conf files (where space characters are delimiters between keys and values) 

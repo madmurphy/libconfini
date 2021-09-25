@@ -3,7 +3,10 @@
 #include <stdio.h>
 #include <confini.h>
 
-static int my_callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   if (
     dispatch->type != INI_COMMENT &&
@@ -49,8 +52,8 @@ int main () {
 
   printf(
     "We are going to parse `ini_files/pacman.conf`, which is a"
-    " clone of\n`/etc/pacman.conf` from Arch GNU/Linux (pacman"
-    " version 5.2.1)...\n\n(ignoring comments)\n\n"
+    " clone of\n`/etc/pacman.conf` from Arch (pacman version"
+    " 5.2.1)...\n\n(ignoring comments)\n\n"
   );
 
   /*
@@ -75,13 +78,15 @@ int main () {
       .disabled_can_be_implicit = true \
     })
 
-  if (load_ini_path(
-    "../ini_files/pacman.conf",
-    PACMAN_CONF_FORMAT,
-    NULL,
-    my_callback,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "../ini_files/pacman.conf",
+      PACMAN_CONF_FORMAT,
+      NULL,
+      my_callback,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;

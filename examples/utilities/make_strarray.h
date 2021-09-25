@@ -22,10 +22,10 @@
 
   Example usage:
 
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
   size_t my_arrlen;
 
-  char ** my_array = make_strarray(
+  char * const * my_array = make_strarray(
     &my_arrlen,
     disp->value,
     disp->v_len,
@@ -40,40 +40,44 @@
 
   // Do something with `my_array`...
 
-  if (my_array) {
-    free(my_array);
-  }
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  free((void *) my_array);
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **/
-static char ** make_strarray (
+char * const * make_strarray (
   size_t * const dest_arrlen,
   const char * const ini_string,
-  const size_t len,
+  const size_t inistr_len,
   const char delimiter,
   const IniFormat format
 ) {
 
   *dest_arrlen = ini_array_get_length(ini_string, delimiter, format);
 
-  char ** const
-    newarr  =   *dest_arrlen ?
-                  (char **) malloc(*dest_arrlen * sizeof(char *) + len + 1)
-                :
-                  NULL;
+  char ** const newarr =
+    *dest_arrlen ?
+      (char **) malloc(*dest_arrlen * sizeof(char *) + inistr_len + 1)
+    :
+      NULL;
 
   if (!newarr) {
+
     return NULL;
+
   }
 
   char * remnant = (char *) ((char **) newarr + *dest_arrlen);
-  memcpy(remnant, ini_string, len + 1);
+
+  memcpy(remnant, ini_string, inistr_len + 1);
+
   for (size_t idx = 0; idx < *dest_arrlen; idx++) {
+
     newarr[idx] = ini_array_release(&remnant, delimiter, format);
     ini_string_parse(newarr[idx], format);
+
   }
 
-  return newarr;
+  return (char * const *) newarr;
 
 }
 

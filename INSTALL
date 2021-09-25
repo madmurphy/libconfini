@@ -59,7 +59,7 @@ Microsoft Windows
 ### MinGW
 
 If you are using Microsoft Windows, a batch script for compiling **libconfini**
-under MinGW without GNU Make is available (`mgwmake.bat`). If you want instead
+with MinGW without GNU Make is available (`mgwmake.bat`). If you want instead
 to compile the library manually, you can run:
 
     cd src
@@ -79,8 +79,9 @@ If you want to generate also the `.def` file, use:
     strip.exe libconfini.dll
 
 If you want to build (and install) **libconfini** via GNU Make under Microsoft
-Windows several options are available, such as MinGW + MSYS, MSYS2, GnuWin32
-and Cygwin (for which [an unofficial port][1] of **libconfini** exists).
+Windows several options are available, such as MinGW + MSYS, MSYS2 (which ships
+[an official port][1] of the library, Cygwin (for which [an unofficial port][2]
+of **libconfini** exists) and GnuWin32.
 
 
 ### Microsoft Visual Studio
@@ -131,7 +132,7 @@ standard `extern` keyword is used to access a shared `.data` segment.
 
 ### Precompiled DLL
 
-Often a compiled DLL [is available][2] among the assets of each release of this
+Often a compiled DLL [is available][3] among the assets of each release of this
 package on GitHub.
 
 
@@ -146,9 +147,9 @@ Library is simply too heavy or just not implementable.
 
 In these situations it will be needed to get rid of every tie with the C
 Standard Library and compile **libconfini** as "bare metal". The `configure`
-script has a `--without-io-api` option that allows to create a special fork of
-the original library able to function in any environment. For information about
-how to proceed, please see `dev/hackings/baremetal/README.md`.
+script has two options for creating special forks of the original library able to
+function in any environment, `--without-io-api` and `--without-libc`. For
+information about how to proceed, please see `dev/hackings/baremetal/README.md`.
 
 
 Complex installations
@@ -178,7 +179,7 @@ package names of all versions that are older than the current version.
 If you want to install a modified version of **libconfini** without generating
 conflicts with an original version already present in the system, or you simply
 want to install **libconfini** under a different name, you can use [Autoconf
-transforming rules][3]. In particular, to prepend a prefix to the library name,
+transforming rules][4]. In particular, to prepend a prefix to the library name,
 use `./configure --program-prefix=[PREFIX]`; to append a suffix, use
 `./configure --program-suffix=[SUFFIX]`; to perform a `sed` substitution, use
 `./configure --program-transform-name="s/[OLDTEXT]/[NEWTEXT]/[g]"`. Note that
@@ -199,7 +200,7 @@ For any issue, drop a message at https://github.com/madmurphy/libconfini/issues.
 Distributing the source code
 ----------------------------
 
-If you aim to re-distribute the source code of **libconfini** you should first
+If you aim to re-distribute the source code of **libconfini** you must first
 make sure that the `configure` script is present, for granting the possibility
 to compile the package without having Autotools installed. If the `configure`
 script is present and you have already launched it, use `make distclean` to
@@ -215,7 +216,8 @@ particular platform. If you want to obtain the list of the files that are going
 to be installed, use `make manifest`.
 
 
-  [1]: https://github.com/fd00/yacp/tree/master/libconfini
-  [2]: https://github.com/madmurphy/libconfini/releases
-  [3]: https://www.gnu.org/software/automake/manual/html_node/Renaming.html
+  [1]: https://packages.msys2.org/base/mingw-w64-libconfini
+  [2]: https://github.com/fd00/yacp/tree/master/libconfini
+  [3]: https://github.com/madmurphy/libconfini/releases
+  [4]: https://www.gnu.org/software/automake/manual/html_node/Renaming.html
 

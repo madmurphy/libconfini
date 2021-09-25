@@ -4,12 +4,12 @@ root = true
 indent_style = tab
 indent_size = 2
 
-[{src/confini.c,dev/marked-sources/confini-marked.c,**.sh,configure.ac,**/Makefile.am,**.m4}]
+[{src/confini.c,dev/marked-sources/confini-marked.c,dev/hackings/baremetal/str2num.c,**.sh,configure.ac,**/Makefile.am,**.m4}]
 charset = utf-8
 indent_style = tab
 indent_size = 4
 
-[{src/confini.h,dev/marked-sources/confini-marked.h}]
+[{src/confini.h,dev/marked-sources/confini-marked.h,dev/hackings/baremetal/str2num.h}]
 charset = utf-8
 indent_style = space
 indent_size = 4

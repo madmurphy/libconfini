@@ -3,13 +3,16 @@
 #include <stdio.h>
 #include <confini.h>
 
-static int ini_listener (IniDispatch * dispatch, void * v_null) {
+static int ini_listener (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   printf(
     "DATA: %s\nVALUE: %s\nPARENT SECTION: %s\n\n",
     dispatch->data,
     dispatch->value,
-    *dispatch->append_to ? dispatch->append_to : "{root}"
+    *dispatch->append_to ? dispatch->append_to : "{top level}"
   );
 
   return 0;
@@ -36,13 +39,15 @@ int main () {
       .disabled_can_be_implicit = false \
     })
 
-  if (load_ini_path(
-    "../ini_files/colon_as_delimiter.conf",
-    MY_FORMAT,
-    NULL,
-    ini_listener,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "../ini_files/colon_as_delimiter.conf",
+      MY_FORMAT,
+      NULL,
+      ini_listener,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;

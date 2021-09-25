@@ -5,7 +5,10 @@
 #include <string.h>
 #include <confini.h>
 
-static int my_callback (IniDispatch * dispatch, void * v_null) {
+static int my_callback (
+  IniDispatch * const dispatch,
+  void * const v_null
+) {
 
   printf(
     "DATA: %s\nVALUE: %s\nNODE TYPE: %u\n\n",
@@ -31,14 +34,16 @@ int main () {
   size_t ini_length = strlen(original_ini_buffer);
   char * const ini_cache = strndup(original_ini_buffer, ini_length);
 
-  if (!ini_cache || strip_ini_cache(
-    ini_cache,
-    ini_length,
-    INI_DEFAULT_FORMAT,
-    NULL,
-    my_callback,
-    NULL
-  )) {
+  if (
+    !ini_cache || strip_ini_cache(
+      ini_cache,
+      ini_length,
+      INI_DEFAULT_FORMAT,
+      NULL,
+      my_callback,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;

@@ -9,7 +9,10 @@ about it, without dispatching its content.
 #include <stdio.h>
 #include <confini.h>
 
-static int my_stats_handler (IniStatistics * statistics, void * user_data) {
+static int my_stats_handler (
+  IniStatistics * const statistics,
+  void * v_null
+) {
 
   printf(
     "The file is %zu bytes large and contains %zu members.\n",
@@ -23,13 +26,15 @@ static int my_stats_handler (IniStatistics * statistics, void * user_data) {
 
 int main () {
 
-  if (load_ini_path(
-    "../ini_files/self_explaining.conf",
-    INI_DEFAULT_FORMAT,
-    my_stats_handler,
-    NULL,
-    NULL
-  )) {
+  if (
+    load_ini_path(
+      "../ini_files/self_explaining.conf",
+      INI_DEFAULT_FORMAT,
+      my_stats_handler,
+      NULL,
+      NULL
+    )
+  ) {
 
     fprintf(stderr, "Sorry, something went wrong :-(\n");
     return 1;

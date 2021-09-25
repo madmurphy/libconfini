@@ -29,15 +29,15 @@ AC_INIT([lib]n4_mem([GL_PROJECT_NAME], [confini]),
 	m4_joinall([.],
 		n4_mem([GL_PROJECT_MAJVER], [1]),
 		n4_mem([GL_PROJECT_MINVER], [16]),
-		n4_mem([GL_PROJECT_REVVER], [1])),
+		n4_mem([GL_PROJECT_REVVER], [2])),
 	[madmurphy333@gmail.com],
 	[lib]GL_PROJECT_NAME,
 	[https://madmurphy.github.io/libconfini])
 
 NC_GLOBAL_LITERALS(
 	[INTERFACE_NUM],			[5],
-	[IMPLEMENTATION_NUM],		[0],
 	[INTERFACES_SUPPORTED],		[5],
+	[IMPLEMENTATION_NUM],		[1],
 	[PROJECT_DESCRIPTION],		[Yet another INI parser],
 	[LICENSE_STRING],			[GNU General Public License, version 3 or any
 								later version],
@@ -248,7 +248,7 @@ AS_CASE(["${na_tmp_ioflavor}"],
 			[NC_MSG_WARNBOX([It is strongly recommended to rename the package
 			when compiling it without a I/O API (--without-io-api). For
 			example, to rename `]AC_PACKAGE_TARNAME[` to
-			`lib]GL_PROJECT_NAME[-baremetal`, use `./configure --without-io-api
+			`]AC_PACKAGE_TARNAME[-baremetal` use `./configure --without-io-api
 			--program-suffix='-baremetal'`. Type `./configure --help` for more
 			information about renaming rules.])])
 		AS_VAR_SET([na_want_baremetal], ['yes'])
@@ -686,7 +686,7 @@ AM_COND_IF([HAVE_EXTENDED_CONFIG], [
 			AS_VAR_SET([mergenew_recipe],
 				m4_normalize([
 					'echo '\''**Warning** Extended configuration has been
-					called on a renamed package. All'\'' && echo '\''updates
+					invoked on a renamed package. All'\'' && echo '\''updates
 					will be reverted with `make clean` and will not be
 					re-distributed with'\'' && echo '\''`make dist`!'\'';
 					]m4_foreach([__i__], [NC_THREATENED_LIST], [[
@@ -726,9 +726,9 @@ AM_COND_IF([HAVE_EXTENDED_CONFIG], [
 				the updates see the content of `./$(confnewdir)`).'\'
 		]))
 		AM_COND_IF([RENAME_PACKAGE], [
-			NC_MSG_WARNBOX([Extended configuration has been called on a renamed
-			package. Changes will be reverted with `make distclean` and will
-			not be re-distributed with `make dist`!])
+			NC_MSG_WARNBOX([Extended configuration has been invoked on a
+			renamed package. Changes will be reverted with `make distclean` and
+			will not be re-distributed with `make dist`!])
 			m4_foreach([__i__], [NC_THREATENED_LIST],
 				[test -f "${srcdir}/]__i__[.dist" || \
 					cp "${srcdir}/]__i__[" "${srcdir}/]__i__[.dist";])
@@ -933,13 +933,13 @@ NA_HELP_STRINGS(
 		[launch `make uninstall` followed by `make clean`],
 	[[make alldone]],
 		[launch `make install-strip` followed by `make installcheck` - in case
-		of staged installations it is possible to pass a `DESTDIR` variable (see
-		below)],
+		of staged installations it is possible to pass a `DESTDIR` variable
+		(see below)],
 	[[make binary-release], [make manifest]],
 		[create respectively a package and a manifest in the current location
 		containing all the files that would be installed by `make
-		install-strip` - if `make (all)` has not been launched yet, it will be
-		launched first],
+		install(-strip)` - if `make (all)` has not been launched yet, it will
+		be launched first],
 	[[make portable-builds]],
 		[create a package containing all the files that would be installed by
 		`make install-exec-strip`, but without any directory structure - if

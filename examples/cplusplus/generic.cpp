@@ -3,7 +3,10 @@
 
 using namespace std;
 
-static int callback (IniDispatch * disp, void * v_other) {
+static int callback (
+	IniDispatch * const disp,
+	void * const v_other
+) {
 
 	#define IS_KEY(SECTION, KEY) \
 		(ini_array_match(SECTION, disp->append_to, '.', disp->format) && \

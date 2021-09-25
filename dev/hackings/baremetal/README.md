@@ -1,12 +1,12 @@
 Compiling without I/O {#baremetal}
 ==================================
 
-Almost everything in **libconfini** is implemented from scratch, with the only
+In **libconfini** almost everything is implemented from scratch, with the only
 notable exception of the I/O functions `load_ini_file()` and `load_ini_path()`,
-which rely on standard libraries (either the C Standard or the POSIX Standard,
-depending on the build settings). On some platforms, however, only a rather
-exotic I/O API is available, while for some other platforms the C Standard
-Library is simply too heavy or just not implementable.
+which rely on standard libraries -- either the C Standard or the POSIX
+Standard, depending on the build settings. On some platforms, however, only a
+rather exotic I/O API is available, while for some other platforms the C
+Standard Library is simply too heavy or just not implementable.
 
 In the past, the build environment of **libconfini** did not offer shortcuts
 for facing this kind of situations -- although, thanks to the modularity of the
@@ -33,7 +33,7 @@ equivalently, with `--with-io-api=baremetal`), it assumes that no standard
 library at all could be present in the system. Hence it runs a series of tests
 and creates an inventory of what is present and what is not, in order to amend
 the source code accordingly -- to ignore all the tests and assume that
-literally nothing from the C Standard Library is supported use
+literally nothing from the C Standard Library is supported, use
 `--without-libc`. The amendments are necessary (instead of just relying on the
 C preprocessor) because it is required to change the public header, not just
 the compiled code.
@@ -46,15 +46,15 @@ applied when launching `make all` or `make baremetal-source-code` after having
 launched `./configure --without-io-api` (the original source code will be
 preserved).
 
-The file `str2num.c` constitutes a re-implementation of the functions
+The `str2num.c` file contains re-implementation of the functions
 `ini_get_int()`, `ini_get_lint()`, `ini_get_llint()`, `ini_get_float()` and
 `ini_get_double()`, which in the original code are implemented as pointers to
 standard functions (see below). This file amends `src/confini.c`.
 
-The file `str2num.h`, which amends `src/confini.h` (i.e. the public header),
+The `str2num.h` file, which amends `src/confini.h` (i.e. the public header),
 exports the function headers of what `str2num.c` implements.
 
-The file `confini-header.c` contains only a nominal workaround-amendment to
+The `confini-header.c` file contains only a nominal workaround-amendment to
 `src/confini.c` (for facilitating the build system) that does not change the
 final C code compiled.
 
@@ -83,7 +83,7 @@ The first four files (the ones located in the `dev/hackings/baremetal`
 subdirectory) are static and do not need any intervention from the user, unless
 (s)he wants to participate in the development of **libconfini**. The fifth file
 _might_ require manual intervention in some situations, depending on the
-platform or on the user's choice (the build system will emit a warning in such
+platform or the user's will (the build system will emit a warning in such
 cases).
 
 
@@ -95,9 +95,10 @@ some kind of filesystem. If the C standard `fopen()`, `fseek()`, `ftell()`,
 `rewind()`, `fread()` and `fclose()` do not suit your needs, you can
 re-implement your own version of `load_ini_file()` and `load_ini_path()`. The
 only requirement is that at the end of the day you find a way to pass a
-disposable buffer containing an entire INI file to `strip_ini_cache()`. A good
-way to proceed is to hack the original pair of functions that rely on the C
-standard I/O API and adapt them to your platform.
+disposable buffer containing an entire INI file to `strip_ini_cache()`.
+
+A good way to proceed is to hack the original pair of functions that rely on
+the C standard I/O API and adapt them to your platform:
 
 `````````````````````````````````````````````````````````````````````````` c
 #include <stdio.h>

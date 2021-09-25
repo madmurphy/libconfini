@@ -4,7 +4,7 @@
 
 This is a marked **exact copy** of `src/confini.h`, in which replaceable
 sections have been wrapped within special tags that can be parsed and amended
-by GNU Make during the build process in order to create custom forks of the
+by GNU Make during the build process, in order to create custom forks of the
 library.
 
 If you want to contribute to the development of this project, please **use this
@@ -20,8 +20,8 @@ any later version.
 /*@@@@@@@@@@@@@@@@@@@@ !ENTRY_POINT(CONFINI_H_METADATA)! @@@@@@@@@@@@@@@@@@@@*/
 
 
-#ifndef _LIBCONFINI_HEADER_
-#define _LIBCONFINI_HEADER_
+#ifndef __CONFINI_H__
+#define __CONFINI_H__
 
 
 
@@ -107,7 +107,6 @@ extern "C" {
 #define INIFORMAT_HAS_NO_ESC(FORMAT) \
     (FORMAT.multiline_nodes == INI_NO_MULTILINE && \
     FORMAT.no_double_quotes && FORMAT.no_single_quotes)
-
 
 
 /**
@@ -588,7 +587,7 @@ extern size_t INI_GLOBAL_IMPLICIT_V_LEN;
 
 
 
-/*  END OF `_LIBCONFINI_HEADER_`  */
+/*  END OF `__CONFINI_H__`  */
 
 
 #ifdef __cplusplus

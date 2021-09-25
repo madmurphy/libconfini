@@ -169,7 +169,7 @@ by running the `bootstrap` script. By default, `bootstrap` will also run the
 
 If you are using **Microsoft Windows**, a batch script for compiling
 **libconfini** with [MinGW][7] without Bash is available (`mgwmake.bat`). If
-you are interested in using GNU Make for compiling **libconfini** under
+you are interested in using **GNU Make** for compiling **libconfini** under
 Microsoft Windows, you can integrate MinGW with [MSYS][8], or you can directly
 use [MSYS2][9] and [its official port][10] of the library. Alternatively, [an
 unofficial port][11] of **libconfini** for [Cygwin][12] is available.
