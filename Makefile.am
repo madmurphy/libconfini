@@ -59,7 +59,7 @@ endif WANT_MAN
 if WANT_HTML
 
 _am_installalso_ += \
-	install-html;
+	install-html
 
 endif WANT_HTML
 
@@ -136,8 +136,9 @@ if HAVE_TRANSFORMATIONS
 _examples_insthook_ += \
 	$(SED) -i 's/-l@PROJECT_NAME@/-l@PROJECT_LOCALNAME@/g' \
 	'$(DESTDIR)$(examplesdir)/run-example.sh' && \
-	$(FIND) '$(DESTDIR)$(examplesdir)' -type f -name '*.c' -exec \
-	$(SED) -i 's/<@PROJECT_NAME@.h>/<@library_headername@.h>/g' {} \;;
+	$(FIND) '$(DESTDIR)$(examplesdir)' -type f '(' -name '*.c' -o -name \
+	'*.h' -o -name '*.cpp' -o -name '*.hpp' ')' -exec $(SED) -i \
+	's/<@PROJECT_NAME@.h>/<@library_headername@.h>/g' '{}' ';';
 
 endif HAVE_TRANSFORMATIONS
 
@@ -309,6 +310,7 @@ finishcheck:
 	@$(MAKE) -C 'tests' clean && $(MAKE) \
 	AM_CPPFLAGS='$(INSTALLCHECKS_CPPENV)' \
 	autotest_LDADD='-l@PROJECT_LOCALNAME@' check;
+
 
 # Let us decide whether stripping or not
 .PHONY: nearlydone

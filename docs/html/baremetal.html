@@ -68,9 +68,9 @@ $(function() {
 <div class="contents">
 <div class="textblock"><p>What <code>./configure --without-io-api</code> does</p>
 <p><a class="anchor" id="md_dev_docs_baremetal"></a></p>
-<p>In <b>libconfini</b> almost everything is implemented from scratch, with the only notable exception of the I/O functions <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code> and <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code>, which rely on standard libraries &ndash; either the C Standard or the POSIX Standard, depending on the build settings. On some platforms, however, only a rather exotic I/O API is available, while for some other platforms the C Standard Library is simply too heavy or just not implementable.</p>
-<p>In the past, the build environment of <b>libconfini</b> did not offer shortcuts for facing this kind of situations &ndash; although, thanks to the modularity of the source code, it was still relatively simple to get rid of every tie with the C Standard Library and compile <b>libconfini</b> as “bare metal”, with <code><a class="el" href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b" title="Parse and tokenize a buffer containing an INI file, then dispatch its content to a custom callback.">strip_ini_cache()</a></code> as the only parsing function (as this relies only on a buffer for its input), i.e. without <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code> and <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code>, and possibly even without any header at all.</p>
-<p>Starting from version 1.13.0 a “bare metal” version of <b>libconfini</b> has been made available simply by passing a <code>--without-io-api</code> option to the <code>configure</code> script. This modified version presents the following characteristics:</p>
+<p>Almost everything in <b>libconfini</b> is implemented from scratch, with the only notable exception of the I/O functions <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code> and <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code>, which rely on standard libraries &ndash; either the C Standard or the POSIX Standard, depending on the build settings. On some platforms, however, only a rather exotic I/O API is available, while for some other platforms the C Standard Library is simply too heavy or just not implementable.</p>
+<p>In the past, the build environment of <b>libconfini</b> did not offer shortcuts for facing this kind of situations &ndash; although, thanks to the modularity of the source code, it was still relatively simple to get rid of every tie with the C Standard Library and compile <b>libconfini</b> as “bare metal”, with <code><a class="el" href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b" title="Parse and tokenize a buffer containing an INI file, then dispatch its content to a custom callback.">strip_ini_cache()</a></code> as the only parsing function (as this relies only on a buffer for its input), i.e. without <code><a class="el" href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d" title="Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.">load_ini_file()</a></code> and <code><a class="el" href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17" title="Parse an INI file and dispatch its content to a custom callback using a path as argument.">load_ini_path()</a></code>, and possibly even without including any header at all.</p>
+<p>Starting from version 1.13.0 a “bare metal” version of <b>libconfini</b> has been made available by simply passing a <code>--without-io-api</code> option to the <code>configure</code> script. This modified version has the following characteristics:</p>
 <ul>
 <li>No heap usage (no memory is ever allocated or freed)</li>
 <li>No I/O functions (it is possible to parse only disposable <code>char</code> buffers via <code><a class="el" href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b" title="Parse and tokenize a buffer containing an INI file, then dispatch its content to a custom callback.">strip_ini_cache()</a></code>)</li>
@@ -81,7 +81,7 @@ $(function() {
 <p>Only a very small amount of code in <b>libconfini</b> depends on the C Standard Library besides the I/O functions, so it is relatively easy to produce a “bare metal” fork with or without the latter. The <code>dev/hackings/baremetal</code> subdirectory contains all the necessary amendments. These are automatically applied when launching <code>make all</code> or <code>make baremetal-source-code</code> after having launched <code>./configure --without-io-api</code> (the original source code will be preserved).</p>
 <p>The <code>str2num.c</code> file contains re-implementation of the functions <code><a class="el" href="confini_8h.html#adba0d5ee273d05ed845c66f01a621119" title="Pointer to atoi()">ini_get_int()</a></code>, <code><a class="el" href="confini_8h.html#ae334387b2202eca25e16fb92694d56ca" title="Pointer to atol()">ini_get_lint()</a></code>, <code><a class="el" href="confini_8h.html#a9562da3c55b51795bbcbb2b19d608907" title="Pointer to atoll()">ini_get_llint()</a></code>, <code><a class="el" href="confini_8h.html#a178704d02ede6101f757bbd37e5bd697" title="Legacy support for parsing a double data type – please do not use this function: use ini_get_double()...">ini_get_float()</a></code> and <code><a class="el" href="confini_8h.html#ab0330bc2629009b1848293abc0de5a6c" title="Pointer to atof()">ini_get_double()</a></code>, which in the original code are implemented as pointers to standard functions (see below). This file amends <code><a class="el" href="confini_8c.html" title="libconfini functions">src/confini.c</a></code>.</p>
 <p>The <code>str2num.h</code> file, which amends <code><a class="el" href="confini_8h.html" title="libconfini header">src/confini.h</a></code> (i.e. the public header), exports the function headers of what <code>str2num.c</code> implements.</p>
-<p>The <code>confini-header.c</code> file contains only a nominal workaround-amendment to <code><a class="el" href="confini_8c.html" title="libconfini functions">src/confini.c</a></code> (for facilitating the build system) that does not change the final C code compiled.</p>
+<p>The <code>confini-header.c</code> file contains only a nominal workaround-amendment for <code><a class="el" href="confini_8c.html" title="libconfini functions">src/confini.c</a></code> (for facilitating the build system) that does not change the final C code compiled.</p>
 <p>To create the source code of a “bare metal” version of <b>libconfini</b> a fifth amendment to the public header is also required, containing some common C standard definitions. This amendment is automatically generated for each platform during the build process and will be located under <code>no-dist/hackings/baremetal/c-standard-library.h</code>.</p>
 <p>Here follows the summary of what is required by <code>./configure --without-io-api</code>:</p>
 <ol type="1">
@@ -215,15 +215,15 @@ $(function() {
 <div class="line"> </div>
 <div class="line">}</div>
 <div class="ttc" id="aconfini_8h_html_a0eff1cb87db5b73071e87f8cc9c4b445"><div class="ttname"><a href="confini_8h.html#a0eff1cb87db5b73071e87f8cc9c4b445">IniDispHandler</a></div><div class="ttdeci">int(* IniDispHandler)(IniDispatch *dispatch, void *user_data)</div><div class="ttdoc">Callback function for handling an IniDispatch structure.</div><div class="ttdef"><b>Definition:</b> confini.h:162</div></div>
-<div class="ttc" id="aconfini_8h_html_a25d648d387f6e8bc36e7965accfca63b"><div class="ttname"><a href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b">strip_ini_cache</a></div><div class="ttdeci">int strip_ini_cache(register char *const ini_source, const size_t ini_length, const IniFormat format, const IniStatsHandler f_init, const IniDispHandler f_foreach, void *const user_data)</div><div class="ttdoc">Parse and tokenize a buffer containing an INI file, then dispatch its content to a custom callback.</div><div class="ttdef"><b>Definition:</b> confini.c:2574</div></div>
+<div class="ttc" id="aconfini_8h_html_a25d648d387f6e8bc36e7965accfca63b"><div class="ttname"><a href="confini_8h.html#a25d648d387f6e8bc36e7965accfca63b">strip_ini_cache</a></div><div class="ttdeci">int strip_ini_cache(register char *const ini_source, const size_t ini_length, const IniFormat format, const IniStatsHandler f_init, const IniDispHandler f_foreach, void *const user_data)</div><div class="ttdoc">Parse and tokenize a buffer containing an INI file, then dispatch its content to a custom callback.</div><div class="ttdef"><b>Definition:</b> confini.c:2603</div></div>
 <div class="ttc" id="aconfini_8h_html_a3330e1083693c66b63b18c0d8883f9a8"><div class="ttname"><a href="confini_8h.html#a3330e1083693c66b63b18c0d8883f9a8">IniStatsHandler</a></div><div class="ttdeci">int(* IniStatsHandler)(IniStatistics *statistics, void *user_data)</div><div class="ttdoc">Callback function for handling an IniStatistics structure.</div><div class="ttdef"><b>Definition:</b> confini.h:153</div></div>
 <div class="ttc" id="aconfini_8h_html_a4b42cb63e48154fb799599eccd25ce29a0e8e1cee80bc4b7839838764f5d661f5"><div class="ttname"><a href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a0e8e1cee80bc4b7839838764f5d661f5">CONFINI_ENOMEM</a></div><div class="ttdeci">@ CONFINI_ENOMEM</div><div class="ttdef"><b>Definition:</b> confini.h:412</div></div>
 <div class="ttc" id="aconfini_8h_html_a4b42cb63e48154fb799599eccd25ce29a20bea3ecf7dd504f5446a5983ed3fc0d"><div class="ttname"><a href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a20bea3ecf7dd504f5446a5983ed3fc0d">CONFINI_EFBIG</a></div><div class="ttdeci">@ CONFINI_EFBIG</div><div class="ttdef"><b>Definition:</b> confini.h:418</div></div>
 <div class="ttc" id="aconfini_8h_html_a4b42cb63e48154fb799599eccd25ce29a8b9b6ea5c455bfad3976fd394c36a91d"><div class="ttname"><a href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29a8b9b6ea5c455bfad3976fd394c36a91d">CONFINI_EIO</a></div><div class="ttdeci">@ CONFINI_EIO</div><div class="ttdef"><b>Definition:</b> confini.h:413</div></div>
 <div class="ttc" id="aconfini_8h_html_a4b42cb63e48154fb799599eccd25ce29abea4607cf9d97028cd782ceb2885b2d9"><div class="ttname"><a href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29abea4607cf9d97028cd782ceb2885b2d9">CONFINI_EBADF</a></div><div class="ttdeci">@ CONFINI_EBADF</div><div class="ttdef"><b>Definition:</b> confini.h:416</div></div>
 <div class="ttc" id="aconfini_8h_html_a4b42cb63e48154fb799599eccd25ce29aca147c275760856386fdb9e778525676"><div class="ttname"><a href="confini_8h.html#a4b42cb63e48154fb799599eccd25ce29aca147c275760856386fdb9e778525676">CONFINI_ENOENT</a></div><div class="ttdeci">@ CONFINI_ENOENT</div><div class="ttdef"><b>Definition:</b> confini.h:411</div></div>
-<div class="ttc" id="aconfini_8h_html_a54be108d26619db3066ce1c000dc8a17"><div class="ttname"><a href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17">load_ini_path</a></div><div class="ttdeci">int load_ini_path(const char *const path, const IniFormat format, const IniStatsHandler f_init, const IniDispHandler f_foreach, void *const user_data)</div><div class="ttdoc">Parse an INI file and dispatch its content to a custom callback using a path as argument.</div><div class="ttdef"><b>Definition:</b> confini.c:3241</div></div>
-<div class="ttc" id="aconfini_8h_html_a7d5042d3044dfb5a34a6bfc5af3a882d"><div class="ttname"><a href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d">load_ini_file</a></div><div class="ttdeci">int load_ini_file(FILE *const ini_file, const IniFormat format, const IniStatsHandler f_init, const IniDispHandler f_foreach, void *const user_data)</div><div class="ttdoc">Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.</div><div class="ttdef"><b>Definition:</b> confini.c:3147</div></div>
+<div class="ttc" id="aconfini_8h_html_a54be108d26619db3066ce1c000dc8a17"><div class="ttname"><a href="confini_8h.html#a54be108d26619db3066ce1c000dc8a17">load_ini_path</a></div><div class="ttdeci">int load_ini_path(const char *const path, const IniFormat format, const IniStatsHandler f_init, const IniDispHandler f_foreach, void *const user_data)</div><div class="ttdoc">Parse an INI file and dispatch its content to a custom callback using a path as argument.</div><div class="ttdef"><b>Definition:</b> confini.c:3271</div></div>
+<div class="ttc" id="aconfini_8h_html_a7d5042d3044dfb5a34a6bfc5af3a882d"><div class="ttname"><a href="confini_8h.html#a7d5042d3044dfb5a34a6bfc5af3a882d">load_ini_file</a></div><div class="ttdeci">int load_ini_file(FILE *const ini_file, const IniFormat format, const IniStatsHandler f_init, const IniDispHandler f_foreach, void *const user_data)</div><div class="ttdoc">Parse an INI file and dispatch its content to a custom callback using a FILE structure as argument.</div><div class="ttdef"><b>Definition:</b> confini.c:3177</div></div>
 <div class="ttc" id="astructIniFormat_html"><div class="ttname"><a href="structIniFormat.html">IniFormat</a></div><div class="ttdoc">24-bit bitfield representing the format of an INI file (INI dialect)</div><div class="ttdef"><b>Definition:</b> confini.h:115</div></div>
 </div><!-- fragment --><h1>Going manual</h1>
 <p>If instead of using the <code>--without-io-api</code> option you prefer to adapt the code manually, follow these simple steps (or adjust them according to your needs), which map verbatim what <code>--without-io-api</code> does:</p>
@@ -238,7 +238,7 @@ $(function() {
 <p>After doing so <b>libconfini</b> will work even without a kernel.</p>
 <h2>Parsing numbers without the C Standard Library</h2>
 <p>As explained above, compiling <b>libconfini</b> without the C Standard Library requires getting rid of the function pointers <code><a class="el" href="confini_8h.html#adba0d5ee273d05ed845c66f01a621119" title="Pointer to atoi()">ini_get_int()</a></code>, <code><a class="el" href="confini_8h.html#ae334387b2202eca25e16fb92694d56ca" title="Pointer to atol()">ini_get_lint()</a></code>, <code><a class="el" href="confini_8h.html#a9562da3c55b51795bbcbb2b19d608907" title="Pointer to atoll()">ini_get_llint()</a></code> and <code><a class="el" href="confini_8h.html#ab0330bc2629009b1848293abc0de5a6c" title="Pointer to atof()">ini_get_double()</a></code> &ndash; as these are nothing but links to the standard functions <a href="http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoi"><code>atoi()</code></a>, <a href="http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atol"><code>atol()</code></a>, <a href="http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atoll"><code>atoll()</code></a> and <a href="http://www.gnu.org/software/libc/manual/html_node/Parsing-of-Integers.html#index-atof"><code>atof()</code></a>.</p>
-<p>Instead of just removing these function pointers, however, it is also possible to provide novel functions implemented from scratch for parsing numbers.</p>
+<p>Instead of just removing these function pointers, it is also possible to provide novel functions implemented from scratch for parsing numbers.</p>
 <p>What <code>./configure --without-io-api</code> does in fact is replacing in <code><a class="el" href="confini_8h.html" title="libconfini header">src/confini.h</a></code> the function pointers declared immediately after the comment <code>/* PUBLIC LINKS */</code> with the following function headers:</p>
 <div class="fragment"><div class="line"><span class="keyword">extern</span> <span class="keywordtype">int</span> <a class="code" href="confini_8h.html#adba0d5ee273d05ed845c66f01a621119">ini_get_int</a> (</div>
 <div class="line">  <span class="keyword">const</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> ini_string</div>
@@ -263,11 +263,11 @@ $(function() {
 <div class="line"><span class="keyword">extern</span> <span class="keywordtype">double</span> <a class="code" href="confini_8h.html#ab0330bc2629009b1848293abc0de5a6c">ini_get_double</a> (</div>
 <div class="line">  <span class="keyword">const</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> ini_string</div>
 <div class="line">);</div>
-<div class="ttc" id="aconfini_8h_html_a178704d02ede6101f757bbd37e5bd697"><div class="ttname"><a href="confini_8h.html#a178704d02ede6101f757bbd37e5bd697">ini_get_float</a></div><div class="ttdeci">double(*const ini_get_float)(const char *ini_string)</div><div class="ttdoc">Legacy support for parsing a double data type – please do not use this function: use ini_get_double()...</div><div class="ttdef"><b>Definition:</b> confini.c:5716</div></div>
-<div class="ttc" id="aconfini_8h_html_a9562da3c55b51795bbcbb2b19d608907"><div class="ttname"><a href="confini_8h.html#a9562da3c55b51795bbcbb2b19d608907">ini_get_llint</a></div><div class="ttdeci">long long int(*const ini_get_llint)(const char *ini_string)</div><div class="ttdoc">Pointer to atoll()</div><div class="ttdef"><b>Definition:</b> confini.c:5698</div></div>
-<div class="ttc" id="aconfini_8h_html_ab0330bc2629009b1848293abc0de5a6c"><div class="ttname"><a href="confini_8h.html#ab0330bc2629009b1848293abc0de5a6c">ini_get_double</a></div><div class="ttdeci">double(*const ini_get_double)(const char *ini_string)</div><div class="ttdoc">Pointer to atof()</div><div class="ttdef"><b>Definition:</b> confini.c:5700</div></div>
-<div class="ttc" id="aconfini_8h_html_adba0d5ee273d05ed845c66f01a621119"><div class="ttname"><a href="confini_8h.html#adba0d5ee273d05ed845c66f01a621119">ini_get_int</a></div><div class="ttdeci">int(*const ini_get_int)(const char *ini_string)</div><div class="ttdoc">Pointer to atoi()</div><div class="ttdef"><b>Definition:</b> confini.c:5694</div></div>
-<div class="ttc" id="aconfini_8h_html_ae334387b2202eca25e16fb92694d56ca"><div class="ttname"><a href="confini_8h.html#ae334387b2202eca25e16fb92694d56ca">ini_get_lint</a></div><div class="ttdeci">long int(*const ini_get_lint)(const char *ini_string)</div><div class="ttdoc">Pointer to atol()</div><div class="ttdef"><b>Definition:</b> confini.c:5696</div></div>
+<div class="ttc" id="aconfini_8h_html_a178704d02ede6101f757bbd37e5bd697"><div class="ttname"><a href="confini_8h.html#a178704d02ede6101f757bbd37e5bd697">ini_get_float</a></div><div class="ttdeci">double(*const ini_get_float)(const char *ini_string)</div><div class="ttdoc">Legacy support for parsing a double data type – please do not use this function: use ini_get_double()...</div><div class="ttdef"><b>Definition:</b> confini.c:5744</div></div>
+<div class="ttc" id="aconfini_8h_html_a9562da3c55b51795bbcbb2b19d608907"><div class="ttname"><a href="confini_8h.html#a9562da3c55b51795bbcbb2b19d608907">ini_get_llint</a></div><div class="ttdeci">long long int(*const ini_get_llint)(const char *ini_string)</div><div class="ttdoc">Pointer to atoll()</div><div class="ttdef"><b>Definition:</b> confini.c:5726</div></div>
+<div class="ttc" id="aconfini_8h_html_ab0330bc2629009b1848293abc0de5a6c"><div class="ttname"><a href="confini_8h.html#ab0330bc2629009b1848293abc0de5a6c">ini_get_double</a></div><div class="ttdeci">double(*const ini_get_double)(const char *ini_string)</div><div class="ttdoc">Pointer to atof()</div><div class="ttdef"><b>Definition:</b> confini.c:5728</div></div>
+<div class="ttc" id="aconfini_8h_html_adba0d5ee273d05ed845c66f01a621119"><div class="ttname"><a href="confini_8h.html#adba0d5ee273d05ed845c66f01a621119">ini_get_int</a></div><div class="ttdeci">int(*const ini_get_int)(const char *ini_string)</div><div class="ttdoc">Pointer to atoi()</div><div class="ttdef"><b>Definition:</b> confini.c:5722</div></div>
+<div class="ttc" id="aconfini_8h_html_ae334387b2202eca25e16fb92694d56ca"><div class="ttname"><a href="confini_8h.html#ae334387b2202eca25e16fb92694d56ca">ini_get_lint</a></div><div class="ttdeci">long int(*const ini_get_lint)(const char *ini_string)</div><div class="ttdoc">Pointer to atol()</div><div class="ttdef"><b>Definition:</b> confini.c:5724</div></div>
 </div><!-- fragment --><p>The same <code>configure</code> option amends in <code><a class="el" href="confini_8c.html" title="libconfini functions">src/confini.c</a></code> (at the end of the file) the corresponding pointers with the code below. Note that the C language does not possess a templating mechanism, so the following code needs to rely on a macro for not repeating five times the same function body with only minimal variations.</p>
 <div class="fragment"><div class="line"><span class="comment">/*</span></div>
 <div class="line"><span class="comment">  The code below is free software. You can redistribute it and/or modify it</span></div>
@@ -275,10 +275,9 @@ $(function() {
 <div class="line"><span class="comment">  COPYING for details. </span></div>
 <div class="line"><span class="comment">*/</span></div>
 <div class="line"> </div>
-<div class="line"><span class="preprocessor">#define _LIBCONFINI_RADIX_POINT_ &#39;.&#39;</span></div>
+<div class="line"><span class="preprocessor">#define _CONFINI_RADIX_POINT_ &#39;.&#39;</span></div>
 <div class="line"><span class="preprocessor">#define __INTEGER_DATA_TYPE__ 0</span></div>
 <div class="line"><span class="preprocessor">#define __FLOAT_DATA_TYPE__ 1</span></div>
-<div class="line"> </div>
 <div class="line"> </div>
 <div class="line"><span class="comment">/*</span></div>
 <div class="line"><span class="comment"></span> </div>
@@ -292,36 +291,37 @@ $(function() {
 <div class="line"><span class="comment">  FLAG_32   The number is negative</span></div>
 <div class="line"><span class="comment"></span> </div>
 <div class="line"><span class="comment">*/</span></div>
-<div class="line"><span class="preprocessor">#define _LIBCONFINI_STR2NUM_FNBODY_(HAS_RADIX_PT, DATA_TYPE, STR) \</span></div>
-<div class="line"><span class="preprocessor">  register uint8_t abcd = 9; \</span></div>
+<div class="line"><span class="preprocessor">#define _CONFINI_STR2NUM_FNBODY_(HAS_RADIX_PT, DATA_TYPE, STR) \</span></div>
+<div class="line"><span class="preprocessor">  register uint_least8_t abcd = 9; \</span></div>
 <div class="line"><span class="preprocessor">  register size_t idx = 0; \</span></div>
 <div class="line"><span class="preprocessor">  register DATA_TYPE retval = 0; \</span></div>
 <div class="line"><span class="preprocessor">  __PP_IIF__(HAS_RADIX_PT, \</span></div>
 <div class="line"><span class="preprocessor">    DATA_TYPE fact = 1; \</span></div>
 <div class="line"><span class="preprocessor">  ) \</span></div>
 <div class="line"><span class="preprocessor">  do { \</span></div>
-<div class="line"><span class="preprocessor">    abcd  =   STR[idx] &gt; 47 &amp;&amp; STR[idx] &lt; 58 ? \</span></div>
-<div class="line"><span class="preprocessor">                abcd | 18 \</span></div>
-<div class="line"><span class="preprocessor">              : !(abcd &amp; 6) &amp;&amp; STR[idx] == &#39;-&#39; ? \</span></div>
-<div class="line"><span class="preprocessor">                (abcd &amp; 47) | 36 \</span></div>
-<div class="line"><span class="preprocessor">              : !(abcd &amp; 6) &amp;&amp; STR[idx] == &#39;+&#39; ? \</span></div>
-<div class="line"><span class="preprocessor">                (abcd &amp; 15) | 4 \</span></div>
-<div class="line"><span class="preprocessor">              __PP_IIF__(HAS_RADIX_PT, \</span></div>
-<div class="line"><span class="preprocessor">              : (abcd &amp; 8) &amp;&amp; STR[idx] == _LIBCONFINI_RADIX_POINT_ ? \</span></div>
-<div class="line"><span class="preprocessor">                (abcd &amp; 39) | 2 \</span></div>
-<div class="line"><span class="preprocessor">              ) \</span></div>
-<div class="line"><span class="preprocessor">              : !(abcd &amp; 2) &amp;&amp; is_some_space(STR[idx], _LIBCONFINI_WITH_EOL_) ? \</span></div>
-<div class="line"><span class="preprocessor">                (abcd &amp; 47) | 1 \</span></div>
-<div class="line"><span class="preprocessor">              : \</span></div>
-<div class="line"><span class="preprocessor">                abcd &amp; 46; \</span></div>
+<div class="line"><span class="preprocessor">    abcd = \</span></div>
+<div class="line"><span class="preprocessor">      STR[idx] &gt; 47 &amp;&amp; STR[idx] &lt; 58 ? \</span></div>
+<div class="line"><span class="preprocessor">        abcd | 18 \</span></div>
+<div class="line"><span class="preprocessor">      : !(abcd &amp; 6) &amp;&amp; STR[idx] == &#39;-&#39; ? \</span></div>
+<div class="line"><span class="preprocessor">        (abcd &amp; 47) | 36 \</span></div>
+<div class="line"><span class="preprocessor">      : !(abcd &amp; 6) &amp;&amp; STR[idx] == &#39;+&#39; ? \</span></div>
+<div class="line"><span class="preprocessor">        (abcd &amp; 15) | 4 \</span></div>
+<div class="line"><span class="preprocessor">      __PP_IIF__(HAS_RADIX_PT, \</span></div>
+<div class="line"><span class="preprocessor">      : (abcd &amp; 8) &amp;&amp; STR[idx] == _CONFINI_RADIX_POINT_ ? \</span></div>
+<div class="line"><span class="preprocessor">        (abcd &amp; 39) | 2 \</span></div>
+<div class="line"><span class="preprocessor">      ) \</span></div>
+<div class="line"><span class="preprocessor">      : !(abcd &amp; 2) &amp;&amp; is_some_space(STR[idx], _CONFINI_WITH_EOL_) ? \</span></div>
+<div class="line"><span class="preprocessor">        (abcd &amp; 47) | 1 \</span></div>
+<div class="line"><span class="preprocessor">      : \</span></div>
+<div class="line"><span class="preprocessor">        abcd &amp; 46; \</span></div>
 <div class="line"><span class="preprocessor">    if (abcd &amp; 16) { \</span></div>
-<div class="line"><span class="preprocessor">      retval  =   __PP_IIF__(HAS_RADIX_PT, \</span></div>
-<div class="line"><span class="preprocessor">                  abcd &amp; 8 ? \</span></div>
-<div class="line"><span class="preprocessor">                    STR[idx] - 48 + retval * 10 \</span></div>
-<div class="line"><span class="preprocessor">                  : \</span></div>
-<div class="line"><span class="preprocessor">                    (STR[idx] - 48) / (fact *= 10) + retval, \</span></div>
-<div class="line"><span class="preprocessor">                  retval * 10 + STR[idx] - 48 \</span></div>
-<div class="line"><span class="preprocessor">                  ); \</span></div>
+<div class="line"><span class="preprocessor">      retval  =  __PP_IIF__(HAS_RADIX_PT, \</span></div>
+<div class="line"><span class="preprocessor">            abcd &amp; 8 ? \</span></div>
+<div class="line"><span class="preprocessor">              STR[idx] - 48 + retval * 10 \</span></div>
+<div class="line"><span class="preprocessor">            : \</span></div>
+<div class="line"><span class="preprocessor">              (STR[idx] - 48) / (fact *= 10) + retval, \</span></div>
+<div class="line"><span class="preprocessor">            retval * 10 + STR[idx] - 48 \</span></div>
+<div class="line"><span class="preprocessor">            ); \</span></div>
 <div class="line"><span class="preprocessor">    } \</span></div>
 <div class="line"><span class="preprocessor">    idx++; \</span></div>
 <div class="line"><span class="preprocessor">  } while (abcd &amp; 1); \</span></div>
@@ -329,27 +329,27 @@ $(function() {
 <div class="line"> </div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> <a class="code" href="confini_8h.html#adba0d5ee273d05ed845c66f01a621119">ini_get_int</a> (<span class="keyword">const</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> ini_string) {</div>
-<div class="line">  _LIBCONFINI_STR2NUM_FNBODY_(__INTEGER_DATA_TYPE__, <span class="keywordtype">int</span>, ini_string);</div>
+<div class="line">  _CONFINI_STR2NUM_FNBODY_(__INTEGER_DATA_TYPE__, <span class="keywordtype">int</span>, ini_string);</div>
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">long</span> <span class="keywordtype">int</span> <a class="code" href="confini_8h.html#ae334387b2202eca25e16fb92694d56ca">ini_get_lint</a> (<span class="keyword">const</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> ini_string) {</div>
-<div class="line">  _LIBCONFINI_STR2NUM_FNBODY_(__INTEGER_DATA_TYPE__, <span class="keywordtype">long</span> <span class="keywordtype">int</span>, ini_string);</div>
+<div class="line">  _CONFINI_STR2NUM_FNBODY_(__INTEGER_DATA_TYPE__, <span class="keywordtype">long</span> <span class="keywordtype">int</span>, ini_string);</div>
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">long</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> <a class="code" href="confini_8h.html#a9562da3c55b51795bbcbb2b19d608907">ini_get_llint</a> (<span class="keyword">const</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> ini_string) {</div>
-<div class="line">  _LIBCONFINI_STR2NUM_FNBODY_(__INTEGER_DATA_TYPE__, <span class="keywordtype">long</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span>, ini_string);</div>
+<div class="line">  _CONFINI_STR2NUM_FNBODY_(__INTEGER_DATA_TYPE__, <span class="keywordtype">long</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span>, ini_string);</div>
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">float</span> <a class="code" href="confini_8h.html#a178704d02ede6101f757bbd37e5bd697">ini_get_float</a> (<span class="keyword">const</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> ini_string) {</div>
-<div class="line">  _LIBCONFINI_STR2NUM_FNBODY_(__FLOAT_DATA_TYPE__, <span class="keywordtype">float</span>, ini_string);</div>
+<div class="line">  _CONFINI_STR2NUM_FNBODY_(__FLOAT_DATA_TYPE__, <span class="keywordtype">float</span>, ini_string);</div>
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">double</span> <a class="code" href="confini_8h.html#ab0330bc2629009b1848293abc0de5a6c">ini_get_double</a> (<span class="keyword">const</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> ini_string) {</div>
-<div class="line">  _LIBCONFINI_STR2NUM_FNBODY_(__FLOAT_DATA_TYPE__, <span class="keywordtype">double</span>, ini_string);</div>
+<div class="line">  _CONFINI_STR2NUM_FNBODY_(__FLOAT_DATA_TYPE__, <span class="keywordtype">double</span>, ini_string);</div>
 <div class="line">}</div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->

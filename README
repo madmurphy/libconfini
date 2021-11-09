@@ -17,16 +17,16 @@ freedom to choose what to do with them through a custom callback invoked for
 each INI node read. The API has been designed to be powerful, flexible and
 simple to use.
 
-With **libconfini** you will find in INI files the same serialization power you
-would normally find in other heavily structured formats (such as JSON, YAML,
-TOML), but with the advantage of using the most human-friendly configuration
-format ever invented (thanks to their informal status, INI files are indeed
-more fluid, expressive and human-friendly than formats explicitly designed with
-the same purpose, such as YAML and TOML). The library's main goal is to be
-uncommonly powerful in the most tedious and error-prone task when parsing a
-text file in C: string handling. Thanks to this the programmer is left free to
-organize the content parsed as (s)he pleases, assisted by a rich set of
-fine-tuning tools.
+With **libconfini** you will find in INI files the same serialization power
+that you would normally find in other heavily structured formats (such as JSON,
+YAML, TOML), but with the advantage of using the most human-friendly
+configuration format ever invented (thanks to their informal status, INI files
+are indeed more fluid, expressive and human-friendly than formats explicitly
+designed with the same purpose, such as YAML and TOML). The library's main goal
+is to be uncommonly powerful in the most tedious and error-prone task when
+parsing a text file in C: string handling. Thanks to this, the programmer is
+left free to organize the content parsed as (s)he pleases, assisted by a rich
+set of fine-tuning tools.
 
 
 Features
@@ -161,18 +161,19 @@ instead (it will produce larger binaries)
 For a minimum installation without development files (i.e. static libraries,
 headers, documentation, examples, etc.) use `./configure --disable-devel`.
 
-If the `configure` script is missing from your package you need to generate it
-by running the `bootstrap` script. By default, `bootstrap` will also run the
-`configure` script immediately after having generated it, so you may type the
-`make` command directly after `bootstrap`. To list different options use
-`./bootstrap --help`.
+If the `configure` script is missing you need to generate it by running the
+`bootstrap` script. By default, `bootstrap` will also run the `configure`
+script immediately after having generated it, so you may type the `make`
+command directly after `bootstrap`. To list different options use `./bootstrap
+--help`.
 
 If you are using **Microsoft Windows**, a batch script for compiling
-**libconfini** with [MinGW][7] without Bash is available (`mgwmake.bat`). If
-you are interested in using **GNU Make** for compiling **libconfini** under
-Microsoft Windows, you can integrate MinGW with [MSYS][8], or you can directly
-use [MSYS2][9] and [its official port][10] of the library. Alternatively, [an
-unofficial port][11] of **libconfini** for [Cygwin][12] is available.
+**libconfini** with [**MinGW**][7] without **Bash** is available
+(`mgwmake.bat`). If you are interested in using **GNU Make** for compiling
+**libconfini**, you can integrate **MinGW** with [**MSYS**][8], or you can
+directly use [**MSYS2**][9] and [its official port][10] of the library.
+Alternatively, [an unofficial port][11] of **libconfini** for [**Cygwin**][12]
+is available.
 
 For further information, see [INSTALL][13].
 

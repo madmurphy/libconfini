@@ -1,7 +1,7 @@
 /*
 
 This is a simple example of how to construct a C++ class that relies on a
-`std::unordered_map` object to store the data dispatched by **libconfini**.
+`std::unordered_map` object for storing the data dispatched by **libconfini**.
 This framework exploits most of the library's features, but not all. Missing
 features include:
 

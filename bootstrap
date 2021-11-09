@@ -52,7 +52,8 @@ if test "${CLEANONLY}" -ne 0; then
 	echo 'Cleaning package...'
 	test -f 'Makefile' && make maintainer-clean
 	rm -Rf autom4te.cache m4 build-aux no-dist `find . -type d -name .deps`
-	rm -f aclocal.m4 compile config.* configure configure~ depcomp install-sh libtool ltmain.sh missing `find . -name Makefile.in`
+	rm -f aclocal.m4 compile config.* configure configure~ depcomp \
+		install-sh libtool ltmain.sh missing `find . -name Makefile.in`
 	echo 'Done'
 	exit 0
 fi
@@ -84,7 +85,7 @@ if grep "^IT_PROG_INTLTOOL" "${srcdir}/configure.ac" >/dev/null; then
 	intltoolize --version < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo '**Error**: You must have `intltool` installed. You can get it from'
-		echo 'ftp://ftp.gnome.org/pub/GNOME/'
+		echo 'https://freedesktop.org/wiki/Software/intltool/'
 		echo
 		DIE=1
 	} >&2
@@ -94,7 +95,7 @@ if grep "^AM_PROG_XML_I18N_TOOLS" "${srcdir}/configure.ac" >/dev/null; then
 	xml-i18n-toolize --version < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo '**Error**: You must have `xml-i18n-toolize` installed. You can get it from'
-		echo 'ftp://ftp.gnome.org/pub/GNOME/'
+		echo 'https://download.gnome.org/sources/xml-i18n-tools/'
 		echo
 		DIE=1
 	} >&2
@@ -132,7 +133,7 @@ if grep "^AM_GLIB_GNU_GETTEXT" "${srcdir}/configure.ac" >/dev/null; then
 	glib-gettextize --version < /dev/null > /dev/null 2>&1 || {
 		echo
 		echo '**Error**: You must have `glib` installed. You can get it from'
-		echo 'ftp://ftp.gtk.org/pub/gtk'
+		echo 'https://gitlab.gnome.org/GNOME/glib'
 		echo
 		DIE=1
 	} >&2

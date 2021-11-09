@@ -2,6 +2,18 @@ Change Log
 ==========
 
 
+## 1.16.3 (2021-11-09)
+
+Changes:
+
+* Code review (`ini_string_match_si()`; private functions `qultrim_h()`,
+  `dqultrim_s()`, `get_type_as_active()` and  `further_cuts()`) -- micro
+  changes and performance optimizations only
+* Documentation
+* Examples
+* A small bug in the build system has been fixed (see `autostuff/ChangeLog.md`)
+
+
 ## 1.16.2 (2021-09-25)
 
 Changes:
@@ -82,7 +94,7 @@ Changes:
   `enum`
 * Code review (`ini_array_foreach()`, `ini_get_bool()`, `ini_ntof()`, "bare
   metal" functions `ini_get_int()`, `ini_get_lint()`, `ini_get_llint()` and
-  `ini_get_double()`, private functions `dqultrim_s()`, `get_type_as_active()`,
+  `ini_get_double()`; private functions `dqultrim_s()`, `get_type_as_active()`,
   and `qultrim_h()`)
 * Documentation
 * New examples have been created (`examples/miscellanea/parse_foreign.c`,
@@ -327,7 +339,7 @@ Changes:
 
 Changes:
 
-* Code review (`load_ini_file()`, `ini_array_foreach()`, `ini_array_split()`,
+* Code review (`load_ini_file()`, `ini_array_foreach()`, `ini_array_split()`;
   private functions `is_some_space()`, `ltrim_s()`, `ltrim_h()`, `ltrim_hh()`,
   `rtrim_s()` and `rtrim_h()`)
 * Updated **Autotools** macros
@@ -451,7 +463,7 @@ Changes:
 * The buffer pointed by `IniDispatch::append_to` is now passed as `const`
 * Code review (`ini_string_match_ss()`, `ini_string_match_si()`,
   `ini_string_match_ii()`, `ini_string_parse()`, `ini_array_get_length()`,
-  `ini_array_foreach()`, `ini_array_split()`, private functions `uncomment()`
+  `ini_array_foreach()`, `ini_array_split()`; private functions `uncomment()`
   and `further_cuts()`)
 * Private functions `get_metachar_pos()` and `collapse_empty_quotes()` have
   been created
@@ -473,7 +485,7 @@ Changes:
 * Private function † `ultrim_h()` has been renamed to `qultrim_h()` and
   rewritten
 * Code review (`ini_array_foreach()`, `ini_array_split()`,
-  `ini_string_parse()`, private functions † `get_delimiter_pos()` and
+  `ini_string_parse()`; private functions † `get_delimiter_pos()` and
   `get_type_as_active()`)
 
 
@@ -525,7 +537,7 @@ Changes:
   `sanitize_section_path()`
 * Created private function † `sanitize_key_name()`
 * Code review (`ini_array_get_length()`, `ini_string_match_si()`,
-  `ini_string_match_ii()`, private functions `sanitize_section_path()` and
+  `ini_string_match_ii()`; private functions `sanitize_section_path()` and
   `collapse_spaces()`)
 * Made sure that sections appended to root as pseudo-subsections will be
   dispatched always without the leading dot

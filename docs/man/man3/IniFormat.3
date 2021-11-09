@@ -1,4 +1,4 @@
-.TH "IniFormat" 3 "Sat Sep 25 2021" "libconfini" \" -*- nroff -*-
+.TH "IniFormat" 3 "Tue Nov 9 2021" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -95,7 +95,7 @@ If set to \fCtrue\fP, the double-quote character (\fC"\fP) will be considered as
 .SS "IniFormat::no_single_quotes"
 If set to \fCtrue\fP, the single-quote character (\fC'\fP) will be considered as a normal character\&. 
 .SS "IniFormat::no_spaces_in_names"
-If set to \fCtrue\fP, key and section names containing spaces (even within quotes) will be dispatched as \fBINI_UNKNOWN\fP\&. Note that setting \fBIniFormat::delimiter_symbol\fP to \fBINI_ANY_SPACE\fP will not automatically set this option to \fCtrue\fP (spaces will still be allowed in section names)\&. 
+If set to \fCtrue\fP, key and section names containing spaces (even within quotes) will be dispatched as \fBINI_UNKNOWN\fP\&. Note that setting \fBIniFormat::delimiter_symbol\fP to \fBINI_ANY_SPACE\fP will not automatically set this option to \fCtrue\fP (spaces will still be allowed within quotes, and in section names independently of quotes)\&. 
 .SS "IniFormat::preserve_empty_quotes"
 If set to \fCtrue\fP, and if single/double quotes are metacharacters, ensures that, within values, empty strings enclosed between quotes (\fC''\fP or \fC''\fP) will not be collapsed together with the spaces that surround them\&. This option is useful for values containing space-delimited arrays, in order to preserve their empty members – as in, for instance: \fCcoordinates = '' ''\fP\&. Note that, in section and key names, empty strings enclosed between quotes are \fIalways\fP collapsed together with their surrounding spaces\&. 
 .SS "IniFormat::section_paths"

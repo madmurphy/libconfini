@@ -1,6 +1,9 @@
 @ECHO OFF
 SETLOCAL
 
+REM Please make sure that Microsoft Visual Studio compiler and linker are
+REM reachable from your %Path% environment variable.
+
 SET RCOMPILER=rc.exe
 SET CCOMPILER=cl.exe
 SET LINKER=link.exe

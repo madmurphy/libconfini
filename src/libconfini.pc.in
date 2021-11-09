@@ -8,6 +8,7 @@ includedir=@includedir@
 Name: @PACKAGE_CONFNAME@
 Description: @PROJECT_DESCRIPTION@
 Version: @PACKAGE_VERSION@
+URL: @PACKAGE_URL@
 Requires: 
 Libs: -L${libdir} -l@PROJECT_LOCALNAME@
 Cflags: -I${includedir}

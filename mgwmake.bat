@@ -1,7 +1,7 @@
 @ECHO OFF
 SETLOCAL
 
-REM Do not forget to add C:\MinGW\bin to your %Path% environment variable, or
+REM Do not forget to add C:\MinGW\bin to your %Path% environment variable,
 REM otherwise this script will not work!
 
 SET RCOMPILER=windres.exe

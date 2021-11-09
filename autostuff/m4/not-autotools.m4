@@ -126,7 +126,7 @@ dnl  From: not-autotools/m4/not-autoshell.m4
 dnl
 AC_DEFUN([NS_TEST_AEQ],
 	[m4_if([$#], [0], [:], [$#], [1], [:],
-		[test "_AS_QUOTE(m4_dquote(?[]m4_joinall(?, m4_shift($@))))" = "_AS_QUOTE(m4_dquote(m4_for([], [2], [$#], [1], [[?$1]])))"])])
+		[test "_AS_QUOTE(m4_dquote([?]m4_joinall([?], m4_shift($@))))" = "_AS_QUOTE(m4_dquote(m4_for([], [2], [$#], [1], [[?$1]])))"])])
 
 
 dnl  NS_TEST_NAE(string1, string2[, string3[, ... stringN]])
@@ -139,7 +139,7 @@ dnl  From: not-autotools/m4/not-autoshell.m4
 dnl
 AC_DEFUN([NS_TEST_NAE],
 	[m4_if([$#], [0], [:], [$#], [1], [:],
-		[test "_AS_QUOTE(m4_dquote(?[]m4_joinall(?, m4_shift($@))))" != "_AS_QUOTE(m4_dquote(m4_for([], [2], [$#], [1], [[?$1]])))"])])
+		[test "_AS_QUOTE(m4_dquote([?]m4_joinall([?], m4_shift($@))))" != "_AS_QUOTE(m4_dquote(m4_for([], [2], [$#], [1], [[?$1]])))"])])
 
 
 dnl  NC_REQUIRE(macro1[, macro2[, macro3[, ... macroN]]])
@@ -303,14 +303,12 @@ dnl
 dnl  Requires: `n4_case_in()`
 dnl  From: not-autotools/m4/not-extended-config.m4
 dnl
-AC_DEFUN_ONCE([NC_CONFIG_SHADOW_DIR], [
-
+AC_DEFUN_ONCE([NC_CONFIG_SHADOW_DIR], [dnl
 AC_REQUIRE([AC_PROG_LN_S])
 m4_define([NC_SHADOW_DIR], [$1])
 m4_define([NC_CONFNEW_SUBDIR], [confnew])
 m4_define([NC_THREATENED_LIST], [])
 AC_SUBST([confnewdir], [']NC_CONFNEW_SUBDIR['])
-
 AC_ARG_ENABLE([extended-config],
 	[AS_HELP_STRING([--enable-extended-config@<:@=MODE@:>@],
 		[extend the configure process to files that normally do not need
@@ -327,10 +325,8 @@ AC_ARG_ENABLE([extended-config],
 				AC_MSG_WARN([unrecognized option: --enable-extended-config='${enableval}'])
 			])],
 		[AS_VAR_SET([enable_extended_config], ['no'])])
-
 AM_CONDITIONAL([HAVE_EXTENDED_CONFIG], [test "x${enable_extended_config}" != xno])
 AM_CONDITIONAL([HAVE_UPDATES], [test "x${enable_extended_config}" = xsandbox])
-
 AM_COND_IF([HAVE_EXTENDED_CONFIG], [
 	AS_MKDIR_P(["]m4_quote(NC_CONFNEW_SUBDIR)["])
 	AC_CONFIG_COMMANDS([extended-config], [
@@ -352,16 +348,17 @@ AM_COND_IF([HAVE_EXTENDED_CONFIG], [
 		AS_VAR_SET([extconfmode], ['${enable_extended_config}'])
 		AS_VAR_SET([threatlist], ['${nc_threatlist}'])
 	])
-])
-
+])dnl
+dnl
 dnl  NC_THREATEN_FILES(file1[, file2[, file3[, ... fileN]]])
-dnl  **********************************************************************
+dnl  **************************************************************************
+dnl  For the documentation, see `NC_CONFIG_SHADOW_DIR()`
 AC_DEFUN([NC_THREATEN_FILES], [
 	AM_COND_IF([HAVE_EXTENDED_CONFIG], [
 		AC_CONFIG_FILES(m4_foreach([_F_ITER_], m4_dquote(]m4_dquote(m4_map_args_sep([m4_normalize(], [)], [,], ][$][@][))[),
 			[m4_ifnblank(m4_quote(_F_ITER_),
 				[n4_case_in(m4_quote(_F_ITER_), m4_quote(NC_THREATENED_LIST),
-					[n4_case_in(m4_quote(_F_ITER_), m4_quote(NC_SHADOW_REDEF), [],
+					[n4_case_in(m4_quote(_F_ITER_), m4_dquote(NC_SHADOW_REDEF), [],
 						[m4_define([NC_SHADOW_REDEF],
 							m4_ifset([NC_SHADOW_REDEF],
 								[m4_dquote(NC_SHADOW_REDEF,[ ]_F_ITER_)],
@@ -375,15 +372,16 @@ AC_DEFUN([NC_THREATEN_FILES], [
 	AS_VAR_SET([nc_threatlist], ["]m4_join(m4_newline(), NC_THREATENED_LIST)["])
 	m4_ifdef([NC_SHADOW_REDEF],
 		[m4_warn([syntax], [redefined threatened files ]m4_quote(NC_SHADOW_REDEF)[ - skip])])
-])
-
-dnl  NC_THREATEN_BLINDLY()
-dnl  **********************************************************************
-AC_DEFUN_ONCE([NC_THREATEN_BLINDLY],
-	[NC_THREATEN_FILES(m4_shift(m4_bpatsubst(m4_quote(m4_esyscmd([find ']m4_quote(NC_SHADOW_DIR)[' -type f -name '*.in' -printf ", [[%P{/@/}]]"])), [\.in{/@/}], [])))])
-
+])dnl
+dnl
+dnl  NR_THREATEN_BLINDLY()
+dnl  **************************************************************************
+dnl  dnl  For the documentation, see `NC_CONFIG_SHADOW_DIR()`
+AC_DEFUN_ONCE([NR_THREATEN_BLINDLY],
+	[NC_THREATEN_FILES(m4_shift(m4_bpatsubst(m4_quote(m4_esyscmd([find ']m4_quote(NC_SHADOW_DIR)[' -type f -name '*.in' -printf ", [[%P{/@/}]]"])), [\.in{/@/}], [])))])dnl
+dnl
 dnl  NC_SHADOW_AFTER_OUTPUT[(if-merge-cmds[, if-sandbox-cmds])]
-dnl  **********************************************************************
+dnl  **************************************************************************
 dnl
 dnl  Example:
 dnl
@@ -392,7 +390,7 @@ dnl        AC_MSG_NOTICE([updating the source code with `${ac_make} all-official
 dnl        "${ac_make}" all-official-sources
 dnl     ])
 dnl
-dnl  **********************************************************************
+dnl  **************************************************************************
 AC_DEFUN_ONCE([NC_SHADOW_AFTER_OUTPUT],
 	[m4_ifset([NC_THREATENED_LIST],
 		[m4_ifnblank(m4_quote(]m4_dquote(][$][1][$][2][)[),
@@ -404,8 +402,7 @@ AC_DEFUN_ONCE([NC_SHADOW_AFTER_OUTPUT],
 						[AM_COND_IF([HAVE_EXTENDED_CONFIG],
 							[m4_expand(m4_argn([1],
 								]m4_dquote(]m4_dquote(]m4_dquote(]m4_dquote(]m4_dquote(][$][@][)[)[)[)[)[))])]]))])],
-		[m4_warn([syntax], [NC_CONFIG_SHADOW_DIR has been invoked but no files have been threatened.])])])
-
+		[m4_warn([syntax], [NC_CONFIG_SHADOW_DIR has been invoked but no files have been threatened.])])])dnl
 ])
 
 
@@ -440,8 +437,8 @@ dnl
 dnl  From: not-autotools/m4/not-autotools.m4
 dnl
 AC_DEFUN([NA_HELP_STRINGS],
-	[m4_if(m4_count($1), [1],
-		[m4_if([$#], [0], [], [$#], [1],
+	[m4_if([$#], [0], [], m4_count($1), [1],
+		[m4_if([$#], [1],
 			[m4_text_wrap($1, [  ])],
 			[AS_HELP_STRING(m4_normalize($1), [$2])m4_if([$#], [2], [], [m4_newline()NA_HELP_STRINGS(m4_shift2($@))])])],
 		[m4_text_wrap(m4_car($1)[,], [  ])m4_newline()NA_HELP_STRINGS(m4_dquote(m4_shift($1))m4_if([$#], [1], [], [, m4_shift($@)]))])])

@@ -7,7 +7,7 @@
 	@brief		libconfini functions
 	@author		Stefano Gioffr&eacute;
 	@copyright	GNU General Public License, version 3 or any later version
-	@version	1.16.2
+	@version	1.16.3
 	@date		2016-2021
 	@see		https://madmurphy.github.io/libconfini
 
@@ -147,7 +147,8 @@
 	                within quotes) will be dispatched as #INI_UNKNOWN. Note that
 	                setting #IniFormat::delimiter_symbol to #INI_ANY_SPACE will not
 	                automatically set this option to `true` (spaces will still be
-	                allowed in section names).
+	                allowed within quotes, and in section names independently of
+	                quotes).
 	@property   IniFormat::no_single_quotes
 	                If set to `true`, the single-quote character (`'`) will be
 	                considered as a normal character.
@@ -817,13 +818,13 @@ static inline size_t qultrim_h (
 
 	Mask `abcd` (8 bits used):
 
-		FLAG_1		Single quotes are not metacharacters (const)
-		FLAG_2		Double quotes are not metacharacters (const)
-		FLAG_4		Unescaped single quotes are odd right now
-		FLAG_8		Unescaped double quotes are odd right now
-		FLAG_16		We are in an odd sequence of backslashes
-		FLAG_32		Erase the previous character
-		FLAG_64		Erase this character
+		FLAG_1      Single quotes are not metacharacters (const)
+		FLAG_2      Double quotes are not metacharacters (const)
+		FLAG_4      Unescaped single quotes are odd right now
+		FLAG_8      Unescaped double quotes are odd right now
+		FLAG_16     We are in an odd sequence of backslashes
+		FLAG_32     Erase the previous character
+		FLAG_64     Erase this character
 		FLAG_128    Continue the loop
 
 	*/
@@ -838,7 +839,7 @@ static inline size_t qultrim_h (
 		abcd =
 
 			!(abcd & 28) && is_some_space(srcstr[idx], _CONFINI_NO_EOL_) ?
-				(abcd & 207) | 64
+				(abcd & 223) | 64
 			: !(abcd & 12) && (
 				srcstr[idx] == _CONFINI_LF_ ||
 				srcstr[idx] == _CONFINI_CR_
@@ -849,19 +850,19 @@ static inline size_t qultrim_h (
 					:
 						abcd | 64
 				)
-			: !(abcd & 25) && srcstr[idx] == _CONFINI_S_QUOTES_ ?
-				(
-					abcd & 4 ?
-						(abcd & 235) | 96
-					:
-						(abcd & 143) | 4
-				)
 			: !(abcd & 22) && srcstr[idx] == _CONFINI_D_QUOTES_ ?
 				(
 					abcd & 8 ?
 						(abcd & 231) | 96
 					:
 						(abcd & 159) | 8
+				)
+			: !(abcd & 25) && srcstr[idx] == _CONFINI_S_QUOTES_ ?
+				(
+					abcd & 4 ?
+						(abcd & 235) | 96
+					:
+						(abcd & 159) | 4
 				)
 			: srcstr[idx] == _CONFINI_BACKSLASH_ ?
 				(abcd & 159) ^ 16
@@ -923,10 +924,8 @@ static inline size_t dqultrim_s (
 	*/
 
 
-	register uint_least16_t abcd =
-		format.no_single_quotes |
-		(format.no_double_quotes << 1) |
-		96;
+	register uint_least8_t abcd =
+		(format.no_double_quotes ? 98 : 96) | format.no_single_quotes;
 
 	register size_t idx = offs;
 
@@ -1532,8 +1531,8 @@ static size_t collapse_empty_quotes (
 
 	*/
 
-	register uint_least8_t
-		abcd = (format.no_double_quotes << 1) | format.no_single_quotes;
+	register uint_least8_t abcd =
+		(format.no_double_quotes << 1) | format.no_single_quotes;
 
 	register size_t lshift = ltrim_s(str, 0, _CONFINI_WITH_EOL_), idx = lshift;
 
@@ -1807,7 +1806,7 @@ static uint_least8_t get_type_as_active (
 							: ~abcd & 192 ?
 								(abcd & 991) | 128
 							:
-								(abcd & 735)
+								abcd & 735
 						)
 					: ~abcd & 192 ?
 						(abcd & 927) | 128
@@ -1859,52 +1858,82 @@ static uint_least8_t get_type_as_active (
 
 		*/
 
-		abcd = 32 | (format.no_double_quotes << 1) | format.no_single_quotes;
+		abcd = (format.no_double_quotes ? 34 : 32) | format.no_single_quotes;
 
-		do {
 
-			if (idx >= len) {
+		/* \                                /\
+		\ */     non_space_check:          /* \
+		 \/     ______________________     \ */
 
-				return INI_SECTION;
 
-			}
+		if (idx >= len) {
 
-			switch (srcstr[idx++]) {
+			return INI_SECTION;
 
-				case _CONFINI_VT_:
-				case _CONFINI_FF_:
-				case _CONFINI_HT_:
-				case _CONFINI_SIMPLE_SPACE_:
+		}
 
-					abcd = abcd & 28 ? 0 : abcd & 47;
-					continue;
+		switch (srcstr[idx++]) {
 
-				case _CONFINI_LF_:
-				case _CONFINI_CR_:
+			case _CONFINI_VT_:
+			case _CONFINI_FF_:
+			case _CONFINI_HT_:
+			case _CONFINI_SIMPLE_SPACE_:
 
-					abcd = abcd & 12 ? 0 : abcd & 47;
-					continue;
+				if (abcd & 28) {
 
-				case _CONFINI_BACKSLASH_:
+					break;
 
-					abcd = abcd & 28 ? 0 : abcd | 16;
-					continue;
+				}
 
-				case _CONFINI_D_QUOTES_:
+				abcd &= 47;
+				goto non_space_check;
 
-					abcd = abcd & 22 ? 0 : (abcd & 47) ^ 8;
-					continue;
+			case _CONFINI_LF_:
+			case _CONFINI_CR_:
 
-				case _CONFINI_S_QUOTES_:
+				if (abcd & 12) {
 
-					abcd = abcd & 25 ? 0 : (abcd & 47) ^ 4;
-					continue;
+					break;
 
-			}
+				}
 
-			break;
+				abcd &= 47;
+				goto non_space_check;
 
-		} while (abcd);
+			case _CONFINI_BACKSLASH_:
+
+				if (abcd & 28) {
+
+					break;
+
+				}
+
+				abcd |= 16;
+				goto non_space_check;
+
+			case _CONFINI_S_QUOTES_:
+
+				if (abcd & 25) {
+
+					break;
+
+				}
+
+				abcd = (abcd & 47) ^ 4;
+				goto non_space_check;
+
+			case _CONFINI_D_QUOTES_:
+
+				if (abcd & 22) {
+
+					break;
+
+				}
+
+				abcd = (abcd & 47) ^ 8;
+				goto non_space_check;
+
+		}
 
 	}
 
@@ -1929,7 +1958,7 @@ static uint_least8_t get_type_as_active (
 
 	*/
 
-	abcd = (format.no_spaces_in_names << 1) | (allow_implicit ? 0 : 1);
+	abcd = (format.no_spaces_in_names << 1) | !allow_implicit;
 
 	if (abcd) {
 
@@ -1983,6 +2012,8 @@ static size_t further_cuts (
 	char * const srcstr,
 	const IniFormat format
 ) {
+
+	/*  Abandon hope all ye who enter here  */
 
 	/*
 
@@ -2194,14 +2225,12 @@ static size_t further_cuts (
 										_CONFINI_NO_EOL_
 									)
 								)
-							) && (
-								idx > focus_at /*  see issue #16  */ &&
-								get_type_as_active(
-									srcstr + focus_at,
-									idx - focus_at,
-									format.disabled_can_be_implicit,
-									format
-								)
+							) && /*  see issue #16  */ idx > focus_at &&
+							get_type_as_active(
+								srcstr + focus_at,
+								idx - focus_at,
+								format.disabled_can_be_implicit,
+								format
 							)
 						) || !_CONFINI_IS_ANY_MARKER_(srcstr[idx], format)
 					: abcd & 2048 ?
@@ -3120,7 +3149,8 @@ int strip_ini_cache (
 	The @p ini_file parameter must be a `FILE` handle with read privileges. On some
 	platforms, such as Microsoft Windows, it might be necessary to add the binary
 	specifier to the mode string (`"b"`) in order to prevent discrepancies between
-	the physical size of the file and its computed size:
+	the physical size of the file and its computed size. Adding the binary specifier
+	guarantees portability across all platforms:
 
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 	FILE * my_file = fopen("example.conf", "rb");
@@ -3452,9 +3482,7 @@ bool ini_string_match_si (
 		INIFORMAT_HAS_NO_ESC(format) ?
 			67
 		:
-			68 |
-			(format.no_double_quotes << 1) |
-			format.no_single_quotes;
+			(format.no_double_quotes ? 70 : 68) | format.no_single_quotes;
 
 	register size_t idx_i = 0;
 	size_t idx_s = 0, nbacksl = 0;

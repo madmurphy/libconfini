@@ -29,7 +29,7 @@ AC_INIT([lib]n4_mem([GL_PROJECT_NAME], [confini]),
 	m4_joinall([.],
 		n4_mem([GL_PROJECT_MAJVER], [1]),
 		n4_mem([GL_PROJECT_MINVER], [16]),
-		n4_mem([GL_PROJECT_REVVER], [2])),
+		n4_mem([GL_PROJECT_REVVER], [3])),
 	[madmurphy333@gmail.com],
 	[lib]GL_PROJECT_NAME,
 	[https://madmurphy.github.io/libconfini])
@@ -37,7 +37,7 @@ AC_INIT([lib]n4_mem([GL_PROJECT_NAME], [confini]),
 NC_GLOBAL_LITERALS(
 	[INTERFACE_NUM],			[5],
 	[INTERFACES_SUPPORTED],		[5],
-	[IMPLEMENTATION_NUM],		[1],
+	[IMPLEMENTATION_NUM],		[2],
 	[PROJECT_DESCRIPTION],		[Yet another INI parser],
 	[LICENSE_STRING],			[GNU General Public License, version 3 or any
 								later version],
@@ -471,6 +471,8 @@ AC_ARG_ENABLE([devel],
 		])])],
 	[AS_VAR_SET([enable_devel], ['yes'])])
 
+AM_CONDITIONAL([WANT_DEVEL], [test "x${enable_devel}" != xno])
+
 ###  Add `--disable-doc` option
 AC_ARG_ENABLE([doc],
 	[AS_HELP_STRING([--disable-doc],
@@ -480,6 +482,8 @@ AC_ARG_ENABLE([doc],
 		AS_VAR_SET([enable_doc], ['no'])
 	])],
 	[AS_VAR_COPY([enable_doc], [enable_devel])])
+
+AM_CONDITIONAL([WANT_DOC], [test "x${enable_doc}" != xno])
 
 ###  Add `--disable-man` option
 AC_ARG_ENABLE([man],
@@ -491,10 +495,13 @@ AC_ARG_ENABLE([man],
 	])],
 	[AS_VAR_COPY([enable_man], [enable_doc])])
 
+AM_CONDITIONAL([WANT_MAN], [test "x${enable_man}" != xno])
+
 ###  Add `--enable-examples` and `--disable-examples` options
 AC_ARG_ENABLE([examples],
 	[AS_HELP_STRING([--disable-examples],
-		[don't generate examples @<:@default=<disable-doc/without-io-api>@:>@])],
+		[don't generate examples
+		@<:@default=<disable-doc>|<without-io-api>@:>@])],
 	[AS_IF([test "x${enable_devel}" = xno -a "x${enable_examples}" != xno], [
 		AC_MSG_WARN([ignoring --enable-examples @{:@--disable-devel@:}@])
 		AS_VAR_SET([enable_examples], ['no'])
@@ -502,6 +509,12 @@ AC_ARG_ENABLE([examples],
 	[AM_COND_IF([WANT_BAREMETAL],
 		[AS_VAR_SET([enable_examples], ['no'])],
 		[AS_VAR_COPY([enable_examples], [enable_doc])])])
+
+AM_CONDITIONAL([WANT_EXAMPLES], [test "x${enable_examples}" != xno])
+
+AS_IF([test "x${na_want_baremetal}" = xyes -a "x${enable_examples}" != xno],
+	[NC_MSG_WARNBOX([Many examples will not work without a I/O API
+	@{:@--enable-examples --without-io-api@:}@])])
 
 ###  Add `--enable-htmldoc` option
 AC_ARG_ENABLE([htmldoc],
@@ -513,19 +526,7 @@ AC_ARG_ENABLE([htmldoc],
 	])],
 	[AS_VAR_SET([enable_htmldoc], ['no'])])
 
-AM_CONDITIONAL([WANT_DEVEL], [test "x${enable_devel}" != xno])
-
-AM_CONDITIONAL([WANT_DOC], [test "x${enable_doc}" != xno])
-
-AM_CONDITIONAL([WANT_MAN], [test "x${enable_man}" != xno])
-
-AM_CONDITIONAL([WANT_EXAMPLES], [test "x${enable_examples}" != xno])
-
 AM_CONDITIONAL([WANT_HTML], [test "x${enable_htmldoc}" != xno])
-
-AS_IF([test "x${na_want_baremetal}" = xyes -a "x${enable_examples}" != xno],
-	[NC_MSG_WARNBOX([Many examples will not work without a I/O API
-	@{:@--enable-examples --without-io-api@:}@])])
 
 dnl  PREPARE_MAN3PAGES(page1, renamed-page1[, ... pageN, renamed-pageN])
 dnl  **************************************************************************
@@ -768,10 +769,7 @@ AC_SUBST([PROJECT_REVVER], [']GL_PROJECT_REVVER['])
 AC_SUBST([PROJECT_EFFVER], [']GL_PROJECT_MAJVER[.]GL_PROJECT_MINVER['])
 
 AC_SUBST([LIBRARY_BINVERSION],
-	m4_joinall([.],
-		m4_eval(GL_INTERFACE_NUM[ - ]GL_INTERFACES_SUPPORTED),
-		GL_INTERFACES_SUPPORTED,
-		GL_IMPLEMENTATION_NUM))
+	m4_decr(GL_PROJECT_MAJVER).GL_INTERFACES_SUPPORTED.GL_IMPLEMENTATION_NUM)
 
 
 ###  **************************************************************************

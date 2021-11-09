@@ -101,11 +101,11 @@ self-documented sample usages of <strong>libconfini</strong> under
 
 <h2 id="WHAT-IS-AN-INI-FILE-">WHAT IS AN INI FILE?</h2>
 
-<p>INI files were introduced with the early versions of Microsoft Windows, where
-the .ini file name extension stood for INItialization. An INI file can be
-considered as a string representation of a tree object, with new lines used as
-delimiters between nodes. A typical INI file is a plain text file looking like
-the following example:</p>
+<p>INI files were introduced with the early versions of <strong>Microsoft Windows</strong>,
+where the <code>.ini</code> file name extension stood for INItialization. An INI file can
+be considered as a string representation of a tree object, with new lines used
+as delimiters between nodes. A typical INI file is a plain text file looking
+like the following example:</p>
 
 <pre><code class="language-{.ini}"># delivery.conf
 
@@ -127,11 +127,11 @@ email = mario.rossi@example.com
 
 <p>During the years several interpretations of INI files appeared. In some
 implementations the colon character (<code>:</code>) was adopted as delimiter between keys
-and values instead of the classic equals sign (a typical example under
-GNU/Linux is <code>/etc/nsswitch.conf</code>); in other implementations, under the
-influence of Unix standard configuration files, a sequence of one or more
-spaces (<code>/[ \t\v\f]+/</code> or <code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code>) was adopted
-instead (see for example <code>/etc/host.conf</code>).</p>
+and values instead of the classic equals sign (a typical example under <strong>GNU</strong>
+is <code>/etc/nsswitch.conf</code>); in other implementations, under the influence of Unix
+standard configuration files, a sequence of one or more spaces (<code>/[ \t\v\f]+/</code>
+or <code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code>) was adopted instead (see for example
+<code>/etc/host.conf</code>).</p>
 
 <p>Equals sign used as delimiter between keys and values:</p>
 
@@ -161,7 +161,7 @@ city	Paris
 most part of INI dialects has been implemented within it.</p>
 
 <p>Especially in <strong>Microsoft Windows</strong> a more radical syntax variation found its
-way into INI files: the use of semicolon, instead of new lines, as delimiter
+way into INI files: the use of semicolons, instead of new lines, as delimiter
 between nodes, as in the following example:</p>
 
 <pre><code class="language-{.ini}"># delivery.conf
@@ -174,7 +174,7 @@ email=john.smith@example.com;
 email=mario.rossi@example.com
 </code></pre>
 
-<p>For several reasons the use of semicolon as node delimiter is not (and will
+<p>For several reasons the use of semicolons as node delimiters is not (and will
 never be) supported by <strong>libconfini</strong>.</p>
 
 <h3 id="KEYS">KEYS</h3>
@@ -249,7 +249,7 @@ foo = bar
 </code></pre>
 
 <p>A section path starting with a dot expresses nesting to the previous section.
-Hence the last example is equivalent to:</p>
+Hence, the last example is equivalent to:</p>
 
 <pre><code class="language-{.ini}">[section]
 
@@ -348,13 +348,14 @@ comment = "hey! have a look at my hashtag #johnsmith !"
 
 <p>A particular case of escape sequence is the multi-line escape sequence
 (<code>/\\(?:\n\r?|\r\n?)/</code>), which in multi-line INI files gets <em>immediately
-unescaped by <strong>libconfini</strong></em>.</p>
+unescaped</em> by <strong>libconfini</strong>.</p>
 
-<pre><code class="language-{.ini}">foo = this\
-is\
-a\
-multi-line\
-value
+<pre><code class="language-{.ini}">mykey = \
+	this \
+	is \
+	a \
+	multi-line \
+	value
 </code></pre>
 
 <h2 id="GETTING-STARTED">GETTING STARTED</h2>
@@ -375,7 +376,7 @@ apply also to version 1.X.X:</p>
 
 <h2 id="READING-AN-INI-FILE">READING AN INI FILE</h2>
 
-<p>#1 Using a pointer to a <code>FILE</code> handle:</p>
+<p><strong>1. Using a pointer to a <code>FILE</code> handle:</strong></p>
 
 <pre><code class="language-{.c}">int load_ini_file (
     FILE * ini_file,
@@ -386,7 +387,7 @@ apply also to version 1.X.X:</p>
 )
 </code></pre>
 
-<p>#2 Using a path:</p>
+<p><strong>2. Using a path:</strong></p>
 
 <pre><code class="language-{.c}">int load_ini_path (
     const char * path,
@@ -397,7 +398,7 @@ apply also to version 1.X.X:</p>
 )
 </code></pre>
 
-<p>where</p>
+<p><strong>Where:</strong></p>
 
 <ul>
   <li>
@@ -451,7 +452,7 @@ INI file has been completely dispatched, non-zero otherwise.</p>
 
 <h3 id="BASIC-EXAMPLES">BASIC EXAMPLES</h3>
 
-<p>#1 Using a pointer to a <code>FILE</code> handle:</p>
+<p><strong>Example 1. Using a pointer to a <code>FILE</code> handle:</strong></p>
 
 <pre><code class="language-{.c}">/*  examples/topics/load_ini_file.c  */
 
@@ -474,7 +475,6 @@ static int my_callback (
 
 int main () {
 
-  /*  Use always `"rb"` with `load_ini_file()`!  */
   FILE * const ini_file = fopen("../ini_files/delivery.conf", "rb");
 
   if (ini_file == NULL) {
@@ -506,7 +506,7 @@ int main () {
 }
 </code></pre>
 
-<p>#2 Using a path:</p>
+<p><strong>Example 2. Using a path:</strong></p>
 
 <pre><code class="language-{.c}">/*  examples/topics/load_ini_path.c  */
 
@@ -557,7 +557,7 @@ path instead of a <code>FILE</code> handle.</p>
 <p>Both functions <code>load_ini_file()</code> and <code>load_ini_path()</code> dynamically allocate at
 once the whole INI file into the heap, and the two structures <code>IniStatistics</code>
 and <code>IniDispatch</code> into the stack. All members of the INI file are then
-dispatched to the custom listener <code>f_foreach()</code>. Finally the allocated memory
+dispatched to the custom listener <code>f_foreach()</code>. Finally, the allocated memory
 gets automatically freed.</p>
 
 <p>Because of this mechanism <em>it is very important that all the dispatched data be
@@ -570,10 +570,11 @@ moreover each dispatch might overwrite data from previous dispatches.</p>
 (<code>IniDispatch * dispatch</code>) is always the same <code>struct</code> that gets constantly
 updated with new information.</p>
 
-<p><em><strong>Note:</strong> In some platforms, such as Microsoft Windows, it
+<p><em><strong>Note:</strong> On some platforms, such as Microsoft Windows, it
 might be necessary to add the binary specifier (<code>"b"</code>) to the mode string of
 the <code>FILE</code> handle passed to <code>load_ini_file()</code> in order to prevent discrepancies
-between the physical size and the computed size of the file:</em></p>
+between the physical size and the computed size of the file. Adding the binary
+specifier guarantees portability across all platforms:</em></p>
 
 <pre><code class="language-{.c}">FILE * ini_file = fopen("example.conf", "rb");
 </code></pre>
@@ -581,10 +582,10 @@ between the physical size and the computed size of the file:</em></p>
 <h2 id="PARSING-A-BUFFER-INSTEAD-OF-A-FILE">PARSING A BUFFER INSTEAD OF A FILE</h2>
 
 <p>Starting from version 1.10.0, it is possible to parse a disposable buffer
-containing an INI file instead of a physical file (i.e., to parse a <code>char</code>
+containing an INI file instead of a physical file (i.e. to parse a <code>char</code>
 array). The function that allows to do so is named <code>strip_ini_cache()</code>. This
-function presents some important differences when compared to <code>load_ini_file()</code>
-and <code>load_ini_path()</code>:</p>
+function presents some important differences compared to <code>load_ini_file()</code> and
+<code>load_ini_path()</code>:</p>
 
 <ol>
   <li>As the name suggests, the buffer passed is not left untouched, but gets
@@ -622,23 +623,6 @@ following function:</p>
 #include &lt;string.h&gt;
 #include &lt;confini.h&gt;
 
-/**
-
-  @brief    Parse a `const` string containing an INI file
-  @param    ini_buffer      The buffer containing the INI file to
-                            parse
-  @param    ini_length      The length of @p ini_buffer
-  @param    format          The format of the INI file
-  @param    f_init          The function that will be invoked before
-                            the first dispatch, or `NULL`
-
-  @param    f_foreach       The function that will be invoked for
-                            each dispatch, or `NULL`
-  @param    user_data       A custom argument, or `NULL`
-  @return   Zero for success, otherwise an error code (see `enum`
-            #ConfiniInterruptNo)
-
-**/
 int load_ini_buffer (
   const char * const ini_buffer,
   const size_t ini_length,
@@ -787,8 +771,8 @@ my_default_format.disabled_can_be_implicit = false;
 <code>IniFormat::delimiter_symbol</code>, whose value is set to <code>INI_ANY_SPACE</code> instead
 of <code>INI_EQUALS</code>.</p>
 
-<p>The semantics of the <code>IniFormat</code> bitfield has been designed in order to ensure
-that when all its fields are set to zero it equals <code>INI_UNIXLIKE_FORMAT</code>.</p>
+<p>The semantics of the <code>IniFormat</code> bitfield has been designed to ensure that when
+all its fields are set to zero it equals <code>INI_UNIXLIKE_FORMAT</code>.</p>
 
 <pre><code class="language-{.c}">IniFormat format_zero = (IniFormat) { 0 };
 
@@ -971,9 +955,9 @@ int main () {
 </code></pre>
 
 <p>In formats that support quotes, the function <code>ini_array_match()</code> is also the
-function that should be used, with <code>'.'</code> or <code>INI_DOT</code> as delimiter (see <code>enum</code>
-<code>IniDelimiters</code>), to compare properly section paths containing more than one
-level of nesting.</p>
+function that should be used, with <code>'.'</code>, or <code>INI_DOT</code>, as delimiter (see
+<code>enum</code> <code>IniDelimiters</code>), to compare properly section paths containing more
+than one level of nesting.</p>
 
 <pre><code class="language-{.c}">if (
   ini_array_match("foo.bar", disp-&gt;append_to, '.', disp-&gt;format) &amp;&amp;
@@ -1018,36 +1002,34 @@ level of nesting.</p>
 
 <p>The four functions <code>ini_string_match_ss()</code>, <code>ini_string_match_si()</code>,
 <code>ini_string_match_ii()</code>, <code>ini_array_match()</code> perform case-sensitive or
-case-insensitive comparisons depending on the format given. UTF-8 codepoints
-out of the ASCII range are always compared case-sensitive.</p>
+case-insensitive comparisons depending on the format given. The comparison
+between UTF-8 codepoints out of the ASCII range is always case-sensitive.</p>
 
 <p>Note that within INI strings empty quotes and spaces out of quotes are always
 collapsed during comparisons. Furthermore, remember that the multi-line escape
 sequence <code>/\\(?:\n\r?|\r\n?)/</code> is <em>not</em> considered as such in INI strings,
-since this is the only escape sequence automatically unescaped by
-<strong>libconfini</strong> before each dispatch.</p>
+as this is the only escape sequence automatically unescaped by <strong>libconfini</strong>
+before each dispatch.</p>
 
 <h2 id="ARRAYS">ARRAYS</h2>
 
-<p>It is possible with <strong>libconfini</strong> to parse INI strings as arrays. In order to
+<p>It is possible with <strong>libconfini</strong> to parse INI values as arrays. In order to
 avoid that any particular character be treated as a metacharacter throughout an
 entire configuration file, INI arrays do not have a fixed delimiter symbol
 specified in the INI format.</p>
 
 <p>Abstractly speaking, this means that array delimiters are not part of the INI
-syntax, but of the INI semantics instead. Concretely speaking, it means that
-developers have to provide a delimiter as soon as they decide to parse an INI
+syntax, but of the INI semantics instead. Concretely speaking, this means that
+developers have to provide a delimiter each time they decide to parse an INI
 string as an array.</p>
 
 <p>Out in the wild, the most widespread INI array delimiter is probably the space
-sequence (<code>INI_ANY_SPACE</code> &ndash; i.e. <code>/(?:\\(?:\n\r?|\r\n?)|[\t \v\f])+/</code> or
-<code>/[ \t\v\f]+/</code>, depending on whether the format is multi-line or not). Another
-widespread delimiter is the comma (<code>','</code> or <code>INI_COMMA</code>). Besides these two,
-occasionally other characters can be found as array delimiters (<code>':'</code>, <code>'|'</code>,
-<code>';'</code>, ...).</p>
+sequence (<code>INI_ANY_SPACE</code>). Another widespread delimiter is the comma (<code>','</code>
+or <code>INI_COMMA</code>). Besides these two, other characters can occasionally be found
+as array delimiters too (<code>':'</code>, <code>'|'</code>, <code>';'</code>, etc.).</p>
 
-<p>For iterating through an INI array using a delimiter <strong>libconfini</strong> provides
-the following tools:</p>
+<p>For iterating through an INI array using a delimiter, <strong>libconfini</strong> provides
+the following functions:</p>
 
 <ul>
   <li><code>ini_array_get_length()</code></li>
@@ -1062,11 +1044,11 @@ the following tools:</p>
 <p>None of the functions above actually ever allocates any array, as
 <strong>libconfini</strong> does not know what kind of data type an array should be composed
 of &ndash; the developer might be looking for an array of strings, or an array of
-integers, or anything else. These tools only provide safe mechanisms to iterate
-through, or tokenize, the members of INI arrays according to the format and the
-delimiter given &ndash; making sure for example that when the delimiter symbol is
-found nested within quotes it is treated as a normal character &ndash; but
-allocating memory is something that must be done manually.</p>
+integers, or anything else. These tools only provide safe mechanisms to
+tokenize or iterate through the members of INI arrays according to the format
+and the delimiter given &ndash; making sure, for example, that when the delimiter
+symbol is found nested within quotes it is treated as a normal character, and
+so on &ndash; but allocating memory is something that must be done manually.</p>
 
 <p>An example function that parses INI strings as newly allocated arrays of C
 strings is available under <code>examples/utilities/make_strarray.h</code>. If your
@@ -1083,19 +1065,20 @@ adapt that example to your needs.</p>
 <code>IniDispatch::d_len</code> and <code>IniDispatch::v_len</code>).</li>
   <li>Do not edit the <code>IniDispatch::data</code> field of a section: the
 <code>IniDispatch::append_to</code> properties of its children will either share this
-buffer or will concatenate it to another buffer. Thus, if you edit its
-content &ndash; and depending on how you edit it &ndash; you might be no more able to
-rely on the <code>IniDispatch::append_to</code> properties of this node's children. You
-would not make any damage, the loop will continue just fine: so if you think
-you are never going to use the property <code>IniDispatch::append_to</code>, just do
-it; alternatively, use <code>strndup()</code>. If instead <code>IniDispatch::data</code> contains
-a key name or a comment, it is granted that no other dispatch will share
-this buffer, so feel free to edit it before it gets lost.</li>
+buffer or will concatenate it to another buffer. If you edit its content &ndash; 
+and depending on how you edit it &ndash; you might be no more able to rely on the
+<code>IniDispatch::append_to</code> properties of this node's children (you would not
+make any damage, the loop will continue just fine &ndash; if you think you are
+never going to use the property <code>IniDispatch::append_to</code>, just do it;
+alternatively, use <code>strndup()</code>).</li>
+  <li>If <code>IniDispatch::data</code> contains a key name or a comment, it is guaranteed
+that no other dispatch will share this buffer, so feel free to edit it
+before it gets lost.</li>
   <li>Regarding <code>IniDispatch::value</code>, if it does not represent an implicit value
 (see <strong>&sect; Implicit keys</strong>) or if <code>IniFormat::implicit_is_not_empty</code> is set to
 <code>false</code>, this buffer is never shared between dispatches, so feel free to
 edit it.</li>
-  <li>Regarding <code>IniDispatch::append_to</code>, this buffer is likely to be shared with
+  <li>The buffer pointed by <code>IniDispatch::append_to</code> is likely to be shared with
 other dispatches. Again, you would not destroy the world nor generate
 errors, but you would make the next <code>IniDispatch::append_to</code>s useless. For
 this reason <strong>the buffer pointed by <code>IniDispatch::append_to</code> is passed as
@@ -1112,11 +1095,11 @@ custom placeholders if you like &ndash; but check their types:
 the next dispatch, so you should not edit it. The reading happens only as
 further diagnostics: if you constantly set this field to <code>0</code> the loop will
 still end at the right moment (hopefully), but if you set it instead to a
-value equal or higher than the <code>IniStatistics::members</code> previously received
+value equal or higher than the <code>IniStatistics::members</code> previously received,
 the loop will immediately stop and a <code>CONFINI_EOOR</code> will be thrown (see
-<code>enum</code> <code>ConfiniInterruptNo</code>). You can think of this as a dirty way of
-writing <code>return !0</code> at the end of your listener. Unless you really know what
-you are doing, do not edit <code>IniDispatch::dispatch_id</code>.</li>
+<code>enum</code> <code>ConfiniInterruptNo</code>). You can think of this as a dirty way to write
+<code>return !0</code> at the end of your listener. Unless you really know what you are
+doing, do not edit <code>IniDispatch::dispatch_id</code>.</li>
 </ol>
 
 <p>Typical peaceful edits are the ones obtained by calling the functions
@@ -1175,8 +1158,8 @@ int main () {
 }
 </code></pre>
 
-<p>If all these rules, although thoroughly exposed, sound still confusing to you,
-use always <code>strndup()</code> on the strings dispatched and feel free to edit your own
+<p>If all these rules, although thoroughly exposed, still sound confusing to you,
+always use <code>strndup()</code> on the strings dispatched and feel free to edit your own
 buffers as you wish. Under <code>examples/utilities/clone_ini_dispatch.h</code> you can
 find a function designed to make a hard copy of an entire <code>IniDispatch</code>,
 including all the strings that this points to.</p>
@@ -1296,7 +1279,7 @@ safer to make <code>INI_GLOBAL_IMPLICIT_V_LEN</code> match <em>exactly</em> the 
 so it is possible to make <strong>libconfini</strong> aware of a segment of memory that must
 be protected from writing operations.</p>
 
-<p>After having set the value to be assigned to implicit key elements, and having
+<p>After having set the value to be assigned to implicit key elements and having
 enabled <code>IniFormat::implicit_is_not_empty</code> in the format, it is possible to
 test whether a dispatched key is implicit or not by comparing the address of
 its <code>value</code> property with the global variable <code>INI_GLOBAL_IMPLICIT_VALUE</code>:</p>
@@ -1504,16 +1487,16 @@ of the string will be removed, then the new length of the string will be
 returned.</li>
 </ol>
 
-<p>A function-like macro named <code>INIFORMAT_HAS_NO_ESC()</code> is available in order to
-check whether a format supports escape sequences or not.</p>
+<p>A function-like macro named <code>INIFORMAT_HAS_NO_ESC()</code> is available for checking
+whether a format supports escape sequences or not.</p>
 
 <p>It is possible to extend the list of supported escape sequences by parsing
 additional ones before invoking <code>ini_string_parse()</code>. Under
 <code>examples/utilities/ini_string_preparse.h</code> there is a little helper function
 that adds support to the following sequences: <code>"\a"</code>, <code>"\b"</code>, <code>"\f"</code>, <code>"\n"</code>,
-<code>"\r"</code>, <code>"\t"</code>, <code>"\v"</code> and <code>"\e"</code>. It must be used right before <code>ini_unquote()</code>
-or <code>ini_string_parse()</code>, since it relies on the latter for unescaping double
-backslashes:</p>
+<code>"\r"</code>, <code>"\t"</code>, <code>"\v"</code> and <code>"\e"</code>. That function must be used right before
+<code>ini_unquote()</code> or <code>ini_string_parse()</code>, as it relies on the latter for
+unescaping double backslashes:</p>
 
 <pre><code class="language-{.c}">#include &lt;confini.h&gt;
 #include "examples/utilities/ini_string_preparse.h"
@@ -1642,24 +1625,23 @@ with them in many different ways.</p>
 
 <p>For small INI files a normal if/else chain, using <code>ini_array_match()</code> for
 comparing section paths and <code>ini_string_match_si()</code>/<code>ini_string_match_ii()</code> for
-comparing key names, usually represents the most practical way to obtain the
-information required from an INI file. Sometimes however, especially in case of
-sizeable INI files, the most efficient solution would be to store the parsed
-data in a hash table before trying to access it.</p>
+comparing key names, usually represents the most practical and efficient way to
+obtain the information required from an INI file. Sometimes however, especially
+in case of sizeable INI files, the most efficient solution would be to store
+the parsed data in a hash table before trying to access it.</p>
 
 <p>Some INI parsers are released with a hash table API included by default. This
-is often an unpractical solution, since fantastic free software libraries that
-focus solely on hash tables already exist, and providing a further API for
-managing a hash function together with an INI parser only complicates the code,
-makes it harder to maintain, and does not give the user the real freedom to
-choose what suits best to each single case. Some programming languages have
-even hash tables in their standard libraries (see <code>std::map</code> in C++ for
-example).</p>
+is an unpractical solution, since fantastic free software libraries that focus
+solely on hash tables already exist, and providing a further API for managing a
+hash function together with an INI parser only complicates the code, makes it
+harder to maintain, and does not give the developer the real freedom to choose
+what suits best to each single case. Some programming languages even have hash
+tables in their standard libraries (see <code>std::map</code> in C++ for example).</p>
 
-<p>When needed, the data parsed by <strong>libconfini</strong> can still be stored in a hash
-table while it is being dispatched. If you are interested in combining
-<strong>libconfini</strong> with a hash table, I have left a general example of how to use
-<strong>GLib</strong>'s <code>GHashTable</code> together with <strong>libconfini</strong> under
+<p>When needed, the data parsed by <strong>libconfini</strong> can be stored in a hash table
+while it is being dispatched. If you are interested in combining <strong>libconfini</strong>
+with a hash table, we have left a general example of how to use <strong>GLib</strong>'s
+<code>GHashTable</code> together with <strong>libconfini</strong> under
 <code>examples/miscellanea/glib_hash_table.c</code>. If you are using C++, you can find an
 example of how to construct a C++ class that relies on a <code>std::unordered_map</code>
 object under <code>examples/cplusplus/map.cpp</code>. By keeping these examples as models
@@ -1762,9 +1744,9 @@ This variable rarely needed to be set to <code>true</code>, since string compari
 by libconfini are always either case-sensitive or case-insensitive depending on
 the format given.</p>
 
-<p>This &ldquo;dispatch in lowercase&rdquo; functionality itself was a relic from a time when
+<p>This &ldquo;dispatch in lowercase&rdquo; functionality itself is a relic from a time when
 <strong>libconfini</strong> did not yet possess any string comparison functions. This is no
-longer the case and there are now four functions for that, therefore starting
+longer the case, and there are now four functions for that; therefore starting
 from version 1.15.0 both the <code>INI_GLOBAL_IMPLICIT_VALUE</code> variable and the
 <code>ini_global_set_lowercase_mode()</code> function have been marked as deprecated (see
 the <strong>list of deprecated functions and variables</strong>). If needed, to convert to
@@ -1814,10 +1796,10 @@ machine is located. Imagine for example a key named &ldquo;INI&rdquo; and imagin
 Unicode case folding were performed on key names during string comparisons. If
 you lived in Europe you could look up for such key using its lower case &ldquo;ini&rdquo;,
 while if you lived in Turkey you would have to use the lower case &ldquo;&#305;n&#305;&rdquo; to find
-it. So the only solution in this context is to consider Unicode characters out
-of the ASCII range always as case-sensitive. For this reason, <strong>libconfini</strong>
-(and probably any senseful INI parser) will never perform case folding of
-Unicode characters out of the ASCII range within key and section names.</p>
+it. So the only solution is to consider Unicode characters out of the ASCII
+range always as case-sensitive. For this reason, <strong>libconfini</strong> (and probably
+any judicious INI parser) will never perform case folding of Unicode characters
+out of the ASCII range within key and section names.</p>
 
 <p>It must be said that most Unicode characters do not possess a lower and upper
 case, and most characters outside of the ASCII range could theoretically appear
@@ -1847,7 +1829,7 @@ considered thread-safe.</p>
 
 <h3 id="ERROR-EXCEPTIONS">ERROR EXCEPTIONS</h3>
 
-<p>The philosophy of <strong>libconfini</strong> is to parse as much as possible without
+<p>The philosophy of <strong>libconfini</strong> is that of parsing as much as possible without
 generating error exceptions. No parsing errors are returned once an INI file
 has been correctly allocated into the heap, with the exception of the
 <em>out-of-range</em> error <code>CONFINI_EOOR</code> (see <code>enum</code> <code>ConfiniInterruptNo</code>), whose
@@ -1861,20 +1843,20 @@ Empty lines, or lines containing only spaces and empty quotes (if the latter
 are supported) will be skipped.</p>
 
 <p>In order to avoid error exceptions, strings containing an unterminated quote
-will be always treated as if they had a virtual quote as their last + 1
+will always be treated as if they had a virtual quote as their last + 1
 character. For example,</p>
 
 <pre><code class="language-{.ini}">foo = "bar
 </code></pre>
 
-<p>will always determine the same behavior as if it had been</p>
+<p>will always determine the same behavior as if it were</p>
 
 <pre><code class="language-{.ini}">foo = "bar"
 </code></pre>
 
 <p>Any format containing the following three settings will never produce
-<code>INI_UNKNOWN</code> nodes, even if instead of an INI file we tried to parse a .jpeg
-image (or anything else):</p>
+<code>INI_UNKNOWN</code> nodes, even if instead of an INI file we tried to parse a
+<code>.jpeg</code> image (or anything else):</p>
 
 <pre><code class="language-{.c}">IniFormat my_format = {
   .delimiter_symbol = INI_ANY_SPACE,
@@ -1955,15 +1937,15 @@ by setting <code>IniFormat::multiline_nodes</code> to <code>INI_NO_MULTILINE</co
 positive impact on the performance.</p>
 
 <p>On my laptop <strong>libconfini</strong> seems to parse around 95 MiB per second using the
-model format <code>INI_DEFAULT_FORMAT</code>. Whether this is enough for you or not, that
-depends on your needs.</p>
+model format <code>INI_DEFAULT_FORMAT</code>. Whether this is enough for you or not, it
+depends only on your needs.</p>
 
 <pre><code>53411840 bytes (1146880 nodes) parsed in 0.533315 seconds.
 Number of bytes parsed per second: 100150642.678342
 </code></pre>
 
 <p>If you are interested in testing yourself the library's performance on a
-particular hardware you can find a performance test under
+particular hardware, you can find a performance test under
 <code>dev/tests/performance</code>.</p>
 
 <h2 id="INI-SYNTAX-CONSIDERATIONS">INI SYNTAX CONSIDERATIONS</h2>
@@ -2153,7 +2135,7 @@ attempt fails, the block will be dispatched as a normal comment.</p>
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'>Stefano Gioffr&eacute;</li>
-    <li class='tc'>September 2021</li>
+    <li class='tc'>November 2021</li>
     <li class='tr'>libconfini(3)</li>
   </ol>
 

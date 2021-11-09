@@ -6,8 +6,8 @@
 
 /*  Windows DLL version information  */
 VS_VERSION_INFO		VERSIONINFO
-FILEVERSION		1,16,2,0
-PRODUCTVERSION		1,16,2,0
+FILEVERSION		1,16,3,0
+PRODUCTVERSION		1,16,3,0
 FILEFLAGSMASK		VS_FFI_FILEFLAGSMASK
 #ifdef _DEBUG
 FILEFLAGS		VS_FF_DEBUG | VS_FF_PRERELEASE
@@ -24,12 +24,12 @@ BEGIN
 		BEGIN
 			VALUE "CompanyName", "Stefano Gioffré"
 			VALUE "FileDescription", "Yet another INI parser"
-			VALUE "FileVersion", "1.16.2"
+			VALUE "FileVersion", "1.16.3"
 			VALUE "InternalName", "libconfini"
 			VALUE "LegalCopyright", "GNU General Public License, version 3 or any later version"
 			VALUE "OriginalFilename", "libconfini.dll"
 			VALUE "ProductName", "libconfini"
-			VALUE "ProductVersion", "1.16.2"
+			VALUE "ProductVersion", "1.16.3"
 			VALUE "Comments", "https://madmurphy.github.io/libconfini"
 		END
 	END

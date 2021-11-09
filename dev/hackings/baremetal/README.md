@@ -1,7 +1,7 @@
 Compiling without I/O {#baremetal}
 ==================================
 
-In **libconfini** almost everything is implemented from scratch, with the only
+Almost everything in **libconfini** is implemented from scratch, with the only
 notable exception of the I/O functions `load_ini_file()` and `load_ini_path()`,
 which rely on standard libraries -- either the C Standard or the POSIX
 Standard, depending on the build settings. On some platforms, however, only a
@@ -14,11 +14,11 @@ source code, it was still relatively simple to get rid of every tie with the C
 Standard Library and compile **libconfini** as “bare metal”, with
 `strip_ini_cache()` as the only parsing function (as this relies only on a
 buffer for its input), i.e. without `load_ini_file()` and `load_ini_path()`,
-and possibly even without any header at all.
+and possibly even without including any header at all.
 
 Starting from version 1.13.0 a “bare metal” version of **libconfini** has been
-made available simply by passing a `--without-io-api` option to the `configure`
-script. This modified version presents the following characteristics:
+made available by simply passing a `--without-io-api` option to the `configure`
+script. This modified version has the following characteristics:
 
 * No heap usage (no memory is ever allocated or freed)
 * No I/O functions (it is possible to parse only disposable `char` buffers via
@@ -54,7 +54,7 @@ standard functions (see below). This file amends `src/confini.c`.
 The `str2num.h` file, which amends `src/confini.h` (i.e. the public header),
 exports the function headers of what `str2num.c` implements.
 
-The `confini-header.c` file contains only a nominal workaround-amendment to
+The `confini-header.c` file contains only a nominal workaround-amendment for
 `src/confini.c` (for facilitating the build system) that does not change the
 final C code compiled.
 
@@ -259,8 +259,8 @@ requires getting rid of the function pointers `ini_get_int()`,
 nothing but links to the standard functions [`atoi()`][1], [`atol()`][2],
 [`atoll()`][3] and [`atof()`][4].
 
-Instead of just removing these function pointers, however, it is also possible
-to provide novel functions implemented from scratch for parsing numbers.
+Instead of just removing these function pointers, it is also possible to
+provide novel functions implemented from scratch for parsing numbers.
 
 What `./configure --without-io-api` does in fact is replacing in
 `src/confini.h` the function pointers declared immediately after the comment
@@ -305,10 +305,9 @@ variations.
   COPYING for details. 
 */
 
-#define _LIBCONFINI_RADIX_POINT_ '.'
+#define _CONFINI_RADIX_POINT_ '.'
 #define __INTEGER_DATA_TYPE__ 0
 #define __FLOAT_DATA_TYPE__ 1
-
 
 /*
 
@@ -322,36 +321,37 @@ Mask `abcd` (6 bits used):
   FLAG_32   The number is negative
 
 */
-#define _LIBCONFINI_STR2NUM_FNBODY_(HAS_RADIX_PT, DATA_TYPE, STR) \
-  register uint8_t abcd = 9; \
+#define _CONFINI_STR2NUM_FNBODY_(HAS_RADIX_PT, DATA_TYPE, STR) \
+  register uint_least8_t abcd = 9; \
   register size_t idx = 0; \
   register DATA_TYPE retval = 0; \
   __PP_IIF__(HAS_RADIX_PT, \
     DATA_TYPE fact = 1; \
   ) \
   do { \
-    abcd  =   STR[idx] > 47 && STR[idx] < 58 ? \
-                abcd | 18 \
-              : !(abcd & 6) && STR[idx] == '-' ? \
-                (abcd & 47) | 36 \
-              : !(abcd & 6) && STR[idx] == '+' ? \
-                (abcd & 15) | 4 \
-              __PP_IIF__(HAS_RADIX_PT, \
-              : (abcd & 8) && STR[idx] == _LIBCONFINI_RADIX_POINT_ ? \
-                (abcd & 39) | 2 \
-              ) \
-              : !(abcd & 2) && is_some_space(STR[idx], _LIBCONFINI_WITH_EOL_) ? \
-                (abcd & 47) | 1 \
-              : \
-                abcd & 46; \
+    abcd = \
+      STR[idx] > 47 && STR[idx] < 58 ? \
+        abcd | 18 \
+      : !(abcd & 6) && STR[idx] == '-' ? \
+        (abcd & 47) | 36 \
+      : !(abcd & 6) && STR[idx] == '+' ? \
+        (abcd & 15) | 4 \
+      __PP_IIF__(HAS_RADIX_PT, \
+      : (abcd & 8) && STR[idx] == _CONFINI_RADIX_POINT_ ? \
+        (abcd & 39) | 2 \
+      ) \
+      : !(abcd & 2) && is_some_space(STR[idx], _CONFINI_WITH_EOL_) ? \
+        (abcd & 47) | 1 \
+      : \
+        abcd & 46; \
     if (abcd & 16) { \
-      retval  =   __PP_IIF__(HAS_RADIX_PT, \
-                  abcd & 8 ? \
-                    STR[idx] - 48 + retval * 10 \
-                  : \
-                    (STR[idx] - 48) / (fact *= 10) + retval, \
-                  retval * 10 + STR[idx] - 48 \
-                  ); \
+      retval  =  __PP_IIF__(HAS_RADIX_PT, \
+            abcd & 8 ? \
+              STR[idx] - 48 + retval * 10 \
+            : \
+              (STR[idx] - 48) / (fact *= 10) + retval, \
+            retval * 10 + STR[idx] - 48 \
+            ); \
     } \
     idx++; \
   } while (abcd & 1); \
@@ -359,27 +359,27 @@ Mask `abcd` (6 bits used):
 
 
 int ini_get_int (const char * const ini_string) {
-  _LIBCONFINI_STR2NUM_FNBODY_(__INTEGER_DATA_TYPE__, int, ini_string);
+  _CONFINI_STR2NUM_FNBODY_(__INTEGER_DATA_TYPE__, int, ini_string);
 }
 
 
 long int ini_get_lint (const char * const ini_string) {
-  _LIBCONFINI_STR2NUM_FNBODY_(__INTEGER_DATA_TYPE__, long int, ini_string);
+  _CONFINI_STR2NUM_FNBODY_(__INTEGER_DATA_TYPE__, long int, ini_string);
 }
 
 
 long long int ini_get_llint (const char * const ini_string) {
-  _LIBCONFINI_STR2NUM_FNBODY_(__INTEGER_DATA_TYPE__, long long int, ini_string);
+  _CONFINI_STR2NUM_FNBODY_(__INTEGER_DATA_TYPE__, long long int, ini_string);
 }
 
 
 float ini_get_float (const char * const ini_string) {
-  _LIBCONFINI_STR2NUM_FNBODY_(__FLOAT_DATA_TYPE__, float, ini_string);
+  _CONFINI_STR2NUM_FNBODY_(__FLOAT_DATA_TYPE__, float, ini_string);
 }
 
 
 double ini_get_double (const char * const ini_string) {
-  _LIBCONFINI_STR2NUM_FNBODY_(__FLOAT_DATA_TYPE__, double, ini_string);
+  _CONFINI_STR2NUM_FNBODY_(__FLOAT_DATA_TYPE__, double, ini_string);
 }
 `````````````````````````````````````````````````````````````````````````````
 

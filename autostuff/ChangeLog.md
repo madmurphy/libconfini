@@ -2,6 +2,15 @@ Build Environment Change Log
 ============================
 
 
+## 1.16.3
+
+Changes:
+
+* A small bug concerning the examples installed in renamed packages has been
+  fixed
+* The m4 macros from the **Not Autotools** project have been updated
+
+
 ## 1.15.0
 
 Changes:

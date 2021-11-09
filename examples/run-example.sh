@@ -4,7 +4,7 @@
 #
 # Compile and run an example on the fly
 #
-# Copyright 2017-2020, Stefano Gioffr\u00E9
+# Copyright 2017-2020, madmurphy
 #
 # GNU General Public License, version 3 or any later version
 #
@@ -62,9 +62,10 @@ fi
 _SEENLIST_=()
 _LASTSEEN_=0
 
-# other variables declared in this script:
-# _SEEN_, _ITER_, _FILENAME_, _CHOICE_, _LASTSEEN_,
-# _CHOSEN_LONG_, _CHOSEN_SHORT_, _GCC_CMD_, _EXIT_CODE_
+# Other variables declared in this script are:
+#
+# _SEEN_, _ITER_, _FILENAME_, _CHOICE_, _LASTSEEN_, _CHOSEN_LONG_,
+# _CHOSEN_SHORT_, _GCC_CMD_, _EXIT_CODE_
 
 
 # SCRIPT BODY

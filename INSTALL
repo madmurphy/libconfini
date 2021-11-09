@@ -30,10 +30,10 @@ to list the configure options.
 After running the `configure` script you can print the list of commonly used
 targets by launching `make help`.
 
-If the `configure` script is missing from your package you need to create it by
-running the `bootstrap` script. Use the `--noconfigure` parameter to prevent
-`bootstrap` from running automatically the `configure` script immediately after
-having generated it. To list different options use `./bootstrap --help`.
+If the `configure` script is missing you need to generate it by running the
+`bootstrap` script. Use the `--noconfigure` parameter to prevent `bootstrap`
+from automatically running the `configure` script immediately after having
+generated it. To list different options use `./bootstrap --help`.
 
 If both the `configure` and `bootstrap` scripts are missing you can initialize
 the build environment by launching the following commands from the source
@@ -86,14 +86,16 @@ of **libconfini** exists) and GnuWin32.
 
 ### Microsoft Visual Studio
 
-To compile the library with Microsoft Visual Studio use the following commands:
+To compile the library with Microsoft Visual Studio the `msvcmake.bat` batch
+script is available (please make sure to run it with the right environment
+variables). If you want instead to compile the library manually, you can run:
 
     cd src
     rc.exe winres.rc
     cl.exe /c /O2 confini.c
     link /DLL /DEF:libconfini.def /OUT:libconfini.dll winres.res confini.obj
 
-To compile it as a static library use:
+To create a static library use instead:
 
     cd src
     rc.exe winres.rc
@@ -105,10 +107,10 @@ can launch:
 
     cl.exe my_test.c /link libconfini.lib
 
-The library is written in standard C99; however MSVC uses a non-standard
-semantics to access the `.data` segment of a shared library. Accordingly, after
-having generated the DLL file, to access its global variables you will need to
-replace all occurrences of the `extern` keyword with the special
+The library is written in standard C99; however MSVC uses an exotic semantics
+to access the `.data` segment of a shared library. Accordingly, after having
+generated the DLL file, to access its global variables you will need to replace
+all occurrences of the `extern` keyword with the special
 `__declspec(dllimport)` keyword in the library's header included in your
 program. This can be easily done using the C Preprocessor:
 
@@ -126,14 +128,18 @@ The code above will work if you are using the library in a C program. But, as
 the macro will affect also the language-specific directive `extern "C"`, it
 will not work under C++. In this last case you will have to edit the header by
 hand and place the above macro inside `extern "C" { ... }`. This workaround is
-not required with more standard-compliant compilers, such as GCC, where the
-standard `extern` keyword is used to access a shared `.data` segment.
+not required with more standard-compliant compilers (GCC, Clang).
 
 
 ### Precompiled DLL
 
-Often a compiled DLL [is available][3] among the assets of each release of this
-package on GitHub.
+Often a compiled DLL [is available][3] among the assets of each release of the
+library. The DLL asset usually contains a header file already sanitized for
+Microsoft Visual Studio and a set of DLLs built using different optimizations
+and compilers. Unless you used a C++ compiler for compiling the library (we
+didn't and you shouldn't, the library is written in C99, not in C++), a binary
+built with GCC (MinGW) will be linkable from a Microsoft Visual Studio project
+(you may rename the `.dll.a` file extension to `.lib` for that).
 
 
 Bare metal
@@ -147,9 +153,17 @@ Library is simply too heavy or just not implementable.
 
 In these situations it will be needed to get rid of every tie with the C
 Standard Library and compile **libconfini** as "bare metal". The `configure`
-script has two options for creating special forks of the original library able to
-function in any environment, `--without-io-api` and `--without-libc`. For
+script has two options for creating special forks of the original library able
+to function in any environment, `--without-io-api` and `--without-libc`. For
 information about how to proceed, please see `dev/hackings/baremetal/README.md`.
+
+
+Comparison of different compilers
+---------------------------------
+
+In all the tests GCC always produced the fastest binary. Clang produced a code
+about 10% slower (with both `-O2` and `-O3`), whereas Microsoft Visual Studio
+lied far behind.
 
 
 Complex installations
@@ -173,7 +187,7 @@ This will ensure **libconfini** X.Y.Z to be installed as **libconfiniX** X.Y.Z.
 There are different views concerning which package name should be the only
 unnumbered one. According to some conventions the major version number is
 appended to the package names of all major version greater than one, while
-according to other conventions the the major version number is appended to the
+according to other conventions the major version number is appended to the
 package names of all versions that are older than the current version.
 
 If you want to install a modified version of **libconfini** without generating
@@ -200,12 +214,12 @@ For any issue, drop a message at https://github.com/madmurphy/libconfini/issues.
 Distributing the source code
 ----------------------------
 
-If you aim to re-distribute the source code of **libconfini** you must first
+If you aim to re-distribute the source code of **libconfini** you should first
 make sure that the `configure` script is present, for granting the possibility
 to compile the package without having Autotools installed. If the `configure`
 script is present and you have already launched it, use `make distclean` to
-reset the configuration that this has created, or use `make source-release` to
-build a fresh archive that ignores the current configuration.
+reset the configuration that this has created, or use `make dist` to build a
+fresh archive that ignores the current configuration.
 
 
 Distributing the compiled package

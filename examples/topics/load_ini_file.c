@@ -19,7 +19,6 @@ static int my_callback (
 
 int main () {
 
-  /*  Use always `"rb"` with `load_ini_file()`!  */
   FILE * const ini_file = fopen("../ini_files/delivery.conf", "rb");
 
   if (ini_file == NULL) {

@@ -1,8 +1,9 @@
 /*  examples/miscellanea/toml-like.c  */
 /*
 
-  The following code will try to load a typed INI file that resembles the showcase
-  TOML document found at https://github.com/toml-lang/toml
+  The following code will try to load a typed INI file that resembles TOML's
+  featured example found at
+  https://github.com/toml-lang/toml/blob/master/README.md#Example
 
 */
 
@@ -19,35 +20,54 @@
 		return RETVAL; \
 	}
 
+#define my_format \
+	((IniFormat) { \
+		.delimiter_symbol = INI_EQUALS, \
+		.case_sensitive = true, \
+		.semicolon_marker = INI_IGNORE, \
+		.hash_marker = INI_IGNORE, \
+		.section_paths = INI_ABSOLUTE_AND_RELATIVE, \
+		.multiline_nodes = INI_MULTILINE_EVERYWHERE, \
+		.no_single_quotes = false, \
+		.no_double_quotes = false, \
+		.no_spaces_in_names = false, \
+		.implicit_is_not_empty = true, \
+		.do_not_collapse_values = false, \
+		.preserve_empty_quotes = false, \
+		.disabled_after_space = false, \
+		.disabled_can_be_implicit = true \
+	})
+
 struct Server_T {
 	char * ip;
 	char * dc;	
 };
 
-/*  This is the structure that will map our INI file  */
+/*  This is the structure that will map our INI file...  */
 struct Configs_T {
 	char * title;
-	struct Owner_T {
+	struct {
 		char * name;
 		char * dob;
 	} owner;
-	struct Database_T {
+	struct {
 		char * server;
 		int * ports;
 		size_t ports_length;
 		int connection_max;
 		bool enabled;
 	} database;
-	struct Servers_T {
+	struct {
 		struct Server_T alpha;
 		struct Server_T beta;
 	} servers;
-	struct Clients_T {
+	struct {
 		/*
-		  in the original INI file `servers.data` is an "array" containing
-		  an "array" of strings followed by an "array" of integers. We
-		  cannot do that in C, so we store the array of strings as
-		  `servers.data_str` and the array of integer as `servers.data_num`
+		  in the original INI file `servers.data` is an "array"
+                  containing an "array" of strings followed by an "array" of
+		  integers. We cannot do that in C, so we store the array of
+		  strings as `servers.data_str` and the array of integer as
+		  `servers.data_num`
 		*/
 		char ** data_str;
 		int * data_num;
@@ -67,7 +87,12 @@ int set_new_string (char ** const dest_str, IniDispatch * const disp) {
 }
 
 /*  If `dest_arr` is non-`NULL` free it, then parse `disp->value` into it as an array of strings  */
-int set_new_strarray (char *** const dest_arr, size_t * const dest_len, const IniDispatch * const disp, const char delimiter) {
+int set_new_strarray (
+	char *** const dest_arr,
+	size_t * const dest_len,
+	const IniDispatch * const disp,
+	const char delimiter
+) {
 	*dest_len = ini_array_get_length(disp->value, delimiter, disp->format);
 	CLEAN_MALLOC(*dest_arr, *dest_len * sizeof(char *) + disp->v_len + 1, 1);
 	size_t idx = 0;
@@ -81,7 +106,12 @@ int set_new_strarray (char *** const dest_arr, size_t * const dest_len, const In
 }
 
 /*  If `dest_arr` is non-`NULL` free it, then parse `disp->value` into it as an array of integers  */
-int set_new_intarray (int ** const dest_arr, size_t * const dest_len, const IniDispatch * const disp, const char delimiter) {
+int set_new_intarray (
+	int ** const dest_arr,
+	size_t * const dest_len,
+	const IniDispatch * const disp,
+	const char delimiter
+) {
 	*dest_len = ini_array_get_length(disp->value, delimiter, disp->format);
 	CLEAN_MALLOC(*dest_arr, *dest_len * sizeof(int), 1);
 	const char * shifted = disp->value;
@@ -93,7 +123,10 @@ int set_new_intarray (int ** const dest_arr, size_t * const dest_len, const IniD
 	return 0;
 }
 
-static int populate_config (IniDispatch * const disp, void * const v_confs) {
+static int populate_config (
+	IniDispatch * const disp,
+	void * const v_confs
+) {
 	#define confs ((struct Configs_T *) v_confs)
 	if (disp->type == INI_KEY) {
 		if (disp->at_len == 0) {
@@ -161,24 +194,7 @@ static int populate_config (IniDispatch * const disp, void * const v_confs) {
 }
  
 int main () {
-	#define my_format \
-		((IniFormat) { \
-			.delimiter_symbol = INI_EQUALS, \
-			.case_sensitive = false, \
-			.semicolon_marker = INI_IGNORE, \
-			.hash_marker = INI_IGNORE, \
-			.section_paths = INI_ABSOLUTE_AND_RELATIVE, \
-			.multiline_nodes = INI_MULTILINE_EVERYWHERE, \
-			.no_single_quotes = false, \
-			.no_double_quotes = false, \
-			.no_spaces_in_names = false, \
-			.implicit_is_not_empty = true, \
-			.do_not_collapse_values = false, \
-			.preserve_empty_quotes = false, \
-			.disabled_after_space = false, \
-			.disabled_can_be_implicit = true \
-		})
-	/*  **Important** The `confs` structure must be initialized with all its bytes set to `0`!  */
+	/*  The `confs` structure **must** be initialized with all its bytes set to `0`!  */
 	struct Configs_T * confs = calloc(1, sizeof(struct Configs_T)); 
 	if (!confs) { 
 		fprintf(stderr, "malloc() failed\n");
@@ -227,5 +243,8 @@ int main () {
 	free(confs->clients.hosts);
 	free(confs);
 	return 0;
+	#undef PRINT_CONF_SIMPLEVAL
+	#undef PRINT_CONF_ARRAY
+	#undef PRINT_CONF_ARRAY_WITHLABEL
 }
 
