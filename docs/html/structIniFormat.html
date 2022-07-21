@@ -151,7 +151,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>If set to <code>true</code>, what follows <code>/[#;]\s/</code> is allowed to be parsed as a disabled entry. </p>
+<p>If set to <code>true</code>, what follows <code>/\s+[#;]\s+/</code> is allowed to be parsed as a disabled entry; conversely, only <code>/\s+[#;](?!\s)/</code> will be able to mark a disabled entry. </p>
 
 </div>
 </div>

@@ -48,7 +48,7 @@ int IniMap::mapINIString (const string ini_string, const IniFormat format, const
     char * tmp = new char[len + 1];
     memcpy(tmp, ini_string.c_str(), len + 1);
     int retval = strip_ini_cache(tmp, len, format, NULL, callback, &dictionary);
-    delete tmp;
+    delete[] tmp;
     return retval;
 }
 
@@ -97,7 +97,7 @@ string IniMap::getString (const string key) {
     memcpy(tmp, srcstr.c_str(), len + 1);
     len = ini_string_parse(tmp, this->_format_);
     string myString(tmp, len);
-    delete tmp;
+    delete[] tmp;
     return myString;
 }
 
@@ -180,7 +180,7 @@ int IniMap::_push_dispatch_ (IniDispatch * const disp, void * const v_dictionary
         idx = newptr1 - newptr2;
         newptr1 = new char[idx + disp->d_len + 1];
         memcpy(newptr1, newptr2, idx);
-        delete newptr2;
+        delete[] newptr2;
         newptr2 = newptr1 + idx;
 
     } else {

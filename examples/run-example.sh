@@ -86,7 +86,7 @@ while :; do
 			((_ITER_=_ITER_+1))
 			echo "  [${_COL_BCYAN_}${_ITER_}${_COL_DEFAULT_}] $([[ "${_LASTSEEN_}" -eq "${_ITER_}" ]] && echo "${_COL_BLYELLOW_}" || [[ "${_SEEN_}" -eq 0 ]] || echo "${_COL_YELLOW_}")${_FILENAME_:${_THIS_PATH_LENGTH_}}$([[ "${_SEEN_}" -eq 0 ]] || echo "${_COL_DEFAULT_}")"
 		done
-	} | more
+	} | more -e
 	echo
 	_ITER_=0
 	while [[ "${_ITER_}" -eq -0 ]]; do

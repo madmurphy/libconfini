@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "LIBCONFINI" "3" "November 2021" "Stefano Gioffré" "Library Functions Manual"
+.TH "LIBCONFINI" "3" "July 2022" "Stefano Gioffré" "Library Functions Manual"
 .SH "NAME"
 \fBlibconfini\fR
 .SH "DESCRIPTION"
@@ -454,13 +454,15 @@ int load_ini_buffer (
   void * const user_data
 ) {
 
-  char * const ini_cache = strndup(ini_buffer, ini_length);
+  char * const ini_cache = malloc(ini_length);
 
   if (!ini_cache) {
 
     return CONFINI_ENOMEM;
 
   }
+
+  memcpy(ini_cache, ini_buffer, ini_length);
 
   const int retval = strip_ini_cache(
     ini_cache,

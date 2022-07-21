@@ -1,12 +1,12 @@
 {
 	"name": "libconfini",
-	"version": "1.16.3",
+	"version": "1.16.4",
 	"description": "Yet another INI parser",
 	"homepage": "https://madmurphy.github.io/libconfini",
 	"author": "madmurphy333@gmail.com",
 	"license": "GPL-3.0-or-later",
 	"main": "libconfini",
-	"binaryVersion": "0.5.2",
+	"binaryVersion": "0.5.3",
 	"repo": "madmurphy/libconfini",
 	"repository": {
 		"type": "git",

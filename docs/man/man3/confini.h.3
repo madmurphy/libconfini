@@ -1,4 +1,4 @@
-.TH "confini.h" 3 "Tue Nov 9 2021" "libconfini" \" -*- nroff -*-
+.TH "confini.h" 3 "Thu Jul 21 2022" "libconfini" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -238,7 +238,7 @@ confini.h \- libconfini header
 .br
 .RI "A model format for standard INI files\&. "
 .ti -1c
-.RI "static const \fBIniFormat\fP \fBINI_UNIXLIKE_FORMAT\fP = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }"
+.RI "static const \fBIniFormat\fP \fBINI_UNIXLIKE_FORMAT\fP = { \fBINI_ANY_SPACE\fP, false, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_ABSOLUTE_AND_RELATIVE\fP, \fBINI_MULTILINE_EVERYWHERE\fP, false, false, false, false, false, false, false, false }"
 .br
 .RI "A model format for Unix-like \&.conf files (where space characters are delimiters between keys and values) "
 .ti -1c
@@ -272,12 +272,12 @@ GNU General Public License, version 3 or any later version
 .PP
 \fBVersion\fP
 .RS 4
-1\&.16\&.3 
+1\&.16\&.4 
 .RE
 .PP
 \fBDate\fP
 .RS 4
-2016-2021 
+2016-2022 
 .RE
 .PP
 \fBSee also\fP
@@ -2606,7 +2606,7 @@ Deprecated since version 1\&.15\&.0 (it will be removed in version 2\&.0\&.0)
 .RE
 .PP
 
-.SS "const \fBIniFormat\fP INI_UNIXLIKE_FORMAT = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }\fC [static]\fP"
+.SS "const \fBIniFormat\fP INI_UNIXLIKE_FORMAT = { \fBINI_ANY_SPACE\fP, false, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_DISABLED_OR_COMMENT\fP, \fBINI_ABSOLUTE_AND_RELATIVE\fP, \fBINI_MULTILINE_EVERYWHERE\fP, false, false, false, false, false, false, false, false }\fC [static]\fP"
 
 .PP
 A model format for Unix-like \&.conf files (where space characters are delimiters between keys and values) 

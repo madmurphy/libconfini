@@ -2,6 +2,18 @@ Change Log
 ==========
 
 
+## 1.16.4 (2022-07-21)
+
+Changes:
+
+* A bug has been fixed in `load_ini_path()` (`fclose()` was not invoked in case of
+  errors)
+* Code review (`strip_ini_cache()`, `load_ini_file()`, `load_ini_path()`; private
+  function `further_cuts()`)
+* Documentation
+* Examples
+
+
 ## 1.16.3 (2021-11-09)
 
 Changes:

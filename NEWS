@@ -2,6 +2,12 @@ News
 ====
 
 
+## 1.16.4
+
+* A bug has been fixed in `load_ini_path()` (`fclose()` was not invoked in case of
+  errors)
+
+
 ## 1.16.2
 
 * Issue [#16](https://github.com/madmurphy/libconfini/issues/16) has been fixed

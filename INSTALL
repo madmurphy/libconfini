@@ -161,9 +161,9 @@ information about how to proceed, please see `dev/hackings/baremetal/README.md`.
 Comparison of different compilers
 ---------------------------------
 
-In all the tests GCC always produced the fastest binary. Clang produced a code
-about 10% slower (with both `-O2` and `-O3`), whereas Microsoft Visual Studio
-lied far behind.
+In all the tests so far GCC always produced the fastest binary. Clang produced
+a binary about 10% slower (with both `-O2` and `-O3`), whereas Microsoft Visual
+Studio lay far behind.
 
 
 Complex installations

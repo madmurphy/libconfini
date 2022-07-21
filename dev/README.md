@@ -55,7 +55,7 @@ inside loops creates slow code, and if these conditions are not going to change
 during the loop, unacceptable code -- for instance, it does not make much sense
 to check for every character whether a format supports quotes or not, this is
 something that will remain constant during the entire parsing. The normal
-solution would be keeping the constant conditions outside the loops and
+solution would be that of keeping the constant conditions outside the loops and
 creating slightly different loops for each case, but this is unthinkable with
 110592 possibilities. There is however also a third way: bit masks. Bit masks
 allow to collapse several conditions into one single operation and keep the
@@ -91,9 +91,9 @@ two, but dozens each time. And while bit masks do keep the number of branches
 constant, they definitely look esoteric.
 
 The usual way to avoid esoteric code is that of using `enum` labels for
-bitflags. In **libconfini**'s case however this would not help much, bitflags
-are used so often that it would just fill the entire source code of `enum`s.
-The esoterism would just change form.
+bitflags. With **libconfini** however this would not help much: bitflags are
+used so often that it would just fill the entire source code of `enum`s. The
+esoterism would just change form.
 
 I am sorry if the code scares you, but there are no other ways, I am afraid.¹
 If you want to understand how the library works you will have to get used to

@@ -29,7 +29,7 @@ AC_INIT([lib]n4_mem([GL_PROJECT_NAME], [confini]),
 	m4_joinall([.],
 		n4_mem([GL_PROJECT_MAJVER], [1]),
 		n4_mem([GL_PROJECT_MINVER], [16]),
-		n4_mem([GL_PROJECT_REVVER], [3])),
+		n4_mem([GL_PROJECT_REVVER], [4])),
 	[madmurphy333@gmail.com],
 	[lib]GL_PROJECT_NAME,
 	[https://madmurphy.github.io/libconfini])
@@ -37,14 +37,15 @@ AC_INIT([lib]n4_mem([GL_PROJECT_NAME], [confini]),
 NC_GLOBAL_LITERALS(
 	[INTERFACE_NUM],			[5],
 	[INTERFACES_SUPPORTED],		[5],
-	[IMPLEMENTATION_NUM],		[2],
+	[IMPLEMENTATION_NUM],		[3],
 	[PROJECT_DESCRIPTION],		[Yet another INI parser],
 	[LICENSE_STRING],			[GNU General Public License, version 3 or any
 								later version],
 	[LICENSE_SPDX],				[GPL-3.0-or-later],
 	[PUBLISHER_NAME],			[Stefano Gioffré],
 	[PUBLISHER_ID],				[madmurphy],
-	[GIT_HTTP_SERVER],			[https://github.com]
+	[GIT_HTTP_SERVER],			[https://github.com],
+	[PROJECT_YEARS],			[2016-2022]
 )
 
 

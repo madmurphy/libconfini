@@ -5,7 +5,7 @@
     @author     Stefano Gioffr&eacute;
     @copyright  @LICENSE_STRING@
     @version    @PACKAGE_VERSION@
-    @date       2016-2021
+    @date       @PROJECT_YEARS@
     @see        @PACKAGE_URL@
 
 **/

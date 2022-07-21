@@ -30,13 +30,15 @@ int load_ini_buffer (
   void * const user_data
 ) {
 
-  char * const ini_cache = strndup(ini_buffer, ini_length);
+  char * const ini_cache = malloc(ini_length);
 
   if (!ini_cache) {
 
     return CONFINI_ENOMEM;
 
   }
+
+  memcpy(ini_cache, ini_buffer, ini_length);
 
   const int retval = strip_ini_cache(
     ini_cache,

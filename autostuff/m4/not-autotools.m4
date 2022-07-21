@@ -539,10 +539,11 @@ dnl  Requires: `NA_SANITIZE_VARNAME()` and `NA_ESC_APOS()`
 dnl  From: not-autotools/m4/not-autotools.m4
 dnl
 AC_DEFUN([NC_GLOBAL_LITERALS],
-	[m4_pushdef([_lit_], m4_quote(NA_SANITIZE_VARNAME([$1])))[]m4_define([GL_]_lit_,
-		m4_normalize([$2]))
-	AC_SUBST(_lit_, ['NA_ESC_APOS(m4_normalize([$2]))'])[]m4_popdef([_lit_])[]m4_if(m4_eval([$# > 2]), [1],
-		[NC_GLOBAL_LITERALS(m4_shift2($@))])])
+	[m4_if([$#], [0], [], [$#], [1], [],
+		[m4_pushdef([_lit_], m4_quote(NA_SANITIZE_VARNAME([$1])))[]m4_define([GL_]m4_quote(_lit_),
+			m4_normalize([$2]))[]m4_newline()[]AC_SUBST(_lit_,
+			[']NA_ESC_APOS(m4_normalize([$2]))['])[]m4_popdef([_lit_])[]m4_if([$#], [2], [],
+			[NC_GLOBAL_LITERALS(m4_shift2($@))])])])
 
 
 

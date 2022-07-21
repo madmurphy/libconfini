@@ -27,9 +27,13 @@
 #endif
 #include TESTS_CONFINI_HEADER
 
+#define UNUSED(ARG) (void)(ARG)
+
 static char ini_cache[] = "testkey=testvalue";
 
 static int test_callback (IniDispatch * dispatch, void * v_null) {
+
+	UNUSED(v_null);
 
 	TESTS_PRINTF_FUNCTION(
 		"DATA: %s, VALUE: %s, NODE TYPE: %u\n",

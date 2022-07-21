@@ -182,8 +182,9 @@ later version.
 	                empty strings enclosed between quotes are _always_ collapsed
 	                together with their surrounding spaces.
 	@property   IniFormat::disabled_after_space
-	                If set to `true`, what follows `/[#;]\s/` is allowed to be
-	                parsed as a disabled entry.
+	                If set to `true`, what follows `/\s+[#;]\s+/` is allowed to be
+	                parsed as a disabled entry; conversely, only `/\s+[#;](?!\s)/`
+					will be able to mark a disabled entry.
 	@property   IniFormat::disabled_can_be_implicit
 	                If set to `false`, comments that do not contain a key-value
 	                delimiter will never be parsed as disabled keys, but always as
@@ -2265,10 +2266,11 @@ static size_t further_cuts (
 				/*
 
 					No case break here, keep it like this! `case /[ \t\v\f]/` must
-					follow (switch case fallthrough).
+					follow -- switch case fallthrough
 
 				*/
 
+			/* fallthrough */
 			case _CONFINI_VT_:
 			case _CONFINI_FF_:
 			case _CONFINI_HT_:
@@ -2870,11 +2872,12 @@ int strip_ini_cache (
 					/*
 
 						No case break here, keep it like this!
-						`case _CONFINI_BC_INT_MARKER_` must follow
-						(switch case fallthrough).
+						`case _CONFINI_BC_INT_MARKER_` must follow -- switch case
+						fallthrough
 
 					*/
 
+				/* fallthrough */
 				case _CONFINI_BC_INT_MARKER_:
 
 					/*
@@ -3208,7 +3211,7 @@ int load_ini_file (
 
 	}
 
-	if (file_size > SIZE_MAX) {
+	if ((uintmax_t) file_size > SIZE_MAX) {
 
 		return CONFINI_EFBIG;
 
@@ -3224,7 +3227,7 @@ int load_ini_file (
 
 	rewind(ini_file);
 
-	if (fread(cache, 1, (size_t) file_size, ini_file) < file_size) {
+	if (fread(cache, 1, (size_t) file_size, ini_file) < (size_t) file_size) {
 
 		free(cache);
 		return CONFINI_EIO;
@@ -3306,12 +3309,16 @@ int load_ini_path (
 		(file_size = _CONFINI_FTELL_(ini_file)) < 0
 	) {
 
+		/*  No checks here, as there is nothing we can do about it...  */
+		fclose(ini_file);
 		return CONFINI_EBADF;
 
 	}
 
-	if (file_size > SIZE_MAX) {
+	if ((uintmax_t) file_size > SIZE_MAX) {
 
+		/*  No checks here, as there is nothing we can do about it...  */
+		fclose(ini_file);
 		return CONFINI_EFBIG;
 
 	}
@@ -3320,15 +3327,19 @@ int load_ini_path (
 
 	if (!cache) {
 
+		/*  No checks here, as there is nothing we can do about it...  */
+		fclose(ini_file);
 		return CONFINI_ENOMEM;
 
 	}
 
 	rewind(ini_file);
 
-	if (fread(cache, 1, (size_t) file_size, ini_file) < file_size) {
+	if (fread(cache, 1, (size_t) file_size, ini_file) < (size_t) file_size) {
 
 		free(cache);
+		/*  No checks here, as there is nothing we can do about it...  */
+		fclose(ini_file);
 		return CONFINI_EIO;
 
 	}

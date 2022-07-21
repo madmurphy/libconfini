@@ -8,6 +8,7 @@
 AM_CFLAGS = \
 	@guessed_am_cflags@ \
 	-Wall \
+	-Wextra \
 	-pedantic \
 	-std=c99
 
